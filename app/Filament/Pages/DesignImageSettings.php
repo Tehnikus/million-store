@@ -73,13 +73,30 @@ class DesignImageSettings extends Page
                                         ->label(__('admin.design.image_types.height')),
                                 ])
                                 ->columns(2),
-                            Fieldset::make(__('admin.design.image_types.product_options'))
+
+                        ]),
+                    
+                    Section::make(__('admin.design.image_types.options_attributes'))
+                        ->schema([
+                            Fieldset::make(__('admin.design.image_types.options'))
                                 ->schema([
-                                    TextInput::make("image_dimensions.product.option.width")
+                                    TextInput::make("image_dimensions.option.miniature.width")
                                         ->numeric()
                                         ->required()
                                         ->label(__('admin.design.image_types.width')),
-                                    TextInput::make("image_dimensions.product.option.height")
+                                    TextInput::make("image_dimensions.option.miniature.height")
+                                        ->numeric()
+                                        ->required()
+                                        ->label(__('admin.design.image_types.height')),
+                                ])
+                                ->columns(2),
+                            Fieldset::make(__('admin.design.image_types.attributes'))
+                                ->schema([
+                                    TextInput::make("image_dimensions.attribute.miniature.width")
+                                        ->numeric()
+                                        ->required()
+                                        ->label(__('admin.design.image_types.width')),
+                                    TextInput::make("image_dimensions.attribute.miniature.height")
                                         ->numeric()
                                         ->required()
                                         ->label(__('admin.design.image_types.height')),
