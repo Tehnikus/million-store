@@ -76,6 +76,8 @@ class Customer extends Model
             'anonymized_at'     => now(),
             'password'          => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(40)),
             'remember_token'    => null,
+            'wishlist'          => '{}',
+            'addresses'         => '{}',
 
             // Remove notifications if present
             'marketing_opt_in'  => false,
