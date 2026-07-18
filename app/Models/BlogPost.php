@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Domain\Seo\HasSlugs;
 use Spatie\Translatable\HasTranslations;
+use App\Domain\Media\Concerns\HasProcessedImages;
 
 class BlogPost extends Model
 {
     use HasTranslations;
     use HasSlugs;
+    use HasProcessedImages;
     protected $fillable = [
         'store_id',
         'name',
@@ -91,4 +93,16 @@ class BlogPost extends Model
     {
         return $this->belongsTo(BlogAuthor::class, 'author_id');
     }
+
+    // Required for image conversions
+    public function imageColumns(): array
+    {
+        return [
+            'images' => [
+                'type'        => 'blog', // Image type. Sets which dimensions to choose from StoreSetting and what directory to store images in
+                'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
+            ],
+        ];
+    }
+
 }
