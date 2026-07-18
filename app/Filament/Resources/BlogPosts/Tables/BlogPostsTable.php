@@ -19,8 +19,21 @@ class BlogPostsTable
     {
         return $table
             ->columns([
-                // ImageColumn::make('images')
-                //     ->label(__('admin.blog.posts.fields.name')),
+                ImageColumn::make('images')
+                    ->label(__('admin.common.fields.image'))
+                    ->disk('public')
+                    ->state(fn ($record) => collect($record->images ?? [])->pluck('conversions.miniature')->filter()->values()->first()) // or ->all()
+                    // ->stacked() // uncomment if ->all()
+                    // ->circular()
+                    // ->limit(3)
+                    // ->limitedRemainingText()
+                    // ->overlap(6)
+                    // ->ring(8)
+                    ->imageHeight(50)
+                    ->extraImgAttributes(['loading' => 'lazy'])
+                    ->checkFileExistence(false)
+                    ->alignment(Alignment::Center)
+                    ->width('1%'),
 
                 TextColumn::make('name')
                     ->label(__('admin.blog.posts.fields.name'))
