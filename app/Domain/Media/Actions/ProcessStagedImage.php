@@ -33,7 +33,7 @@ class ProcessStagedImage
         $dimensions = $this->resolveDimensions($storeId, $type);
 
         if (! Storage::disk($this->disk)->exists($stagedPath)) {
-            throw new RuntimeException("Staging-файл не найден на диске: [{$stagedPath}].");
+            throw new RuntimeException("Staging file not found: [{$stagedPath}].");
         }
 
         $extension = pathinfo($stagedPath, PATHINFO_EXTENSION) ?: 'jpg';

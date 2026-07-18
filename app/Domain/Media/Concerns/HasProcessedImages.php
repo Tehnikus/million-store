@@ -144,52 +144,6 @@ trait HasProcessedImages
         }
     }
 
-    // protected function processRawImages(): void
-    // {
-    //     $touched = false;
-    //     $slugBase = null;
-
-    //     foreach ($this->imageColumns() as $column => $config) {
-    //         $images = $this->getAttribute($column) ?? [];
-
-    //         foreach ($images as $index => &$entry) {
-    //             if (filled($entry['conversions'] ?? null)) {
-    //                 continue;
-    //             }
-
-    //             if (blank($entry['image'] ?? null)) {
-    //                 continue;
-    //             }
-
-    //             $slugBase ??= $this->resolveSlugBase($config['slug_source'] ?? null);
-
-    //             // стало:
-    //             $processed = app(ProcessStagedImage::class)->handle(
-    //                 stagedPath: $entry['image'],
-    //                 storeId: $this->store_id,
-    //                 type: $config['type'],
-    //                 entityId: $this->getKey(),
-    //                 baseSlug: "{$slugBase}-{$index}",
-    //                 existingId: $entry['id'] ?? null,
-    //             );
-
-    //             $entry = [...$entry, ...$processed];
-    //             unset($entry['image']);
-
-    //             $touched = true;
-    //         }
-    //         unset($entry);
-
-    //         if ($touched) {
-    //             $this->setAttribute($column, array_values($images));
-    //         }
-    //     }
-
-    //     if ($touched) {
-    //         $this->saveQuietly();
-    //     }
-    // }
-
     protected function resolveSlugBase(?string $slugSource): string
     {
         $fallback = Str::slug(class_basename($this)) . '-' . $this->getKey();
