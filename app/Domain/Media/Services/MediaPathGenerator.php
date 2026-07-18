@@ -2,79 +2,51 @@
 
 namespace App\Domain\Media\Services;
 
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-
 class MediaPathGenerator
 {
     private const int BUCKET_SIZE = 100;
 
-    public function __construct(
-        private readonly string $disk = 'public',
-    ) {}
-
-    public function resolveBasePath(int $storeId, string $type, string $originalFilename): string
+    /**
+     * Where to store source images
+     * @param int $storeId
+     * @param string $type
+     * @param int $entityId
+     * @param string $baseName
+     * @param string $extension
+     * @return string
+     */
+    public function sourcePath(int $storeId, string $type, int $entityId, string $baseName, string $extension): string
     {
-        $bucketDir = $this->resolveBucketDir($storeId, $type);
-        $slug = $this->resolveUniqueSlug($bucketDir, $originalFilename);
+        // Create 100 child directories max, then make next bucket
+        $bucket = intdiv($entityId, self::BUCKET_SIZE);
 
-        return "{$bucketDir}/{$slug}";
+        return "{$storeId}/images/{$type}/sources/{$bucket}/{$entityId}_{$baseName}.{$extension}";
     }
 
-    private function resolveBucketDir(int $storeId, string $type): string
-    {
-        $baseDir = "{$storeId}/{$type}";
-        $directories = Storage::disk($this->disk)->directories($baseDir);
+    /**
+     * Where to store conversions
+     * @param int $storeId
+     * @param string $type
+     * @param int $entityId
+     * @param string $baseName
+     * @param string $conversionKey
+     * @param int $width
+     * @param int $height
+     * @param string $extension
+     * @return string
+     */
+    public function conversionPath(
+        int $storeId,
+        string $type,
+        int $entityId,
+        string $baseName,
+        string $conversionKey,
+        int $width,
+        int $height,
+        string $extension = 'webp' // TODO use when format is passed as param
+    ): string {
+        $bucket = intdiv($entityId, self::BUCKET_SIZE);
 
-        if (empty($directories)) {
-            return "{$baseDir}/0";
-        }
-
-        $lastBucket = collect($directories)
-            ->map(fn (string $dir) => (int) basename($dir))
-            ->sort()
-            ->last();
-
-        $filesInLastBucket = Storage::disk($this->disk)->files("{$baseDir}/{$lastBucket}");
-
-        $bucket = count($filesInLastBucket) >= self::BUCKET_SIZE
-            ? $lastBucket + 1
-            : $lastBucket;
-
-        return "{$baseDir}/{$bucket}";
-    }
-
-    private function resolveUniqueSlug(string $bucketDir, string $originalFilename): string
-    {
-        $slug = Str::slug(pathinfo($originalFilename, PATHINFO_FILENAME));
-
-        if ($slug === '') {
-            $slug = 'image';
-        }
-
-        $candidate = $slug;
-        $counter = 1;
-
-        while ($this->slugIsTaken($bucketDir, $candidate)) {
-            $candidate = "{$slug}-{$counter}";
-            $counter++;
-        }
-
-        return $candidate;
-    }
-
-    private function slugIsTaken(string $bucketDir, string $slug): bool
-    {
-        $existingFiles = Storage::disk($this->disk)->files($bucketDir);
-
-        foreach ($existingFiles as $file) {
-            $basename = pathinfo($file, PATHINFO_FILENAME);
-
-            if ($basename === $slug || str_starts_with($basename, "{$slug}_")) {
-                return true;
-            }
-        }
-
-        return false;
+        return "{$storeId}/images/{$type}/conversions/{$bucket}/{$entityId}_{$baseName}_{$conversionKey}_{$width}x{$height}.webp";
     }
 }

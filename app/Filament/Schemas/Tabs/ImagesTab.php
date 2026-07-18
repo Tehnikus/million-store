@@ -69,6 +69,10 @@ class ImagesTab
                         ->imageEditorAspectRatioOptions([$aspectRatio, '16:9', '4:3', '1:1', null]) // Set actual aspect ration first
                         ->formatStateUsing(fn (Get $get) => static::resolvePreviewPath($get('conversions') ?? [])) // Display preview on edit page
                         ->required(fn (Get $get) => blank($get('conversions'))) // Show error if image is still uploading
+                        // ->multiple()
+                        // ->maxParallelUploads(1)
+                        // ->maxFiles(1)
+                        // ->live()
                         // ->preserveFilenames()
                         ,
 
