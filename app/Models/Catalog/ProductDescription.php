@@ -2,14 +2,15 @@
 
 namespace App\Models\Catalog;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Translatable\HasTranslations;
 use App\Domain\Media\Concerns\HasProcessedImages;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class ProductDescription extends Model
 {
     use HasTranslations, HasProcessedImages;
+
+    public $incrementing = false; // Disables Eloquent's auto-increment handling on insert (it would otherwise try to read back a non-existent "id" column after INSERT).
 
     public $translatable = [
         'name',
@@ -25,7 +26,8 @@ class ProductDescription extends Model
     ];
 
     protected $fillable = [
-        'product_store_id',
+        'product_id',
+        'store_id',
         'name',
         'h1',
         'meta_title',
@@ -40,17 +42,17 @@ class ProductDescription extends Model
     ];
 
     protected $casts = [
-        'name' => 'array',
-        'h1' => 'array',
-        'meta_title' => 'array',
-        'meta_description' => 'array',
-        'images' => 'array',
+        'name'              => 'array',
+        'h1'                => 'array',
+        'meta_title'        => 'array',
+        'meta_description'  => 'array',
+        'images'            => 'array',
         'description_short' => 'array',
-        'description_full' => 'array',
-        'seo_keywords' => 'array',
-        'faq' => 'array',
-        'how_to' => 'array',
-        'footer' => 'array',
+        'description_full'  => 'array',
+        'seo_keywords'      => 'array',
+        'faq'               => 'array',
+        'how_to'            => 'array',
+        'footer'            => 'array',
     ];
 
     // Required for image conversions
@@ -58,14 +60,9 @@ class ProductDescription extends Model
     {
         return [
             'images' => [
-                'type'        => 'product', // Image type. Sets which dimensions to choose from StoreSetting and what directory to store images in
-                'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
+                'type' => 'product',
+                'slug_source' => 'name',
             ],
         ];
-    }
-
-    public function productStore(): BelongsTo
-    {
-        return $this->belongsTo(ProductStore::class);
     }
 }
