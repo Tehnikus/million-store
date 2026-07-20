@@ -15,17 +15,19 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id');
             $table->foreignId('store_id');
-            $table->foreignId('currency_id')->constrained('currencies')->cascadeOnDelete();
+            $table->foreignId('currency_id')->constrained('currencies')->restrictOnDelete();
+            $table->foreignId('customer_group_id')->nullable()->constrained('customer_groups')->restrictOnDelete();
 
             $table->decimal('price', 10, 2)->nullable();
             $table->boolean('is_discount')->default(false);
+            $table->integer('sort_order')->default(1);
             $table->dateTime('valid_from')->nullable();
             $table->dateTime('valid_until')->nullable();
             $table->integer('valid_quantity')->nullable();
 
             $table->timestamps();
 
-            $table->index(['product_id', 'store_id', 'currency_id']);
+            $table->index(['store_id', 'currency_id', 'customer_group_id', 'product_id']);
             $table->foreign(['product_id', 'store_id'])->references(['product_id', 'store_id'])->on('product_stores')->cascadeOnDelete();
         });
     }

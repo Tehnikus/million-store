@@ -17,7 +17,6 @@ return new class extends Migration
             $table->jsonb('global_name')->nullable()->default('{}'); // Translatable internal name, admin search only
             $table->string('sku')->unique()->nullable(); // Non-translatable article/SKU, used for orders, ERP import, barcodes
             $table->enum('units', ['pcs', 'volume', 'weight'])->default('pcs');
-            $table->softDeletes();
             $table->timestamps();
         });
 

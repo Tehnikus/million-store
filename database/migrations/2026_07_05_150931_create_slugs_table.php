@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('slugs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
-            $table->foreignId('language_id')->constrained('languages')->restrictOnDelete();
+            $table->foreignId('language_id')->constrained('languages')->cascadeOnDelete();
             $table->string('slug');
             $table->nullableMorphs('sluggable'); // Polymorph reference to entity: BlogTag, BlogPost, Product, Category, Filter Seo Pages (TODO)
             $table->foreignId('redirected_to_id')->nullable()->constrained('slugs')->nullOnDelete(); // For 301 redirects. Old slug references to to new actual row of the same sluggable_type

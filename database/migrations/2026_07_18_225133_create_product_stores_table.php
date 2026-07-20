@@ -19,7 +19,6 @@ return new class extends Migration
             $table->dateTime('is_available_from')->nullable();
             $table->dateTime('is_available_to')->nullable();
             $table->timestamps();
-            $table->softDeletes();
             $table->primary(['product_id', 'store_id']);
             $table->index(['store_id', 'is_active', 'is_available', 'product_id'], 'product_stores_catalog_lookup')->where('deleted_at is null');
         });
