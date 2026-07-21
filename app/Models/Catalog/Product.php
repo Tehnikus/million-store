@@ -3,13 +3,12 @@
 namespace App\Models\Catalog;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
 {
-    use SoftDeletes, HasTranslations;
+    use HasTranslations;
 
     public $translatable = ['global_name'];
 
