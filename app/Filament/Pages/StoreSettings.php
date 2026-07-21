@@ -50,7 +50,8 @@ class StoreSettings extends Page
         // Get languages for inputs that require translatable values
         $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
         // Get currencies for inputs that
-        $currencies = Currency::get()->where('is_active', true);
+        // $currencies = Currency::get()->where('is_active', true);
+        $currencies = Filament::getTenant()->currencies()->wherePivot('is_active', true)->get();
 
         
 
