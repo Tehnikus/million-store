@@ -52,44 +52,6 @@ class DescriptionTab implements HasTranslatableTab
                     ->afterStateUpdated(function (?string $state, $component, $livewire, ?Model $record) use ($languageId) {
                         self::validateSlugLive($livewire, $component->getStatePath(), $state, $languageId, $record);
                     })
-                    // ->afterStateUpdated(function (?string $state, Get $get, $component, $livewire, ?Slug $record) use ($languageId) {
-                    //     // dd($state, $languageId, $record);
-                    //     $path = $component->getStatePath();
-                    //     $livewire->resetErrorBag($path);
-
-                    //     if (blank($state)) {
-                    //         return;
-                    //     }
-
-                    //     $validator = Validator::make(
-                    //         ["slugs.{$languageId}" => $state],
-                    //         ["slugs.{$languageId}" => 'alpha_dash'],
-                    //         ["slugs.{$languageId}.alpha_dash" => __('admin.seo.slugs.errors.alpha_dash')],
-                    //     );
-
-                    //     if ($validator->fails()) {
-                    //         $livewire->addError($path, $validator->errors()->first("slugs.{$languageId}"));
-                    //         return;
-                    //     }
-
-                    //     // $taken = self::slugIsTaken(
-                    //     //     $state,
-                    //     //     (int) $languageId,
-                    //     //     $record ? fn($query) => $query->whereKeyNot($record->getKey()) : null,
-                    //     // );
-                    //     $taken = self::slugIsTaken(
-                    //         $state,
-                    //         $languageId,
-                    //         $record ? fn (Builder $query) => $query->where(function (Builder $q) use ($record) {
-                    //             $q->where('sluggable_type', '!=', $record::class)
-                    //                 ->orWhere('sluggable_id', '!=', $record->getKey());
-                    //         }) : null,
-                    //     );
-
-                    //     if ($taken) {
-                    //         $livewire->addError($path, __('admin.messages.slug_taken'));
-                    //     }
-                    // })
                     ->unique(
                         table: 'slugs',
                         column: 'slug',
@@ -127,34 +89,6 @@ class DescriptionTab implements HasTranslatableTab
 
                         return $livewire->getErrorBag()->has($component->getStatePath()) ? 'danger' : 'success';
                     })
-                // ->suffixIcon(function (?string $state, ?Model $record) use ($languageId) {
-                //     if (blank($state)) {
-                //         return null;
-                //     }
-
-                //     return self::slugIsTaken(
-                //         $state,
-                //         $languageId,
-                //         $record ? fn (Builder $query) => $query->where(function (Builder $q) use ($record) {
-                //             $q->where('sluggable_type', '!=', $record::class)
-                //                 ->orWhere('sluggable_id', '!=', $record->getKey());
-                //         }) : null,
-                //     ) ? Heroicon::XCircle : Heroicon::CheckCircle;
-                // })
-                // ->suffixIconColor(function (?string $state, ?Model $record) use ($languageId) {
-                //     if (blank($state)) {
-                //         return null;
-                //     }
-
-                //     return self::slugIsTaken(
-                //         $state,
-                //         $languageId,
-                //         $record ? fn (Builder $query) => $query->where(function (Builder $q) use ($record) {
-                //             $q->where('sluggable_type', '!=', $record::class)
-                //                 ->orWhere('sluggable_id', '!=', $record->getKey());
-                //         }) : null,
-                //     ) ? 'danger' : 'success';
-                // })
             ] : []),
 
             TextInput::make("h1.{$locale}")
