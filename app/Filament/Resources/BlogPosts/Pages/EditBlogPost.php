@@ -2,20 +2,14 @@
 
 namespace App\Filament\Resources\BlogPosts\Pages;
 
-use App\Models\BlogPost;
 use App\Filament\Resources\BlogPosts\BlogPostResource;
-use App\Filament\Concerns\SyncsSlugFields;
-use App\Filament\Concerns\RedirectsToIndex;
+use App\Filament\Concerns\StripsSlugFormState;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBlogPost extends EditRecord
 {
-    use SyncsSlugFields;
-    use RedirectsToIndex;
-
     protected static string $resource = BlogPostResource::class;
-    protected array $pendingSlugs = [];
 
     protected function getHeaderActions(): array
     {
@@ -24,20 +18,9 @@ class EditBlogPost extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        return $this->loadSlugsIntoData($data, BlogPost::class, $this->record->id);
-    }
-
+    use StripsSlugFormState;
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $this->pendingSlugs = $this->pullSlugsFromData($data);
-
-        return $data;
-    }
-
-    protected function afterSave(): void
-    {
-        $this->syncSlugs($this->pendingSlugs, BlogPost::class, $this->record->id);
+        return $this->stripSlugFormState($data);
     }
 }
