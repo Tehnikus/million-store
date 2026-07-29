@@ -42,8 +42,8 @@ class SupermasterPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // AccountWidget::class,
+                // FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -75,6 +75,8 @@ class SupermasterPanelProvider extends PanelProvider
             })
             ->sidebarCollapsibleOnDesktop() // Set admin main menu to collapsible
             ->maxContentWidth(Width::Full)  // Set main page content to fill width
+            ->resourceCreatePageRedirect('index') // Redirect on resource create
+            ->resourceEditPageRedirect('index') // Redirect on resource edit
             ;
     }
 }
