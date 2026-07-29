@@ -1,20 +1,25 @@
 <?php
+
 namespace App\Filament\Resources\Languages\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Support\Enums\Alignment;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+use Illuminate\Database\Eloquent\Builder;
 
 class LanguagesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->with('currency'); // ?
+            })
             ->columns([
                 ImageColumn::make('image')
                     ->label(__('admin.languages.fields.flag'))
