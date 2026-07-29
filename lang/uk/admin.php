@@ -10,6 +10,38 @@ return [
     'delete_restricted_title'   => 'Увага! Ви не можете це видалити через інші залежні дані!',
     'delete_cascade_warning'    => 'Увага! Якщо ви видалите цеб інші залежні дані також будуть видалені!',
   ],
+  'catalog' => [
+    'products' => [
+      'navigation_label'      => 'Товари',
+      'model_label_singular'  => 'Товар',
+      'fields' => []
+    ],
+    'categories' => [
+      'navigation_label'      => 'Категорії',
+      'model_label_singular'  => 'Категорія',
+      'fields' => []
+    ],
+    'manufacturers' => [
+      'navigation_label'      => 'Бренди',
+      'model_label_singular'  => 'Бренд',
+      'fields' => []
+    ],
+    'attributes' => [
+      'navigation_label'      => 'Атрибути',
+      'model_label_singular'  => 'Атрибут',
+      'fields' => []
+    ],
+    'options' => [
+      'navigation_label'      => 'Опції',
+      'model_label_singular'  => 'Опція',
+      'fields' => []
+    ],
+    'tags' => [
+      'navigation_label'      => 'Теґи',
+      'model_label_singular'  => 'Теґ',
+      'fields' => []
+    ],
+  ],
   'customers' => [
     'customer' => [
       'navigation_label'      => 'Покупці',
@@ -129,9 +161,10 @@ return [
         'post'               => 'Стаття',
         'type'               => 'Тип',        
         'author'             => 'Автор',
+        'email'              => 'Email',
         'body'               => 'Відгук',
         'rating'             => 'Рейтинг',
-        'is_approved'        => 'Схавлений',
+        'is_approved'        => 'Ухавлений',
         'created_at'         => 'Дата створення',
         'reply_body'         => 'Відповідь',
         'locale'             => 'Мова',
@@ -205,11 +238,11 @@ return [
     ],
     'helpers' => [
       'name'              => 'Ім\'я',
-      'slug'              => 'Має бути унікальним кожною мовою в магазине',
+      'slug'              => 'Має бути унікальним кожною мовою в магазині',
       'description_short' => 'Вступний текст, який відображається над всіма іншими блоками. рекомендована довжина - до 500 символів',
       'description_full'  => 'Повний опис',
       'h1'                => 'Додайте основні ключові слова, зробіть схожим на title',
-      'meta_title'        => 'Додайте основні ключові слова. Рекомендована довжина - 50–60 символів. Довший заголовок буде обрізаний Google. Максимальна довжина - 150 символів',
+      'meta_title'        => 'Додайте основні ключові слова. Рекомендована довжина - 50–60 символів. Довший заголовок буде обрізаний Google. Максимальна довжина - 160 символів',
       'meta_description'  => 'Рекомендована довжина - 120 символів для мобільних пристроїв та 150 символів для настільних комп\'ютерів. Довший опис буде обрізаний Google. Максимальна довжина - 255 символів',
       'image_description' => 'Alt атрибут зображення, найкраще до 125 символів',
       'images_tab'        => 'Не забудьте заповнити атрибут Alt для зображення, це допоможе пошуковим системам зрозуміти, что зображено, та, відповідно, покращить SEO-рейтинг',
@@ -280,15 +313,12 @@ return [
       'store_settings'  => 'Налаштування магазина',
       'global_settings' => 'Глобальні налаштування',
     ],
-    'items' => [
-      'store_contacts'              => 'Контакти',
-      'store_settings'              => 'Налаштування',
-      'store_homepage_description'  => 'Головна',
-      'image_settings'              => 'Зображення',
-      'css_editor'                  => 'CSS Редактор',
-      'robots_editor'               => 'Robots.txt',
-    ],
   ],
+
+  'store_homepage'  => ['navigation_label' => 'Головна',],
+  'image_settings'  => ['navigation_label' => 'Зображення',],
+  'css_editor'      => ['navigation_label' => 'CSS Редактор',],
+  'robots_editor'   => ['navigation_label' => 'Robots.txt',],
 
   // Info pages
   'info_pages' => [
@@ -298,6 +328,7 @@ return [
 
   // Store contacts form
   'store_contacts' => [
+    'navigation_label' => 'Контакти',
     'fields' => [
       'legal_infos'                => 'Юридична інформація',
       'organization_description'   => 'Опис організації',
@@ -362,6 +393,7 @@ return [
 
   // Store settings
   'store_settings' => [
+    'navigation_label' => 'Налаштування',
     'tabs' => [
       'delivery_settings'       => 'Доставка',
       'checkout_settings'       => 'Замовлення',
@@ -388,10 +420,10 @@ return [
     ],
     'checkout_settings' => [
       'fields' => [
-        'minimal_order_total'     => 'Minimal checkout total',
-        'agreement_pages'         => 'Agreement pages',
-        'service_agreement_page'  => 'Service agreement page',
-        'return_rules_page'       => 'Return rules page',
+        'minimal_order_total'     => 'Мінімальна сума замовлення',
+        'agreement_pages'         => 'Сторінки згоди',
+        'service_agreement_page'  => 'Угода користування',
+        'return_rules_page'       => 'Правила повернення',
         'checkout_custom_fields'  => 'Додаткові поля',
         'checkout_address_fields' => 'Поля адреси',
         'firstname'               => 'Ім\'я',
@@ -432,15 +464,16 @@ return [
     'navigation_label'      => 'Країни',
     'model_label_singular'  => 'Країна',
     'fields' => [
-      'name'                 => 'Назва',
-      'iso_code'             => 'ISO код',
-      'phone_code'           => 'Код телефона',
-      'default_currency_id'  => 'Основна валюта',
-      'is_eu_member'         => 'Входить в ЕС',
-      'regions'              => 'Області',
-      'region'               => 'Область',
-      'add_region'           => 'Додати область',
-      'is_active'            => 'Активна',
+      'name'                  => 'Назва',
+      'localization_settings' => 'Настройки локалізації',
+      'iso_code'              => 'ISO код',
+      'phone_code'            => 'Код телефона',
+      'default_currency_id'   => 'Основна валюта',
+      'is_eu_member'          => 'Входить в ЕС',
+      'regions'               => 'Області',
+      'region'                => 'Область',
+      'add_region'            => 'Додати область',
+      'is_active'             => 'Активна',
     ],
     'helpers' => [
       'add_region'  => 'Необов\'язково, ви можете пропустити це',
@@ -479,7 +512,7 @@ return [
       'name'                      => 'Назва',
       'iso_code'                  => 'Код ISO',
       'locale'                    => 'Локаль',
-      'is_active'                 => 'Активний',
+      'is_active'                 => 'Активна',
       'stores'                    => 'Магазини',
       'default_currency'          => 'Валюта',
       'fulltext_search_language'  => 'Словник PostgreSQL',
@@ -505,6 +538,9 @@ return [
       'currencies'          => 'Валюти',
       'countries'           => 'Країни',
       'is_active'           => 'Активний',
+      'add_language'        => 'Додати мову магазину',
+      'add_currency'        => 'Додати валюту магазину',
+      'add_country'         => 'Додати країну магазину',
     ],
     'relations' => [
       'languages' => [

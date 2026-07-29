@@ -10,6 +10,38 @@ return [
     'delete_restricted_title'   => 'Внимание! Вы не можете это удалить из-за других зависимых данных!',
     'delete_cascade_warning'    => 'Внимание! Если вы удалите это, другие зависимые данные тоже будут удалены!',
   ],
+  'catalog' => [
+    'products' => [
+      'navigation_label'      => 'Товары',
+      'model_label_singular'  => 'Товар',
+      'fields' => []
+    ],
+    'categories' => [
+      'navigation_label'      => 'Категории',
+      'model_label_singular'  => 'Категория',
+      'fields' => []
+    ],
+    'manufacturers' => [
+      'navigation_label'      => 'Бренды',
+      'model_label_singular'  => 'Бренд',
+      'fields' => []
+    ],
+    'attributes' => [
+      'navigation_label'      => 'Атрибуты',
+      'model_label_singular'  => 'Атрибут',
+      'fields' => []
+    ],
+    'options' => [
+      'navigation_label'      => 'Опции',
+      'model_label_singular'  => 'Опция',
+      'fields' => []
+    ],
+    'tags' => [
+      'navigation_label'      => 'Теги',
+      'model_label_singular'  => 'Тег',
+      'fields' => []
+    ],
+  ],
   'customers' => [
     'customer' => [
       'navigation_label'      => 'Покупатели',
@@ -129,6 +161,7 @@ return [
         'post'               => 'Статья',
         'type'               => 'Тип',        
         'author'             => 'Автор',
+        'email'              => 'Email',
         'body'               => 'Отзыв',
         'rating'             => 'Рейтинг',
         'is_approved'        => 'Одобрен',
@@ -195,7 +228,7 @@ return [
       'faq_answer'        => 'Ответ',
       'how_to_step_name'  => 'Название шага/этапа',
       'how_to_step_text'  => 'Описание шага/этапа',
-      'image'             => 'Изображение',
+      'image'             => 'Фото',
       'image_description' => 'Описание изображения',
       'footer_tab'        => 'Название вкладки',
       'footer_content'    => 'Контент',
@@ -209,7 +242,7 @@ return [
       'description_short' => 'Вступительный текст, который отображается сверху страницы. Рекомендуемая длина до 500 символов',
       'description_full'  => 'Длинный текст',
       'h1'                => 'Включите основные ключевые слова, сделайте похожим на title',
-      'meta_title'        => 'Включите основные ключевые слова. Рекомендуемая длина 50–60 символов. Более длинный заголовок будет обрезан Google. Максимальная длина - 150 символов',
+      'meta_title'        => 'Включите основные ключевые слова. Рекомендуемая длина 50–60 символов. Более длинный заголовок будет обрезан Google. Максимальная длина - 160 символов',
       'meta_description'  => 'Рекомендуемая длина 120 символов для мобильных устройств и 150 символов для настольных компьютеров. Более длинное описание будет обрезано Google. Максимальная длина - 255 символов',
       'image_description' => 'Alt атрибут изображения, лучше всего до 125 символов',
       'images_tab'        => 'Не забудьте установить атрибут Alt для изображения, это поможет поисковым системам понять, что изображено, и, следовательно, улучшит SEO ранжирование',
@@ -238,6 +271,10 @@ return [
       'add_how_to_tool'   => 'Добавить инструмент HowTo',
       'add_how_to_supply' => 'Добавить материал HowTo',
       'add_footer_tab'    => 'Добавить вкладку Footer',
+      'create_slug'       => 'Создать URL из названия',
+      'paste_h1'          => 'Вставить название в H1',
+      'paste_title'       => 'Вставить H1 или название в Title',
+      'paste_description' => 'Вставить Title в начало Description',
     ],
   ],
   'design' => [
@@ -274,21 +311,18 @@ return [
       'catalog'         => 'Каталог',
       'blog'            => 'Блог',
       'stock'           => 'Склад',
-      'customers'       => 'Клиенты',
+      'customers'       => 'Покупатели',
       'seo'             => 'SEO',
       'design'          => 'Дизайн',
       'store_settings'  => 'Настройки магазина',
       'global_settings' => 'Глобальные настройки',
     ],
-    'items' => [
-      'store_contacts'              => 'Контакты',
-      'store_settings'              => 'Настройки',
-      'store_homepage_description'  => 'Главная',
-      'image_settings'              => 'Изображения',
-      'css_editor'                  => 'CSS Редактор',
-      'robots_editor'               => 'Robots.txt',
-    ],
   ],
+
+  'store_homepage'  => ['navigation_label' => 'Главная'],
+  'image_settings'  => ['navigation_label' => 'Изображения'],
+  'css_editor'      => ['navigation_label' => 'CSS Редактор'],
+  'robots_editor'   => ['navigation_label' => 'Robots.txt'],
 
   // Info pages
   'info_pages' => [
@@ -298,6 +332,7 @@ return [
 
   // Store contacts form
   'store_contacts' => [
+    'navigation_label' => 'Контакты',
     'fields' => [
       'legal_infos'                => 'Юридическая информация',
       'organization_description'   => 'Описание организации',
@@ -362,6 +397,7 @@ return [
 
   // Store settings
   'store_settings' => [
+    'navigation_label' => 'Настройки',
     'tabs' => [
       'delivery_settings' => 'Доставка',
       'checkout_settings' => 'Оформление заказа',
@@ -390,7 +426,7 @@ return [
       'fields' => [
         'minimal_order_total'     => 'Минимальная сумма заказа',
         'agreement_pages'         => 'Страницы соглашений',
-        'service_agreement_page'  => 'соглашение обслуживания',
+        'service_agreement_page'  => 'Соглашение обслуживания',
         'return_rules_page'       => 'Правила возврата',
         'checkout_custom_fields'  => 'Дополнительные поля заказа',
         'checkout_address_fields' => 'Поля адреса',
@@ -432,15 +468,16 @@ return [
     'navigation_label'      => 'Страны',
     'model_label_singular'  => 'Страна',
     'fields' => [
-      'name'                 => 'Название',
-      'iso_code'             => 'ISO код',
-      'phone_code'           => 'Код телефона',
-      'default_currency_id'  => 'Валюта по умолчанию',
-      'is_eu_member'         => 'Входит в ЕС',
-      'regions'              => 'Области',
-      'region'               => 'Область',
-      'add_region'           => 'Добавить область',
-      'is_active'            => 'Активна',
+      'name'                  => 'Название',
+      'localization_settings' => 'Настройки локализации',
+      'iso_code'              => 'ISO код',
+      'phone_code'            => 'Код телефона',
+      'default_currency_id'   => 'Валюта по умолчанию',
+      'is_eu_member'          => 'Входит в ЕС',
+      'regions'               => 'Области',
+      'region'                => 'Область',
+      'add_region'            => 'Добавить область',
+      'is_active'             => 'Включен',
     ],
     'helpers' => [
       'add_region' => 'Эту часть необязательно заполнять',
@@ -505,6 +542,9 @@ return [
       'currencies'          => 'Валюты',
       'countries'           => 'Страны',
       'is_active'           => 'Включен',
+      'add_language'        => 'Добавить язык магазина',
+      'add_currency'        => 'Добавить валюту магазина',
+      'add_country'         => 'Добавить страну магазина',
     ],
     'relations' => [
       'languages' => [

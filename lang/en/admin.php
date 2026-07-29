@@ -10,6 +10,87 @@ return [
     'delete_restricted_title'   => 'Warning! You cannot delete this because of dependent resources!',
     'delete_cascade_warning'    => 'Warning! If you delete this other resources bill be affected!',
   ],
+  'catalog' => [
+    'products' => [
+      'navigation_label'      => 'Products',
+      'model_label_singular'  => 'Product',
+      'fields' => [
+        'global_name'           => 'Global name',
+        'global_data'           => 'Global data',
+        'sku'                   => 'SKU',
+        'store_name'            => 'Store name',
+        'parent_id'             => 'Main category',
+        'product_categories'    => 'Other categories',
+        'manufacturer_id'       => 'Manufacturer',
+        'attributes'            => 'Attributes',
+        'options'               => 'Options',
+        'tags'                  => 'Tags',
+        'prices'                => 'Prices',
+        'price'                 => 'Price',
+        'discount'              => 'Discount',
+        'is_active'             => 'Active in this store',
+        'is_not_active'         => 'Not active in this store',
+        'is_not_associated'     => 'Not associated to this store',
+        'prices_customer_group' => 'Customer group',
+        'valid_from'            => 'Price valid from date',
+        'valid_until'           => 'Price valid until date',
+        'valid_quantity'        => 'Price valid quantity',
+        'priority'              => 'Priority',
+      ],
+      'helpers' => [
+        'global_data'           => 'Shared across every store this product is in - editing it here changes it everywhere',
+        'is_active'             => 'Product status in current store',
+        'prices_customer_group' => 'Select the customer group to which this price will apply',
+        'priority'              => 'If multiple prices have similar applience conditions, the higher priority price will be used',
+        'discount'              => 'Discount has priority over regular price',
+        'valid_from'            => 'The price is active from this date',
+        'valid_until'           => 'The price is active until this date',
+        'valid_quantity'        => 'Product quantity in cart to apply this price',
+      ],
+      'buttons' => [
+        'add_price_tier'        => 'Add price tier',
+        'add_attribute'         => 'Add product attribute',
+        'add_option'            => 'Add product options',
+        'add_tag'               => 'Add product tag',
+      ]
+    ],
+    'categories' => [
+      'navigation_label'      => 'Categories',
+      'model_label_singular'  => 'Category',
+      'fields' => [
+        'is_active'       => 'Active',
+        'show_in_facets'  => 'Show in facets',
+        'parent_id'       => 'Parent category',
+      ],
+      'helpers' => [
+        'parent_id'       => 'Select parent category or leave blank to set this category as Root'
+      ],
+    ],
+    'manufacturers' => [
+      'navigation_label'      => 'Manufacturers',
+      'model_label_singular'  => 'Manufacturer',
+      'fields'  => [],
+      'helpers' => [],
+    ],
+    'attributes' => [
+      'navigation_label'      => 'Attributes',
+      'model_label_singular'  => 'Attribute',
+      'fields'  => [],
+      'helpers' => [],
+    ],
+    'options' => [
+      'navigation_label'      => 'Options',
+      'model_label_singular'  => 'Option',
+      'fields'  => [],
+      'helpers' => [],
+    ],
+    'tags' => [
+      'navigation_label'      => 'Tags',
+      'model_label_singular'  => 'Tag',
+      'fields'  => [],
+      'helpers' => [],
+    ],
+  ],
   'customers' => [
     'customer' => [
       'navigation_label'      => 'Customers',
@@ -129,6 +210,7 @@ return [
         'post'               => 'Post',
         'type'               => 'Type',        
         'author'             => 'Author',
+        'email'              => 'Email',
         'body'               => 'Comment',
         'rating'             => 'Rating',
         'is_approved'        => 'Approved',
@@ -209,8 +291,8 @@ return [
       'description_short' => 'Introductory text that is displayed above other page blocks. Recommended length - up to 500 characters',
       'description_full'  => 'Full description',
       'h1'                => 'Include your primary target keyword, match closely to title tag',
-      'meta_title'        => 'Recommended 50–60 chars. Longer title will be truncated. Max length is 150 chars',
-      'meta_description'  => 'Recommended 120 chars for mobile and 150 chars for desktop. Longer description will be truncated. Max length is 255 chars',
+      'meta_title'        => 'Recommended 50–60 chars. Longer title will be truncated by Google. Max length is 160 chars',
+      'meta_description'  => 'Recommended 120 chars for mobile and 150 chars for desktop. Longer description will be truncated by Google. Max length is 255 chars',
       'image_description' => 'Alt image attribute, best under 125 chars',
       'images_tab'        => 'Don\'t forget to set image\'s Alt attribue, it helps Search engines to understand what\'s depicted, thus better SEO ranking',
       'footer_tab'        => 'You can add some content here in form of tabs, mainly for SEO to enrich the page with missing keywords',
@@ -238,6 +320,10 @@ return [
       'add_how_to_tool'   => 'Add new HowTo tool',
       'add_how_to_supply' => 'Add new HowTo supply',
       'add_footer_tab'    => 'Add new Footer tab',
+      'create_slug'       => 'Create URL from name',
+      'paste_h1'          => 'Paste name to H1',
+      'paste_title'       => 'Paste H1 or name to Title',
+      'paste_description' => 'Paste Title to the beginning of Description',
     ],
   ],
   'design' => [
@@ -280,15 +366,12 @@ return [
       'store_settings'  => 'Store settings',
       'global_settings' => 'Global settings',
     ],
-    'items' => [
-      'store_contacts'              => 'Contacts',
-      'store_settings'              => 'Settings',
-      'store_homepage_description'  => 'Homepage',
-      'image_settings'              => 'Images settings',
-      'css_editor'                  => 'CSS Editor',
-      'robots_editor'               => 'Robots.txt',
-    ],
   ],
+
+  'store_homepage'  => ['navigation_label' => 'Homepage',],
+  'image_settings'  => ['navigation_label' => 'Images settings',],
+  'css_editor'      => ['navigation_label' => 'CSS Editor',],
+  'robots_editor'   => ['navigation_label' => 'Robots.txt',],
 
   // Info pages
   'info_pages' => [
@@ -298,6 +381,7 @@ return [
 
   // Store contacts form
   'store_contacts' => [
+    'navigation_label' => 'Contacts',
     'fields' => [
       'legal_infos' => 'Legal infos',
       'organization_description'    => 'Organization description',
@@ -362,6 +446,7 @@ return [
 
   // Store settings
   'store_settings' => [
+    'navigation_label' => 'Settings',
     'tabs' => [
       'delivery_settings'       => 'Delivery',
       'checkout_settings'       => 'Checkout',
@@ -432,15 +517,16 @@ return [
     'navigation_label'      => 'Countries',
     'model_label_singular'  => 'Country',
     'fields' => [
-      'name'                 => 'Name',
-      'iso_code'             => 'ISO code',
-      'phone_code'           => 'Phone code',
-      'default_currency_id'  => 'Default currency',
-      'is_eu_member'         => 'EU member',
-      'regions'              => 'Regions',
-      'region'               => 'Region',
-      'add_region'           => 'Add region',
-      'is_active'            => 'Active',
+      'name'                  => 'Name',
+      'localization_settings' => 'Localization settings',
+      'iso_code'              => 'ISO code',
+      'phone_code'            => 'Phone code',
+      'default_currency_id'   => 'Default currency',
+      'is_eu_member'          => 'EU member',
+      'regions'               => 'Regions',
+      'region'                => 'Region',
+      'add_region'            => 'Add region',
+      'is_active'             => 'Active',
     ],
     'helpers' => [
       'add_region' => 'Not necessary, you can skip this',
@@ -505,6 +591,9 @@ return [
       'currencies'          => 'Currencies',
       'countries'           => 'Countries',
       'is_active'           => 'Active',
+      'add_language'        => 'Add store language',
+      'add_currency'        => 'Add store currency',
+      'add_country'         => 'Add store country',
     ],
     'relations' => [
       'languages' => [
@@ -522,7 +611,7 @@ return [
 
   // Users
   'users' => [
-    'navigation_label' => 'Users',
+    'navigation_label'     => 'Users',
     'model_label_singular' => 'user',
     'fields' => [
       'name'        => 'Name',
