@@ -124,16 +124,17 @@ class SlugForm
                 Select::make('sluggable_type')
                     ->options([
                         // List of models that may have SEO URL
-                        \App\Models\BlogPost::class => 'Blog Post',
-                        \App\Models\BlogTag::class => 'Blog Tag',
-                        \App\Models\BlogAuthor::class => 'Blog Author',
-                        // \App\Models\Product::class          => 'Product',
-                        // \App\Models\Category::class         => 'Category',
-                        // \App\Models\Manufacturer::class     => 'Manufacturer',
-                        // \App\Models\FilterSeoPage::class    => 'Filter SEO Page',
-                        // \App\Models\ProductOption::class    => 'Option',
-                        // \App\Models\ProductAttribute::class => 'Attribute',
-                        // \App\Models\ProductTag::class       => 'Tag',
+                        \App\Models\Catalog\Product::class          => 'Product',
+                        \App\Models\Catalog\Category::class         => 'Category',
+                        // \App\Models\Catalog\Manufacturer::class     => 'Manufacturer',
+                        // \App\Models\Catalog\FilterSeoPage::class    => 'Filter SEO Page',
+                        // \App\Models\Catalog\ProductOption::class    => 'Option',
+                        // \App\Models\Catalog\ProductAttribute::class => 'Attribute',
+                        // \App\Models\Catalog\ProductTag::class       => 'Tag',
+                        \App\Models\Blog\BlogPost::class            => 'Blog Post',
+                        \App\Models\Blog\BlogTag::class             => 'Blog Tag',
+                        \App\Models\Blog\BlogAuthor::class          => 'Blog Author',
+                        \App\Models\Store\StoreInfoPage::class      => 'Info page',
 
                     ])
                     // ->required()
