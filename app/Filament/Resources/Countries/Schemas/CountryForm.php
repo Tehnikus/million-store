@@ -15,87 +15,89 @@ use Filament\Schemas\Schema;
 
 class CountryForm
 {
+
     public static function configure(Schema $schema): Schema
     {
+        // Get all active languages instead of only stores active languages
+        // because country can be used across stores with different set of languages
+        // thus should have name in any possible lang accross all stores
         $activeLanguages = Language::query()->where('is_active', true)->get();
+
         return $schema
             ->components([
                 Fieldset::make(__('admin.countries.fields.name'))
                     ->schema([
-                        ...Language::query()
-                            ->where('is_active', true)
-                            ->get()
-                            ->map(
-                                fn(Language $language) =>
-                                // Group::make()
-                                // ->schema([
-                                //     TextInput::make('first_name'),
-                                //     TextInput::make('last_name'),
-                                // ])
-                                // ->columns(2)
+                        ...$activeLanguages
+                            ->map(fn($language) =>
                                 TextInput::make("name.{$language->locale}")
                                     ->required()
                                     ->columnSpanFull()
-                                    ->hiddenLabel()
                                     ->required()
                                     ->prefix($language->locale)
+                                    ->label(__('admin.countries.fields.name') . " ({$language->name})")
                                     ->placeholder(__('admin.countries.fields.name') . " ({$language->name})")
                             )
                             ->all(),
                     ])
                     ->columnSpanFull(),
+                Fieldset::make(__('admin.countries.fields.localization_settings'))
+                    ->schema([
+                        Select::make('default_currency_id')
+                            ->relationship(name: 'currency', titleAttribute: 'name')
+                            ->searchable(['name', 'iso_code'])
+                            ->required()
+                            ->preload()
+                            ->label(__('admin.countries.fields.default_currency_id'))
+                            ->columnSpanFull(),
+        
+                        TextInput::make('iso_code')
+                            ->required()
+                            ->maxLength(3)
+                            ->unique(ignoreRecord: true) // Needed to skip own record when checking unique
+                            ->label(__('admin.countries.fields.iso_code'))
+                            ->helperText(__('admin.countries.helpers.iso_code')),
+        
+                        TextInput::make('phone_code')
+                            ->required()
+                            ->maxLength(10)
+                            ->label(__('admin.countries.fields.phone_code'))
+                            ->helperText(__('admin.countries.helpers.phone_code')),
+                    ])
+                    ->columnSpanFull(),
 
-                // KeyValue::make('regions')
-                //     ->columnSpanFull()
-                //     ->label(__('admin.countries.fields.regions'))
-                //     ->keyLabel(__('admin.countries.fields.iso_code'))
-                //     ->valueLabel(__('admin.countries.fields.region'))
-                //     ->addActionLabel(__('admin.countries.fields.add_region')),
+
                 Fieldset::make(__('admin.countries.fields.regions'))
                     ->schema([
                         Repeater::make('regions')
                             ->hiddenLabel()
                             ->table([
-                                TableColumn::make(__('admin.countries.fields.iso_code'))->width('1%'),
-                                ...$activeLanguages->map(fn($language) => TableColumn::make($language->name))->all(),
+                                TableColumn::make(__('admin.countries.fields.iso_code'))->width('200px'),
+                                TableColumn::make(__('admin.countries.fields.region'))                                
                             ])
                             ->schema([
-                                TextInput::make('iso_code')->required(),
-                                ...$activeLanguages->map(fn($language) => TextInput::make("name.{$language->locale}")->required())->all(),
+                                TextInput::make('iso_code')
+                                    ->required()
+                                    ->placeholder(__('admin.countries.fields.iso_code')),
+                                Group::make([
+                                    ...$activeLanguages->map(fn($language) => 
+                                        TextInput::make("name.{$language->locale}")
+                                            ->required()
+                                            ->prefix($language->locale)
+                                            ->placeholder(__('admin.countries.fields.name') . " ({$language->name})")
+                                    )->all(),
+                                ]),
                             ])
                             ->addActionLabel(__('admin.countries.fields.add_region'))
                             ->reorderable(false)
-                            ->compact()
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->defaultItems(0),
                     ])
                     ->columnSpanFull(),
-
-                TextInput::make('iso_code')
-                    ->required()
-                    ->maxLength(3)
-                    ->unique(ignoreRecord: true) // Needed to skip own record when checking unique
-                    ->label(__('admin.countries.fields.iso_code'))
-                    ->helperText(__('admin.countries.helpers.iso_code')),
-
-                TextInput::make('phone_code')
-                    ->required()
-                    ->maxLength(10)
-                    ->label(__('admin.countries.fields.phone_code'))
-                    ->helperText(__('admin.countries.helpers.phone_code')),
-
-                Select::make('default_currency_id')
-                    ->label(__('admin.countries.fields.default_currency_id'))
-                    ->relationship('defaultCurrency', 'name')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
 
                 Toggle::make('is_eu_member')
                     ->default(false)
                     ->label(__('admin.countries.fields.is_eu_member'))
-                    ->columnSpanFull()
-                    // ->helperText(__('admin.countries.helpers.is_eu_member'))
-                    ,
+                    ->columnSpanFull(),
 
                 Toggle::make('is_active')
                     ->default(true)
