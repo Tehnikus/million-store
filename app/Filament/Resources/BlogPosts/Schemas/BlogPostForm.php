@@ -2,22 +2,22 @@
 
 namespace App\Filament\Resources\BlogPosts\Schemas;
 
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
+use App\Models\Blog\BlogTag;
+use App\Models\Blog\BlogAuthor;
 use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\HowToTab;
 use App\Filament\Schemas\Tabs\FooterTab;
 use App\Filament\Schemas\Tabs\ImagesTab;
+use Filament\Facades\Filament;
+use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\BlogTag;
-use App\Models\BlogAuthor;
+
 
 class BlogPostForm
 {
@@ -29,7 +29,7 @@ class BlogPostForm
             ->get();
         return $schema
             ->components([
-                Tabs::make('blog_tag')
+                Tabs::make('blog_post')
                     ->schema([
 
                         Tab::make(__('admin.common.tabs.content'))

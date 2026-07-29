@@ -73,7 +73,6 @@ class BlogCommentsTable
                     ->label(__('admin.blog.comments.fields.created_at'))
                     ->dateTime()
                     ->sortable()
-                    // ->toggleable(isToggledHiddenByDefault: true)
                     ->width('1%')
                     ->alignment(Alignment::Center)
                     ->wrap(),
@@ -120,11 +119,9 @@ class BlogCommentsTable
                             ->title(__('admin.blog.comments.notifications.reply_sent'))
                             ->success()
                             ->send();
-                    })
-                    ->iconButton(),
-
-                EditAction::make()->iconButton(),
-                DeleteAction::make()->iconButton(),
+                    }),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
 
             ->groups([

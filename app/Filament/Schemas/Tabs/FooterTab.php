@@ -20,7 +20,7 @@ class FooterTab implements HasTranslatableTab
                     TableColumn::make(__('admin.common.fields.footer_content')),
                 ])
                 ->schema([
-                    TextInput::make('tab'),
+                    TextInput::make('tab')->required()->placeholder(__('admin.common.fields.footer_tab')),
                     RichEditor::make('content')
                         ->columnSpanFull()
                         ->resizableImages()
@@ -40,13 +40,15 @@ class FooterTab implements HasTranslatableTab
                         ])
                         ->extraInputAttributes([
                             'style' => 'min-height: 10rem; max-height: 50vh; overflow-y: auto;'
-                        ]),
+                        ])
+                        ->placeholder(__('admin.common.fields.footer_content')),
                 ])
                 ->addActionLabel(__('admin.common.buttons.add_footer_tab'))
                 ->reorderable(true)
                 // ->compact()
                 ->columnSpanFull()
-                ->helperText(__('admin.common.helpers.footer_tab')),
+                ->helperText(__('admin.common.helpers.footer_tab'))
+                ->defaultItems(0),
 
         ];
     }

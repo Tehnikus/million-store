@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -17,6 +18,22 @@ class BlogAuthorsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar')
+                    ->label(__('admin.blog.authors.fields.avatar'))
+                    ->disk('public')
+                    // ->state(fn ($record) => collect($record->images ?? [])->pluck('conversions.miniature')->filter()->values()->first()) // ->all()
+                    // ->stacked() // uncomment if ->all()
+                    // ->limit(3)
+                    // ->limitedRemainingText()
+                    // ->overlap(6)
+                    // ->ring(8)
+                    ->circular()
+                    ->imageHeight(70)
+                    ->checkFileExistence(false)
+                    ->alignment(Alignment::Center)
+                    ->width('1%')
+                    ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: 50%; margin: -0.7rem 0']),
+
                 TextColumn::make('name')
                     ->label(__('admin.blog.authors.fields.name'))
                     ->searchable()
@@ -50,8 +67,8 @@ class BlogAuthorsTable
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->recordActions([
-                EditAction::make()->iconButton(),
-                DeleteAction::make()->iconButton(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

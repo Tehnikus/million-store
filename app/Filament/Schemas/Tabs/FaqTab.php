@@ -19,14 +19,15 @@ class FaqTab implements HasTranslatableTab
                         TableColumn::make(__('admin.common.fields.faq_answer')),
                     ])
                     ->schema([
-                        TextInput::make('question'),
-                        Textarea::make('answer'),
+                        TextInput::make('question')->placeholder(__('admin.common.fields.faq_question')),
+                        Textarea::make('answer')->placeholder(__('admin.common.fields.faq_answer')),
                     ])
                     ->addActionLabel(__('admin.common.buttons.add_faq_row'))
                     ->reorderable(true)
                     ->compact()
                     ->columnSpanFull()
-                    ->helperText(__('admin.common.helpers.faq_tab')),
+                    ->helperText(__('admin.common.helpers.faq_tab'))
+                    ->defaultItems(0),
             ];
     }
 

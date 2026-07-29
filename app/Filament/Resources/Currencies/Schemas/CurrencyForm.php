@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Resources\Currencies\Schemas;
 
 use Filament\Forms\Components\TextInput;
@@ -34,7 +35,7 @@ class CurrencyForm
                     ->required()
                     ->numeric()
                     ->default(1)
-                    ->step(0.000001)
+                    ->step(0.001)
                     ->label(__('admin.currencies.fields.rate'))
                     ->helperText(__('admin.currencies.helpers.rate')),
 

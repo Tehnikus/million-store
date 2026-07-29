@@ -88,9 +88,9 @@ class BlogAuthorForm
                     ])
                     ->columnSpanFull(),
 
-                LanguageTabs::make($languages, [
-                    [DescriptionTab::class, ['withSlug' => true]],
-                ])
+                    LanguageTabs::make($languages, [
+                        [DescriptionTab::class, ['withSlug' => true]],
+                    ])
                     ->columnSpanFull(),
             ]);
     }
