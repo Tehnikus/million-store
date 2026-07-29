@@ -4,7 +4,6 @@ namespace App\Filament\Schemas\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Schemas\Components\Callout;
@@ -90,6 +89,25 @@ class StoreContactForm implements HasTranslatableTab
                     ->label(__('admin.store_contacts.fields.email'))
                     ->email(),
 
+                // Phones
+                Fieldset::make(__('admin.store_contacts.fields.phones'))
+                    ->schema([
+                        Repeater::make("phones.{$locale}")
+                            ->hiddenLabel()
+                            ->table([
+                                TableColumn::make(__('admin.store_contacts.fields.phone_name'))->width('50%'),
+                                TableColumn::make(__('admin.store_contacts.fields.phone_number'))->width('50%'),
+                            ])
+                            ->schema([
+                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.phone_name')),
+                                TextInput::make('number')->placeholder(__('admin.store_contacts.fields.phone_number')),
+                            ])
+                            ->addActionLabel(__('admin.store_contacts.buttons.add_phone'))
+                            ->compact()
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
+
                 // Open hours
                 Fieldset::make(__('admin.store_contacts.fields.open_hours'))
                     ->schema([
@@ -101,28 +119,15 @@ class StoreContactForm implements HasTranslatableTab
                                 TableColumn::make(__('admin.store_contacts.fields.closes')),
                             ])
                             ->schema([
-                                TextInput::make('day'),
-                                TextInput::make('opens'),
-                                TextInput::make('closes'),
+                                TextInput::make('day')->placeholder(__('admin.store_contacts.fields.day')),
+                                TextInput::make('opens')->placeholder(__('admin.store_contacts.fields.opens')),
+                                TextInput::make('closes')->placeholder(__('admin.store_contacts.fields.closes')),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_open_hours'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull()
                             ->helperText(new HtmlString(__('admin.store_contacts.helpers.open_hours'))),
-                    ])
-                    ->columnSpanFull(),
-
-                // Phones
-                Fieldset::make(__('admin.store_contacts.fields.phones'))
-                    ->schema([
-                        KeyValue::make("phones.{$locale}")
-                            ->hiddenLabel()
-                            ->columnSpanFull()
-                            ->label(__('admin.store_contacts.fields.phones'))
-                            ->keyLabel(__('admin.store_contacts.fields.phone_name'))
-                            ->valueLabel(__('admin.store_contacts.fields.phone_number'))
-                            ->addActionLabel(__('admin.store_contacts.buttons.add_phone'))
                     ])
                     ->columnSpanFull(),
                 
@@ -132,14 +137,14 @@ class StoreContactForm implements HasTranslatableTab
                         Repeater::make("social_links.{$locale}")
                             ->hiddenLabel()
                             ->table([
-                                TableColumn::make(__('admin.store_contacts.fields.social_link_icon'))->width('150px'),
+                                TableColumn::make(__('admin.store_contacts.fields.social_link_icon'))->width('100px'),
                                 TableColumn::make(__('admin.store_contacts.fields.social_link_title')),
                                 TableColumn::make(__('admin.store_contacts.fields.social_link_link')),
                             ])
                             ->schema([
-                                FileUpload::make('icon')->panelLayout('compact'),
-                                TextInput::make('name'),
-                                TextInput::make('link'),
+                                FileUpload::make('icon')->placeholder(__('admin.store_contacts.fields.social_link_icon'))->panelLayout('compact'),
+                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.social_link_title')),
+                                TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_link_link')),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_social_link'))
                             ->reorderable(false)
@@ -154,20 +159,19 @@ class StoreContactForm implements HasTranslatableTab
                         Repeater::make("social_contacts.{$locale}")
                             ->hiddenLabel()
                             ->table([
-                                TableColumn::make(__('admin.store_contacts.fields.social_contact_icon'))->width('150px'),
+                                TableColumn::make(__('admin.store_contacts.fields.social_contact_icon'))->width('100px'),
                                 TableColumn::make(__('admin.store_contacts.fields.social_contact_title')),
                                 TableColumn::make(__('admin.store_contacts.fields.social_contact_link')),
                             ])
                             ->schema([
-                                FileUpload::make('icon')->panelLayout('compact'),
-                                TextInput::make('name'),
-                                TextInput::make('link'),
+                                FileUpload::make('icon')->placeholder(__('admin.store_contacts.fields.social_contact_icon'))->panelLayout('compact'),
+                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.social_contact_title')),
+                                TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_contact_link')),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_social_contact'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull(),
-                            // ->helperText(),
                         Callout::make(__('admin.store_contacts.fields.social_contacts'))
                             ->description(new HtmlString(__('admin.store_contacts.helpers.social_contacts')))
                             ->info()
