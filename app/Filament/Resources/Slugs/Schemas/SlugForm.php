@@ -149,7 +149,7 @@ class SlugForm
                     ->relationship(
                         name: 'redirectedTo',
                         titleAttribute: 'slug',
-                        modifyQueryUsing: fn(\Illuminate\Database\Eloquent\Builder $query, \Filament\Schemas\Components\Utilities\Get $get, ?\App\Models\Slug $record) => $query
+                        modifyQueryUsing: fn(\Illuminate\Database\Eloquent\Builder $query, \Filament\Schemas\Components\Utilities\Get $get, ?\App\Models\Seo\Slug $record) => $query
                             ->where('store_id', Filament::getTenant()->id)
                             ->where('language_id', $get('language_id'))
                             ->when($record, fn($q) => $q->whereKeyNot($record->id)),
