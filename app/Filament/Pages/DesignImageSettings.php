@@ -178,11 +178,12 @@ class DesignImageSettings extends Page
         $formData = $this->form->getState();
         $formData['store_id'] = $store->id;
 
-        $record = $this->getRecord() ?? new StoreSetting();
+        $record = $this->getRecord() ?? new StoreSettings();
         $record->fill($formData);
         // $record->save();
         // Update only target column
-        $record->update([
+        $record->updateOrCreate([
+            'store_id'         => $formData['store_id'],
             'image_dimensions' => $formData['image_dimensions'],
         ]);
 
@@ -191,11 +192,11 @@ class DesignImageSettings extends Page
         Notification::make()->success()->title(__('admin.messages.settings_saved'))->send();
     }
 
-    public function getRecord(): ?StoreSetting
+    public function getRecord(): ?StoreSettings
     {
         $store = Filament::getTenant();
 
-        return StoreSetting::query()
+        return StoreSettings::query()
             ->where('store_id', $store->id)
             ->first();
     }
