@@ -1,132 +1,171 @@
 <?php
 
 namespace App\Filament\Resources\Products\Schemas;
-use App\Models\Store;
+// use App\Models\Seo\Slug;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+// use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
+use Filament\Schemas\Components\Section;
+use Illuminate\Database\Eloquent\Builder;
+// use Illuminate\Database\Eloquent\Model;
+
+// use Illuminate\Support\Str;
+// use Illuminate\Validation\Rule;
+
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+
+// use Filament\Schemas\Components\Tabs;
+// use Filament\Schemas\Components\Tabs\Tab;
+
+// Reusable description tabs
 use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\FooterTab;
 use App\Filament\Schemas\Tabs\HowToTab;
-use App\Filament\Schemas\Tabs\ImagesTab;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Callout;
-use Filament\Schemas\Components\Group;
+// use App\Filament\Schemas\Tabs\ImagesTab;
 
-use Filament\Forms\Components\Select;
-use Illuminate\Database\Eloquent\Builder;
+
 use App\Models\CustomerGroup;
+
+
 
 class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
+        $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
         $currencies = Filament::getTenant()->currencies()->wherePivot('is_active', true)->get();
 
-        // $currencies = Store::with(['currencies' => function($query) {
-        //     $query->wherePivot('is_active', true);
-        // }])->get();
-       
         return $schema
-            ->statePath('data')
-            ->schema([
-                Tabs::make('product_store')->schema([
+            ->components([
+                // Global data
+                Section::make(__('admin.catalog.products.fields.global_data'))
+                    ->description(__('admin.catalog.products.helpers.global_data'))
+                    ->schema([
+                        ...collect($languages)->map(
+                            fn($language) => 
+                                TextInput::make("global_name.{$language->locale}")
+                                    ->required()
+                                    ->prefix($language->locale)
+                                    ->columnSpanFull()
+                                    ->placeholder(__('admin.catalog.products.fields.global_name'))
+                                    ->hiddenLabel(),
+                        )->all(),
+                        TextInput::make('sku')
+                            ->label(__('admin.catalog.products.fields.sku'))
+                            ->placeholder(__('admin.catalog.products.fields.sku')),
+                        
+                    ])
+                    ->columnSpanFull(),
 
-                    Tab::make('Status')->schema([
-                        Section::make('Global data')
-                            ->description('Shared across every store this product is in - editing it here changes it everywhere.')
-                            ->schema([
-                                ...collect($languages)->map(
-                                    fn ($language) => TextInput::make("global_name.{$language->locale}")
-                                        ->columnSpanFull()
-                                        ->prefix($language->locale)
-                                        ->placeholder('Internal name')
-                                        ->hiddenLabel(),
-                                )->all(),
-                                TextInput::make('sku'),
-                            ]),
-                        Section::make('This store')->schema([
-                            Toggle::make('is_active')
-                                ->label('Page visible on frontend'),
+                // Store-scoped data
+                Group::make([
+                    Toggle::make('is_active')
+                        ->label(__('admin.catalog.products.fields.is_active'))
+                        ->helperText(__('admin.catalog.products.helpers.is_active')),
+                    LanguageTabs::make($languages, [
+                        [DescriptionTab::class, ['withSlug' => true]],
+                        FaqTab::class,
+                        HowToTab::class,
+                        FooterTab::class,
+                    ])
+                ])
+                // ->relationship(name:'storeDescription')
+                ->statePath('description')
+                ->columnSpanFull(),
 
-                            Toggle::make('is_available')
-                                ->label('Can be added to cart'),
-
-                            DateTimePicker::make('is_available_from')
-                                ->label('Available from (pre-order)'),
-
-                            DateTimePicker::make('is_available_to')
-                                ->label('Available until (limited offer)'),
-                        ]),
-                    ]),
-
-                    Tab::make('description')->schema([
-                        LanguageTabs::make($languages, [
-                            [DescriptionTab::class, [
-                                'withSlug' => true,
-                                'sluggableType' => \App\Models\Catalog\ProductStore::class,
-                            ]],
-                            FaqTab::class,
-                            HowToTab::class,
-                            FooterTab::class,
-                        ]),
-                    ]),
-
-                    Tab::make('Prices')
+                Group::make([
+                    Repeater::make('product_price_tiers')
+                        ->relationship(
+                            name: 'priceTiers',
+                            modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
+                        )
+                        ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
+                            $data['store_id'] = Filament::getTenant()->id;
+                            return $data;
+                        })
                         ->schema([
+                            // Вложенный репитер — цены по валютам внутри одного тира
                             Repeater::make('prices')
-                                // ->relationship()
-                                ->orderColumn('sort_order')
-                                ->table([
-                                    TableColumn::make('price')->width('300px'),
-                                    TableColumn::make('price_settings'),
-                                ])
+                                ->relationship('prices')
                                 ->schema([
-                                    Group::make(
-                                        collect($currencies)->map(
-                                            fn ($currency) => TextInput::make("price.{$currency->id}")
-                                                ->columnSpanFull()
-                                                ->prefix($currency->sign)
-                                                ->placeholder('Price')
-                                                ->hiddenLabel(),
-                                        )->all(),
-                                    ),
-                                    Group::make([
-                                        Toggle::make('is_discount')->label('Discount'),
-                                        DateTimePicker::make('valid_from')->label('valid from'),
-                                        DateTimePicker::make('valid_until')->label('valid to'),
-                                        TextInput::make('valid_quantity')->numeric()->label('min valid quantity'),
+                                    Select::make('currency_id')
+                                        ->options($currencies->pluck('sign', 'id'))
+                                        ->required()
+                                        ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
 
-                                        // Customer group with autocomplete
-                                        // Select::make('customer_group_id')
-                                        //     ->required()
-                                        //     ->relationship(
-                                        //         name: 'customerGroup',
-                                        //         titleAttribute: 'name',
-                                        //         modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
-                                        //     )
-                                        //     ->getOptionLabelFromRecordUsing(fn(CustomerGroup $record) => $record->name)
-                                        //     ->searchable()
-                                        //     ->preload()
-                                        //     ->label(__('admin.customers.customer.fields.customer_group_id'))
-                                    ])
-                                ]),
+                                    TextInput::make('price')
+                                        ->numeric()
+                                        ->required()
+                                        ->prefix(fn(Get $get) => $currencies->firstWhere('id', $get('currency_id'))?->sign),
+                                ])
+                                ->columns(2)
+                                // Стартуем с одной строки на каждую активную валюту магазина —
+                                // применяется только при создании НОВОГО тира; при
+                                // редактировании существующего Filament подтянет реальные
+                                // ProductPrice через relationship вместо этого дефолта
+                                ->default(
+                                    collect($currencies)->map(fn($currency) => [
+                                        'currency_id' => $currency->id,
+                                        'price' => null,
+                                    ])->all()
+                                )
+                                ->columnSpanFull()
+                                ->label(__('admin.catalog.products.fields.prices')),
 
-                        ]),
+                            Group::make([
+                                Toggle::make('is_discount')
+                                    ->label(__('admin.catalog.products.fields.discount'))
+                                    ->helperText(__('admin.catalog.products.helpers.discount')),
 
-                    Tab::make('Images')
-                        ->label(ImagesTab::label())
-                        ->schema(ImagesTab::schema(['type' => 'product'])),
-                ])->columnSpanFull(),
+                                Select::make('customer_group_id')
+                                    ->relationship(
+                                        name: 'customerGroup',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
+                                    )
+                                    ->searchable()
+                                    ->preload()
+                                    ->label(__('admin.catalog.products.fields.prices_customer_group'))
+                                    ->helperText(__('admin.catalog.products.helpers.prices_customer_group')),
+
+                                DateTimePicker::make('valid_from')
+                                    ->label(__('admin.catalog.products.fields.valid_from'))
+                                    ->helperText(__('admin.catalog.products.helpers.valid_from')),
+
+                                DateTimePicker::make('valid_until')
+                                    ->label(__('admin.catalog.products.fields.valid_until'))
+                                    ->helperText(__('admin.catalog.products.helpers.valid_until')),
+
+                                TextInput::make('valid_quantity')
+                                    ->numeric()
+                                    ->label(__('admin.catalog.products.fields.valid_quantity'))
+                                    ->helperText(__('admin.catalog.products.helpers.valid_quantity')),
+
+                                TextInput::make('priority')
+                                    ->numeric()
+                                    ->default(1)
+                                    ->required()
+                                    ->label(__('admin.catalog.products.fields.priority'))
+                                    ->helperText(__('admin.catalog.products.helpers.priority')),
+                            ])
+                                ->columns(2)
+                                ->columnSpanFull(),
+                        ])
+                        ->defaultItems(1)
+                        ->addActionLabel(__('admin.catalog.products.buttons.add_price_tier'))
+                        ->columnSpanFull(),
+                ])
+                ->columnSpanFull(),
             ]);
     }
 }
