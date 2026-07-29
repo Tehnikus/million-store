@@ -68,7 +68,7 @@ class CustomerGroupsTable
                             CustomerGroup::where('id', '!=', $record->id)->update(['is_default' => false]);
                         }
                     })
-                    ->width('1%')
+                    ->width('200px')
                     ->wrapHeader()
                     ->alignment(Alignment::Center)
                     ->label(new HtmlString(__('admin.customers.customer_groups.fields.is_default'))),
@@ -84,9 +84,9 @@ class CustomerGroupsTable
                 //
             ])
             ->recordActions([
-                ViewAction::make()->iconButton(),
-                EditAction::make()->iconButton(),
-                DeleteAction::make()->iconButton(),
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

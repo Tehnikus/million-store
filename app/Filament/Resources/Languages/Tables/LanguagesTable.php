@@ -29,36 +29,36 @@ class LanguagesTable
                 TextColumn::make('iso_code')
                     ->searchable()
                     ->label(__('admin.languages.fields.iso_code'))
-                    ->alignment(Alignment::Center)
+                    ->alignment('center')
                     ->badge(),
 
                 TextColumn::make('locale')
                     ->searchable()
                     ->label(__('admin.languages.fields.locale'))
-                    ->alignment(Alignment::Center)
+                    ->alignment('center')
                     ->badge(),
 
                 TextColumn::make('ts_config')
                     ->searchable()
                     ->label(__('admin.languages.fields.fulltext_search_language'))
-                    ->alignment(Alignment::Center)
+                    ->alignment('center')
                     ->badge(),
 
-                TextColumn::make('defaultCurrency.name')
+                TextColumn::make('currency.name')
                     ->label(__('admin.languages.fields.default_currency'))
-                    ->alignment(Alignment::Center)
+                    ->alignment('center')
                     ->badge(),
 
                 TextColumn::make('stores.name')
                     ->label(__('admin.languages.fields.stores'))
                     ->badge()
-                    ->alignment(Alignment::Center)
+                    ->alignment('center')
                     ->separator(','),
 
                 IconColumn::make('is_active')
                     ->sortable()
                     ->label(__('admin.languages.fields.is_active'))
-                    ->alignment(Alignment::Center)
+                    ->alignment('center')
                     ->boolean()
                     ->width('1%'),
             ])
@@ -66,7 +66,7 @@ class LanguagesTable
                 //
             ])
             ->recordActions([
-                EditAction::make()->iconButton(),
+                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

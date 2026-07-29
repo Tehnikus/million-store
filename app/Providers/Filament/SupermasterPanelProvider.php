@@ -69,7 +69,8 @@ class SupermasterPanelProvider extends PanelProvider
                 Table::configureUsing(function (Table $table) {
                     $table
                         ->paginated([50, 100, 200]) // Set the available "items per page" dropdown options globally
-                        ->defaultPaginationPageOption(50); // Set the default option selected initially
+                        ->defaultPaginationPageOption(50) // Set the default option selected initially
+                        ->modifyUngroupedRecordActionsUsing(fn (Action $action) => $action->iconButton());
                 });
             })
             ->sidebarCollapsibleOnDesktop() // Set admin main menu to collapsible

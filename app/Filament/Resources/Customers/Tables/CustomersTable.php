@@ -120,9 +120,9 @@ class CustomersTable
                         ->pluck('name', 'locale')),
             ])
             ->recordActions([
-                ViewAction::make()->iconButton(),
-                EditAction::make()->iconButton(),
-                RestoreAction::make()->iconButton(),
+                ViewAction::make(),
+                EditAction::make(),
+                RestoreAction::make(),
                 // Anonymize action
                 Action::make('anonymize')
                     ->label(__('admin.customers.customer.fields.anonymize'))
@@ -136,9 +136,9 @@ class CustomersTable
                     ->action(function (Customer $record) {
                         $record->anonymize();
                     })
-                    ->iconButton(),
-                DeleteAction::make()->iconButton(),
-                ForceDeleteAction::make()->iconButton(),
+                    ,
+                DeleteAction::make(),
+                ForceDeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
