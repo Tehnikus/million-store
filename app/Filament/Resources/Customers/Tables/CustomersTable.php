@@ -6,6 +6,7 @@ use App\Models\Customer\Customer;
 use App\Models\Customer\CustomerGroup;
 use App\Domain\Customer\Search\CustomerSearch;
 use Illuminate\Support\HtmlString;
+use Illuminate\Database\Eloquent\Builder;
 
 use Filament\Facades\Filament;
 use Filament\Actions\Action;
@@ -21,14 +22,14 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
-use Filament\Support\Enums\Alignment;
 use Filament\Tables\Table;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Columns\Layout\Stack;
 use Filament\Support\Icons\Heroicon;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\FontWeight;
 
-use App\Domain\Customer\Search\CustomerSearch;
-use Illuminate\Database\Eloquent\Builder;
 
 class CustomersTable
 {
@@ -36,6 +37,13 @@ class CustomersTable
     {
         return $table
             ->columns([
+
+            // Stack::make([
+            //     TextColumn::make('first_name')
+            //         ->weight(FontWeight::Bold),
+            //     TextColumn::make('email')
+            //         ->icon('heroicon-m-envelope'),
+            // ]),
                 TextColumn::make('first_name')
                     ->formatStateUsing(function (Customer $customer) {
                         return new HtmlString(

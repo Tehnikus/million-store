@@ -27,7 +27,8 @@ class HowToTab implements HasTranslatableTab
                     ->reorderable(true)
                     ->compact()
                     ->columnSpanFull()
-                    ->helperText(__('admin.common.helpers.how_to_tab')),
+                    ->helperText(__('admin.common.helpers.how_to_tab'))
+                    ->defaultItems(0),
             ];
     }
 

@@ -277,19 +277,19 @@ class CustomerForm
             ?? $field['type'] ?? '';
     }
 
-private static function unsetOtherDefaults(bool $state, Set $set, Get $get, Component $component, string $field): void
-{
-    if (! $state) {
-        return;
-    }
+    private static function unsetOtherDefaults(bool $state, Set $set, Get $get, Component $component, string $field): void
+    {
+        if (! $state) {
+            return;
+        }
 
-    $segments = explode('.', $component->getStatePath());
-    $currentUuid = $segments[count($segments) - 2] ?? null;
+        $segments = explode('.', $component->getStatePath());
+        $currentUuid = $segments[count($segments) - 2] ?? null;
 
-    foreach ($get('../') ?? [] as $itemUuid => $item) {
-        if ($itemUuid !== $currentUuid && ! empty($item[$field])) {
-            $set("../{$itemUuid}.{$field}", false);
+        foreach ($get('../') ?? [] as $itemUuid => $item) {
+            if ($itemUuid !== $currentUuid && ! empty($item[$field])) {
+                $set("../{$itemUuid}.{$field}", false);
+            }
         }
     }
-}
 }
