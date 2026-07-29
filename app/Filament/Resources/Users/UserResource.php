@@ -8,21 +8,18 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\Schemas\UserForm;
 use App\Filament\Resources\Users\Tables\UsersTable;
 use App\Models\User;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use App\Filament\Support\NavigationGroup;
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class UserResource extends Resource
 {
     protected static bool $isScopedToTenant = false;
     protected static ?string $model = User::class;
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLockClosed;
-    protected static ?int $navigationSort = 4;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::GlobalSettings;
     protected static ?string $recordTitleAttribute = 'name';
+    protected static bool $isGloballySearchable = false;
 
     public static function form(Schema $schema): Schema
     {
@@ -50,24 +47,16 @@ class UserResource extends Resource
         ];
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.users.navigation_label');
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('admin.users.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.users.navigation_label');
-    }
-
-    // Fix search columns error on Filament global search
+    // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'email'];
+        return [];
+    }
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::Users;
     }
 }

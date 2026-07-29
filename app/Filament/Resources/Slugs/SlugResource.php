@@ -10,18 +10,17 @@ use App\Filament\Resources\Slugs\Tables\SlugsTable;
 use App\Models\Seo\Slug;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use App\Filament\Support\NavigationGroup;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class SlugResource extends Resource
 {
     protected static ?string $model = Slug::class;
     protected static bool $isScopedToTenant = true;
     protected static ?string $recordTitleAttribute = 'slug';
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
-    protected static ?int $navigationSort = 3;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::Seo;
+    protected static bool $isGloballySearchable = false;
 
 
     public static function form(Schema $schema): Schema
@@ -50,19 +49,16 @@ class SlugResource extends Resource
         ];
     }
 
-    public static function getModelLabel(): string
-    {
-        return __('admin.seo.slugs.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.seo.slugs.navigation_label');
-    }
-
     // Skip on global search, no need to show slugs
     public static function getGloballySearchableAttributes(): array
     {
         return [];
+    }
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::Slugs;
     }
 }

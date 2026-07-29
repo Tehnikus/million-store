@@ -12,21 +12,15 @@ use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Models\Global\Store;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\Stores\RelationManagers\LanguagesRelationManager;
-use App\Filament\Support\NavigationGroup;
-
 
 class StoreResource extends Resource
 {
-    protected static bool $isScopedToTenant = false;
     protected static ?string $model = Store::class;
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGlobeAlt;
-    protected static ?int $navigationSort = 6;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::GlobalSettings;
+    protected static bool $isScopedToTenant = false;
     protected static ?string $recordTitleAttribute = 'name';
+    protected static bool $isGloballySearchable = false;
 
     public static function form(Schema $schema): Schema
     {
@@ -38,6 +32,13 @@ class StoreResource extends Resource
         return StoresTable::configure($table);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
@@ -47,45 +48,22 @@ class StoreResource extends Resource
         ];
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.stores.navigation_label');
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('admin.stores.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.stores.navigation_label');
-    }
-
-    // Relation managers
-    public static function getRelations(): array
-    {
-        return [
-            RelationManagers\LanguagesRelationManager::class,
-            RelationManagers\CurrenciesRelationManager::class,
-            RelationManagers\CountriesRelationManager::class,
-        ];
-    }
-
-    /**
-     * Greedy data loading
-     * Get data related to stores from tables
-     * @return Builder
-     */
-    public static function getEloquentQuery(): Builder
-    {
+    // Greedy loading
+    public static function getEloquentQuery(): Builder {
         return parent::getEloquentQuery()
-            ->with(['languages', 'currencies', 'countries']); // Greedy related tables store data loading
+            ->with(['countries', 'languages', 'currencies']);
     }
 
-    // Skip global search
+    // Skip global search DB columns
     public static function getGloballySearchableAttributes(): array
     {
         return [];
+    }
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::Stores;
     }
 }
