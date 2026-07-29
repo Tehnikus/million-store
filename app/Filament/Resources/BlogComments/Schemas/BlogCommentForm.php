@@ -9,7 +9,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use App\Models\BlogPost;
+use App\Models\Blog\BlogPost;
 use Illuminate\Database\Eloquent\Builder;
 
 class BlogCommentForm

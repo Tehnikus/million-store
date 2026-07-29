@@ -2,7 +2,7 @@
 
 namespace App\Filament\Schemas\Tabs;
 
-use App\Models\StoreSetting;
+use App\Models\Store\StoreSettings;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;

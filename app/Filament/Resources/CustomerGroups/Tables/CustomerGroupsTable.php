@@ -12,7 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Support\HtmlString;
-use App\Models\CustomerGroup;
+use App\Models\Customer\CustomerGroup;
 
 class CustomerGroupsTable
 {

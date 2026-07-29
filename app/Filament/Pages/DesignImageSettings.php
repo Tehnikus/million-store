@@ -2,8 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\StoreSetting;
-use App\Filament\Support\NavigationGroup;
+use App\Models\Store\StoreSettings;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;

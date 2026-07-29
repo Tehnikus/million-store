@@ -9,7 +9,7 @@ use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Facades\Filament;
 use Filament\Support\Icons\Heroicon;
-use App\Models\Slug;
+use App\Models\Seo\Slug;
 use App\Domain\Seo\ChecksSlugUniqueness;
 
 class SlugForm

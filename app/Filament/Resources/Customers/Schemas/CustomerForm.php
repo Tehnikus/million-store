@@ -21,9 +21,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Filament\Facades\Filament;
-use App\Models\CustomerGroup;
-use App\Models\StoreSetting;
-use App\Models\Country;
+use App\Models\Customer\CustomerGroup;
+use App\Models\Store\StoreSettings;
+use App\Models\Global\Country;
 
 class CustomerForm
 {
@@ -31,7 +31,7 @@ class CustomerForm
     {
         // Get checkout fields store settings
         $storeId            = Filament::getTenant()->id;
-        $checkoutSettings   = StoreSetting::where('store_id', $storeId)->value('checkout_settings') ?? [];
+        $checkoutSettings   = StoreSettings::where('store_id', $storeId)->value('checkout_settings') ?? [];
         $checkoutFields     = $checkoutSettings['checkout_fields'] ?? [];
         $customFields       = $checkoutSettings['custom_fields'] ?? [];
 

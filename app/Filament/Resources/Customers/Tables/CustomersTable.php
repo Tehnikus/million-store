@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\Customers\Tables;
 
-use App\Models\Customer;
-use App\Models\CustomerGroup;
+use App\Models\Customer\Customer;
+use App\Models\Customer\CustomerGroup;
+use App\Domain\Customer\Search\CustomerSearch;
 use Illuminate\Support\HtmlString;
 
 use Filament\Facades\Filament;
