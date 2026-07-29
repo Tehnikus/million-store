@@ -2,7 +2,7 @@
 
 namespace App\Filament\Concerns;
 
-use App\Models\Slug;
+use App\Models\Seo\Slug;
 use Filament\Facades\Filament;
 
 trait SyncsSlugFields
