@@ -2,27 +2,45 @@
 
 namespace App\Filament\Schemas\Tabs;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Facades\Filament;
 use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Utilities\Set;
-
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Str;
 use Illuminate\Support\HtmlString;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rules\Unique;
 
 use App\Domain\Seo\ChecksSlugUniqueness;
+use App\Models\Seo\Slug;
+use Filament\Schemas\Components\Component;
 
 class DescriptionTab implements HasTranslatableTab
 {
     use ChecksSlugUniqueness;
     public static function schema(string $locale, array $config = []): array
     {
-        $withSlug = $config['withSlug'] ?? false;
-        $languageId = $config['language_id'] ?? null;
+        $withSlug       = $config['withSlug']       ?? false;
+        $languageId     = $config['language_id']    ?? null;
+        $sluggableType  = $config['sluggableType']  ?? null;
+
+        $excludeSelf = function (?Model $owner) use ($sluggableType) {
+            if (!$owner) {
+                return null;
+            }
+
+            $type = $sluggableType ?? $owner::class;
+
+            return fn($query) => $query->where(function ($q) use ($type, $owner) {
+                $q->where('sluggable_type', '!=', $type)
+                    ->orWhere('sluggable_id', '!=', $owner->getKey());
+            });
+        };
+
         return [
             TextInput::make("name.{$locale}")
                 ->label(__('admin.common.fields.name'))
@@ -30,41 +48,73 @@ class DescriptionTab implements HasTranslatableTab
                 ->columnSpanFull()
                 ->live(onBlur: false, debounce: 500)
                 ->required()
-                ->afterStateUpdated(function (Set $set, $component, $livewire, ?string $state, ?Model $record) use ($languageId) {
-                    if ($record?->exists) {
+                ->afterStateUpdated(function (Set $set, Get $get, $component, $livewire, ?string $state, ?Model $record) use ($languageId, $locale, $excludeSelf) {
+                    // // Skip autofill if record already exists
+                    // if ($record?->exists) {
+                    //     return;
+                    // }
+                    $slugTouchedPath = "slugs_touched.{$languageId}";
+
+                    if ($get($slugTouchedPath)) {
                         return;
                     }
-
-                    $newSlug = Str::slug($state ?? '');
+                    // Create slur from name
+                    $newSlug = Str::slug($state ?? '', '-', $locale);
+                    // Fill slug input
                     $set("slugs.{$languageId}", $newSlug);
-
+                    // Validate slug uniqueness and alpha-numeric stuff
                     $slugPath = $component->getContainer()->getStatePath() . ".slugs.{$languageId}";
-                    self::validateSlugLive($livewire, $slugPath, $newSlug, $languageId, $record);
+                    self::validateSlugLive($livewire, $slugPath, $newSlug, $languageId, $excludeSelf($record));
                 }),
-            // URL Slug with condition
+
+            // The flag to check if slug already exists thus it will not be autofilled
+            ...($withSlug ? [
+                \Filament\Forms\Components\Hidden::make("slugs_touched.{$languageId}")
+                    ->default(false)
+                    ->dehydrated(false),
+            ] : []),
+
+            // URL Slug with condition only for forms that need it
             ...($withSlug ? [
                 TextInput::make("slugs.{$languageId}")
                     ->label(__('admin.common.fields.slug'))
                     ->helperText(__('admin.common.helpers.slug'))
                     ->columnSpanFull()
                     ->required()
-                    ->live(onBlur: false, debounce: 500) // Only check on blur event, so no data sent to server on each keystroke
-                    ->afterStateUpdated(function (?string $state, $component, $livewire, ?Model $record) use ($languageId) {
-                        self::validateSlugLive($livewire, $component->getStatePath(), $state, $languageId, $record);
+                    ->live(onBlur: false, debounce: 500)
+                    
+                    ->afterStateUpdated(function (Set $set, ?string $state, $component, $livewire, ?Model $record) use ($languageId, $excludeSelf) {
+                    // Пользователь тронул слаг руками — навсегда помечаем
+                    // как "занят", автозаполнение больше сюда не полезет
+                    $set("slugs_touched.{$languageId}", true);
+
+                        self::validateSlugLive($livewire, $component->getStatePath(), $state, $languageId, $excludeSelf($record));
                     })
+                    ->afterStateHydrated(function (Set $set, ?string $state) use ($languageId) {
+                        // При загрузке формы (create с пустым слагом, либо edit
+                        // с уже существующим значением) фиксируем стартовое
+                        // состояние один раз, до любого ввода пользователя
+                        if (filled($state)) {
+                            $set("slugs_touched.{$languageId}", true);
+                        }
+                    })
+
+                    ->dehydrated(false)
+
                     ->unique(
                         table: 'slugs',
                         column: 'slug',
                         ignorable: fn() => null,
-                        modifyRuleUsing: function (Unique $rule, ?Model $record) use ($languageId) {
+                        modifyRuleUsing: function (Unique $rule, ?Model $record) use ($languageId, $sluggableType) {
                             $rule
                                 ->where('store_id', Filament::getTenant()->id)
                                 ->where('language_id', $languageId);
 
-                            // Exclude self record from unique check
                             if ($record) {
-                                $rule->where(function ($query) use ($record) {
-                                    $query->where('sluggable_type', '!=', $record::class)
+                                $type = $sluggableType ?? $record::class;
+
+                                $rule->where(function ($query) use ($type, $record) {
+                                    $query->where('sluggable_type', '!=', $type)
                                         ->orWhere('sluggable_id', '!=', $record->getKey());
                                 });
                             }
@@ -72,44 +122,149 @@ class DescriptionTab implements HasTranslatableTab
                             return $rule;
                         },
                     )
-                    ->maxLength(255)
-                    ->rules(['alpha_dash:ascii']) // Rule to disallow any characters except alpha-numeric and dashes
-                    ->validationMessages(['unique' => __('admin.messages.slug_taken'), 'alpha_dash' => __('admin.seo.slugs.errors.alpha_dash')])
-                    ->suffixIcon(function (?string $state, $component, $livewire) {
-                        if (blank($state)) {
-                            return null;
-                        }
 
+                    ->maxLength(255)
+                    ->rules(['alpha_dash:ascii'])
+                    ->validationMessages(['unique' => __('admin.seo.slugs.errors.slug_taken'), 'alpha_dash' => __('admin.seo.slugs.errors.alpha_dash')])
+                    ->suffixIcon(function (?string $state, $component, $livewire) {
+                        if (blank($state)) {return null;}
                         return $livewire->getErrorBag()->has($component->getStatePath()) ? Heroicon::XCircle : Heroicon::CheckCircle;
                     })
                     ->suffixIconColor(function (?string $state, $component, $livewire) {
-                        if (blank($state)) {
-                            return null;
-                        }
-
+                        if (blank($state)) {return null;}
                         return $livewire->getErrorBag()->has($component->getStatePath()) ? 'danger' : 'success';
                     })
+
+                    ->loadStateFromRelationshipsUsing(static function (?Model $record, Component $component) use ($languageId) {
+                        if (!$record || !method_exists($record, 'currentStoreSlugs')) return;
+
+                        $slugs = $record->currentStoreSlugs->keyBy('language_id');
+                        $state = $slugs->get($languageId)?->slug;
+                        $component->state($state);
+                    })
+
+                    ->saveRelationshipsUsing(static function (Model $record, $state) use ($locale, $languageId) {
+                        $storeId = Filament::getTenant()->id;
+
+                        if (filled($state)) {
+                            $slugValue = Str::slug($state ?? '', '-', $locale);
+
+                            Slug::updateOrCreate(
+                                [
+                                    'sluggable_type' => $record->getMorphClass(),
+                                    'sluggable_id'   => $record->id,
+                                    'store_id'       => $storeId,
+                                    'language_id'    => $languageId,
+                                ],
+                                [
+                                    'slug'           => $slugValue,
+                                    'is_active'      => true,
+                                ]
+                            );
+                        } else {
+                            Slug::where([
+                                'sluggable_type' => $record->getMorphClass(),
+                                'sluggable_id'   => $record->id,
+                                'store_id'       => $storeId,
+                                'language_id'    => $languageId,
+                            ])->delete();
+                        }
+                    })
+
+                    ->suffixAction(
+                        Action::make(__('admin.common.buttons.create_slug'))
+                            ->icon('heroicon-o-link')
+                            ->action(function (Get $get, Set $set) use ($languageId, $locale) {
+                                $name = $get("name.{$locale}");
+                                $newSlug = Str::slug($name ?? '', '-', $locale);
+                                $set("slugs.{$languageId}", $newSlug);
+                            })
+                            ->tooltip(__('admin.common.buttons.create_slug'))
+                    )
             ] : []),
 
             TextInput::make("h1.{$locale}")
                 ->label(__('admin.common.fields.h1'))
                 ->helperText(__('admin.common.helpers.h1'))
-                ->columnSpanFull(),
+                ->columnSpanFull()
+                ->suffixAction(
+                    Action::make(__('admin.common.buttons.paste_h1'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->action(function (Get $get, Set $set) use ($locale) {
+                            $name = $get("name.{$locale}");
+                            $set("h1.{$locale}", $name);
+                        })
+                        ->tooltip(__('admin.common.buttons.paste_h1'))
+                ),
 
             TextInput::make("meta_title.{$locale}")
                 ->label(__('admin.common.fields.meta_title'))
                 ->helperText(__('admin.common.helpers.meta_title'))
                 ->columnSpanFull()
+                ->suffixAction(
+                    Action::make(__('admin.common.buttons.paste_title'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->action(function (Get $get, Set $set) use ($locale) {
+                            $name = $get("name.{$locale}");
+                            $h1   =  $get("h1.{$locale}");
+                            $set("meta_title.{$locale}", $h1 ?? $name);
+                        })
+                        ->tooltip(__('admin.common.buttons.paste_title'))
+                )
                 ->hint(new HtmlString(
-                    '<span x-data="{ count: 0, recommended: 60, max: 160, init() { const input = this.$el.closest(\'.fi-fo-field\').querySelector(\'input\'); this.count = input.value.length; input.addEventListener(\'input\', e => this.count = e.target.value.length); } }" x-text="count + \' / \' + max" :style="{ color: (count > max || count < 10) ? \'rgb(220 38 38)\' : (count > recommended ? \'rgb(217 119 6)\' : \'rgb(22 163 74)\') }"></span>'
+                    '<span 
+                        x-data="{ 
+                            count: 0, 
+                            recommended: 60, 
+                            max: 160, 
+                            init() { 
+                                this.$nextTick(() => {
+                                    const input = this.$el.closest(\'.fi-fo-field\').querySelector(\'input\');
+                                    if (input) {
+                                        this.count = input.value.length; 
+                                        input.addEventListener(\'input\', e => this.count = e.target.value.length); 
+                                    }
+                                });
+                            } 
+                        }" 
+                        x-text="count + \' / \' + max" 
+                        :style="{ color: (count > max || count < 10) ? \'rgb(220 38 38)\' : (count > recommended ? \'rgb(217 119 6)\' : \'rgb(22 163 74)\') }"
+                    ></span>'
                 ))
                 ->columnSpanFull(),
 
             Textarea::make("meta_description.{$locale}")
                 ->label(__('admin.common.fields.meta_description'))
                 ->helperText(__('admin.common.helpers.meta_description'))
+                ->hintAction(
+                    Action::make(__('admin.common.buttons.paste_description'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->action(function (Get $get, Set $set, ?string $state) use ($locale) {
+                            $title = $get("meta_title.{$locale}");
+                            $set("meta_description.{$locale}", $title . " " . $state);
+                        })
+                        ->hiddenLabel()
+                        ->tooltip(__('admin.common.buttons.paste_description'))
+                )
                 ->hint(new HtmlString(
-                    '<span x-data="{ count: 0, recommended: 160, max: 250, init() { const input = this.$el.closest(\'.fi-fo-field\').querySelector(\'textarea\'); this.count = input.value.length; input.addEventListener(\'input\', e => this.count = e.target.value.length); } }" x-text="count + \' / \' + max" :style="{ color: (count > max || count < 20) ? \'rgb(220 38 38)\' : (count > recommended ? \'rgb(217 119 6)\' : \'rgb(22 163 74)\') }"></span>'
+                    '<span 
+                        x-data="{
+                            count: 0, 
+                            recommended: 160, 
+                            max: 250, 
+                            init() { 
+                                this.$nextTick(() => {
+                                    const input = this.$el.closest(\'.fi-fo-field\').querySelector(\'textarea\'); 
+                                    if (input) {
+                                        this.count = input.value.length; 
+                                        input.addEventListener(\'input\', e => this.count = e.target.value.length);
+                                    }
+                                });
+                            }
+                        }" 
+                        x-text="count + \' / \' + max" 
+                        :style="{ color: (count > max || count < 20) ? \'rgb(220 38 38)\' : (count > recommended ? \'rgb(217 119 6)\' : \'rgb(22 163 74)\') }"
+                    ></span>'
                 ))
                 ->columnSpanFull(),
 
@@ -143,7 +298,7 @@ class DescriptionTab implements HasTranslatableTab
                 ->resizableImages()
                 ->toolbarButtons([
                     ['bold', 'italic', 'underline', 'link', 'textColor'],
-                    ['h2', 'h3', 'h4'],
+                    ['h1', 'h2', 'h3', 'h4'],
                     ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
                     ['blockquote', 'bulletList', 'orderedList'],
                     ['table', 'attachFiles'],
