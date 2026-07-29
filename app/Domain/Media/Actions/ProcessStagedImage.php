@@ -3,7 +3,7 @@
 namespace App\Domain\Media\Actions;
 
 use App\Domain\Media\Services\MediaPathGenerator;
-use App\Models\StoreSetting;
+use App\Models\Store\StoreSettings;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -85,7 +85,7 @@ class ProcessStagedImage
      */
     private function resolveDimensions(int $storeId, string $type): array
     {
-        $dimensions = StoreSetting::where('store_id', $storeId)->first()->image_dimensions[$type] ?? null;
+        $dimensions = StoreSettings::where('store_id', $storeId)->first()->image_dimensions[$type] ?? null;
 
         if ($dimensions === null) {
             throw new InvalidArgumentException(

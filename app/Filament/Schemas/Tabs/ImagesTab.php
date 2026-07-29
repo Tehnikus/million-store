@@ -23,7 +23,7 @@ class ImagesTab
         $storeId    = Filament::getTenant()->id;
         $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
         $type       = $config['type'] ?? 'misc';
-        $dimensions = StoreSetting::where('store_id', $storeId)->first()->image_dimensions;
+        $dimensions = StoreSettings::where('store_id', $storeId)->first()?->image_dimensions;
 
         // Error message if image dimensions for this type are not set
         if (! isset($dimensions[$type])) {

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Seo;
 
-use App\Models\Slug;
+use App\Models\Seo\Slug;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 

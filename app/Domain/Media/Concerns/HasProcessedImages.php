@@ -4,8 +4,8 @@ namespace App\Domain\Media\Concerns;
 use illuminate\Support\Str;
 use App\Domain\Media\Actions\DeleteProcessedImage;
 use App\Domain\Media\Actions\ProcessStagedImage;
-use App\Models\Language;
-use App\Models\StoreLanguage;
+use App\Models\Global\Language;
+use App\Models\Global\StoreLanguage;
 
 /**
  * Converts images automatically to WEBP
