@@ -13,19 +13,13 @@ return new class extends Migration {
         // create_currencies_table
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
-            // Displayed name
-            $table->string('name');
-            // ISO code for JSON-LD data
-            $table->string('iso_code')->unique(true);
-            // Displayed sign. May or may not be used to format price
-            $table->string('sign');
-            // Exchange rate compared to default currency
-            $table->decimal('rate', 10, 6)->default(1);
-            $table->integer('decimal_places')->default(2);
-            // Default currency flag. Must be only one default currency system-wide. 
-            $table->boolean('rate_default')->default(false);
-            // Is currency enabled. Default currency cannot be disabled
-            $table->boolean('is_active')->default(true);
+            $table->string('name');                          // Displayed name
+            $table->string('iso_code')->unique(true);        // ISO code for JSON-LD data
+            $table->string('sign');                          // Displayed sign. May or may not be used to format price
+            $table->decimal('rate', 10, 6)->default(1);      // Exchange rate compared to default currency
+            $table->integer('decimal_places')->default(2);   // Decimal places
+            $table->boolean('rate_default')->default(false); // Default currency flag. Must be only one default currency system-wide. 
+            $table->boolean('is_active')->default(true);     // Is currency enabled. Default currency cannot be disabled
             $table->timestamps();
             $table->uniqueIndex('rate_default')->where('rate_default = true');
         });

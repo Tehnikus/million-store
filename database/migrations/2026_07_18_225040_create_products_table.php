@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Tpetry\PostgresqlEnhanced\Schema\Blueprint;
+use Tpetry\PostgresqlEnhanced\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -16,15 +16,10 @@ return new class extends Migration
             $table->id();
             $table->jsonb('global_name')->nullable()->default('{}'); // Translatable internal name, admin search only
             $table->string('sku')->unique()->nullable(); // Non-translatable article/SKU, used for orders, ERP import, barcodes
-            $table->enum('units', ['pcs', 'volume', 'weight'])->default('pcs');
             $table->timestamps();
+            $table->index(['sku']);
+            // $table->index(['global_name '])->algorithm('gin'); // TODO Make admin product search to support gin search by loacale and name, read about jsonb_path_ops
         });
-
-        DB::statement('
-            CREATE UNIQUE INDEX product_unique
-            ON products (id)
-            WHERE deleted_at IS NULL
-        ');
     }
 
     /**

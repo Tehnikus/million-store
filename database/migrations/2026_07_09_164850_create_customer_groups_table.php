@@ -31,7 +31,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->uniqueIndex('is_default')->where('is_default = true');
+            $table->uniqueIndex(['is_default', 'store_id'])->where('is_default = true');
         });
     }
 

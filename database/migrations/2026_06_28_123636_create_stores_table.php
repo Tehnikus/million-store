@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Displayed name
+            $table->string('name');
             $table->string('host')->unique(); // Store base host, e.g. store.com
             $table->boolean('is_active')->default(true);
             $table->timestamps();

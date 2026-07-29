@@ -40,6 +40,10 @@ return new class extends Migration {
             // $table->uniqueIndex(['store_id', 'email'])->where('deleted_at is null');
         });
 
+        DB::statement(
+            'CREATE EXTENSION IF NOT EXISTS pg_trgm'
+        );
+
         // Create function to concat customer addresses in string separate fulltext search index in admin
         DB::statement(<<<'SQL'
             CREATE OR REPLACE FUNCTION customer_search_text(addresses jsonb, first_name text, last_name text, phone text, email text, vat_number text, company_name text) RETURNS text AS $$

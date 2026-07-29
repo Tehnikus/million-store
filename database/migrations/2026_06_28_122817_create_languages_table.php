@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Tpetry\PostgresqlEnhanced\Schema\Blueprint;
+use Tpetry\PostgresqlEnhanced\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -13,26 +13,13 @@ return new class extends Migration
     {
         Schema::create('languages', function(Blueprint $table) {
             $table->id();
-            // Displayed name
-            $table->string('name');
-            // ISO code. Not sure 
-            $table->string('iso_code')->unique(true);
-            // Locale for HTML lang="{{ locale }}" tag
-            $table->string('locale'); 
-            // Full language name in english, e.g. "english", "spanish" for fulltext search
-            // Exapmle:
-            // $language = Language::where('iso_code', $currentLocale)->first();
-            // Product::whereFullText(['name', 'description'], $searchTerm, [
-            //     'language' => $language->ts_config,
-            // ])->get();
-            $table->string('ts_config')->default('simple'); 
-            // Flag
-            $table->string('image')->nullable(true);
+            $table->string('name');                         // Displayed name
+            $table->string('iso_code')->unique(true);       // ISO code
+            $table->string('locale');                       // Locale for translations
+            $table->string('ts_config')->default('simple'); // Postgres dictionary for tsvector search
+            $table->string('image')->nullable(true);        // Flag
             // Default currency for language is required because Google bot and other will get prices related to language: Ukrainian -> UAH, Polish -> PLN, etc.
-            $table->foreignId('default_currency_id') // Column name
-                ->constrained('currencies') // Table name where constrained id is
-                ->restrictOnDelete(); // What to do if constrained table entry is modified
-            // Is language active
+            $table->foreignId('default_currency_id')->constrained('currencies')->cascadeOnDelete(); 
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

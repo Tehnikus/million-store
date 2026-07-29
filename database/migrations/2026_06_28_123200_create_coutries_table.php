@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Tpetry\PostgresqlEnhanced\Schema\Blueprint;
+use Tpetry\PostgresqlEnhanced\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('phone_code')->nullable();           // +380, +48 - order checkout format
             $table->boolean('is_eu_member')->default(false);    // For some legal usage
             $table->jsonb('regions')->nullable();               // Regions in JSON
-            $table->foreignId('default_currency_id')->constrained('currencies')->restrictOnDelete();
+            $table->foreignId('default_currency_id')->constrained('currencies')->cascadeOnDelete();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

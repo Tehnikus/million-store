@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    public function shouldRun(): bool
+    {
+        // Only run on production
+        return app()->environment('production'); 
+    }
     /**
      * Run the migrations.
      */
@@ -13,8 +18,8 @@ return new class extends Migration
     {
         DB::statement('CREATE EXTENSION IF NOT EXISTS unaccent');
         DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm');
-        DB::statement('ALTER TABLE cache SET UNLOGGED');
-        DB::statement('ALTER TABLE sessions SET UNLOGGED');
+        // DB::statement('ALTER TABLE cache SET UNLOGGED');
+        // DB::statement('ALTER TABLE sessions SET UNLOGGED');
     }
 
     /**
@@ -24,7 +29,7 @@ return new class extends Migration
     {
         DB::statement('DROP EXTENSION IF EXISTS unaccent');
         DB::statement('DROP EXTENSION IF EXISTS pg_trgm');
-        DB::statement('ALTER TABLE cache SET LOGGED');
-        DB::statement('ALTER TABLE sessions SET LOGGED');
+        // DB::statement('ALTER TABLE cache SET LOGGED');
+        // DB::statement('ALTER TABLE sessions SET LOGGED');
     }
 };

@@ -12,12 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('store_languages', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
-            $table->foreignId('language_id')->constrained('languages')->restrictOnDelete();
-            $table->boolean('is_default')->default(false);
+            $table->foreignId('language_id')->constrained('languages')->cascadeOnDelete();
             $table->boolean('is_active')->default(false);
-            $table->primary(['store_id', 'language_id']);
-            $table->uniqueIndex('store_id')->where('is_default = true');
+            $table->boolean('is_default')->default(false);
+            $table->integer('sort_order')->nullable();
+            $table->timestamps();
+            $table->index(['store_id', 'is_active']);
         });
     }
 

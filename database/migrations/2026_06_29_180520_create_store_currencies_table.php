@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Tpetry\PostgresqlEnhanced\Schema\Blueprint;
+use Tpetry\PostgresqlEnhanced\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('store_currencies', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
-            $table->foreignId('currency_id')->constrained('currencies')->restrictOnDelete();
+            $table->foreignId('currency_id')->constrained('currencies')->cascadeOnDelete();
             $table->boolean('is_active')->default(false);
+            $table->integer('sort_order')->nullable();
+            $table->timestamps();
+            $table->index(['store_id', 'is_active']);
         });
     }
 
