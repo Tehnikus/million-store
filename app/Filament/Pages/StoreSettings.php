@@ -2,12 +2,12 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\StoreSetting;
-use App\Models\Currency;
-use App\Filament\Support\NavigationGroup;
+use App\Models\Store\StoreSettings as StoreSettingsModel;
+// use App\Models\Currency;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
+// use Illuminate\Database\Eloquent\Builder;
 
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -26,22 +26,27 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Filament\Support\Icons\Heroicon;
-use Filament\Support\Enums\Alignment;
-use BackedEnum;
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class StoreSettings extends Page
 {
     protected string $view = 'filament.pages.simple-form';
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-    protected static ?int $navigationSort = 4;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::StoreSettings;
 
     public ?array $data = [];
 
     public function mount(): void
     {
         $this->form->fill($this->getRecord()?->toArray() ?? []);
+    }
+
+    public function getRecord(): ?StoreSettingsModel
+    {
+        $store = Filament::getTenant();
+
+        return StoreSettingsModel::query()
+            ->where('store_id', $store->id)
+            ->first();
     }
 
     public function form(Schema $schema): Schema
@@ -60,24 +65,6 @@ class StoreSettings extends Page
                 Form::make([
                     Tabs::make('settings_tabs')
                         ->tabs([
-
-                            // Tab::make(__('admin.store_settings.tabs.image_settings'))
-                            //     ->schema([
-                            //         ...collect(ImageConversionType::cases())->flatMap(fn ($type) => [
-                            //             Fieldset::make($type->label())
-                            //                 ->schema([
-                            //                     TextInput::make("image_dimensions.{$type->value}.width")
-                            //                         ->numeric()
-                            //                         ->required()
-                            //                         ->label(__('admin.store_settings.image_settings.width')),
-                            //                     TextInput::make("image_dimensions.{$type->value}.height")
-                            //                         ->numeric()
-                            //                         ->required()
-                            //                         ->label(__('admin.store_settings.image_settings.height')),
-                            //                 ])
-                            //                 ->columns(2),
-                            //         ])->all(),
-                            //     ]),
 
                             Tab::make(__('admin.store_settings.tabs.delivery_settings'))
                                 ->schema([
@@ -149,7 +136,7 @@ class StoreSettings extends Page
                                                 ->label(__('admin.store_settings.checkout_settings.fields.return_rules_page'))
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.return_rules_page'))
                                         ]),
-                                    Fieldset::make(__('admin.store_settings.checkout_settings.fields.checkout_fields'))
+                                    Fieldset::make(__('admin.store_settings.checkout_settings.fields.checkout_address_fields'))
                                         ->schema([
                                             // Address fields
                                             Repeater::make('checkout_settings.checkout_fields')
@@ -270,7 +257,7 @@ class StoreSettings extends Page
         $formData['store_id'] = Filament::getTenant()->id;  // Set form data store_id
         $formData = self::setCheckoutFieldsKeys($formData); // Set array keys to avoid input name collisions
 
-        $record = $this->getRecord() ?? new StoreSetting();
+        $record = $this->getRecord() ?? new StoreSettingsModel();
         $record->fill($formData);
         $record->save();
 
@@ -336,27 +323,10 @@ class StoreSettings extends Page
         return $fields;
     }
 
-    public function getRecord(): ?StoreSetting
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
     {
-        $store = Filament::getTenant();
-
-        return StoreSetting::query()
-            ->where('store_id', $store->id)
-            ->first();
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.navigation.items.store_settings');
-    }
-
-    public function getHeading(): string
-    {
-        return __('admin.navigation.items.store_settings');
-    }
-
-    public function getTitle(): string
-    {
-        return __('admin.navigation.items.store_settings');
+        return NavigationItem::StoreSettings;
     }
 }
