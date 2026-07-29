@@ -10,8 +10,8 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
+// use Filament\Widgets\AccountWidget;
+// use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -19,9 +19,10 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Http\Middleware\SetAdminLocale;
-use App\Models\Store;
-use Filament\Tables\Table; // Ensure this is imported
+use App\Models\Global\Store;
+use Filament\Tables\Table;
 use Filament\Support\Enums\Width;
+use Filament\Actions\Action;
 
 class SupermasterPanelProvider extends PanelProvider
 {
@@ -55,15 +56,15 @@ class SupermasterPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                SetAdminLocale::class, // Set admin locale
+                SetAdminLocale::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
             ])
             ->unsavedChangesAlerts() // Alert on unsaved changes
             ->databaseTransactions() // Not sure if this works, needs test under PostgreSQL
+            ->brandName('')          // Set brand name
             ->tenant(Store::class)   // Connect panel context to store: data, that belongs to single store will be changed according to current selected store
-            ->brandName('') // Set brand name
             // Setpagination preferences
             ->bootUsing(function () {
                 Table::configureUsing(function (Table $table) {
