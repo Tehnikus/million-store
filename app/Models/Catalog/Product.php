@@ -2,41 +2,41 @@
 
 namespace App\Models\Catalog;
 
+use App\Models\Catalog\ProductDescription;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
+use App\Domain\Seo\HasSlugs;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
     use HasTranslations;
-
-    public $translatable = ['global_name'];
-
-    protected $fillable = [
-        'global_name',
-        'sku',
-        'units',
-    ];
-
+    use HasSlugs;
+    protected $fillable = ['sku', 'global_name'];
     protected $casts = [
         'global_name' => 'array',
     ];
 
-    // Level 1: remove this product from ONE store only. Soft-deletes the
-    // product_stores row for that store; the product itself, and its
-    // presence in other stores, is untouched.
-    public static function removeFromStore(int $productId, int $storeId): void
+    protected $translatable = ['global_name'];
+
+    public function priceTiers(): HasMany
     {
-        ProductStore::where('product_id', $productId)->where('store_id', $storeId)->delete();
+        return $this->hasMany(ProductPriceTier::class);
     }
 
-    // Level 2: remove this product everywhere. Soft-deletes the product
-    // itself plus every product_stores row it has, across every store.
-    public static function removeCompletely(int $productId): void
+    public function descriptions(): HasMany
     {
-        DB::transaction(function () use ($productId) {
-            ProductStore::where('product_id', $productId)->delete();
-            Product::where('id', $productId)->delete();
-        });
+        return $this->hasMany(ProductDescription::class);
+    }
+
+    public function currentDescription(): ?ProductDescription
+    {
+        if (! $this->relationLoaded('descriptions')) {
+            throw new \LogicException(
+                'descriptions relation must be eager-loaded with a store_id constraint before calling currentDescription().'
+            );
+        }
+
+        return $this->descriptions->first();
     }
 }
