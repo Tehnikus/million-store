@@ -1,25 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Store;
 
+use App\Models\Global\Store;
+use App\Models\Store\StoreInfoPage;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Store;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class StoreSetting extends Model
+class StoreSettings extends Model
 {
-    protected $casts = [
-        'image_dimensions'      => 'array',
-        'delivery_settings'     => 'array',
-        'checkout_settings'     => 'array',
-        'legal_settings'        => 'array',
-        'tax_settings'          => 'array',
-        'analytics_settings'    => 'array',
-        'seo_defaults'          => 'array',
-        'notification_settings' => 'array',
-        'maintenance_settings'  => 'array',
-    ];
-
     protected $fillable = [
         'store_id',
         'image_dimensions',
@@ -33,6 +22,17 @@ class StoreSetting extends Model
         'maintenance_settings',
     ];
 
+    protected $casts = [
+        'image_dimensions'      => 'array',
+        'delivery_settings'     => 'array',
+        'checkout_settings'     => 'array',
+        'legal_settings'        => 'array',
+        'tax_settings'          => 'array',
+        'analytics_settings'    => 'array',
+        'seo_defaults'          => 'array',
+        'notification_settings' => 'array',
+        'maintenance_settings'  => 'array',
+    ];
 
     // This model depends on current store context
     public function store(): BelongsTo
@@ -42,6 +42,6 @@ class StoreSetting extends Model
 
     public function infoPage(): BelongsTo
     {
-        return $this->belongsTo(StoreInfoPage::class);
+        return $this->belongsTo(StoreInfoPage::class, 'id');
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Store;
 
+use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
-use App\Models\Store;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Translatable\HasTranslations;
 
 class StoreContact extends Model
 {
@@ -51,22 +51,22 @@ class StoreContact extends Model
     ];
 
     protected $casts = [
-        'legal_name' => 'array',
-        'organization_description' => 'array',
-        'local_business_description' => 'array',
-        'address_country' => 'array',
-        'address_region' => 'array',
-        'address_locality' => 'array',
-        'address_street' => 'array',
-        'country_iso' => 'array',
-        'postal_code' => 'array',
-        'latitude' => 'array',
-        'longitude' => 'array',
-        'open_hours' => 'array',
-        'email' => 'array',
-        'phones' => 'array',
-        'social_links' => 'array',
-        'social_contacts' => 'array',
+        'legal_name'                    => 'array',
+        'organization_description'      => 'array',
+        'local_business_description'    => 'array',
+        'address_country'               => 'array',
+        'address_region'                => 'array',
+        'address_locality'              => 'array',
+        'address_street'                => 'array',
+        'country_iso'                   => 'array',
+        'postal_code'                   => 'array',
+        'latitude'                      => 'array',
+        'longitude'                     => 'array',
+        'open_hours'                    => 'array',
+        'email'                         => 'array',
+        'phones'                        => 'array',
+        'social_links'                  => 'array',
+        'social_contacts'               => 'array',
     ];
 
     // This model depends on current store context
