@@ -29,11 +29,11 @@ class BlogPostsTable
                     // ->limitedRemainingText()
                     // ->overlap(6)
                     // ->ring(8)
-                    ->imageHeight(50)
-                    ->extraImgAttributes(['loading' => 'lazy'])
+                    ->imageHeight(70)
                     ->checkFileExistence(false)
                     ->alignment(Alignment::Center)
-                    ->width('1%'),
+                    ->width('1%')
+                    ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: 10px; margin: -0.7rem']),
 
                 TextColumn::make('name')
                     ->label(__('admin.blog.posts.fields.name'))
