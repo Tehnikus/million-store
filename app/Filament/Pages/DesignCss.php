@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Filament\Pages;
-use App\Filament\Support\NavigationGroup;
+
 use Illuminate\Support\Facades\Storage;
 
 use Filament\Facades\Filament;
@@ -11,18 +11,17 @@ use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
-use Filament\Support\Icons\Heroicon;
 use Filament\Forms\Components\CodeEditor;
 use Filament\Forms\Components\CodeEditor\Enums\Language;
 use Filament\Notifications\Notification;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class DesignCss extends Page
 {
     public ?array $data = [];
     protected string $view = 'filament.pages.simple-form';
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedCodeBracket;
-    protected static ?int $navigationSort = 4;
-    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Design;
 
     public function form(Schema $schema): Schema
     {
@@ -84,19 +83,12 @@ class DesignCss extends Page
         }
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.navigation.items.css_editor');
-    }
 
-    public function getHeading(): string
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
     {
-        return __('admin.navigation.items.css_editor');
-    }
-
-    public function getTitle(): string
-    {
-        return __('admin.navigation.items.css_editor');
+        return NavigationItem::CssEditor;
     }
 
     public function getSubheading(): string|null

@@ -6,7 +6,6 @@ use App\Models\Store\StoreHomepageDescription;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Actions;
 use Filament\Actions\Action;
@@ -15,19 +14,15 @@ use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\HowToTab;
 use App\Filament\Schemas\Tabs\FooterTab;
-use App\Filament\Support\NavigationGroup;
-use Filament\Support\Enums\Alignment;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class StoreHomepage extends Page
 {
     protected string $view = 'filament.pages.simple-form';
-    protected static ?string $navigationLabel = 'Homepage';
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHome;
-    protected static ?int $navigationSort = 1;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::StoreSettings;
 
-        public ?array $data = [];
+    public ?array $data = [];
 
     public function mount(): void
     {
@@ -81,18 +76,10 @@ class StoreHomepage extends Page
             ->send();
     }
 
-    public static function getNavigationLabel(): string
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
     {
-        return __('admin.navigation.items.store_homepage_description');
-    }
-
-    public function getHeading(): string
-    {
-        return __('admin.navigation.items.store_homepage_description');
-    }
-
-    public function getTitle(): string
-    {
-        return __('admin.navigation.items.store_homepage_description');
+        return NavigationItem::StoreHomepage;
     }
 }

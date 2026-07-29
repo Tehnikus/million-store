@@ -9,29 +9,20 @@ use App\Filament\Resources\Customers\Pages\ViewCustomer;
 use App\Filament\Resources\Customers\Schemas\CustomerForm;
 use App\Filament\Resources\Customers\Schemas\CustomerInfolist;
 use App\Filament\Resources\Customers\Tables\CustomersTable;
-use App\Filament\Support\NavigationGroup;
-use App\Models\Customer;
-use BackedEnum;
+use App\Models\Customer\Customer;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Filament\Facades\Filament;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
-
-    protected static bool $isScopedToTenant = true;
-
     protected static ?string $recordTitleAttribute = 'full_name';
+    protected static bool $isGloballySearchable = false;
     
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
-
-    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Customers;
-
-    protected static ?int $navigationSort = 1;
-
     public static function form(Schema $schema): Schema
     {
         return CustomerForm::configure($schema);
@@ -76,24 +67,16 @@ class CustomerResource extends Resource
         return $count > 0 ? (string) $count : null;
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.customers.customer.navigation_label');
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('admin.customers.customer.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.customers.customer.navigation_label');
-    }
-
     // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
         return [];
+    }
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::Customers;
     }
 }

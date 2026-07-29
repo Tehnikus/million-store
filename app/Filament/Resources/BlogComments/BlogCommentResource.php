@@ -2,35 +2,28 @@
 
 namespace App\Filament\Resources\BlogComments;
 
+use App\Models\Blog\BlogComment;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
+use Filament\Facades\Filament;
 use App\Filament\Resources\BlogComments\Pages\CreateBlogComment;
 use App\Filament\Resources\BlogComments\Pages\EditBlogComment;
 use App\Filament\Resources\BlogComments\Pages\ListBlogComments;
 use App\Filament\Resources\BlogComments\Schemas\BlogCommentForm;
 use App\Filament\Resources\BlogComments\Tables\BlogCommentsTable;
-use App\Models\BlogComment;
-use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
 
-use App\Filament\Support\NavigationGroup;
-use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
+
 
 class BlogCommentResource extends Resource
 {
     protected static ?string $model = BlogComment::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeft;
-
     protected static ?string $recordTitleAttribute = 'name';
-
+    protected static bool $isGloballySearchable = false;
     protected static bool $isScopedToTenant = false; // is filtered by blog post and does not relate to store_id in any way
-
-    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Blog;
-
-    protected static ?int $navigationSort = 4;
 
     public static function getEloquentQuery(): Builder
     {
@@ -72,25 +65,17 @@ class BlogCommentResource extends Resource
         return $count > 0 ? (string) $count : null;
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.blog.comments.navigation_label');
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('admin.blog.comments.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.blog.comments.navigation_label');
-    }
-
     // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
         return [];
+    }
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::BlogComments;
     }
 
 }

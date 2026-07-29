@@ -3,26 +3,23 @@
 namespace App\Filament\Resources\BlogAuthors;
 
 use App\Models\Blog\BlogAuthor;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 use App\Filament\Resources\BlogAuthors\Pages\CreateBlogAuthor;
 use App\Filament\Resources\BlogAuthors\Pages\EditBlogAuthor;
 use App\Filament\Resources\BlogAuthors\Pages\ListBlogAuthors;
 use App\Filament\Resources\BlogAuthors\Schemas\BlogAuthorForm;
 use App\Filament\Resources\BlogAuthors\Tables\BlogAuthorsTable;
-use App\Models\BlogAuthor;
-use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
-use App\Filament\Support\NavigationGroup;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class BlogAuthorResource extends Resource
 {
     protected static ?string $model = BlogAuthor::class;
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserCircle;
-    protected static ?int $navigationSort = 3;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::Blog;
     protected static ?string $recordTitleAttribute = 'name';
+    protected static bool $isGloballySearchable = false;
 
     public static function form(Schema $schema): Schema
     {
@@ -64,5 +61,12 @@ class BlogAuthorResource extends Resource
     public static function getGloballySearchableAttributes(): array
     {
         return [];
+    }
+    
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::BlogAuthors;
     }
 }

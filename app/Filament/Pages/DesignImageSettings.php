@@ -13,17 +13,14 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Fieldset;
-use Filament\Support\Icons\Heroicon;
 use Filament\Actions\Action;
-use BackedEnum;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class DesignImageSettings extends Page
 {
     protected string $view = 'filament.pages.simple-form';
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
-    protected static ?int $navigationSort = 1;
-    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Design;
-
     public ?array $data = [];
 
     public function form(Schema $schema): Schema
@@ -204,22 +201,16 @@ class DesignImageSettings extends Page
             ->first();
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.navigation.items.image_settings');
-    }
-
-    public function getHeading(): string
-    {
-        return __('admin.design.image_types.title');
-    }
-
-    public function getTitle(): string
-    {
-        return __('admin.design.image_types.title');
-    }
     public function getSubheading(): string|null
     {
         return __('admin.design.image_types.subheading');
+    }
+
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::ImageSettings;
     }
 }

@@ -3,25 +3,21 @@
 namespace App\Filament\Resources\BlogPosts;
 
 use App\Models\Blog\BlogPost;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 use App\Filament\Resources\BlogPosts\Pages\CreateBlogPost;
 use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
 use App\Filament\Resources\BlogPosts\Pages\ListBlogPosts;
 use App\Filament\Resources\BlogPosts\Schemas\BlogPostForm;
 use App\Filament\Resources\BlogPosts\Tables\BlogPostsTable;
-use App\Models\BlogPost;
-use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
-use App\Filament\Support\NavigationGroup;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class BlogPostResource extends Resource
 {
     protected static ?string $model = BlogPost::class;
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPencilSquare;
-    protected static ?int $navigationSort = 1;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::Blog;
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
@@ -50,22 +46,7 @@ class BlogPostResource extends Resource
         ];
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.blog.posts.navigation_label');
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('admin.blog.posts.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.blog.posts.navigation_label');
-    }
-
-    // Fix search columns error on Filament global search
+    // Only search by name to avoid excessive overhead and search results bloat
     public static function getGloballySearchableAttributes(): array
     {
         return ['name'];
@@ -76,5 +57,12 @@ class BlogPostResource extends Resource
     {
         $count =  static::getModel()::where('is_active', false)->count();
         return $count > 0 ? (string) $count : null;
+    }
+    
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::BlogPosts;
     }
 }

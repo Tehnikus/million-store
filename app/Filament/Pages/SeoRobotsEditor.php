@@ -2,7 +2,6 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Support\NavigationGroup;
 use Illuminate\Support\Facades\Storage;
 
 use Filament\Facades\Filament;
@@ -12,18 +11,17 @@ use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
-use Filament\Support\Icons\Heroicon;
 use Filament\Forms\Components\CodeEditor;
 use Filament\Forms\Components\CodeEditor\Enums\Language;
 use Filament\Notifications\Notification;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class SeoRobotsEditor extends Page
 {
     public ?array $data = [];
     protected string $view = 'filament.pages.simple-form';
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedCodeBracket;
-    protected static ?int $navigationSort = 6;
-    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Seo;
 
     public function form(Schema $schema): Schema
     {
@@ -84,19 +82,13 @@ class SeoRobotsEditor extends Page
                 ->send();
         }
     }
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.navigation.items.robots_editor');
-    }
 
-    public function getHeading(): string
-    {
-        return __('admin.navigation.items.robots_editor');
-    }
 
-    public function getTitle(): string
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
     {
-        return __('admin.navigation.items.robots_editor');
+        return NavigationItem::RobotsEditor;
     }
 
 }

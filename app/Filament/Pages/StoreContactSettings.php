@@ -11,21 +11,13 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Actions\Action;
-use UnitEnum;
-use BackedEnum;
-use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Actions;
-use App\Filament\Support\NavigationGroup;
-use Filament\Support\Enums\Alignment;
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class StoreContactSettings extends Page implements HasForms
 {
     use InteractsWithForms;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAtSymbol;
-    protected static ?int $navigationSort = 3;
-
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::StoreSettings;
 
     protected string $view = 'filament.pages.simple-form';
 
@@ -78,19 +70,11 @@ class StoreContactSettings extends Page implements HasForms
             ->send();
     }
 
-    public static function getNavigationLabel(): string
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
     {
-        return __('admin.navigation.items.store_contacts');
-    }
-
-    public function getHeading(): string
-    {
-        return __('admin.navigation.items.store_contacts');
-    }
-
-    public function getTitle(): string
-    {
-        return __('admin.navigation.items.store_contacts');
+        return NavigationItem::StoreContacts;
     }
 
 }

@@ -9,25 +9,19 @@ use App\Filament\Resources\CustomerGroups\Pages\ViewCustomerGroup;
 use App\Filament\Resources\CustomerGroups\Schemas\CustomerGroupForm;
 use App\Filament\Resources\CustomerGroups\Schemas\CustomerGroupInfolist;
 use App\Filament\Resources\CustomerGroups\Tables\CustomerGroupsTable;
-use App\Filament\Support\NavigationGroup;
-use App\Models\CustomerGroup;
-use BackedEnum;
+use App\Models\Customer\CustomerGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class CustomerGroupResource extends Resource
 {
     protected static ?string $model = CustomerGroup::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
-
     protected static ?string $recordTitleAttribute = 'name';
-
-    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Customers;
-
-    protected static ?int $navigationSort = 2;
+    protected static bool $isGloballySearchable = false;
 
     public static function form(Schema $schema): Schema
     {
@@ -61,24 +55,16 @@ class CustomerGroupResource extends Resource
         ];
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.customers.customer_groups.navigation_label');
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('admin.customers.customer_groups.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.customers.customer_groups.navigation_label');
-    }
-
     // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
         return [];
+    }
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::CustomerGroups;
     }
 }

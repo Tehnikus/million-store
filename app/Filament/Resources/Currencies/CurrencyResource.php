@@ -7,23 +7,20 @@ use App\Filament\Resources\Currencies\Pages\EditCurrency;
 use App\Filament\Resources\Currencies\Pages\ListCurrencies;
 use App\Filament\Resources\Currencies\Schemas\CurrencyForm;
 use App\Filament\Resources\Currencies\Tables\CurrenciesTable;
-use App\Models\Currency;
-use BackedEnum;
-use UnitEnum;
+use App\Models\Global\Currency;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use App\Filament\Support\NavigationGroup;
+
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class CurrencyResource extends Resource
 {
     protected static bool $isScopedToTenant = false;
     protected static ?string $model = Currency::class;
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
-    protected static ?int $navigationSort = 2;
-    protected static string | \UnitEnum | null $navigationGroup = NavigationGroup::GlobalSettings;
     protected static ?string $recordTitleAttribute = 'name';
+    protected static bool $isGloballySearchable = false;
 
     public static function form(Schema $schema): Schema
     {
@@ -51,23 +48,16 @@ class CurrencyResource extends Resource
         ];
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.currencies.navigation_label');
-    }
-
-    public static function getModelLabel(): string
-    {
-        return __('admin.currencies.model_label_singular');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('admin.currencies.navigation_label');
-    }
-
+    // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'iso_code'];
+        return [];
+    }
+
+    // Some repeating navigation methods in one place
+    use HasCentralizedNavigation;
+    protected static function getMenuConfig(): NavigationItem
+    {
+        return NavigationItem::Currencies;
     }
 }
