@@ -1,7 +1,7 @@
 <?php
 namespace App\Filament\Pages;
 
-use App\Models\StoreContact;
+use App\Models\Store\StoreContact;
 use Filament\Schemas\Components\Form;
 use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\StoreContactForm;

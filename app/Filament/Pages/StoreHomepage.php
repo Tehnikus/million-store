@@ -2,9 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use UnitEnum;
-use BackedEnum;
-use App\Models\StoreHomepageDescription;
+use App\Models\Store\StoreHomepageDescription;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;

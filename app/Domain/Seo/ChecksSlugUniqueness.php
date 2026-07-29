@@ -2,7 +2,7 @@
 
 namespace App\Domain\Seo;
 
-use App\Models\Slug;
+use App\Models\Seo\Slug;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 

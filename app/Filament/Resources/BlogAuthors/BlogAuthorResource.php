@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogAuthors;
 
+use App\Models\Blog\BlogAuthor;
 use App\Filament\Resources\BlogAuthors\Pages\CreateBlogAuthor;
 use App\Filament\Resources\BlogAuthors\Pages\EditBlogAuthor;
 use App\Filament\Resources\BlogAuthors\Pages\ListBlogAuthors;

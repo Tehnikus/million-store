@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogPosts;
 
+use App\Models\Blog\BlogPost;
 use App\Filament\Resources\BlogPosts\Pages\CreateBlogPost;
 use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
 use App\Filament\Resources\BlogPosts\Pages\ListBlogPosts;
