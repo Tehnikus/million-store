@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Blog;
 
-use App\Models\Store;
+use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Domain\Seo\HasSlugs;
 use Spatie\Translatable\HasTranslations;
+use App\Domain\Seo\HasSlugs;
 use App\Domain\Media\Concerns\HasProcessedImages;
 
 class BlogPost extends Model
@@ -34,6 +32,7 @@ class BlogPost extends Model
         'blog_post_products',
         'blog_post_tags',
         'sort_order',
+        'author_id'
     ];
 
     public $translatable = [
@@ -52,6 +51,7 @@ class BlogPost extends Model
     protected $casts = [
         'is_active'             => 'boolean',
         'sort_order'            => 'integer',
+        'author_id'             => 'integer',
         'name'                  => 'array',
         'h1'                    => 'array',
         'meta_title'            => 'array',
@@ -72,17 +72,6 @@ class BlogPost extends Model
         return $this->belongsTo(Store::class, 'store_id');
     }
 
-    // URL slugs
-    public function slugs(): MorphMany
-    {
-        return $this->morphMany(Slug::class, 'sluggable');
-    }
-
-    public function activeSlug(): MorphOne
-    {
-        return $this->morphOne(Slug::class, 'sluggable')->where('is_active', true);
-    }
-
     public function blogTags(): BelongsToMany
     {
         return $this->belongsToMany(BlogTag::class, 'blog_post_tag')
@@ -99,7 +88,7 @@ class BlogPost extends Model
     {
         return [
             'images' => [
-                'type'        => 'blog', // Image type. Sets which dimensions to choose from StoreSetting and what directory to store images in
+                'type'        => 'blog', // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
                 'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
             ],
         ];

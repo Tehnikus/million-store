@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Blog;
 
-use App\Domain\Seo\HasSlugs;
+use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use App\Domain\Seo\HasSlugs;
 
 class BlogAuthor extends Model
 {
@@ -46,17 +45,6 @@ class BlogAuthor extends Model
         'avatar'        => 'array',
         'social_links'  => 'array',
     ];
-
-    // URL slugs
-    public function slugs(): MorphMany
-    {
-        return $this->morphMany(Slug::class, 'sluggable');
-    }
-
-    public function activeSlug(): MorphOne
-    {
-        return $this->morphOne(Slug::class, 'sluggable')->where('is_active', true);
-    }
 
     public function store(): BelongsTo
     {

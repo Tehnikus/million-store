@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Blog;
 
-use App\Models\Store;
+use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\Translatable\HasTranslations;
+use App\Domain\Seo\HasSlugs;
 
 class BlogTag extends Model
 {
@@ -66,17 +64,6 @@ class BlogTag extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class, 'store_id');
-    }
-
-    // URL slugs
-    public function slugs(): MorphMany
-    {
-        return $this->morphMany(Slug::class, 'sluggable');
-    }
-
-    public function activeSlug(): MorphOne
-    {
-        return $this->morphOne(Slug::class, 'sluggable')->where('is_active', true);
     }
 
     public function blogPosts(): BelongsToMany
