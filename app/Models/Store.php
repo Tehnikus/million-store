@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Store extends Model
 {
-    //
+    protected static bool $isScopedToTenant = false;
 
     protected $fillable = [
         'name',
