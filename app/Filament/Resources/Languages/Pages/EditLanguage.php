@@ -5,11 +5,9 @@ namespace App\Filament\Resources\Languages\Pages;
 use App\Filament\Resources\Languages\LanguageResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use App\Filament\Concerns\RedirectsToIndex;
 
 class EditLanguage extends EditRecord
 {
-    use RedirectsToIndex;
     protected static string $resource = LanguageResource::class;
 
     protected function getHeaderActions(): array
