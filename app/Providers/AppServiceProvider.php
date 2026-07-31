@@ -3,6 +3,16 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
+use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Notifications\Events\NotificationFailed;
+// use Illuminate\Support\Facades\Event;
+// use Illuminate\Support\Facades\URL;
+// use Illuminate\Support\Facades\Vite;
+// use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,7 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        DB::prohibitDestructiveCommands(App::environment(['production'])); // Prevent destructive artisan commands on production
+        Model::shouldBeStrict(!App::environment(['production']));
+        // Date::use(CarbonImmutable::class);
+        // URL::forceHttps(App::environment(['production']));
     }
 
     /**
@@ -19,6 +32,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Relation::enforceMorphMap([
+        //     'product'          => \App\Models\Catalog\Product::class,
+        //     'category'         => \App\Models\Catalog\Category::class,
+        //     'manufacturer'     => \App\Models\Catalog\Manufacturer::class,
+        //     'blog_post'        => \App\Models\Blog\BlogPost::class,
+        //     'blog_tag'         => \App\Models\Blog\BlogTag::class,
+        //     'blog_author'      => \App\Models\Blog\BlogAuthor::class,
+        //     'info_page'        => \App\Models\Store\StoreInfoPage::class,
+        // ]);
     }
 }
