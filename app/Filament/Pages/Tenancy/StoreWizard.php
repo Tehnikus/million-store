@@ -19,7 +19,7 @@ class StoreWizard extends RegisterTenant
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            Wizard::make(StoreRegistrationWizard::steps()),
+            Wizard::make(StoreRegistrationWizard::steps())->columnSpanFull(),
         ]);
     }
 
