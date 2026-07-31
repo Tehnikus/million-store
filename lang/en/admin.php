@@ -567,30 +567,6 @@ return [
     ],
   ],
 
-  // Languages
-  'languages' => [
-    'navigation_label'      => 'Languages',
-    'model_label_singular'  => 'Language',
-    'fields' => [
-      'flag'                      => 'Flag',
-      'name'                      => 'Name',
-      'iso_code'                  => 'ISO Code',
-      'locale'                    => 'Locale',
-      'is_active'                 => 'Active',
-      'stores'                    => 'Associated stores',
-      'default_currency'          => 'Default currency',
-      'fulltext_search_language'  => 'Fulltext search dictionary',
-      'is_default'                => 'Default'
-    ],
-    'helpers' => [
-      'name'                      => 'Language name in Admin panel',
-      'iso_code'                  => 'Example: <b>en-US</b>. ISO Code is used in JSON-LD markup',
-      'locale'                    => 'Locale is used in HTML header to tell search engines page language',
-      'default_currency'          => 'Default currency is defined to display prices in relation to language so search engines see correct prices related to language. This does not affect customers, they still can change displayed currency',
-      'fulltext_search_language'  => 'Fulltext search morphology dictionary. You may use custom dictionary for PostgreSQL but you will need to install it first'
-    ],
-  ],
-
   // Stores
   'stores' => [
     'navigation_label'      => 'Stores',
@@ -633,5 +609,54 @@ return [
       'created_at'  => 'Created at',
       'is_active'   => 'Active',
     ],
+  ],
+
+  'global' => [
+    // Languages
+    'languages' => [
+      'navigation_label'      => 'Languages',
+      'model_label_singular'  => 'Language',
+      'fields' => [
+        'flag'                      => 'Flag',
+        'name'                      => 'Name',
+        'iso_code'                  => 'ISO Code',
+        'locale'                    => 'Locale',
+        'is_active'                 => 'Active',
+        'stores'                    => 'Associated stores',
+        'default_currency'          => 'Default currency',
+        'fulltext_search_language'  => 'Fulltext search dictionary',
+        'is_default'                => 'Default'
+      ],
+      'helpers' => [
+        'name'                      => 'Language name in Admin panel',
+        'iso_code'                  => 'Example: <b>en-US</b>. ISO Code is used in JSON-LD markup',
+        'locale'                    => 'Locale is used in HTML header to tell search engines page language',
+        'default_currency'          => 'Default currency is defined to display prices in relation to language so search engines see correct prices related to language. This does not affect customers, they still can change displayed currency',
+        'fulltext_search_language'  => 'Fulltext search morphology dictionary. You may use custom dictionary for PostgreSQL but you will need to install it first'
+      ],
+    ],
+    
+    // Store wizard
+    'store_wizard' => [
+      'navigation_label' => 'Store Wizard',
+      'fields' => [
+        'existing_currency' => 'Use existing currency',
+        'new_currency'      => 'Create currency',
+        'existing_language' => 'Use existing language',
+        'new_language'      => 'Create language',
+        'existing_country'  => 'Use existing country',
+        'new_country'       => 'Create country',
+      ],
+      'messages' => [
+        'currency_language_hint' => 'Default currency for this language will be set as :currency from the previous step. You can always change this setting in Global/Languages admin section',
+        'currency_country_hint'  => 'Default currency for this country will be set as :currency from the previous step. You can always change this setting in Global/Countries admin section',
+      ],
+      'steps' => [
+        'currency'  => 'Currency',
+        'language'  => 'Language',
+        'country'   => 'Country',
+        'store'     => 'Store',
+      ]
+    ]
   ]
 ];

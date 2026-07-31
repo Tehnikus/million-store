@@ -18,22 +18,22 @@ class LanguageForm
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
-                    ->label(__('admin.languages.fields.name'))
-                    ->helperText(__('admin.languages.helpers.name')),
+                    ->label(__('admin.global.languages.fields.name'))
+                    ->helperText(__('admin.global.languages.helpers.name')),
                 TextInput::make('iso_code')
-                    ->label(__('admin.languages.fields.iso_code'))
+                    ->label(__('admin.global.languages.fields.iso_code'))
                     ->required()
                     ->maxLength(5)
                     ->unique(ignoreRecord: true) // Required so DB write does not fails because of own iso_code already exists
-                    ->helperText(new HtmlString(__('admin.languages.helpers.iso_code'))), 
+                    ->helperText(new HtmlString(__('admin.global.languages.helpers.iso_code'))), 
                 TextInput::make('locale')
-                    ->label(__('admin.languages.fields.locale'))
-                    ->helperText(__('admin.languages.helpers.locale'))
+                    ->label(__('admin.global.languages.fields.locale'))
+                    ->helperText(__('admin.global.languages.helpers.locale'))
                     ->required()
                     ->maxLength(10),
 
                 Select::make('ts_config')
-                    ->label(__('admin.languages.fields.fulltext_search_language'))
+                    ->label(__('admin.global.languages.fields.fulltext_search_language'))
                     ->options([
                         'simple'        => 'Simple',
                         'english'       => 'English',
@@ -53,10 +53,10 @@ class LanguageForm
                     ])
                     ->required()
                     ->default('simple')
-                    ->helperText(__('admin.languages.helpers.fulltext_search_language')),
+                    ->helperText(__('admin.global.languages.helpers.fulltext_search_language')),
                     // FileUpload component requires php artisan storage:link, otherwise the file will be uploaded but will not be displayed in backend/frontend
                     FileUpload::make('image')
-                        ->label(__('admin.languages.fields.flag'))
+                        ->label(__('admin.global.languages.fields.flag'))
                         ->disk('public')        // Means store locally, no CDN
                         ->directory('flags')    // path where files fill be uploaded: storage/app/public/flags/...
                         ->image()               // Only images can be uploaded. Also gives crop/preview in UI
@@ -65,14 +65,14 @@ class LanguageForm
 
                     // Select with ->relationship() autocomplete with search in related table
                     Select::make('default_currency_id')
-                        ->label(__('admin.languages.fields.default_currency'))
-                        ->relationship('defaultCurrency', 'name') // 'defaultCurrency' - method name in app\Models\Language.php to find currency by %name%
+                        ->label(__('admin.global.languages.fields.default_currency'))
+                        ->relationship('currency', 'name') // 'currency' - method name in App\Models\Global\Language.php to find currency by %name%
                         ->searchable()
                         ->preload() // Preload all currencies
                         ->required(), // restrictOnDelete() in migration forces to have this relation, so this field is required
 
                     Toggle::make('is_active')
-                        ->label(__('admin.languages.fields.is_active'))
+                        ->label(__('admin.global.languages.fields.is_active'))
                         ->default(true),
             ]);
     }

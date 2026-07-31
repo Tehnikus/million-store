@@ -61,7 +61,7 @@ enum NavigationItem: string
     case Stores         = 'stores';
     case Countries      = 'countries';
     case Users          = 'users';
-    case Languages      = 'languages';
+    case Languages      = 'global.languages';
     case Currencies     = 'currencies';
     case StoreWizard    = 'global.store_wizard';
     
