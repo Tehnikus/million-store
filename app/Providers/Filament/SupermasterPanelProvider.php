@@ -23,11 +23,16 @@ use App\Models\Global\Store;
 use Filament\Tables\Table;
 use Filament\Support\Enums\Width;
 use Filament\Actions\Action;
+use Spatie\Translatable\Facades\Translatable;
 
 class SupermasterPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        Translatable::fallback(
+            fallbackAny: true,
+        );
+
         return $panel
             ->default()
             ->id('supermaster')
