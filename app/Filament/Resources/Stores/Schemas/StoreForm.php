@@ -48,8 +48,8 @@ class StoreForm
                             ->orderColumn('sort_order')
                             ->table([
                                 TableColumn::make(__('admin.stores.fields.languages'))->alignment('center'),
-                                TableColumn::make(__('admin.languages.fields.is_active'))->alignment('center')->width('100px'),
-                                TableColumn::make(__('admin.languages.fields.is_default'))->alignment('center')->width('100px'),
+                                TableColumn::make(__('admin.global.languages.fields.is_active'))->alignment('center')->width('100px'),
+                                TableColumn::make(__('admin.global.languages.fields.is_default'))->alignment('center')->width('100px'),
                             ])
                             ->addActionLabel(__('admin.stores.fields.add_language'))
                             ->hiddenLabel()
@@ -95,7 +95,7 @@ class StoreForm
                             ->orderColumn('sort_order')
                             ->table([
                                 TableColumn::make(__('admin.stores.fields.currencies'))->alignment('center'),
-                                TableColumn::make(__('admin.currencies.fields.is_active'))->alignment('center')->width('100px'),
+                                TableColumn::make(__('admin.global.currencies.fields.is_active'))->alignment('center')->width('100px'),
                             ])
                             ->hiddenLabel()
                             ->addActionLabel(__('admin.stores.fields.add_currency'))
@@ -120,7 +120,7 @@ class StoreForm
                             ->orderColumn('sort_order')
                             ->table([
                                 TableColumn::make(__('admin.stores.fields.countries'))->alignment('center'),
-                                TableColumn::make(__('admin.countries.fields.is_active'))->alignment('center')->width('100px'),
+                                TableColumn::make(__('admin.global.countries.fields.is_active'))->alignment('center')->width('100px'),
                             ])
                             ->hiddenLabel()
                             ->addActionLabel(__('admin.stores.fields.add_country'))

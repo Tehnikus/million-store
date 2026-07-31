@@ -21,32 +21,32 @@ class CountriesTable
             })
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('admin.countries.fields.name'))
+                    ->label(__('admin.global.countries.fields.name'))
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('iso_code')
-                    ->label(__('admin.countries.fields.iso_code'))
+                    ->label(__('admin.global.countries.fields.iso_code'))
                     ->alignment('center')
                     ->sortable()
                     ->badge()
                     ->searchable(),
 
                 TextColumn::make('currency.iso_code')
-                    ->label(__('admin.countries.fields.default_currency_id'))
+                    ->label(__('admin.global.countries.fields.default_currency_id'))
                     ->alignment('center')
                     ->sortable()
                     ->badge(),
 
                 IconColumn::make('is_eu_member')
-                    ->label(__('admin.countries.fields.is_eu_member'))
+                    ->label(__('admin.global.countries.fields.is_eu_member'))
                     ->alignment('center')
                     ->sortable()
                     ->boolean()
                     ->width('1%'),
 
                 IconColumn::make('is_active')
-                    ->label(__('admin.countries.fields.is_active'))
+                    ->label(__('admin.global.countries.fields.is_active'))
                     ->alignment('center')
                     ->sortable()
                     ->boolean()

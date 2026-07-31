@@ -25,7 +25,7 @@ class CountryForm
 
         return $schema
             ->components([
-                Fieldset::make(__('admin.countries.fields.name'))
+                Fieldset::make(__('admin.global.countries.fields.name'))
                     ->schema([
                         ...$activeLanguages
                             ->map(fn($language) =>
@@ -34,60 +34,60 @@ class CountryForm
                                     ->columnSpanFull()
                                     ->required()
                                     ->prefix($language->locale)
-                                    ->label(__('admin.countries.fields.name') . " ({$language->name})")
-                                    ->placeholder(__('admin.countries.fields.name') . " ({$language->name})")
+                                    ->label(__('admin.global.countries.fields.name') . " ({$language->name})")
+                                    ->placeholder(__('admin.global.countries.fields.name') . " ({$language->name})")
                             )
                             ->all(),
                     ])
                     ->columnSpanFull(),
-                Fieldset::make(__('admin.countries.fields.localization_settings'))
+                Fieldset::make(__('admin.global.countries.fields.localization_settings'))
                     ->schema([
                         Select::make('default_currency_id')
                             ->relationship(name: 'currency', titleAttribute: 'name')
                             ->searchable(['name', 'iso_code'])
                             ->required()
                             ->preload()
-                            ->label(__('admin.countries.fields.default_currency_id'))
+                            ->label(__('admin.global.countries.fields.default_currency_id'))
                             ->columnSpanFull(),
         
                         TextInput::make('iso_code')
                             ->required()
                             ->maxLength(3)
                             ->unique(ignoreRecord: true) // Needed to skip own record when checking unique
-                            ->label(__('admin.countries.fields.iso_code'))
-                            ->helperText(__('admin.countries.helpers.iso_code')),
+                            ->label(__('admin.global.countries.fields.iso_code'))
+                            ->helperText(__('admin.global.countries.helpers.iso_code')),
         
                         TextInput::make('phone_code')
                             ->required()
                             ->maxLength(10)
-                            ->label(__('admin.countries.fields.phone_code'))
-                            ->helperText(__('admin.countries.helpers.phone_code')),
+                            ->label(__('admin.global.countries.fields.phone_code'))
+                            ->helperText(__('admin.global.countries.helpers.phone_code')),
                     ])
                     ->columnSpanFull(),
 
 
-                Fieldset::make(__('admin.countries.fields.regions'))
+                Fieldset::make(__('admin.global.countries.fields.regions'))
                     ->schema([
                         Repeater::make('regions')
                             ->hiddenLabel()
                             ->table([
-                                TableColumn::make(__('admin.countries.fields.iso_code'))->width('200px'),
-                                TableColumn::make(__('admin.countries.fields.region'))                                
+                                TableColumn::make(__('admin.global.countries.fields.iso_code'))->width('200px'),
+                                TableColumn::make(__('admin.global.countries.fields.region'))                                
                             ])
                             ->schema([
                                 TextInput::make('iso_code')
                                     ->required()
-                                    ->placeholder(__('admin.countries.fields.iso_code')),
+                                    ->placeholder(__('admin.global.countries.fields.iso_code')),
                                 Group::make([
                                     ...$activeLanguages->map(fn($language) => 
                                         TextInput::make("name.{$language->locale}")
                                             ->required()
                                             ->prefix($language->locale)
-                                            ->placeholder(__('admin.countries.fields.name') . " ({$language->name})")
+                                            ->placeholder(__('admin.global.countries.fields.name') . " ({$language->name})")
                                     )->all(),
                                 ]),
                             ])
-                            ->addActionLabel(__('admin.countries.fields.add_region'))
+                            ->addActionLabel(__('admin.global.countries.fields.add_region'))
                             ->reorderable(false)
                             ->columnSpanFull()
                             ->defaultItems(0),
@@ -96,13 +96,13 @@ class CountryForm
 
                 Toggle::make('is_eu_member')
                     ->default(false)
-                    ->label(__('admin.countries.fields.is_eu_member'))
+                    ->label(__('admin.global.countries.fields.is_eu_member'))
                     ->columnSpanFull(),
 
                 Toggle::make('is_active')
                     ->default(true)
                     ->columnSpanFull()
-                    ->label(__('admin.countries.fields.is_active')),
+                    ->label(__('admin.global.countries.fields.is_active')),
             ]);
     }
 }

@@ -523,29 +523,6 @@ return [
     ],
   ],
 
-  // Countries
-  'countries' => [
-    'navigation_label'      => 'Countries',
-    'model_label_singular'  => 'Country',
-    'fields' => [
-      'name'                  => 'Name',
-      'localization_settings' => 'Localization settings',
-      'iso_code'              => 'ISO code',
-      'phone_code'            => 'Phone code',
-      'default_currency_id'   => 'Default currency',
-      'is_eu_member'          => 'EU member',
-      'regions'               => 'Regions',
-      'region'                => 'Region',
-      'add_region'            => 'Add region',
-      'is_active'             => 'Active',
-    ],
-    'helpers' => [
-      'add_region' => 'Not necessary, you can skip this',
-      'iso_code'   => 'Country ISO code in two letter ISO 3166-1 alpha-2 format: UA, PL, US, GB, etc. ISO code is used in JSON-LD microdata to display Google rich snippets',
-      'phone_code' => 'Phone code of country: +380, +48, +1, +44 to format phone numbers on checkout process',
-    ],
-  ],
-
   // Stores
   'stores' => [
     'navigation_label'      => 'Stores',
@@ -611,6 +588,7 @@ return [
         'rate_default'  => 'This currency is used to calculate rates for other currencies. Only one default currency system-wide',
       ],
     ],
+
     // Languages
     'languages' => [
       'navigation_label'      => 'Languages',
@@ -635,6 +613,29 @@ return [
       ],
     ],
 
+    // Countries
+    'countries' => [
+      'navigation_label'      => 'Countries',
+      'model_label_singular'  => 'Country',
+      'fields' => [
+        'name'                  => 'Name',
+        'localization_settings' => 'Localization settings',
+        'iso_code'              => 'ISO code',
+        'phone_code'            => 'Phone code',
+        'default_currency_id'   => 'Default currency',
+        'is_eu_member'          => 'EU member',
+        'regions'               => 'Regions',
+        'region'                => 'Region',
+        'add_region'            => 'Add region',
+        'is_active'             => 'Active',
+      ],
+      'helpers' => [
+        'add_region' => 'Not necessary, you can skip this',
+        'iso_code'   => 'Country ISO code in two letter ISO 3166-1 alpha-2 format: UA, PL, US, GB, etc. ISO code is used in JSON-LD microdata to display Google rich snippets',
+        'phone_code' => 'Phone code of country: +380, +48, +1, +44 to format phone numbers on checkout process',
+      ],
+    ],
+
     // Store wizard
     'store_wizard' => [
       'navigation_label' => 'Store Wizard',
@@ -647,8 +648,8 @@ return [
         'new_country'       => 'Create country',
       ],
       'messages' => [
-        'currency_language_hint' => 'Default currency for this language will be set as :currency from the previous step. You can always change this setting in Global/Languages admin section',
-        'currency_country_hint'  => 'Default currency for this country will be set as :currency from the previous step. You can always change this setting in Global/Countries admin section',
+        'currency_language_hint' => 'Default currency for this language will be set as :currency from the previous step. You can always change this setting in Global settings/Languages admin section',
+        'currency_country_hint'  => 'Default currency for this country will be set as :currency from the previous step. You can always change this setting in Global settings/Countries admin section',
       ],
       'steps' => [
         'currency'  => 'Currency',
