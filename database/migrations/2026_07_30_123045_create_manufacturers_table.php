@@ -6,19 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('manufacturers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             // Flags
             $table->boolean('is_active')->default(false);
             $table->boolean('show_in_facets')->default(false);
-            $table->foreignId('parent_id')->nullable()->constrained('categories')->cascadeOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('manufacturers')->cascadeOnDelete();
             $table->integer('sort_order')->default(1);
             // Descriptions
             $table->jsonb('name')->nullable()->default('{}');
@@ -32,13 +31,9 @@ return new class extends Migration
             $table->jsonb('faq')->nullable()->default('{}');
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
-
             $table->timestamps();
-            
-            $table->index(['store_id', 'is_active', 'id', 'sort_order'], 'category_admin_lookup');
-            // $table->index(['id', 'store_id', 'is_active', 'sort_order'], 'category_frontend_lookup');
-            $table->index(['store_id', 'parent_id', 'is_active', 'show_in_facets', 'sort_order'], 'category_frontend_lookup');
-            $table->index(['parent_id', 'store_id', 'is_active', 'sort_order'], 'category_children_lookup');
+
+            $table->index(['store_id', 'parent_id', 'is_active', 'show_in_facets', 'sort_order'], 'manufacturers_frontend_lookup');
         });
     }
 
@@ -47,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('manufacturers');
     }
 };

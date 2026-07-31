@@ -16,6 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->references('id')->onDelete('set null');
+            $table->foreignId('manufacturer_id')->nullable()->constrained('manufacturers')->references('id')->onDelete('set null');
             // Flags
             $table->boolean('is_active')->default(false);
             $table->boolean('is_available')->default(false);
