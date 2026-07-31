@@ -34,6 +34,8 @@ return [
         'prices_customer_group' => 'Customer group',
         'valid_from'            => 'Price valid from date',
         'valid_until'           => 'Price valid until date',
+        'valid_from_short'      => 'from',
+        'valid_until_short'     => 'until',
         'valid_quantity'        => 'Price valid quantity',
         'priority'              => 'Priority',
       ],
@@ -54,6 +56,10 @@ return [
         'add_attribute'         => 'Add product attribute',
         'add_option'            => 'Add product options',
         'add_tag'               => 'Add product tag',
+      ],
+      'errors' => [
+        'last_price_title'  => '',
+        'last_price_text'   => 'Product must have at least one price',
       ]
     ],
     'categories' => [

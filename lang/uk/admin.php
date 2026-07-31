@@ -14,32 +14,97 @@ return [
     'products' => [
       'navigation_label'      => 'Товари',
       'model_label_singular'  => 'Товар',
-      'fields' => []
+      'fields' => [
+        'global_name'           => 'Глобальна назва',
+        'global_data'           => 'Глобальні дані',
+        'sku'                   => 'Артикул (SKU)',
+        'store_name'            => 'Назва магазину',
+        'parent_id'             => 'Основна категорія',
+        'product_categories'    => 'Інші категорії',
+        'manufacturer_id'       => 'Виробник',
+        'attributes'            => 'Атрибути',
+        'options'               => 'Опції',
+        'tags'                  => 'Теги',
+        'prices'                => 'Ціни',
+        'price'                 => 'Ціна',
+        'discount'              => 'Знижка',
+        'is_active'             => 'Активний у цьому магазині',
+        'is_not_active'         => 'Неактивний у цьому магазині',
+        'is_not_associated'     => 'Не пов’язаний з цим магазином',
+        'prices_customer_group' => 'Група клієнтів',
+        'valid_from'            => 'Ціна дійсна з дати',
+        'valid_until'           => 'Ціна дійсна по дату',
+        'valid_from_short'      => 'з',
+        'valid_until_short'     => 'по',
+        'valid_quantity'        => 'Кількість для застосування ціни',
+        'priority'              => 'Пріоритет',
+      ],
+      'helpers' => [
+        'global_data'           => 'Спільні дані для кожного магазину, де є цей товар — редагування тут змінить їх усюди',
+        'global_name'           => 'Відображається лише в панелі адміністратора. Використовується для швидкого пошуку товару',
+        'sku'                   => 'Відображається в панелі адміністратора та на вітрині (якщо увімкнено відповідне налаштування магазину). Використовується для швидкого пошуку товару',
+        'is_active'             => 'Статус товару в поточному магазині',
+        'prices_customer_group' => 'Виберіть групу клієнтів, до якої буде застосовуватися ця ціна',
+        'priority'              => 'Якщо кілька цін мають схожі умови застосування, буде використано ціну з вищим пріоритетом',
+        'discount'              => 'Знижка має пріоритет над звичайною ціною',
+        'valid_from'            => 'Ціна активна з цієї дати',
+        'valid_until'           => 'Ціна активна по цю дату',
+        'valid_quantity'        => 'Кількість товару в кошику для застосування цієї ціни',
+      ],
+      'buttons' => [
+        'add_price_tier'        => 'Додати рівень цін',
+        'add_attribute'         => 'Добавить атрибут товару',
+        'add_option'            => 'Додати опції товару',
+        'add_tag'               => 'Додати тег товару',
+      ],
+      'errors' => [
+        'last_price_title'  => '',
+        'last_price_text'   => 'Товар повинен мати щонайменше одну ціну',
+      ]
     ],
     'categories' => [
       'navigation_label'      => 'Категорії',
       'model_label_singular'  => 'Категорія',
-      'fields' => []
+      'fields' => [
+        'is_active'       => 'Активна',
+        'is_root'         => 'Коренева',
+        'show_in_facets'  => 'Показувати у фільтрах (фасетах)',
+        'parent_id'       => 'Батьківська категорія',
+      ],
+      'helpers' => [
+        'parent_id'       => 'Виберіть батьківську категорію або залиште порожнім, щоб зробити цю категорію кореневою'
+      ],
     ],
     'manufacturers' => [
       'navigation_label'      => 'Виробники',
       'model_label_singular'  => 'Виробник',
-      'fields' => []
+      'fields'  => [
+        'is_active'       => 'Активний',
+        'is_root'         => 'Кореневий',
+        'show_in_facets'  => 'Показувати у фільтрах (фасетах)',
+        'parent_id'       => 'Батьківський виробник',
+      ],
+      'helpers' => [
+        'parent_id'       => 'Виберіть батьківського виробника або залиште порожнім, щоб зробити цього виробника кореневим'
+      ],
     ],
     'attributes' => [
       'navigation_label'      => 'Атрибути',
       'model_label_singular'  => 'Атрибут',
-      'fields' => []
+      'fields'  => [],
+      'helpers' => [],
     ],
     'options' => [
       'navigation_label'      => 'Опції',
       'model_label_singular'  => 'Опція',
-      'fields' => []
+      'fields'  => [],
+      'helpers' => [],
     ],
     'tags' => [
-      'navigation_label'      => 'Теґи',
-      'model_label_singular'  => 'Теґ',
-      'fields' => []
+      'navigation_label'      => 'Теги',
+      'model_label_singular'  => 'Тег',
+      'fields'  => [],
+      'helpers' => [],
     ],
   ],
   'customers' => [
@@ -204,7 +269,7 @@ return [
       'navigation_label'      => 'Статті',
       'model_label_singular'  => 'Стаття',
       'fields'  => [
-        'image'       => 'Зображення',
+        'image'       => 'Фото',
         'name'        => 'Назва',
         'sort_order'  => 'Сортування',
         'is_active'   => 'Активна',
@@ -266,11 +331,15 @@ return [
       'save'              => 'Зберегти',
       'cancel'            => 'Скасувати',
       'add_faq_row'       => 'Додати нове Питання/Відпвідь',
-      'add_image_row'     => 'Додати нове зображення',
-      'add_how_to_step'   => 'Додати крок HowTo',
+      'add_image_row'     => 'Додати нове фото',
+      'add_how_to_step'   => 'Додати крок/етап HowTo',
       'add_how_to_tool'   => 'Додати інструмент HowTo',
       'add_how_to_supply' => 'Додати необхіну річ для HowTo',
       'add_footer_tab'    => 'Додати вкладку Footer',
+      'create_slug'       => 'Створити URL із назви',
+      'paste_h1'          => 'Вставити назву в H1',
+      'paste_title'       => 'Вставити H1 або назву в Title',
+      'paste_description' => 'Вставити Title в початок Description',
     ],
   ],
   'design' => [
