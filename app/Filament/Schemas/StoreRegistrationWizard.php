@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard\Step;
+use Illuminate\Support\HtmlString;
 
 class StoreRegistrationWizard
 {
@@ -53,32 +54,36 @@ class StoreRegistrationWizard
                         ->hiddenLabel(),
 
                     TextInput::make('name')
-                        ->label(__('admin.currencies.fields.name'))
                         ->required()
                         ->maxLength(255)
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.currencies.fields.name'))
+                        ->helperText(__('admin.global.currencies.helpers.name')),
 
                     TextInput::make('iso_code')
-                        ->label(__('admin.currencies.fields.iso_code'))
                         ->required()
                         ->maxLength(3)
                         ->unique('currencies', 'iso_code')
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.currencies.fields.iso_code'))
+                        ->helperText(__('admin.global.currencies.helpers.iso_code')),
 
                     TextInput::make('sign')
-                        ->label(__('admin.currencies.fields.sign'))
                         ->required()
                         ->maxLength(10)
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.currencies.fields.sign'))
+                        ->helperText(__('admin.global.currencies.helpers.sign')),
 
                     TextInput::make('rate')
-                        ->label(__('admin.currencies.fields.rate'))
                         ->numeric()
                         ->step(0.001)
                         ->default(1)
                         ->required()
                         // Exchange rate only visible if this is NOT first currency. First currency always has rate=1, see RegisterStore::resolveCurrency()
-                        ->visible(fn(Get $get) => $get('mode') === 'new' && $hasCurrencies),
+                        ->visible(fn(Get $get) => $get('mode') === 'new' && $hasCurrencies)
+                        ->label(__('admin.global.currencies.fields.rate'))
+                        ->helperText(__('admin.global.currencies.helpers.rate')),
 
                 ])->statePath('currency'),
             ]);
@@ -109,31 +114,33 @@ class StoreRegistrationWizard
                         ->hiddenLabel(),
 
                     TextInput::make('name')
-                        ->label(__('admin.languages.fields.name'))
                         ->required()
                         ->maxLength(255)
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.languages.fields.name'))
+                        ->helperText(__('admin.global.languages.helpers.name')),
 
                     TextInput::make('iso_code')
-                        ->label(__('admin.languages.fields.iso_code'))
                         ->required()
                         ->maxLength(5)
                         ->unique('languages', 'iso_code')
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.languages.fields.iso_code'))
+                        ->helperText(new HtmlString(__('admin.global.languages.helpers.iso_code'))),
 
                     TextInput::make('locale')
-                        ->label(__('admin.languages.fields.locale'))
                         ->required()
                         ->maxLength(2)
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.languages.fields.locale'))
+                        ->helperText(__('admin.global.languages.helpers.locale')),
 
                     // Postgres ts_config dictionary
                     Select::make('ts_config')
-                        ->label(__('admin.languages.fields.fulltext_search_language'))
+                        
                         ->options([
                             'simple'        => 'Simple',
                             'english'       => 'English',
-                            'russian'       => 'Russian',
                             'german'        => 'German',
                             'french'        => 'French',
                             'spanish'       => 'Spanish',
@@ -146,10 +153,13 @@ class StoreRegistrationWizard
                             'norwegian'     => 'Norwegian',
                             'swedish'       => 'Swedish',
                             'turkish'       => 'Turkish',
+                            'russian'       => 'Russian',
                         ])
                         ->default('simple')
                         ->required()
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.languages.fields.fulltext_search_language'))
+                        ->helperText(__('admin.global.languages.helpers.fulltext_search_language')),
 
                     // No default_currency_id, see RegisterStore::resolveLanguage()
                     // A simple text message about default currency
@@ -216,25 +226,27 @@ class StoreRegistrationWizard
                     // Only ONE locale - the one selected/created in step 2.
                     // RegisterStore::resolveCountry() wraps this value in {"locale": "..."} manually during create().
                     TextInput::make('name')
-                        ->label(__('admin.countries.fields.name'))
+                        ->label(__('admin.global.countries.fields.name'))
                         ->required()
                         ->maxLength(255)
                         ->visible(fn(Get $get) => $get('mode') === 'new'),
 
                     TextInput::make('iso_code')
-                        ->label(__('admin.countries.fields.iso_code'))
                         ->required()
                         ->maxLength(3)
                         ->unique('countries', 'iso_code')
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.countries.fields.iso_code'))
+                        ->helperText(__('admin.global.countries.helpers.iso_code')),
 
                     TextInput::make('phone_code')
-                        ->label(__('admin.countries.fields.phone_code'))
                         ->maxLength(10)
-                        ->visible(fn(Get $get) => $get('mode') === 'new'),
+                        ->visible(fn(Get $get) => $get('mode') === 'new')
+                        ->label(__('admin.global.countries.fields.phone_code'))
+                        ->helperText(__('admin.global.countries.helpers.phone_code')),
 
                     Toggle::make('is_eu_member')
-                        ->label(__('admin.countries.fields.is_eu_member'))
+                        ->label(__('admin.global.countries.fields.is_eu_member'))
                         ->default(false)
                         ->visible(fn(Get $get) => $get('mode') === 'new'),
 
