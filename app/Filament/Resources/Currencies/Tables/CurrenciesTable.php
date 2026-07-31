@@ -18,32 +18,32 @@ class CurrenciesTable
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
-                    ->label(__('admin.currencies.fields.name')),
+                    ->label(__('admin.global.currencies.fields.name')),
                 TextColumn::make('iso_code')
                     ->badge()
                     ->searchable()
                     ->alignment('center')
-                    ->label(__('admin.currencies.fields.iso_code')),
+                    ->label(__('admin.global.currencies.fields.iso_code')),
                 TextColumn::make('sign')
                     ->badge()
                     ->alignment('center')
-                    ->label(__('admin.currencies.fields.sign')),
+                    ->label(__('admin.global.currencies.fields.sign')),
                 TextColumn::make('rate')
                     ->alignment('right')
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
-                    ->label(__('admin.currencies.fields.rate')),
+                    ->label(__('admin.global.currencies.fields.rate')),
                 IconColumn::make('rate_default')
                     ->boolean()
                     ->sortable()
                     ->alignment('center')
-                    ->label(__('admin.currencies.fields.rate_default'))
+                    ->label(__('admin.global.currencies.fields.rate_default'))
                     ->width('1%'),
                 IconColumn::make('is_active')
                     ->boolean()
                     ->sortable()
                     ->alignment('center')
-                    ->label(__('admin.currencies.fields.is_active'))
+                    ->label(__('admin.global.currencies.fields.is_active'))
                     ->width('1%'),
             ])
             ->filters([

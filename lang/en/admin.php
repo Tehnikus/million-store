@@ -546,27 +546,6 @@ return [
     ],
   ],
 
-  // Currencies
-  'currencies' => [
-    'navigation_label'      => 'Currencies',
-    'model_label_singular'  => 'Currency',
-    'fields' => [
-      'name'          => 'Name',
-      'iso_code'      => 'ISO Code',
-      'sign'          => 'Currency sign',
-      'rate'          => 'Exchange rate',
-      'rate_default'  => 'Default',
-      'is_active'     => 'Active',
-    ],
-    'helpers' => [
-      'name'          => 'Currency name in Admin panel',
-      'iso_code'      => 'ISO Code is used in JSON-LD markup',
-      'sign'          => 'Sign is used to display prices in Frontend and Backend',
-      'rate'          => 'Exchange rate to your default currency',
-      'rate_default'  => 'This currency is used to calculate rates for other currencies. Only one default currency system-wide',
-    ],
-  ],
-
   // Stores
   'stores' => [
     'navigation_label'      => 'Stores',
@@ -612,6 +591,26 @@ return [
   ],
 
   'global' => [
+    // Currencies
+    'currencies' => [
+      'navigation_label'      => 'Currencies',
+      'model_label_singular'  => 'Currency',
+      'fields' => [
+        'name'          => 'Name',
+        'iso_code'      => 'ISO Code',
+        'sign'          => 'Currency sign',
+        'rate'          => 'Exchange rate',
+        'rate_default'  => 'Default',
+        'is_active'     => 'Active',
+      ],
+      'helpers' => [
+        'name'          => 'Currency name in Admin panel',
+        'iso_code'      => 'ISO Code is used in JSON-LD markup',
+        'sign'          => 'Sign is used to display prices in Frontend and Backend',
+        'rate'          => 'Exchange rate to your default currency',
+        'rate_default'  => 'This currency is used to calculate rates for other currencies. Only one default currency system-wide',
+      ],
+    ],
     // Languages
     'languages' => [
       'navigation_label'      => 'Languages',
@@ -635,7 +634,7 @@ return [
         'fulltext_search_language'  => 'Fulltext search morphology dictionary. You may use custom dictionary for PostgreSQL but you will need to install it first'
       ],
     ],
-    
+
     // Store wizard
     'store_wizard' => [
       'navigation_label' => 'Store Wizard',

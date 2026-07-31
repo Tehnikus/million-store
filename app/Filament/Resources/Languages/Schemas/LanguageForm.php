@@ -37,7 +37,6 @@ class LanguageForm
                     ->options([
                         'simple'        => 'Simple',
                         'english'       => 'English',
-                        'russian'       => 'Russian',
                         'german'        => 'German',
                         'french'        => 'French',
                         'spanish'       => 'Spanish',
@@ -50,6 +49,7 @@ class LanguageForm
                         'norwegian'     => 'Norwegian',
                         'swedish'       => 'Swedish',
                         'turkish'       => 'Turkish',
+                        'russian'       => 'Russian',
                     ])
                     ->required()
                     ->default('simple')

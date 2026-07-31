@@ -15,38 +15,38 @@ class CurrencyForm
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
-                    ->label(__('admin.currencies.fields.name'))
-                    ->helperText(__('admin.currencies.helpers.name')),
+                    ->label(__('admin.global.currencies.fields.name'))
+                    ->helperText(__('admin.global.currencies.helpers.name')),
 
                 TextInput::make('iso_code')
                     ->required()
                     ->maxLength(3)
                     ->unique(ignoreRecord: true)
-                    ->label(__('admin.currencies.fields.iso_code'))
-                    ->helperText(__('admin.currencies.helpers.iso_code')),
+                    ->label(__('admin.global.currencies.fields.iso_code'))
+                    ->helperText(__('admin.global.currencies.helpers.iso_code')),
 
                 TextInput::make('sign')
                     ->required()
                     ->maxLength(10)
-                    ->label(__('admin.currencies.fields.sign'))
-                    ->helperText(__('admin.currencies.helpers.sign')),
+                    ->label(__('admin.global.currencies.fields.sign'))
+                    ->helperText(__('admin.global.currencies.helpers.sign')),
 
                 TextInput::make('rate')
                     ->required()
                     ->numeric()
                     ->default(1)
                     ->step(0.001)
-                    ->label(__('admin.currencies.fields.rate'))
-                    ->helperText(__('admin.currencies.helpers.rate')),
+                    ->label(__('admin.global.currencies.fields.rate'))
+                    ->helperText(__('admin.global.currencies.helpers.rate')),
 
                 Toggle::make('rate_default')
                     ->default(false)
-                    ->label(__('admin.currencies.fields.rate_default'))
-                    ->helperText(__('admin.currencies.helpers.rate_default')),
+                    ->label(__('admin.global.currencies.fields.rate_default'))
+                    ->helperText(__('admin.global.currencies.helpers.rate_default')),
 
                 Toggle::make('is_active')
                     ->default(true)
-                    ->label(__('admin.currencies.fields.is_active')),
+                    ->label(__('admin.global.currencies.fields.is_active')),
             ]);
     }
 }
