@@ -12,12 +12,19 @@ enum NavigationItem: string
     case Attributes     = 'catalog.attributes';
     case Options        = 'catalog.options';
     case Tags           = 'catalog.tags';
+    case FacetPages     = 'catalog.facet_pages';
     case FacetFilter    = 'catalog.facet_filter';
 
     // Order
     case Orders         = 'orders.orders';
     case Returns        = 'orders.returns';
     case Statuses       = 'orders.statuses';
+    case Delivery       = 'orders.delivery';
+    case Payment        = 'orders.payment';
+
+    // Warehouse
+    case StockStatus    = 'stock.status';
+    case StockMovements = 'stock.movements';
 
     // Customers
     case Customers      = 'customers.customer';
@@ -44,10 +51,11 @@ enum NavigationItem: string
     case CssEditor      = 'css_editor';
 
     // Store settings
+    case InfoPages      = 'info_pages';
     case StoreHomepage  = 'store_homepage';
     case StoreContacts  = 'store_contacts';
     case StoreSettings  = 'store_settings';
-    case InfoPages      = 'info_pages';
+    case Taxes          = 'store.taxes';
 
     // Global settings
     case Stores         = 'stores';
@@ -55,6 +63,7 @@ enum NavigationItem: string
     case Users          = 'users';
     case Languages      = 'languages';
     case Currencies     = 'currencies';
+    case StoreWizard    = 'global.store_wizard';
     
 
     // Parent-child hierarchy
@@ -64,12 +73,16 @@ enum NavigationItem: string
         return match($this) {
             
             // Catalog
-            self::Products, self::Categories, self::Manufacturers, self::Attributes, self::Options, self::Tags, self::FacetFilter,
+            self::Products, self::Categories, self::Manufacturers, self::Attributes, self::Options, self::Tags, self::FacetPages, self::FacetFilter,
                 => NavigationGroup::Catalog,
 
             // Orders
-            self::Orders, self::Returns, self::Statuses,
+            self::Orders, self::Returns, self::Statuses,  self::Delivery, self::Payment,
                 => NavigationGroup::Orders,
+
+            // Stock
+            self::StockStatus, self::StockMovements,
+                => NavigationGroup::Stock,
 
             // Customers
             self::Customers, self::CustomerGroups,
@@ -88,11 +101,11 @@ enum NavigationItem: string
                 => NavigationGroup::Design,
             
             // Store settings
-            self::StoreSettings, self::InfoPages, self::StoreContacts, self::StoreHomepage
+            self::StoreHomepage, self::InfoPages, self::StoreContacts, self::StoreSettings, self::Taxes,
                 => NavigationGroup::StoreSettings,
 
             // Global settings
-            self::Stores, self::Countries, self::Languages, self::Currencies, self::Users
+            self::Stores, self::Countries, self::Languages, self::Currencies, self::Users, self::StoreWizard,
                 => NavigationGroup::GlobalSettings,
         };
     }
@@ -108,12 +121,19 @@ enum NavigationItem: string
             self::Attributes        => 'heroicon-o-list-bullet',
             self::Options           => 'heroicon-o-adjustments-horizontal',
             self::Tags              => 'heroicon-o-tag',
+            self::FacetPages        => 'heroicon-o-puzzle-piece',
             self::FacetFilter       => 'heroicon-o-adjustments-vertical',
 
             // Orders
             self::Orders            => 'heroicon-o-banknotes',
-            self::Returns           => 'heroicon-o-arrows-right-left',
+            self::Returns           => 'heroicon-o-arrow-path-rounded-square',
             self::Statuses          => 'heroicon-o-check-circle',
+            self::Delivery          => 'heroicon-o-truck',
+            self::Payment           => 'heroicon-o-credit-card',
+
+            // Stock
+            self::StockStatus       => 'heroicon-o-archive-box',
+            self::StockMovements    => 'heroicon-o-arrows-right-left',
 
             // Customers
             self::Customers         => 'heroicon-o-user',
@@ -144,13 +164,16 @@ enum NavigationItem: string
             self::InfoPages         => 'heroicon-o-information-circle',
             self::StoreContacts     => 'heroicon-o-at-symbol',
             self::StoreSettings     => 'heroicon-o-cog-6-tooth',
+            self::Taxes             => 'heroicon-o-divide',
 
             // Global settings
-            self::Stores            => 'heroicon-o-globe-alt',
-            self::Countries         => 'heroicon-o-flag',
-            self::Users             => 'heroicon-o-lock-closed',
             self::Languages         => 'heroicon-o-language',
             self::Currencies        => 'heroicon-o-currency-dollar',
+            self::Countries         => 'heroicon-o-flag',
+            self::Users             => 'heroicon-o-lock-closed',
+            self::Stores            => 'heroicon-o-globe-alt',
+            self::StoreWizard       => 'heroicon-o-cursor-arrow-rays',
+
         };
     }
 
@@ -166,12 +189,19 @@ enum NavigationItem: string
             self::Attributes        => 4,
             self::Options           => 5,
             self::Tags              => 6,
-            self::FacetFilter       => 7,
+            self::FacetPages        => 7,
+            self::FacetFilter       => 8,
 
             // Customers
             self::Customers         => 1,
             self::CustomerGroups    => 2,
             self::Statuses          => 3,
+            self::Delivery          => 4,
+            self::Payment           => 5,
+
+            // Stock
+            self::StockStatus       => 1,
+            self::StockMovements    => 2,
 
             // Blog
             self::BlogPosts         => 1,
@@ -198,6 +228,7 @@ enum NavigationItem: string
             self::InfoPages         => 2,
             self::StoreContacts     => 3,
             self::StoreSettings     => 4,
+            self::Taxes             => 5,
 
             // Global settings
             self::Languages         => 1,
@@ -205,6 +236,7 @@ enum NavigationItem: string
             self::Countries         => 3,
             self::Users             => 4,
             self::Stores            => 5,
+            self::StoreWizard       => 6,
         };
     }
 
