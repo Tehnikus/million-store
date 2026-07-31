@@ -2,11 +2,13 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Tenancy\StoreWizard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -83,6 +85,9 @@ class SupermasterPanelProvider extends PanelProvider
             ->maxContentWidth(Width::Full)  // Set main page content to fill width
             ->resourceCreatePageRedirect('index') // Redirect on resource create
             ->resourceEditPageRedirect('index') // Redirect on resource edit
+            ->tenantRegistration(StoreWizard::class) // Store creation wizard on fresh migration
+            // ->simplePageMaxContentWidth(Width::FitContent) // Login AND store tenant creation page
+            ->subNavigationPosition(SubNavigationPosition::Top)
             ;
     }
 }
