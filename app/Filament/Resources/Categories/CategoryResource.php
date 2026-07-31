@@ -49,7 +49,7 @@ class CategoryResource extends Resource
         ];
     }
 
-        // Global search columns list
+    // Global search columns list
     public static function getGloballySearchableAttributes(): array
     {
         return ['name'];

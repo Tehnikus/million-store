@@ -44,7 +44,7 @@ class ProductsTable
                         // Get prices of current store only
                         $subQuery
                             ->where('store_id', $storeId)
-                            ->whereNull('customer_group_id') // группы покупателей — на потом
+                            ->whereNull('customer_group_id') // Customer group TODO
                             ->where(function ($q) {
                                 $q->whereNull('valid_from')->orWhere('valid_from', '<=', now());
                             })
@@ -52,7 +52,7 @@ class ProductsTable
                                 $q->whereNull('valid_until')->orWhere('valid_until', '>=', now());
                             })
                             ->orderByDesc('priority')
-                            ->with('prices'); // вложенный with — цены каждого тира сразу
+                            ->with('prices'); // Join all tier prices
                     }])
                 ;
             })
@@ -89,7 +89,7 @@ class ProductsTable
 
                         return $price?->price;
                     })
-                    ->money(fn () => Currency::find($defaultCurrencyId)?->iso_code ?? 'USD'), // либо ->suffix($sign), смотря что уже используешь для форматирования цен в проекте
+                    ->money(fn () => Currency::find($defaultCurrencyId)?->iso_code ?? 'USD'), // or ->suffix($sign) TODO
 
                 TextColumn::make('discount_price')
                     ->label(__('admin.catalog.products.fields.discount'))
@@ -99,7 +99,7 @@ class ProductsTable
 
                         return $price?->price;
                     })
-                    ->placeholder('—'),
+                    ->placeholder('--'),
 
                 // Product status: if it is active and if exists in current store
                 // IconColumn::make('is_active')

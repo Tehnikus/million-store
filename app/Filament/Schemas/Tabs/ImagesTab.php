@@ -26,7 +26,7 @@ class ImagesTab
         $dimensions = StoreSettings::where('store_id', $storeId)->first()?->image_dimensions;
 
         // Error message if image dimensions for this type are not set
-        if (! isset($dimensions[$type])) {
+        if (!isset($dimensions[$type])) {
             return [
                 Callout::make(__('admin.common.helpers.image_type_not_set_title'))
                     ->description(new HtmlString(__('admin.common.helpers.image_type_not_set_info', ['type' => __("admin.design.image_types.{$type}")])))
@@ -68,7 +68,8 @@ class ImagesTab
                         ->imageEditor()
                         ->imageEditorAspectRatioOptions([$aspectRatio, '16:9', '4:3', '1:1', null]) // Set actual aspect ration first
                         ->formatStateUsing(fn (Get $get) => static::resolvePreviewPath($get('conversions') ?? [])) // Display preview on edit page
-                        ->required(fn (Get $get) => blank($get('conversions'))) // Show error if image is still uploading
+                        // ->skipRenderAfterStateUpdated()
+                        // ->required(fn (Get $get) => blank($get('conversions'))) // Show error if image is still uploading
                         // ->multiple()
                         // ->maxParallelUploads(1)
                         // ->maxFiles(1)
@@ -95,7 +96,7 @@ class ImagesTab
     /**
      * Resolve preview
      * Needed because after the image was uploaded and the form was saved saved data structure does not match format expected by the Repeater component
-     * So it passes original or larges conversion to diplay in FileUpload component
+     * So it passes original or large conversion to diplay in FileUpload component
      * Try to load orgilan first, then main image, then first array element
      * @param array $conversions
      */

@@ -84,16 +84,13 @@ class DescriptionTab implements HasTranslatableTab
                     ->live(onBlur: false, debounce: 500)
                     
                     ->afterStateUpdated(function (Set $set, ?string $state, $component, $livewire, ?Model $record) use ($languageId, $excludeSelf) {
-                    // Пользователь тронул слаг руками — навсегда помечаем
-                    // как "занят", автозаполнение больше сюда не полезет
-                    $set("slugs_touched.{$languageId}", true);
+                        // If user made any input into slug input mark it as touched, so autofill does not change it
+                        $set("slugs_touched.{$languageId}", true);
 
                         self::validateSlugLive($livewire, $component->getStatePath(), $state, $languageId, $excludeSelf($record));
                     })
                     ->afterStateHydrated(function (Set $set, ?string $state) use ($languageId) {
-                        // При загрузке формы (create с пустым слагом, либо edit
-                        // с уже существующим значением) фиксируем стартовое
-                        // состояние один раз, до любого ввода пользователя
+                        // If any slug state present after form values are filled mark it slug input touched, so autofill does not change it
                         if (filled($state)) {
                             $set("slugs_touched.{$languageId}", true);
                         }

@@ -4,7 +4,6 @@ namespace App\Filament\Schemas;
 use App\Models\Global\Country;
 use App\Models\Global\Language;
 use App\Models\Global\Currency;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -13,7 +12,6 @@ use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard\Step;
-use Illuminate\Support\HtmlString;
 
 class StoreRegistrationWizard
 {
