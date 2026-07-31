@@ -58,11 +58,11 @@ enum NavigationItem: string
     case Taxes          = 'store.taxes';
 
     // Global settings
-    case Stores         = 'stores';
-    case Countries      = 'countries';
-    case Users          = 'users';
     case Languages      = 'global.languages';
-    case Currencies     = 'currencies';
+    case Currencies     = 'global.currencies';
+    case Countries      = 'global.countries';
+    case Users          = 'users';
+    case Stores         = 'stores';
     case StoreWizard    = 'global.store_wizard';
     
 
