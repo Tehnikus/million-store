@@ -39,6 +39,8 @@ return [
       ],
       'helpers' => [
         'global_data'           => 'Shared across every store this product is in - editing it here changes it everywhere',
+        'global_name'           => 'Shown only in Admin panel. Used for product quick search',
+        'sku'                   => 'Shown in Admin panel and Frontend (if the corresponding store setting is enabled). Used for product quick search',
         'is_active'             => 'Product status in current store',
         'prices_customer_group' => 'Select the customer group to which this price will apply',
         'priority'              => 'If multiple prices have similar applience conditions, the higher priority price will be used',
@@ -59,6 +61,7 @@ return [
       'model_label_singular'  => 'Category',
       'fields' => [
         'is_active'       => 'Active',
+        'is_root'         => 'Root',
         'show_in_facets'  => 'Show in facets',
         'parent_id'       => 'Parent category',
       ],
@@ -69,8 +72,15 @@ return [
     'manufacturers' => [
       'navigation_label'      => 'Manufacturers',
       'model_label_singular'  => 'Manufacturer',
-      'fields'  => [],
-      'helpers' => [],
+      'fields'  => [
+        'is_active'       => 'Active',
+        'is_root'         => 'Root',
+        'show_in_facets'  => 'Show in facets',
+        'parent_id'       => 'Parent manufacturer',
+      ],
+      'helpers' => [
+        'parent_id'       => 'Select parent manufacturer or leave blank to set this manufacturer as Root'
+      ],
     ],
     'attributes' => [
       'navigation_label'      => 'Attributes',
@@ -333,6 +343,7 @@ return [
       'logo'                => 'Logo',
       'product'             => 'Product',
       'category'            => 'Category',
+      'manufacturer'        => 'Manufacturer',
       'blog'                => 'Blog',
       'product_miniature'   => 'Product miniature',
       'product_main'        => 'Product main',

@@ -22,8 +22,8 @@ return [
       'fields' => []
     ],
     'manufacturers' => [
-      'navigation_label'      => 'Бренды',
-      'model_label_singular'  => 'Бренд',
+      'navigation_label'      => 'Производители',
+      'model_label_singular'  => 'Производитель',
       'fields' => []
     ],
     'attributes' => [
@@ -284,6 +284,7 @@ return [
       'logo'                => 'Логотип',
       'product'             => 'Товар',
       'category'            => 'Категория',
+      'manufacturer'        => 'Производитель',
       'blog'                => 'Блог',
       'product_miniature'   => 'Товар - миниатюра',
       'product_main'        => 'Товар - основное',
