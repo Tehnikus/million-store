@@ -7,6 +7,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Facades\Filament;
+use Filament\Schemas\JsContent;
 use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Utilities\Get;
@@ -185,12 +186,11 @@ class DescriptionTab implements HasTranslatableTab
                 ->helperText(__('admin.common.helpers.h1'))
                 ->columnSpanFull()
                 ->suffixAction(
-                    Action::make(__('admin.common.buttons.paste_h1'))
+                    Action::make(__('admin.common.buttons.paste_title'))
                         ->icon('heroicon-o-clipboard-document-check')
-                        ->action(function (Get $get, Set $set) use ($locale) {
-                            $name = $get("name.{$locale}");
-                            $set("h1.{$locale}", $name);
-                        })
+                        ->actionJs(<<<JS
+                            \$set('h1.{$locale}',  \$get('name.{$locale}'))
+                            JS)
                         ->tooltip(__('admin.common.buttons.paste_h1'))
                 ),
 
@@ -201,33 +201,12 @@ class DescriptionTab implements HasTranslatableTab
                 ->suffixAction(
                     Action::make(__('admin.common.buttons.paste_title'))
                         ->icon('heroicon-o-clipboard-document-check')
-                        ->action(function (Get $get, Set $set) use ($locale) {
-                            $name = $get("name.{$locale}");
-                            $h1   =  $get("h1.{$locale}");
-                            $set("meta_title.{$locale}", $h1 ?? $name);
-                        })
+                        ->actionJs(<<<JS
+                            \$set('meta_title.{$locale}', \$get('h1.{$locale}') || \$get('name.{$locale}'))
+                            JS)
                         ->tooltip(__('admin.common.buttons.paste_title'))
                 )
-                ->hint(new HtmlString(
-                    '<span 
-                        x-data="{ 
-                            count: 0, 
-                            recommended: 60, 
-                            max: 160, 
-                            init() { 
-                                this.$nextTick(() => {
-                                    const input = this.$el.closest(\'.fi-fo-field\').querySelector(\'input\');
-                                    if (input) {
-                                        this.count = input.value.length; 
-                                        input.addEventListener(\'input\', e => this.count = e.target.value.length); 
-                                    }
-                                });
-                            } 
-                        }" 
-                        x-text="count + \' / \' + max" 
-                        :style="{ color: (count > max || count < 10) ? \'rgb(220 38 38)\' : (count > recommended ? \'rgb(217 119 6)\' : \'rgb(22 163 74)\') }"
-                    ></span>'
-                ))
+                ->hint(self::characterCountHint(max: 160, recommended: 60, min: 10))
                 ->columnSpanFull(),
 
             Textarea::make("meta_description.{$locale}")
@@ -236,33 +215,13 @@ class DescriptionTab implements HasTranslatableTab
                 ->hintAction(
                     Action::make(__('admin.common.buttons.paste_description'))
                         ->icon('heroicon-o-clipboard-document-check')
-                        ->action(function (Get $get, Set $set, ?string $state) use ($locale) {
-                            $title = $get("meta_title.{$locale}");
-                            $set("meta_description.{$locale}", $title . " " . $state);
-                        })
+                        ->actionJs(<<<JS
+                            \$set('meta_description.{$locale}', ((\$get('meta_title.{$locale}') ?? '') + ' ' + (\$state ?? '')).trim())
+                            JS)
                         ->hiddenLabel()
                         ->tooltip(__('admin.common.buttons.paste_description'))
                 )
-                ->hint(new HtmlString(
-                    '<span 
-                        x-data="{
-                            count: 0, 
-                            recommended: 160, 
-                            max: 250, 
-                            init() { 
-                                this.$nextTick(() => {
-                                    const input = this.$el.closest(\'.fi-fo-field\').querySelector(\'textarea\'); 
-                                    if (input) {
-                                        this.count = input.value.length; 
-                                        input.addEventListener(\'input\', e => this.count = e.target.value.length);
-                                    }
-                                });
-                            }
-                        }" 
-                        x-text="count + \' / \' + max" 
-                        :style="{ color: (count > max || count < 20) ? \'rgb(220 38 38)\' : (count > recommended ? \'rgb(217 119 6)\' : \'rgb(22 163 74)\') }"
-                    ></span>'
-                ))
+                ->hint(self::characterCountHint(max: 250, recommended: 160, min: 20))
                 ->columnSpanFull(),
 
             RichEditor::make("description_short.{$locale}")
@@ -311,6 +270,25 @@ class DescriptionTab implements HasTranslatableTab
                     'style' => 'min-height: 15rem; max-height: 50vh; overflow-y: auto;'
                 ]),
         ];
+    }
+
+    // Count sharacters in input and colored html string with cheracter count
+    private static function characterCountHint(int $max, int $recommended, int $min): HtmlString
+    {
+        return new HtmlString(<<<HTML
+            <span
+                x-data="{
+                    get count() { return (\$state ?? '').length; },
+                    get color() {
+                        return (this.count > {$max} || this.count < {$min})
+                            ? 'rgb(220 38 38)'
+                            : (this.count > {$recommended} ? 'rgb(217 119 6)' : 'rgb(22 163 74)');
+                    }
+                }"
+                x-text="count + ' / ' + {$max}"
+                :style="{ color: color }"
+            ></span>
+            HTML);
     }
 
     public static function label(): string
