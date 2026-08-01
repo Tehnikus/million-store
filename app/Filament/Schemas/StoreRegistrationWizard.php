@@ -14,6 +14,9 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard\Step;
 use Illuminate\Support\HtmlString;
 
+/**
+ * Reusable steps for first store tenant creation and store creation master
+ */
 class StoreRegistrationWizard
 {
     public static function steps(): array
@@ -271,16 +274,18 @@ class StoreRegistrationWizard
                 Group::make([
 
                     TextInput::make('name')
-                        ->label(__('admin.stores.fields.name'))
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->label(__('admin.stores.fields.name'))
+                        ->helperText(new HtmlString(__('admin.stores.helpers.name'))),
 
                     TextInput::make('host')
-                        ->label(__('admin.stores.fields.host'))
                         ->required()
                         ->unique('stores', 'host')
                         ->prefix('https://')
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->label(__('admin.stores.fields.host'))
+                        ->helperText(new HtmlString(__('admin.stores.helpers.host'))),
 
                     Toggle::make('is_active')
                         ->label(__('admin.stores.fields.is_active'))

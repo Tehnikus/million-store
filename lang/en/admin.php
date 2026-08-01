@@ -620,7 +620,7 @@ return [
       'helpers' => [
         'name'                      => 'Language name in Admin panel',
         'iso_code'                  => 'Example: <b>en-US</b>. ISO Code is used in JSON-LD markup',
-        'locale'                    => 'Locale is used in HTML header to tell search engines page language',
+        'locale'                    => 'Two-letter language designation in accordance with the ISO standard. For example: en, uk, pl. Locale is used in HTML header to tell search engines page language',
         'default_currency'          => 'Default currency is defined to display prices in relation to language so search engines see correct prices related to language. This does not affect customers, they still can change displayed currency',
         'fulltext_search_language'  => 'Fulltext search morphology dictionary. You may use custom dictionary for PostgreSQL but you will need to install it first'
       ],
@@ -669,6 +669,9 @@ return [
         'language'  => 'Language',
         'country'   => 'Country',
         'store'     => 'Store',
+      ],
+      'actions' => [
+        'create' => 'Create store'
       ]
     ]
   ]
