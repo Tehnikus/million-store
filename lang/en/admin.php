@@ -25,8 +25,10 @@ return [
         'attributes'            => 'Attributes',
         'options'               => 'Options',
         'tags'                  => 'Tags',
+        'price_tiers'           => 'Price tiers',
         'prices'                => 'Prices',
         'price'                 => 'Price',
+        'price_name'            => 'Price name',
         'discount'              => 'Discount',
         'is_active'             => 'Active in this store',
         'is_not_active'         => 'Not active in this store',
@@ -39,6 +41,10 @@ return [
         'valid_quantity'        => 'Price valid quantity',
         'priority'              => 'Priority',
       ],
+      'tabs' => [
+        'prices' => 'Prices',
+
+      ],
       'helpers' => [
         'global_data'           => 'Shared across every store this product is in - editing it here changes it everywhere',
         'global_name'           => 'Shown only in Admin panel. Used for product quick search',
@@ -50,6 +56,7 @@ return [
         'valid_from'            => 'The price is active from this date',
         'valid_until'           => 'The price is active until this date',
         'valid_quantity'        => 'Product quantity in cart to apply this price',
+        'price_name'            => 'Displayed as badge near price. Leave blenk if you don\'t need this',
       ],
       'buttons' => [
         'add_price_tier'        => 'Add price tier',
