@@ -48,7 +48,8 @@ class User extends Authenticatable implements FilamentUser, HasTenants
 
     public function getTenants(Panel $panel): Collection
     {
-        return Store::all();
+        // Prevent duplicate Filament queries
+        return once(fn () => Store::all());
     }
 
     public function canAccessTenant(Model $tenant): bool
