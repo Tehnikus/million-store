@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 // use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Route;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        Route::pattern('tenant', '[0-9]+');
         DB::prohibitDestructiveCommands(App::environment(['production'])); // Prevent destructive artisan commands on production
         Model::shouldBeStrict(!App::environment(['production']));
         // Date::use(CarbonImmutable::class);
