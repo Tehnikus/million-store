@@ -14,6 +14,8 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 
 class CreateStoreWizard extends Page
 {
@@ -41,17 +43,19 @@ class CreateStoreWizard extends Page
             ->statePath('data')
             ->components([
                 Form::make([
-                    Wizard::make(StoreRegistrationWizard::steps()),
+                    Wizard::make(StoreRegistrationWizard::steps())
+                        ->submitAction(new HtmlString(
+                            Blade::render(
+                                <<<'BLADE'
+                                <x-filament::button type="submit" style="min-width: 200px">
+                                    {{ $label }}
+                                </x-filament::button>
+                                BLADE,
+                                ['label' => __('admin.global.store_wizard.actions.create')],
+                            )
+                        )),
                 ])
-                    ->livewireSubmitHandler('create')
-                    ->footer([
-                        Actions::make([
-                            Action::make('create')
-                                ->submit('create')
-                                ->extraAttributes(['style' => 'min-width: 200px'])
-                                ->label(__('admin.global.store_wizard.actions.create')),
-                        ]),
-                    ]),
+                ->livewireSubmitHandler('create')
             ]);
     }
 
