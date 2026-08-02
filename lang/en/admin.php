@@ -42,8 +42,9 @@ return [
         'priority'              => 'Priority',
       ],
       'tabs' => [
-        'prices' => 'Prices',
-
+        'prices'          => 'Prices',
+        'categories'      => 'Categories',
+        'manufacturers'   => 'Manufacturers',
       ],
       'helpers' => [
         'global_data'           => 'Shared across every store this product is in - editing it here changes it everywhere',
@@ -296,6 +297,7 @@ return [
       'h1'                => 'H1',
       'meta_title'        => 'Meta title',
       'meta_description'  => 'Meta description',
+      'robots'            => 'Robots tag',
       'faq_question'      => 'Question',
       'faq_answer'        => 'Answer',
       'how_to_step_name'  => 'Step name',
@@ -316,6 +318,7 @@ return [
       'h1'                => 'Include your primary target keyword, match closely to title tag',
       'meta_title'        => 'Recommended 50–60 chars. Longer title will be truncated by Google. Max length is 160 chars',
       'meta_description'  => 'Recommended 120 chars for mobile and 150 chars for desktop. Longer description will be truncated by Google. Max length is 255 chars',
+      'robots'            => 'Robots meta tag is needed to tell search robots how this page should be added to the search index',
       'image_description' => 'Alt image attribute, best under 125 chars',
       'images_tab'        => 'Don\'t forget to set image\'s Alt attribue, it helps Search engines to understand what\'s depicted, thus better SEO ranking',
       'footer_tab'        => 'You can add some content here in form of tabs, mainly for SEO to enrich the page with missing keywords',
