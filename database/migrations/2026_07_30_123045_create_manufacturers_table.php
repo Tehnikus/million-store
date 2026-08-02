@@ -31,6 +31,7 @@ return new class extends Migration
             $table->jsonb('faq')->nullable()->default('{}');
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
+            $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
 
             $table->index(['store_id', 'parent_id', 'is_active', 'show_in_facets', 'sort_order'], 'manufacturers_frontend_lookup');

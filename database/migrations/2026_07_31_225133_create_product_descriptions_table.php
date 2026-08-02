@@ -36,7 +36,7 @@ return new class extends Migration
             $table->jsonb('faq')->nullable()->default('{}');
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
-
+            $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
             
             $table->unique(['product_id', 'store_id']); // Enforce only one pair of product + store, also allow foreign composite key for cascade

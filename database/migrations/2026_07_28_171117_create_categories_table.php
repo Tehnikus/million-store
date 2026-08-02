@@ -32,7 +32,7 @@ return new class extends Migration
             $table->jsonb('faq')->nullable()->default('{}');
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
-
+            $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
             
             $table->index(['store_id', 'is_active', 'id', 'sort_order'], 'category_admin_lookup');

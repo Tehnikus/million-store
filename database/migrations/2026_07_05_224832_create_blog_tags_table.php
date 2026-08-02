@@ -25,6 +25,7 @@ return new class extends Migration
             $table->jsonb('faq')->nullable()->default('{}');
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
+            $table->tinyText('robots')->default('noindex, nofollow');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_menu')->default(false);
             $table->integer('sort_order')->nullable();
