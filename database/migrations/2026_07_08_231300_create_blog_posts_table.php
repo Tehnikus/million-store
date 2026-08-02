@@ -18,13 +18,13 @@ return new class extends Migration
             $table->jsonb('h1')->nullable()->default('{}');
             $table->jsonb('meta_title')->nullable()->default('{}');
             $table->jsonb('meta_description')->nullable()->default('{}');
-            $table->jsonb('images')->nullable()->default('{}');
             $table->jsonb('description_short')->nullable()->default('{}');
             $table->jsonb('description_full')->nullable()->default('{}');
             $table->jsonb('seo_keywords')->nullable()->default('{}');
             $table->jsonb('faq')->nullable()->default('{}');
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
+            $table->jsonb('images')->nullable()->default('{}');
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->foreignId('author_id')->nullable()->after('store_id')->constrained('blog_authors')->nullOnDelete();
             $table->boolean('is_active')->default(false);

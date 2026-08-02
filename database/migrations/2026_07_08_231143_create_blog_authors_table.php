@@ -21,9 +21,9 @@ return new class extends Migration {
             $table->jsonb('description_short')->nullable()->default('{}');
             $table->jsonb('description_full')->nullable()->default('{}');
             $table->jsonb('seo_keywords')->nullable()->default('{}');
-            $table->tinyText('robots')->default('noindex, nofollow');
             $table->jsonb('avatar')->nullable()->default('{}');            
             $table->jsonb('social_links')->nullable()->default('[]'); // [{"platform": "facebook", "url": "..."}, {"platform": "instagram", "url": "..."}]
+            $table->tinyText('robots')->default('noindex, nofollow');
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->nullable();
             $table->timestamps();
