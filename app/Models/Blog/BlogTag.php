@@ -29,6 +29,7 @@ class BlogTag extends Model
         'is_active',
         'is_menu',
         'sort_order',
+        'robots',
     ];
 
     public $translatable = [

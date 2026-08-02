@@ -34,6 +34,7 @@ class Category extends Model
         'faq',
         'how_to',
         'footer',
+        'robots',
     ];
 
     protected $casts = [

@@ -27,6 +27,7 @@ class BlogAuthor extends Model
         'social_links',
         'is_active',
         'sort_order',
+        'robots',
     ];
 
     public $translatable = [

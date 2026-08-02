@@ -34,6 +34,7 @@ class Manufacturer extends Model
         'faq',
         'how_to',
         'footer',
+        'robots',
     ];
 
     protected $casts = [

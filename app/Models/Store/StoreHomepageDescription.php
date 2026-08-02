@@ -21,7 +21,8 @@ class StoreHomepageDescription extends Model
         'seo_keywords',
         'faq',
         'how_to',
-        'footer'
+        'footer',
+        'robots',
     ];
     public $translatable = [
         'name',

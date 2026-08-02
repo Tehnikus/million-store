@@ -28,6 +28,7 @@ class BlogPost extends Model
         'faq',
         'how_to',
         'footer',
+        'robots',
         'is_active',
         'blog_post_products',
         'blog_post_tags',

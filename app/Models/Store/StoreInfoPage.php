@@ -27,6 +27,7 @@ class StoreInfoPage extends Model
         'faq',
         'how_to',
         'footer',
+        'robots',
         'is_active',
         'sort_order',
     ];
