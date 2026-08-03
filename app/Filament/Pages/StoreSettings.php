@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Store\StoreInfoPage;
 use App\Models\Store\StoreSettings as StoreSettingsModel;
 // use App\Models\Currency;
 
@@ -105,6 +106,8 @@ class StoreSettings extends Page
                                                     ->default(0)
                                                     ->inputMode('decimal')
                                                     ->required()
+                                                    ->label(__('admin.store_settings.checkout_settings.fields.minimal_order_total'))
+                                                    ->hiddenLabel()
                                             )->all()
                                         )
                                         ->label(__('admin.store_settings.checkout_settings.fields.minimal_order_total'))
@@ -113,10 +116,10 @@ class StoreSettings extends Page
                                     Fieldset::make(__('admin.store_settings.checkout_settings.fields.agreement_pages'))
                                         ->schema([
                                             Select::make('checkout_settings.service_agreement')
-                                                ->relationship(
-                                                    name: 'infoPage',
-                                                    titleAttribute: 'name',
-                                                    modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id)->where('is_active', true)
+                                                ->options(fn () => StoreInfoPage::query()
+                                                    ->where('store_id', Filament::getTenant()->id)
+                                                    ->where('is_active', true)
+                                                    ->pluck('name', 'id')
                                                 )
                                                 ->searchable()
                                                 ->preload()
@@ -125,10 +128,10 @@ class StoreSettings extends Page
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.service_agreement_page')),
 
                                             Select::make('checkout_settings.return_agreement')
-                                                ->relationship(
-                                                    name: 'infoPage',
-                                                    titleAttribute: 'name',
-                                                    modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id)->where('is_active', true)
+                                                ->options(fn () => StoreInfoPage::query()
+                                                    ->where('store_id', Filament::getTenant()->id)
+                                                    ->where('is_active', true)
+                                                    ->pluck('name', 'id')
                                                 )
                                                 ->searchable()
                                                 ->preload()
