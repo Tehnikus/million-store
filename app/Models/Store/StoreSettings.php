@@ -40,8 +40,4 @@ class StoreSettings extends Model
         return $this->belongsTo(Store::class, 'store_id');
     }
 
-    public function infoPage(): BelongsTo
-    {
-        return $this->belongsTo(StoreInfoPage::class, 'id');
-    }
 }
