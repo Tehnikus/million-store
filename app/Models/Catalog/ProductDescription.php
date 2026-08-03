@@ -2,8 +2,9 @@
 
 namespace App\Models\Catalog;
 
+use App\Models\Catalog\Category;
 use Illuminate\Database\Eloquent\Model;
-// use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
 class ProductDescription extends Model
@@ -13,6 +14,8 @@ class ProductDescription extends Model
     protected $fillable = [
         'product_id',
         'store_id',
+        'parent_id',
+        'manufacturer_id',
         'is_active',
         'is_available',
         'is_available_from',
@@ -29,6 +32,7 @@ class ProductDescription extends Model
         'faq',
         'how_to',
         'footer',
+        'robots',
     ];
 
     protected $casts = [
@@ -37,6 +41,8 @@ class ProductDescription extends Model
         'is_available_from'     => 'datetime',
         'is_available_to'       => 'datetime',
         'sort_order'            => 'integer',
+        'parent_id'             => 'integer',
+        'manufacturer_id'       => 'integer',
         'name'                  => 'array',
         'h1'                    => 'array',
         'meta_title'            => 'array',
@@ -61,4 +67,10 @@ class ProductDescription extends Model
         'how_to',
         'footer',
     ];
+
+    // TODO Check if this needed
+    public function parentId(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
