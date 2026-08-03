@@ -71,11 +71,6 @@ class Manufacturer extends Model
         return $this->belongsTo(Store::class);
     }
 
-    // public function products(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(ProductManufacturers::class, 'product_categories',  'product_id', 'category_id');
-    // }
-
     public function parentId(): BelongsTo
     {
         // Pass the class itself and the explicit foreign key column
