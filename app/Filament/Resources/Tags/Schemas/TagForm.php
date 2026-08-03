@@ -9,6 +9,8 @@ use App\Filament\Schemas\Tabs\FooterTab;
 use App\Filament\Schemas\Tabs\HowToTab;
 use App\Filament\Schemas\Tabs\ImagesTab;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\CodeEditor;
+use Filament\Forms\Components\CodeEditor\Enums\Language;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -33,7 +35,8 @@ class TagForm
                                 Toggle::make('show_in_facets')
                                     ->label(__('admin.catalog.tags.fields.show_in_facets'))
                                     ->default(true),
-                                    
+                                CodeEditor::make('inline_style')
+                                    ->language(Language::Css),
                                 LanguageTabs::make($languages, [
                                     [DescriptionTab::class, ['withSlug' => true]],
                                     FaqTab::class,
