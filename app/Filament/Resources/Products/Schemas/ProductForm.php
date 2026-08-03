@@ -19,6 +19,7 @@ use App\Filament\Schemas\Tabs\HowToTab;
 
 use App\Filament\Resources\Products\Schemas\CategoriesTab;
 use App\Filament\Resources\Products\Schemas\ManufacturersTab;
+use App\Filament\Resources\Products\Schemas\TagsTab;
 use App\Filament\Resources\Products\Schemas\PricesTab;
 
 
@@ -84,6 +85,8 @@ class ProductForm
                             ->schema(CategoriesTab::schema()),
                         Tab::make(ManufacturersTab::label())
                             ->schema(ManufacturersTab::schema()),
+                        Tab::make(TagsTab::label())
+                            ->schema(TagsTab::schema()),
                     ])
                     ->columnSpanFull(),
             ]);
