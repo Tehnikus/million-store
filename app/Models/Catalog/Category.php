@@ -2,6 +2,8 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
+use App\Domain\Catalog\FacetType;
 use App\Models\Global\Store;
 use App\Models\Catalog\ProductCategories;
 use Illuminate\Database\Eloquent\Model;
@@ -89,12 +91,19 @@ class Category extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    // Cleanup facet index on delete
+    use HasFacetIndexCleanup;
+    public function facetType(): FacetType
+    {
+        return FacetType::Category;
+    }
+
     public function imageColumns(): array
     {
         return [
             'images' => [
-                'type'        => 'category', // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-                'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
+                'type'        => 'category',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',        // Translatable field to take converted image names from. Will be slugged
             ],
         ];
     }
