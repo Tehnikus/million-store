@@ -1,33 +1,14 @@
 <?php
 
 namespace App\Filament\Resources\Products\Schemas;
-// use App\Models\Seo\Slug;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-// use Filament\Schemas\Components\Component;
-use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
 use Filament\Schemas\Components\Section;
-use Illuminate\Database\Eloquent\Builder;
-// use Illuminate\Database\Eloquent\Model;
-
-// use Illuminate\Support\Str;
-// use Illuminate\Validation\Rule;
-
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
-
-// use Filament\Schemas\Components\Tabs;
-// use Filament\Schemas\Components\Tabs\Tab;
 
 // Reusable description tabs
 use App\Filament\Schemas\LanguageTabs;
@@ -35,10 +16,10 @@ use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\FooterTab;
 use App\Filament\Schemas\Tabs\HowToTab;
-// use App\Filament\Schemas\Tabs\ImagesTab;
 
-
-use App\Models\Customer\CustomerGroup;
+use App\Filament\Resources\Products\Schemas\CategoriesTab;
+use App\Filament\Resources\Products\Schemas\ManufacturersTab;
+use App\Filament\Resources\Products\Schemas\PricesTab;
 
 
 
@@ -92,9 +73,9 @@ class ProductForm
                                         FooterTab::class,
                                     ])
                                 ])
-                                    // ->relationship(name:'storeDescription')
-                                    ->statePath('description')
-                                    ->columnSpanFull(),
+                                // ->relationship(name:'storeDescription')
+                                ->statePath('description')
+                                ->columnSpanFull(),
                             ]),
 
                         Tab::make(PricesTab::label())
