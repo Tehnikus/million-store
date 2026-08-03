@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Filament\Support\Tables\TranslatableColumnState;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -28,11 +29,13 @@ class CategoriesTable
                     ->width('1%')
                     ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: 10px; margin: -0.7rem'])
                     ->label(__('admin.common.fields.image')),
-                
+
                 TextColumn::make('name')
+                    ->html()
                     ->searchable()
                     ->sortable()
-                    ->label(__('admin.blog.posts.fields.name')),
+                    ->getStateUsing(fn ($record) => TranslatableColumnState::resolve($record, 'name'))
+                    ->label(__('admin.catalog.categories.model_label_singular')),
 
                 SelectColumn::make('parent_id')
                     ->optionsRelationship(name: 'parentId', titleAttribute: 'name')
@@ -47,6 +50,7 @@ class CategoriesTable
                 ToggleColumn::make('show_in_facets')
                     ->sortable()
                     ->width('1%')
+                    ->wrapHeader()
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.categories.fields.show_in_facets')),
                 
