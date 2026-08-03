@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Models\Catalog;
+
+use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
+use App\Domain\Catalog\FacetType;
+use App\Domain\Media\Concerns\HasProcessedImages;
+use App\Domain\Seo\HasSlugs;
+use App\Models\Global\Store;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Translatable\HasTranslations;
+
+class Tag extends Model
+{
+    use HasTranslations;
+    use HasSlugs;
+    use HasProcessedImages;
+    protected $fillable = [
+        'store_id',
+        'is_active',
+        'show_in_facets',
+        'sort_order',
+        'inline_style',
+        'name',
+        'h1',
+        'meta_title',
+        'meta_description',
+        'images',
+        'description_short',
+        'description_full',
+        'seo_keywords',
+        'faq',
+        'how_to',
+        'footer',
+        'robots',
+    ];
+
+    protected $casts = [
+        'is_active'             => 'boolean',
+        'sort_order'            => 'integer',
+        'name'                  => 'array',
+        'h1'                    => 'array',
+        'meta_title'            => 'array',
+        'meta_description'      => 'array',
+        'images'                => 'array',
+        'description_short'     => 'array',
+        'description_full'      => 'array',
+        'seo_keywords'          => 'array',
+        'faq'                   => 'array',
+        'how_to'                => 'array',
+        'footer'                => 'array',
+    ];
+    protected $translatable = [
+        'name',
+        'h1',
+        'meta_title',
+        'meta_description',
+        'description_short',
+        'description_full',
+        'seo_keywords',
+        'faq',
+        'how_to',
+        'footer',
+    ];
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    // Cleanup facet index on delete
+    use HasFacetIndexCleanup;
+    public function facetType(): FacetType
+    {
+        return FacetType::Tag;
+    }
+
+    public function imageColumns(): array
+    {
+        return [
+            'images' => [
+                'type'        => 'tag',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',   // Translatable field to take converted image names from. Will be slugged
+            ],
+        ];
+    }
+}
