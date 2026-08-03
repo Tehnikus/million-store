@@ -43,11 +43,30 @@ class EditProduct extends EditRecord
         $data['description'] = $description?->toArray() ?? [];
 
         // Fill facet data
+        // Fill category facet data
         $data['facet_categories'] = $this->record->categoryFacets()
             ->where('store_id', $storeId)
             ->orderBy('sort_order')
             ->get()
             ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id, 'facet_group_id' => $facet->facet_group_id])
+            ->values()
+            ->all();
+
+        // Fill manufacturer facet data
+        $data['facet_manufacturers'] = $this->record->manufacturerFacets()
+            ->where('store_id', $storeId)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id, 'facet_group_id' => $facet->facet_group_id])
+            ->values()
+            ->all();
+
+        // Fill tag facet data
+        $data['facet_tags'] = $this->record->tagFacets()
+            ->where('store_id', $storeId)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id])
             ->values()
             ->all();
 
@@ -78,6 +97,28 @@ class EditProduct extends EditRecord
             FacetType::Category,
             collect($data['facet_categories'] ?? [])
                 ->map(fn ($row, $i) => ['facet_value_id' => $row['facet_value_id'], 'facet_group_id' => $row['facet_group_id'],  'sort_order' => $i + 1])
+                ->values()
+                ->all(),
+        );
+
+        // Update manufacturer facets
+        app(SyncProductFacets::class)->handle(
+            $record,
+            $storeId,
+            FacetType::Manufacturer,
+            collect($data['facet_manufacturers'] ?? [])
+                ->map(fn ($row, $i) => ['facet_value_id' => $row['facet_value_id'], 'facet_group_id' => $row['facet_group_id'],  'sort_order' => $i + 1])
+                ->values()
+                ->all(),
+        );
+
+        // Update tag facets
+        app(SyncProductFacets::class)->handle(
+            $record,
+            $storeId,
+            FacetType::Tag,
+            collect($data['facet_tags'] ?? [])
+                ->map(fn ($row, $i) => ['facet_value_id' => $row['facet_value_id'],  'sort_order' => $i + 1])
                 ->values()
                 ->all(),
         );
