@@ -2,11 +2,12 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Catalog\FacetType;
+use App\Domain\Seo\HasSlugs;
 use App\Models\Catalog\ProductDescription;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
-use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
 {
@@ -38,5 +39,26 @@ class Product extends Model
         }
 
         return $this->descriptions->first();
+    }
+
+    // Collect form data
+    // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
+    // Category facets
+    public function categoryFacets(): HasMany
+    {
+        return $this->hasMany(FacetIndex::class)
+            ->where('facet_type_id', FacetType::Category->value);
+    }
+    // Manufacturer facets
+    public function manufacturerFacets(): HasMany
+    {
+        return $this->hasMany(FacetIndex::class)
+            ->where('facet_type_id', FacetType::Manufacturer->value);
+    }
+    // Tag facets
+    public function tagFacets(): HasMany
+    {
+        return $this->hasMany(FacetIndex::class)
+            ->where('facet_type_id', FacetType::Tag->value);
     }
 }
