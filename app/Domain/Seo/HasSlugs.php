@@ -4,7 +4,7 @@ namespace App\Domain\Seo;
 
 use App\Models\Seo\Slug;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Filament\Facades\Filament;
 
 /**
  * Use when resource has URL slugs
@@ -19,13 +19,16 @@ trait HasSlugs
         });
     }
 
+    // Used when model record is deleted
     public function slugs(): MorphMany
     {
         return $this->morphMany(Slug::class, 'sluggable');
     }
 
-    public function activeSlug(): MorphOne
+    // Used in app\Filament\Schemas\Tabs\DescriptionTab.php
+    public function currentStoreSlugs(): MorphMany
     {
-        return $this->morphOne(Slug::class, 'sluggable')->where('is_active', true);
+        $tenantId = Filament::getTenant()?->id;
+        return $this->morphMany(Slug::class, 'sluggable')->where('store_id', $tenantId);
     }
 }
