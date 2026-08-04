@@ -3,12 +3,10 @@
 namespace App\Filament\Resources\Tags\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
-use App\Filament\Support\Tables\TranslatableColumnState;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Support\Enums\Alignment;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class TagsTable
@@ -20,11 +18,8 @@ class TagsTable
                 ConversionImageColumn::make('images')
                     ->conversion('miniature'),
 
-                TextColumn::make('name')
-                    ->html()
-                    ->searchable()
-                    ->sortable()
-                    ->getStateUsing(fn ($record) => TranslatableColumnState::resolve($record, 'name'))
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll('name')
                     ->label(__('admin.catalog.categories.model_label_singular')),
             ])
             ->filters([

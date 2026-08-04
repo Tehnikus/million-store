@@ -10,10 +10,8 @@ use App\Filament\Resources\Tags\Tables\TagsTable;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Tag;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class TagResource extends Resource
@@ -21,8 +19,6 @@ class TagResource extends Resource
     protected static ?string $model = Tag::class;
 
     protected static bool $isScopedToTenant = true;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
 
