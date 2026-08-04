@@ -19,6 +19,7 @@ class BlogPostsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('blogTags')->with('author')->with('comments'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -27,24 +28,25 @@ class BlogPostsTable
                 MultilangTextColumn::make('name')
                     ->recordColumnAll('name')
                     ->label(__('admin.blog.posts.fields.name')),
-                    
-                TextColumn::make('blog_tags')
+
+                TextColumn::make('author.name')
+                    ->label(__('admin.blog.authors.model_label_singular'))
+                    ->alignment(Alignment::Center)
+                    ->width('1%'),
+
+                TextColumn::make('blogTags.name')
                     ->label(__('admin.blog.tags.navigation_label'))
-                    ->state(fn(Model $record): array => $record->blogTags->pluck('name')->toArray())
-                    ->color(function (string $state, Model $record): string {
-                        $tag = $record->blogTags->firstWhere('name', $state);
-
-                        return $tag?->is_active ? 'success' : 'danger';
-                    })
                     ->alignment(Alignment::Center)
-                    ->badge(),
+                    ->badge()
+                    ->width('1%'),
 
-                TextColumn::make('sort_order')
-                    ->label(__('admin.blog.posts.fields.sort_order'))
-                    ->sortable()
+                TextColumn::make('comments_count')
+                    ->counts('comments')
+                    ->label(__('admin.blog.comments.navigation_label'))
+                    ->alignment(Alignment::Center)
+                    ->badge()
                     ->width('1%')
-                    ->alignment(Alignment::Center)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->wrapHeader(),
 
                 ToggleColumn::make('is_active')
                     ->label(__('admin.blog.posts.fields.is_active'))
