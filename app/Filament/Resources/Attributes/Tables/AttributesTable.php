@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Attributes\Tables;
 
+use App\Filament\Support\Columns\ConversionImageColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,7 +14,8 @@ class AttributesTable
     {
         return $table
             ->columns([
-                //
+                ConversionImageColumn::make('images')
+                    ->conversion('miniature'),
             ])
             ->filters([
                 //

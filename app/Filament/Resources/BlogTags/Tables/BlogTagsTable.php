@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\BlogTags\Tables;
 
+use App\Filament\Support\Columns\ConversionImageColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Support\Enums\Alignment;
 
@@ -18,21 +18,8 @@ class BlogTagsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('images')
-                    ->label(__('admin.common.fields.image'))
-                    ->disk('public')
-                    ->state(fn ($record) => collect($record->images ?? [])->pluck('conversions.miniature')->filter()->values()->first()) // or ->all()
-                    // ->stacked() // uncomment if ->all()
-                    // ->circular()
-                    // ->limit(3)
-                    // ->limitedRemainingText()
-                    // ->overlap(6)
-                    // ->ring(8)
-                    ->imageHeight(70)
-                    ->checkFileExistence(false)
-                    ->alignment(Alignment::Center)
-                    ->width('1%')
-                    ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: 10px; margin: -0.7rem']),
+                ConversionImageColumn::make('images')
+                    ->conversion('miniature'),
 
                 TextColumn::make('name')
                     ->label(__('admin.blog.tags.fields.name'))

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Models\Catalog\Product;
 use App\Models\Global\Currency;
 // use Filament\Actions\Action;
@@ -12,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 // use Filament\Tables\Columns\IconColumn;
 use Filament\Support\Enums\Alignment;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
@@ -58,15 +58,8 @@ class ProductsTable
             })
 
             ->columns([
-                ImageColumn::make('images')
-                    ->disk('public')
-                    ->state(fn ($record) => collect($record->images ?? [])->pluck('conversions.miniature')->filter()->values()->first()) // or ->all()
-                    ->imageHeight(70)
-                    ->checkFileExistence(false)
-                    ->alignment(Alignment::Center)
-                    ->width('1%')
-                    ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: 10px; margin: -0.7rem'])
-                    ->label(__('admin.common.fields.image')),
+                ConversionImageColumn::make('images')
+                    ->conversion('miniature'),
 
                 // Global SKU and name
                 TextColumn::make('sku')
