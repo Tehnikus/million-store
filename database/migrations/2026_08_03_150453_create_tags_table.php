@@ -33,6 +33,8 @@ return new class extends Migration
             $table->jsonb('images')->nullable()->default('{}');
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
+
+            $table->index(['store_id', 'is_active']);
         });
     }
 
