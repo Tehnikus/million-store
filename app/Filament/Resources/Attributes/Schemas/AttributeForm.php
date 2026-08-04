@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Attributes\Schemas;
 
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -23,7 +24,11 @@ class AttributeForm
     {
         $storeId    = Filament::getTenant()->id;
         $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
-        $injectStoreId = fn (array $data): array => [...$data, 'store_id' => $storeId];
+        $prepareValueData = function (array $data) use ($storeId): array {
+            unset($data['slugs'], $data['slugs_touched']);
+
+            return [...$data, 'store_id' => $storeId];
+        };
 
         $excludeSelf = function (?Model $owner) {
             if (!$owner) {
@@ -40,7 +45,8 @@ class AttributeForm
 
         return $schema
             ->components([
-                Section::make('Attribute')
+                Section::make(__('admin.catalog.attributes.fields.group_name'))
+                    ->description(__('admin.catalog.attributes.fields.group_name'))
                     ->schema([
                         Fieldset::make(__('admin.catalog.attributes.fields.group_name'))
                             ->schema(
@@ -57,12 +63,12 @@ class AttributeForm
                             )
                             ->columns(count($languages)),
                         Repeater::make('values')
-                            ->table([
-                                TableColumn::make(__('admin.catalog.attributes.fields.image'))->width('200px'),
-                                TableColumn::make(__('admin.catalog.attributes.fields.description')),
-                            ])
+                            // ->table([
+                            //     TableColumn::make(__('admin.catalog.attributes.fields.image'))->width('200px'),
+                            //     TableColumn::make(__('admin.catalog.attributes.fields.description')),
+                            // ])
                             ->schema([
-                                FileUpload::make('image'),
+                                FileUpload::make('images'),
                                 Group::make(
                                     collect($languages)->map(
                                         fn($language) =>
@@ -79,36 +85,63 @@ class AttributeForm
                                                         $slugTouchedPath = "slugs_touched.{$language->id}";
                                                         if ($get($slugTouchedPath)) return;
 
-                                                        // Create slur from name
-                                                        $newSlug = Str::slug($state ?? '', '-', $language->locale);
+                                                        // Create slur from group and name
+                                                        $groupName = $get("../../name.{$language->locale}");
+                                                        $groupSlug = !empty($groupName) ? Str::slug($get("../../name.{$language->locale}"), '-', $language->locale) . '-' : ''; 
+                                                        $valueSlug = Str::slug($state ?? '', '-', $language->locale);
                                                         // Fill slug input
-                                                        $set("slugs.{$language->id}", $newSlug);
+                                                        $set("slugs.{$language->id}", $groupSlug . $valueSlug);
                                                         // Validate slug uniqueness and alpha-numeric stuff
                                                         // $slugPath = $component->getContainer()->getStatePath() . ".slugs.{$languageId}";
                                                         // self::validateSlugLive($livewire, $slugPath, $newSlug, $languageId, $excludeSelf($record));
-                                                    }),
+                                                    })
+                                                    ->hiddenLabel(),
                                                 TextInput::make("slugs.{$language->id}")
                                                     ->required()
                                                     ->prefix($language->locale)
                                                     ->label(__('admin.catalog.attributes.fields.slug'))
-                                                    ->placeholder(__('admin.catalog.attributes.fields.slug')),
+                                                    ->placeholder(__('admin.catalog.attributes.fields.slug'))
+                                                    ->hiddenLabel()
+                                                    ->suffixAction(
+                                                        Action::make(__('admin.common.buttons.create_slug'))
+                                                            ->icon('heroicon-o-link')
+                                                            ->action(function (Get $get, Set $set) use ($language) {
+                                                                $groupName = $get("../../name.{$language->locale}");
+                                                                $groupSlug = !empty($groupName) ? Str::slug($get("../../name.{$language->locale}"), '-', $language->locale) . '-' : ''; 
+                                                                $valueSlug = Str::slug($get("name.{$language->locale}") ?? '', '-', $language->locale);
+                                                                // Fill slug input
+                                                                $set("slugs.{$language->id}", $groupSlug . $valueSlug);
+                                                                // Set slug touched flag to true so slug autocomlete does not touch it
+                                                                $slugTouchedPath = "slugs_touched.{$language->id}";
+                                                                $set($slugTouchedPath, true);
+                                                            })
+                                                            ->tooltip(__('admin.common.buttons.create_slug'))
+                                                    ),
                                                 RichEditor::make("description.{$language->locale}")
                                                     ->columnSpanFull()
                                                     ->placeholder(__('admin.catalog.attributes.fields.description'))
-                                                    ->toolbarButtons(['bold', 'italic', 'underline', 'link', 'textColor'])
-
+                                                    ->toolbarButtons([])
+                                                    ->floatingToolbars([
+                                                        'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo'],
+                                                    ])
                                                     ->extraInputAttributes([
                                                         'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
                                                     ])
+                                                    ->hiddenLabel()
+                                                    
                                             ])
+                                            ->dense()
                                     )->all()
                                 )
 
                             ])
                             ->relationship('values')
                             // Add required store id column
-                            ->mutateRelationshipDataBeforeCreateUsing($injectStoreId)
-                            ->mutateRelationshipDataBeforeSaveUsing($injectStoreId)
+                            ->mutateRelationshipDataBeforeCreateUsing($prepareValueData)
+                            ->mutateRelationshipDataBeforeSaveUsing($prepareValueData)
+                            ->reorderable()
+                            ->collapsible()
+                            ->itemLabel(fn (array $state): ?string => array_first($state['name']) ?? '')
                             ->label(__('admin.catalog.attributes.fields.values'))
                     ])
                     ->columnSpanFull()
