@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Categories\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
-use App\Filament\Support\Tables\TranslatableColumnState;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -21,13 +21,11 @@ class CategoriesTable
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
-                    ->conversion('miniature'),
+                    ->conversion('miniature')
+                    ->label(__('admin.common.fields.image')),
 
-                TextColumn::make('name')
-                    ->html()
-                    ->searchable()
-                    ->sortable()
-                    ->getStateUsing(fn ($record) => TranslatableColumnState::resolve($record, 'name'))
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll('name')
                     ->label(__('admin.catalog.categories.model_label_singular')),
 
                 SelectColumn::make('parent_id')

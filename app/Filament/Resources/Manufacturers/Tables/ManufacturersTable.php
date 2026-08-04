@@ -3,13 +3,13 @@
 namespace App\Filament\Resources\Manufacturers\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\SelectColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
@@ -20,11 +20,11 @@ class ManufacturersTable
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
-                    ->conversion('miniature'),
+                    ->conversion('miniature')
+                    ->label(__('admin.common.fields.image')),
                 
-                TextColumn::make('name')
-                    ->searchable()
-                    ->sortable()
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll('name')
                     ->label(__('admin.blog.posts.fields.name')),
 
                 SelectColumn::make('parent_id')
@@ -43,12 +43,6 @@ class ManufacturersTable
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.manufacturers.fields.show_in_facets')),
                 
-                TextColumn::make('sort_order')
-                    ->sortable()
-                    ->width('1%')
-                    ->alignment(Alignment::Center)
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->label(__('admin.catalog.manufacturers.fields.sort_order')),
             ])
             ->filters([
                 //

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BlogTags\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -19,12 +20,12 @@ class BlogTagsTable
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
-                    ->conversion('miniature'),
+                    ->conversion('miniature')
+                    ->label(__('admin.common.fields.image')),
 
-                TextColumn::make('name')
-                    ->label(__('admin.blog.tags.fields.name'))
-                    ->searchable()
-                    ->sortable(),
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll('name')
+                    ->label(__('admin.blog.tags.fields.name')),
 
                 TextColumn::make('blog_posts_count')
                     ->label(__('admin.blog.tags.fields.posts_count'))

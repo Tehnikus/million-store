@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Attributes\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -15,7 +16,11 @@ class AttributesTable
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
-                    ->conversion('miniature'),
+                    ->conversion('miniature')
+                    ->label(__('admin.common.fields.image')),
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll('name')
+                    ->label(__('admin.catalog.attributes.fields.group')),
             ])
             ->filters([
                 //

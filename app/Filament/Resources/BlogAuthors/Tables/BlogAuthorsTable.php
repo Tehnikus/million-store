@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\BlogAuthors\Tables;
 
+use App\Filament\Support\Columns\ConversionImageColumn;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,12 +23,6 @@ class BlogAuthorsTable
                 ImageColumn::make('avatar')
                     ->label(__('admin.blog.authors.fields.avatar'))
                     ->disk('public')
-                    // ->state(fn ($record) => collect($record->images ?? [])->pluck('conversions.miniature')->filter()->values()->first()) // ->all()
-                    // ->stacked() // uncomment if ->all()
-                    // ->limit(3)
-                    // ->limitedRemainingText()
-                    // ->overlap(6)
-                    // ->ring(8)
                     ->circular()
                     ->imageHeight(70)
                     ->checkFileExistence(false)
@@ -34,10 +30,9 @@ class BlogAuthorsTable
                     ->width('1%')
                     ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: 50%; margin: -0.7rem 0']),
 
-                TextColumn::make('name')
-                    ->label(__('admin.blog.authors.fields.name'))
-                    ->searchable()
-                    ->sortable(),
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll('name')
+                    ->label(__('admin.blog.authors.fields.name')),
 
                 TextColumn::make('blog_posts_count')
                     ->label(__('admin.blog.authors.fields.posts_count'))

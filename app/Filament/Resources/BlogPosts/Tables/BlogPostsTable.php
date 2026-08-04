@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BlogPosts\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,13 +21,13 @@ class BlogPostsTable
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
-                    ->conversion('miniature'),
+                    ->conversion('miniature')
+                    ->label(__('admin.common.fields.image')),
 
-                TextColumn::make('name')
-                    ->label(__('admin.blog.posts.fields.name'))
-                    ->searchable()
-                    ->sortable(),
-
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll('name')
+                    ->label(__('admin.blog.posts.fields.name')),
+                    
                 TextColumn::make('blog_tags')
                     ->label(__('admin.blog.tags.navigation_label'))
                     ->state(fn(Model $record): array => $record->blogTags->pluck('name')->toArray())
