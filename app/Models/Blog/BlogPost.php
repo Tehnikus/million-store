@@ -6,6 +6,7 @@ use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
 use App\Domain\Media\Concerns\HasProcessedImages;
@@ -82,6 +83,11 @@ class BlogPost extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(BlogAuthor::class, 'author_id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(BlogComment::class, 'blog_post_id');
     }
 
     // Required for image conversions
