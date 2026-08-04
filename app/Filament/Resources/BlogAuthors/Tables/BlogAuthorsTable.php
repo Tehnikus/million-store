@@ -19,6 +19,7 @@ class BlogAuthorsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('blogPosts'))
             ->columns([
                 ImageColumn::make('avatar')
                     ->label(__('admin.blog.authors.fields.avatar'))
@@ -35,16 +36,11 @@ class BlogAuthorsTable
                     ->label(__('admin.blog.authors.fields.name')),
 
                 TextColumn::make('blog_posts_count')
-                    ->label(__('admin.blog.authors.fields.posts_count'))
                     ->counts('blogPosts')
+                    ->badge()
+                    ->label(__('admin.blog.authors.fields.posts_count'))
                     ->alignment(Alignment::Center)
                     ->width('1%'),
-
-                TextColumn::make('sort_order')
-                    ->label(__('admin.blog.authors.fields.sort_order'))
-                    ->sortable()
-                    ->width('1%')
-                    ->alignment(Alignment::Center),
 
                 IconColumn::make('is_active')
                     ->label(__('admin.blog.authors.fields.is_active'))
