@@ -59,9 +59,10 @@ class CreateProduct extends CreateRecord
 
         // Remove facet data from form state before any other save process
         $data = $this->stripFacetsFormState($data);
-
+        
         // Pull product description data from form state before product save
         $descriptionData = Arr::pull($data, 'description', []);
+        $descriptionData = $this->stripSlugFormState($descriptionData);
 
         // Create product in products table
         $product = static::getModel()::create($data);

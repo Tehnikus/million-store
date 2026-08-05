@@ -5,10 +5,8 @@ namespace App\Models\Catalog;
 use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
 use App\Domain\Catalog\FacetType;
 use App\Models\Global\Store;
-use App\Models\Catalog\ProductCategories;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
@@ -41,6 +39,7 @@ class Category extends Model
 
     protected $casts = [
         'is_active'             => 'boolean',
+        'show_in_facets'        => 'boolean',
         'sort_order'            => 'integer',
         'name'                  => 'array',
         'h1'                    => 'array',

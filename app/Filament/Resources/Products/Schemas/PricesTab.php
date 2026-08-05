@@ -16,9 +16,6 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Builder;
 
-
-
-
 class PricesTab
 {
     public static function schema(): array

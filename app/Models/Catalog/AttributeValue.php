@@ -22,7 +22,7 @@ class AttributeValue extends Model
         'sort_order',
         'name',
         'description',
-        'image',
+        'images',
     ];
     protected $casts = [
         'store_id'         => 'integer',
@@ -31,7 +31,7 @@ class AttributeValue extends Model
         'sort_order'       => 'integer',
         'name'             => 'array',
         'description'      => 'array',
-        'image'            => 'array',
+        'images'           => 'array',
     ];
     protected $translatable = [
         'name',

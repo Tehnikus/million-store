@@ -34,13 +34,6 @@ class BlogTagsTable
                     ->width('1%')
                     ->badge(),
 
-                TextColumn::make('sort_order')
-                    ->label(__('admin.blog.tags.fields.sort_order'))
-                    ->sortable()
-                    ->width('1%')
-                    ->alignment(Alignment::Center)
-                    ->toggleable(isToggledHiddenByDefault: true),
-
                 ToggleColumn::make('is_menu')
                     ->label(__('admin.blog.tags.fields.is_menu'))
                     ->alignment(Alignment::Center)
