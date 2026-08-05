@@ -24,7 +24,8 @@ class BlogTagsTable
                     ->label(__('admin.common.fields.image')),
 
                 MultilangTextColumn::make('name')
-                    ->recordColumnAll('name')
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
                     ->label(__('admin.blog.tags.fields.name')),
 
                 TextColumn::make('blog_posts_count')

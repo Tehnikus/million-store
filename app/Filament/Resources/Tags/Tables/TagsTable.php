@@ -19,8 +19,10 @@ class TagsTable
                     ->conversion('miniature'),
 
                 MultilangTextColumn::make('name')
-                    ->recordColumnAll('name')
-                    ->label(__('admin.catalog.categories.model_label_singular')),
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
+                    ->label(__('admin.catalog.tags.model_label_singular')),
+
             ])
             ->filters([
                 //

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\StoreInfoPages\Tables;
 
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -19,17 +20,10 @@ class StoreInfoPagesTable
         return $table
             ->columns([
 
-                TextColumn::make('name')
-                    ->label(__('admin.blog.posts.fields.name'))
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('sort_order')
-                    ->label(__('admin.blog.posts.fields.sort_order'))
-                    ->sortable()
-                    ->width('1%')
-                    ->alignment(Alignment::Center)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
+                    ->label(__('admin.blog.posts.fields.name')),
 
                 ToggleColumn::make('is_active')
                     ->label(__('admin.blog.posts.fields.is_active'))

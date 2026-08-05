@@ -26,7 +26,8 @@ class BlogPostsTable
                     ->label(__('admin.common.fields.image')),
 
                 MultilangTextColumn::make('name')
-                    ->recordColumnAll('name')
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
                     ->label(__('admin.blog.posts.fields.name')),
 
                 TextColumn::make('author.name')

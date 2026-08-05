@@ -32,7 +32,8 @@ class BlogAuthorsTable
                     ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: 50%; margin: -0.7rem 0']),
 
                 MultilangTextColumn::make('name')
-                    ->recordColumnAll('name')
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
                     ->label(__('admin.blog.authors.fields.name')),
 
                 TextColumn::make('blog_posts_count')

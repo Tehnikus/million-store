@@ -24,8 +24,9 @@ class ManufacturersTable
                     ->label(__('admin.common.fields.image')),
                 
                 MultilangTextColumn::make('name')
-                    ->recordColumnAll('name')
-                    ->label(__('admin.blog.posts.fields.name')),
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
+                    ->label(__('admin.catalog.manufacturers.model_label_singular')),
 
                 SelectColumn::make('parent_id')
                     ->optionsRelationship(name: 'parentId', titleAttribute: 'name')

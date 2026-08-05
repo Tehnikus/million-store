@@ -25,7 +25,8 @@ class CategoriesTable
                     ->label(__('admin.common.fields.image')),
 
                 MultilangTextColumn::make('name')
-                    ->recordColumnAll('name')
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
                     ->label(__('admin.catalog.categories.model_label_singular')),
 
                 SelectColumn::make('parent_id')

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\Countries\Tables;
 
+use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -20,10 +22,11 @@ class CountriesTable
                 $query->with('currency'); // ?
             })
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('admin.global.countries.fields.name'))
-                    ->sortable()
-                    ->searchable(),
+                
+                MultilangTextColumn::make('name')
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
+                    ->label(__('admin.global.countries.fields.name')),
 
                 TextColumn::make('iso_code')
                     ->label(__('admin.global.countries.fields.iso_code'))

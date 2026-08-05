@@ -21,9 +21,12 @@ class AttributesTable
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
                     ->label(__('admin.common.fields.image')),
+
                 MultilangTextColumn::make('name')
-                    ->recordColumnAll('name')
+                    ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
+                    ->wrapHeader()
                     ->label(__('admin.catalog.attributes.fields.group')),
+
                 TextColumn::make('values.name')
                     ->badge()
                     ->limitList(10)
