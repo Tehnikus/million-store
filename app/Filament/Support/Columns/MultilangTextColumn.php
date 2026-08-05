@@ -48,7 +48,7 @@ class MultilangTextColumn extends TextColumn
 
         foreach ($languages as $locale) {
             if (!empty($rawState[$locale])) {
-                $result .= '<span class="inline-flex fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($locale) . '</span> ' . e($rawState[$locale]) . '<br>';
+                $result .= '<span class="inline-flex fi-color fi-color-success fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($locale) . '</span> ' . e($rawState[$locale]) . '<br>';
             } else {
                 $result .= '<span class="inline-flex fi-color fi-color-danger fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($locale) . ' </span> -- <br>';
             }

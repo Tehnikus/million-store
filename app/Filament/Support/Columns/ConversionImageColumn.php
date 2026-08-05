@@ -20,7 +20,7 @@ class ConversionImageColumn extends ImageColumn
             ->imageHeight(70)
             ->checkFileExistence(false)
             ->alignment(Alignment::Center)
-            ->width('1%')
+            ->width('100px')
             ->extraImgAttributes(['loading' => 'lazy', 'style' => 'border-radius: .5rem; margin: -0.7rem 0;'])
             ->label(__('admin.common.fields.image'));
     }

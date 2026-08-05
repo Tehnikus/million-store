@@ -127,10 +127,10 @@ class BlogCommentsTable
             ->groups([
                 Group::make('thread_id')
                     ->label(__('admin.blog.comments.fields.thread'))
-                    ->getTitleFromRecordUsing(function (BlogComment $record) {
-                        $root = $record->parent_id ? $record->parent : $record;
-                        return \Illuminate\Support\Str::limit($root->body ?? $root->author_name, 40);
-                    })
+                    // ->getTitleFromRecordUsing(function (BlogComment $record) {
+                    //     $root = $record->parent_id ? $record->parent : $record;
+                    //     return \Illuminate\Support\Str::limit($root->body ?? $root->author_name, 40);
+                    // })
                     ->getTitleFromRecordUsing(function (BlogComment $record) {
                         $root = $record->parent_id ? $record->parent : $record;
                         return $record->blogPost->name . ' - ' . \Illuminate\Support\Str::limit($root->body ?? $root->author_name, 40);

@@ -53,8 +53,8 @@ class AttributeForm
 
         return $schema
             ->components([
-                Section::make(__('admin.catalog.attributes.fields.group_name'))
-                    ->description(__('admin.catalog.attributes.helpers.title_helper'))
+                Section::make(__('admin.catalog.attributes.fields.group_title'))
+                    ->description(__('admin.catalog.attributes.helpers.group_title'))
                     ->schema([
 
                         Fieldset::make(__('admin.catalog.attributes.fields.group_name'))
@@ -63,9 +63,11 @@ class AttributeForm
                                     fn($language) =>
                                     TextInput::make("name.{$language->locale}")
                                         ->required()
+                                        ->maxLength(255)
                                         ->prefix($language->locale)
                                         ->placeholder(__('admin.catalog.attributes.fields.group_name'))
-                                        ->label(__('admin.catalog.attributes.fields.group_name')),
+                                        ->label(__('admin.catalog.attributes.fields.group_name'))
+                                        ->hiddenLabel(),
                                 )->all(),
 
                                 Text::make(__('admin.catalog.attributes.helpers.group_name'))
@@ -96,6 +98,7 @@ class AttributeForm
                                             ->schema([
                                                 TextInput::make("name.{$language->locale}")
                                                     ->required()
+                                                    ->maxLength(255)
                                                     ->prefix($language->locale)
                                                     ->label(__('admin.catalog.attributes.fields.attribute_name'))
                                                     ->placeholder(__('admin.catalog.attributes.fields.attribute_name'))

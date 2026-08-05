@@ -53,6 +53,10 @@ class CategoriesTable
             ->filters([
                 //
             ])
+            ->groups([
+                'parent_id'
+            ])
+            ->defaultGroup('parent_id')
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()

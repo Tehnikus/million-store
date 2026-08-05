@@ -7,6 +7,8 @@ use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\Alignment;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
 class TagsTable
@@ -23,6 +25,18 @@ class TagsTable
                     ->wrapHeader()
                     ->label(__('admin.catalog.tags.model_label_singular')),
 
+                ToggleColumn::make('is_active')
+                    ->sortable()
+                    ->width('100px')
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.tags.fields.is_active')),
+
+                ToggleColumn::make('show_in_facets')
+                    ->sortable()
+                    ->width('100px')
+                    ->wrapHeader()
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.tags.fields.show_in_facets')),
             ])
             ->filters([
                 //

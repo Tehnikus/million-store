@@ -12,6 +12,7 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\CodeEditor;
 use Filament\Forms\Components\CodeEditor\Enums\Language;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -28,15 +29,24 @@ class TagForm
                     ->schema([
                         Tab::make(__('admin.common.tabs.content'))
                             ->schema([
-                                
-                                Toggle::make('is_active')
-                                    ->label(__('admin.catalog.tags.fields.is_active'))
-                                    ->default(true),
-                                Toggle::make('show_in_facets')
-                                    ->label(__('admin.catalog.tags.fields.show_in_facets'))
-                                    ->default(true),
+
+                                Group::make([
+
+                                    Toggle::make('is_active')
+                                        ->label(__('admin.catalog.tags.fields.is_active'))
+                                        ->helperText(__('admin.catalog.tags.helpers.is_active'))
+                                        ->default(true),
+
+                                    Toggle::make('show_in_facets')
+                                        ->label(__('admin.catalog.tags.fields.show_in_facets'))
+                                        ->helperText(__('admin.catalog.tags.helpers.show_in_facets'))
+                                        ->default(true),
+                                ])
+                                ->columnSpanFull(),
+
                                 CodeEditor::make('inline_style')
                                     ->language(Language::Css),
+
                                 LanguageTabs::make($languages, [
                                     [DescriptionTab::class, ['withSlug' => true]],
                                     FaqTab::class,
