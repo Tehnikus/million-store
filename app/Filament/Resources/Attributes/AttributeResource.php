@@ -13,6 +13,7 @@ use App\Models\Catalog\Attribute;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AttributeResource extends Resource
 {
@@ -46,10 +47,16 @@ class AttributeResource extends Resource
         ];
     }
 
-        // Global search columns list
+    // Global search columns list
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name'];
+        return ['name', 'values.name']; // Also search values by hasMany relation
+    }
+
+    // Eager load on global search
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['values']);
     }
 
     // Some repeating navigation methods in one place
