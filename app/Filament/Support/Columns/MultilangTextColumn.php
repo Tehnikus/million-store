@@ -24,67 +24,45 @@ class MultilangTextColumn extends TextColumn
         ;
     }
 
-    public function recordColumnSingle(string $column): static
+    public function recordColumnSingle(\Closure $translationsUsing): static
     {
-        $this->state(
-            fn($record) => $this->fallbackColumn($record, $column)
-        );
+        $this->state(fn ($record) => static::fallbackColumn($translationsUsing($record)));
 
         return $this;
     }
 
-    public function recordColumnAll(string $column): static
+    public function recordColumnAll(\Closure $translationsUsing): static
     {
-        $this->state(
-            fn($record) => $this->allColumns($record, $column)
-        );
+        $this->state(fn ($record) => static::allColumns($translationsUsing($record)));
 
         return $this;
     }
 
     /**
      * Display all strings and their locales and mark missing strings with danger locale badge 
-     * @param Model $record
-     * @param string $column
-     * @return HtmlString
      */
-    public static function allColumns(Model $record, string $column): HtmlString
+    public static function allColumns(array $rawState): HtmlString
     {
-        
-        $rawState = $record->getTranslations($column);
         $result = '';
-
         $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->pluck('locale');
 
         foreach ($languages as $locale) {
             if (!empty($rawState[$locale])) {
-                $result .=
-                    '<span class="inline-flex fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">'
-                        . e($locale) .
-                    '</span> ' . 
-                    e($rawState[$locale]) .
-                    '<br>'
-                ;
+                $result .= '<span class="inline-flex fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($locale) . '</span> ' . e($rawState[$locale]) . '<br>';
             } else {
                 $result .= '<span class="inline-flex fi-color fi-color-danger fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($locale) . ' </span> -- <br>';
             }
         }
 
-        return new HtmlString(!empty($result) ? $result : '--');
+        return new HtmlString($result ?: '--');
     }
 
     /**
      * Display only one fallback string and locale to which sting fell back
-     * @param Model $record
-     * @param string $column
-     * @param mixed $locale
-     * @return HtmlString
      */
-    public static function fallbackColumn(Model $record, string $column, ?string $locale = null): HtmlString
+    public static function fallbackColumn(array $rawState, ?string $locale = null): HtmlString
     {
         $locale ??= app()->getLocale();
-
-        $rawState = $record->getTranslations($column);
 
         if (filled($rawState[$locale] ?? null)) {
             return new HtmlString(e($rawState[$locale]));
@@ -92,11 +70,7 @@ class MultilangTextColumn extends TextColumn
 
         foreach ($rawState as $translationLocale => $value) {
             if (filled($value)) {
-                return new HtmlString(
-                    '<span class="inline-flex fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">'
-                        . e($translationLocale) .
-                    '</span> ' . e($value)
-                );
+                return new HtmlString('<span class="inline-flex fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($translationLocale) . '</span> ' . e($value));
             }
         }
 
