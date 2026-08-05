@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Attributes\Schemas;
 
+use App\Models\Seo\Slug;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
@@ -9,6 +10,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
@@ -116,7 +118,42 @@ class AttributeForm
                                                                 $set($slugTouchedPath, true);
                                                             })
                                                             ->tooltip(__('admin.common.buttons.create_slug'))
-                                                    ),
+                                                    )
+                                                    ->loadStateFromRelationshipsUsing(static function (?Model $record, Component $component) use ($language) {
+                                                        if (!$record || !method_exists($record, 'currentStoreSlugs')) return;
+
+                                                        $slugs = $record->currentStoreSlugs->keyBy('language_id');
+                                                        $state = $slugs->get($language->id)?->slug;
+                                                        $component->state($state);
+                                                    })
+                                                    // Save slugs right from the form
+                                                    ->saveRelationshipsUsing(static function (Model $record, $state) use ($language) {
+                                                        $storeId = Filament::getTenant()->id;
+
+                                                        if (filled($state)) {
+                                                            $slugValue = Str::slug($state ?? '', '-', $language->locale);
+
+                                                            Slug::updateOrCreate(
+                                                                [
+                                                                    'sluggable_type' => $record->getMorphClass(),
+                                                                    'sluggable_id'   => $record->id,
+                                                                    'store_id'       => $storeId,
+                                                                    'language_id'    => $language->id,
+                                                                ],
+                                                                [
+                                                                    'slug'           => $slugValue,
+                                                                    'is_active'      => true,
+                                                                ]
+                                                            );
+                                                        } else {
+                                                            Slug::where([
+                                                                'sluggable_type' => $record->getMorphClass(),
+                                                                'sluggable_id'   => $record->id,
+                                                                'store_id'       => $storeId,
+                                                                'language_id'    => $language->id,
+                                                            ])->delete();
+                                                        }
+                                                    }),
                                                 RichEditor::make("description.{$language->locale}")
                                                     ->columnSpanFull()
                                                     ->placeholder(__('admin.catalog.attributes.fields.description'))
@@ -136,9 +173,8 @@ class AttributeForm
 
                             ])
                             ->relationship('values')
-                            // Add required store id column
-                            ->mutateRelationshipDataBeforeCreateUsing($prepareValueData)
-                            ->mutateRelationshipDataBeforeSaveUsing($prepareValueData)
+                            ->mutateRelationshipDataBeforeCreateUsing($prepareValueData) // Add required store id column
+                            ->mutateRelationshipDataBeforeSaveUsing($prepareValueData) // Remove slugs from data 
                             ->reorderable()
                             ->orderColumn('sort_order')
                             ->collapsible()
