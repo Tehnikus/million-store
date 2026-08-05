@@ -62,6 +62,11 @@ class ProductsTable
                 ConversionImageColumn::make('images')
                     ->conversion('miniature'),
 
+                MultilangTextColumn::make('descriptions.name')
+                    ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name') ?? [])
+                    ->label(__('admin.catalog.products.fields.store_name'))
+                    ->wrapHeader(),
+
                 // Global SKU and name
                 TextColumn::make('sku')
                     ->label(__('admin.catalog.products.fields.global_name') .'/'. __('admin.catalog.products.fields.sku'))
@@ -70,10 +75,8 @@ class ProductsTable
                             "<div>{$record->global_name}</div>" . 
                             "<div style=\"color: var(--gray-400)\">{$record->sku}</div>" 
                         );
-                    }),
-                // Store scoped name
-                TextColumn::make('descriptions.name')
-                    ->label(__('admin.catalog.products.fields.store_name')),
+                    })
+                    ->wrapHeader(),
 
                 TextColumn::make('regular_price')
                     ->label(__('admin.catalog.products.fields.price'))
@@ -144,6 +147,7 @@ class ProductsTable
                     ->offIcon(fn(Product $record) => $record->descriptions?->first()?->is_active === null ? 'heroicon-s-x-mark' : 'heroicon-s-stop')
                     ->disabled(fn(Product $record) => $record->descriptions?->first()?->is_active === null)
                     // // Due some kind of bug the tooltip is not updated with toggle state I have to comment this out and use single tooltip 
+                    // // TODO Report this bug
                     // ->tooltip(fn(Product $record) => match ($record->descriptions?->first()?->is_active) {
                     //     true   => __('admin.catalog.products.fields.is_active'),
                     //     false  => __('admin.catalog.products.fields.is_not_active'),
