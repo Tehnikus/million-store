@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Currencies\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -22,27 +23,31 @@ class CurrenciesTable
                 TextColumn::make('iso_code')
                     ->badge()
                     ->searchable()
-                    ->alignment('center')
-                    ->label(__('admin.global.currencies.fields.iso_code')),
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.global.currencies.fields.iso_code'))
+                    ->width('100px'),
                 TextColumn::make('sign')
                     ->badge()
-                    ->alignment('center')
-                    ->label(__('admin.global.currencies.fields.sign')),
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.global.currencies.fields.sign'))
+                    ->width('100px')
+                    ->wrapHeader(),
                 TextColumn::make('rate')
-                    ->alignment('right')
+                    ->alignment(Alignment::Right)
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
-                    ->label(__('admin.global.currencies.fields.rate')),
+                    ->label(__('admin.global.currencies.fields.rate'))
+                    ->width('100px'),
                 IconColumn::make('rate_default')
                     ->boolean()
                     ->sortable()
-                    ->alignment('center')
+                    ->alignment(Alignment::Center)
                     ->label(__('admin.global.currencies.fields.rate_default'))
                     ->width('1%'),
                 IconColumn::make('is_active')
                     ->boolean()
                     ->sortable()
-                    ->alignment('center')
+                    ->alignment(Alignment::Center)
                     ->label(__('admin.global.currencies.fields.is_active'))
                     ->width('1%'),
             ])

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Stores\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,8 +22,8 @@ class StoresTable
             ->columns([
                 TextColumn::make('name')->label(__('admin.stores.fields.name')),
                 TextColumn::make('host')->label(__('admin.stores.fields.host')),
-                TextColumn::make('countries.name')->label(__('admin.stores.fields.countries'))->badge()->width('1%')->alignCenter(),
-                TextColumn::make('languages.locale')->label(__('admin.stores.fields.languages'))->badge()->width('1%')->alignCenter()
+                TextColumn::make('countries.name')->label(__('admin.stores.fields.countries'))->badge()->width('1%')->alignment(Alignment::Center),
+                TextColumn::make('languages.locale')->label(__('admin.stores.fields.languages'))->badge()->width('1%')->alignment(Alignment::Center)
                     // Get store active languages
                     ->getStateUsing(function (Store $record) {
                         return $record->languages
@@ -38,7 +39,7 @@ class StoresTable
                             ?->pivot->is_default;
                         return $isDefault ? 'success' : 'primary'; 
                     }),
-                TextColumn::make('currencies.sign')->label(__('admin.stores.fields.currencies'))->badge()->width('1%')->alignCenter(),
+                TextColumn::make('currencies.sign')->label(__('admin.stores.fields.currencies'))->badge()->width('1%')->alignment(Alignment::Center),
             ])
             ->filters([
                 //

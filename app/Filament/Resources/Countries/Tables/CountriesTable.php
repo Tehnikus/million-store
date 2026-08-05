@@ -27,27 +27,31 @@ class CountriesTable
 
                 TextColumn::make('iso_code')
                     ->label(__('admin.global.countries.fields.iso_code'))
-                    ->alignment('center')
+                    ->alignment(Alignment::Center)
                     ->sortable()
                     ->badge()
-                    ->searchable(),
+                    ->searchable()
+                    ->width('150px')
+                    ->wrapHeader(),
 
                 TextColumn::make('currency.iso_code')
                     ->label(__('admin.global.countries.fields.default_currency_id'))
-                    ->alignment('center')
+                    ->alignment(Alignment::Center)
                     ->sortable()
-                    ->badge(),
+                    ->badge()
+                    ->width('100px')
+                    ->wrapHeader(),
 
                 IconColumn::make('is_eu_member')
                     ->label(__('admin.global.countries.fields.is_eu_member'))
-                    ->alignment('center')
+                    ->alignment(Alignment::Center)
                     ->sortable()
                     ->boolean()
                     ->width('1%'),
 
                 IconColumn::make('is_active')
                     ->label(__('admin.global.countries.fields.is_active'))
-                    ->alignment('center')
+                    ->alignment(Alignment::Center)
                     ->sortable()
                     ->boolean()
                     ->width('1%'),
