@@ -35,6 +35,6 @@ class Attribute extends Model
 
     public function values(): HasMany
     {
-        return $this->hasMany(AttributeValue::class);
+        return $this->hasMany(AttributeValue::class)->with('currentStoreSlugs');
     }
 }
