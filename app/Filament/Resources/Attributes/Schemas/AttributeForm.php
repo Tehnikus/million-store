@@ -7,13 +7,14 @@ use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -48,27 +49,41 @@ class AttributeForm
         return $schema
             ->components([
                 Section::make(__('admin.catalog.attributes.fields.group_name'))
-                    ->description(__('admin.catalog.attributes.fields.group_name'))
+                    ->description(__('admin.catalog.attributes.helpers.title_helper'))
                     ->schema([
+
                         Fieldset::make(__('admin.catalog.attributes.fields.group_name'))
-                            ->schema(
-                                collect($languages)->map(
+                            ->schema([
+                                ...collect($languages)->map(
                                     fn($language) =>
                                     TextInput::make("name.{$language->locale}")
                                         ->required()
                                         ->prefix($language->locale)
                                         ->placeholder(__('admin.catalog.attributes.fields.group_name'))
-                                        ->label(__('admin.catalog.attributes.fields.group_name'))
-                                        ->helperText(__('admin.catalog.attributes.helpers.group_name'))
-                                        ->live(),
+                                        ->label(__('admin.catalog.attributes.fields.group_name')),
                                 )->all(),
-                            )
+
+                                Text::make(__('admin.catalog.attributes.helpers.group_name'))
+                                    ->columnSpanFull(),
+                                Group::make([
+
+                                    Toggle::make('is_active')
+                                        ->label(__('admin.catalog.attributes.fields.is_active'))
+                                        ->helperText(__('admin.catalog.attributes.helpers.is_active'))
+                                        ->default(true),
+
+                                    Toggle::make('show_in_facets')
+                                        ->label(__('admin.catalog.attributes.fields.show_in_facets'))
+                                        ->helperText(__('admin.catalog.attributes.helpers.show_in_facets'))
+                                        ->default(true),
+                                ])
+                                ->columnSpanFull(),
+                            ])
                             ->columns(count($languages)),
+
+
+                            
                         Repeater::make('values')
-                            // ->table([
-                            //     TableColumn::make(__('admin.catalog.attributes.fields.image'))->width('200px'),
-                            //     TableColumn::make(__('admin.catalog.attributes.fields.description')),
-                            // ])
                             ->schema([
                                 FileUpload::make('images'),
                                 Group::make(
@@ -164,13 +179,25 @@ class AttributeForm
                                                     ->extraInputAttributes([
                                                         'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
                                                     ])
-                                                    ->hiddenLabel()
-                                                    
+                                                    ->hiddenLabel(),
                                             ])
                                             ->dense()
                                     )->all()
-                                )
+                                ),
+                                
+                                Group::make([
+                                    Toggle::make('is_active')
+                                        ->label(__('admin.catalog.attributes.fields.is_active'))
+                                        ->helperText(__('admin.catalog.attributes.helpers.value_is_active'))
+                                        ->default(true),
 
+                                    Toggle::make('show_in_facets')
+                                        ->label(__('admin.catalog.attributes.fields.show_in_facets'))
+                                        ->helperText(__('admin.catalog.attributes.helpers.value_show_in_facets'))
+                                        ->default(true),
+                                ])
+                                ->columns(2)
+                                ->columnSpanFull()
                             ])
                             ->relationship('values')
                             ->mutateRelationshipDataBeforeCreateUsing($prepareValueData) // Add required store id column
