@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
+use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Product;
 use App\Models\Global\Currency;
 // use Filament\Actions\Action;
@@ -82,7 +83,9 @@ class ProductsTable
 
                         return $price?->price;
                     })
-                    ->money(fn () => Currency::find($defaultCurrencyId)?->iso_code ?? 'USD'), // or ->suffix($sign) TODO
+                    ->money(fn () => Currency::find($defaultCurrencyId)?->iso_code ?? 'USD')
+                    ->width('100px')
+                    ->alignment(Alignment::Center), // or ->suffix($sign) TODO
 
                 TextColumn::make('discount_price')
                     ->label(__('admin.catalog.products.fields.discount'))
@@ -92,7 +95,9 @@ class ProductsTable
 
                         return $price?->price;
                     })
-                    ->placeholder('--'),
+                    ->placeholder('--')
+                    ->width('100px')
+                    ->alignment(Alignment::Center),
 
                 // Product status: if it is active and if exists in current store
                 // IconColumn::make('is_active')
@@ -145,7 +150,10 @@ class ProductsTable
                     //     null   => __('admin.catalog.products.fields.is_not_associated'),
                     // })
                     ->tooltip(fn (Product $record) => $record->descriptions?->first()?->is_active === null ? __('admin.catalog.products.fields.is_not_associated') : null)
-                    ->label(__('admin.catalog.products.fields.is_active')),
+                    ->label(__('admin.catalog.products.fields.is_active'))
+                    ->tooltip(__('admin.catalog.products.helpers.status'))
+                    ->wrapHeader()
+                    ->width('1%'),
 
 
                 // Dates

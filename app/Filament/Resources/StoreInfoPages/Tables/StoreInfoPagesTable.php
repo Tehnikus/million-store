@@ -28,7 +28,7 @@ class StoreInfoPagesTable
                 ToggleColumn::make('is_active')
                     ->label(__('admin.blog.posts.fields.is_active'))
                     ->alignment(Alignment::Center)
-                    ->width('1%'),
+                    ->width('100px'),
 
                 TextColumn::make('created_at')
                     ->label(__('admin.blog.posts.fields.created_at'))

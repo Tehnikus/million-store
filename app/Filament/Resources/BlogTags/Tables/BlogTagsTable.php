@@ -38,12 +38,13 @@ class BlogTagsTable
                 ToggleColumn::make('is_menu')
                     ->label(__('admin.blog.tags.fields.is_menu'))
                     ->alignment(Alignment::Center)
-                    ->width('1%'),
+                    ->wrapHeader()
+                    ->width('100px'),
 
                 ToggleColumn::make('is_active')
                     ->label(__('admin.blog.tags.fields.is_active'))
                     ->alignment(Alignment::Center)
-                    ->width('1%'),
+                    ->width('100px'),
 
                 TextColumn::make('created_at')
                     ->label(__('admin.blog.tags.fields.created_at'))

@@ -30,21 +30,26 @@ class ManufacturersTable
 
                 SelectColumn::make('parent_id')
                     ->optionsRelationship(name: 'parentId', titleAttribute: 'name')
+                    ->wrapHeader()
+                    ->width('220px')
                     ->label(__('admin.catalog.manufacturers.fields.parent_id')),
 
                 ToggleColumn::make('is_active')
                     ->sortable()
-                    ->width('1%')
+                    ->width('100px')
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.manufacturers.fields.is_active')),
 
                 ToggleColumn::make('show_in_facets')
                     ->sortable()
-                    ->width('1%')
+                    ->width('100px')
+                    ->wrapHeader()
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.manufacturers.fields.show_in_facets')),
                 
             ])
+            ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->filters([
                 //
             ])

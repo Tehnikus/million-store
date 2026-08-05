@@ -31,28 +31,25 @@ class CategoriesTable
 
                 SelectColumn::make('parent_id')
                     ->optionsRelationship(name: 'parentId', titleAttribute: 'name')
+                    ->width('220px')
+                    ->wrapHeader()
                     ->label(__('admin.catalog.categories.fields.parent_id')),
 
                 ToggleColumn::make('is_active')
                     ->sortable()
-                    ->width('1%')
+                    ->width('100px')
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.categories.fields.is_active')),
 
                 ToggleColumn::make('show_in_facets')
                     ->sortable()
-                    ->width('1%')
+                    ->width('100px')
                     ->wrapHeader()
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.categories.fields.show_in_facets')),
-                
-                TextColumn::make('sort_order')
-                    ->sortable()
-                    ->width('1%')
-                    ->alignment(Alignment::Center)
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->label(__('admin.catalog.categories.fields.sort_order')),
             ])
+            ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->filters([
                 //
             ])

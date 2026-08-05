@@ -40,6 +40,7 @@ class BlogAuthorsTable
                     ->counts('blogPosts')
                     ->badge()
                     ->label(__('admin.blog.authors.fields.posts_count'))
+                    ->wrapHeader()
                     ->alignment(Alignment::Center)
                     ->width('1%'),
 
