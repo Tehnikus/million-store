@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Attributes\Schemas;
 
+use App\Domain\Seo\ChecksSlugUniqueness;
 use App\Models\Seo\Slug;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -19,10 +20,14 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 
 class AttributeForm
 {
+    use ChecksSlugUniqueness;
+
     public static function configure(Schema $schema): Schema
     {
         $storeId    = Filament::getTenant()->id;
@@ -81,8 +86,6 @@ class AttributeForm
                             ])
                             ->columns(count($languages)),
 
-
-                            
                         Repeater::make('values')
                             ->schema([
                                 FileUpload::make('images'),
@@ -106,11 +109,12 @@ class AttributeForm
                                                         $groupName = $get("../../name.{$language->locale}");
                                                         $groupSlug = !empty($groupName) ? Str::slug($get("../../name.{$language->locale}"), '-', $language->locale) . '-' : ''; 
                                                         $valueSlug = Str::slug($state ?? '', '-', $language->locale);
+
                                                         // Fill slug input
                                                         $set("slugs.{$language->id}", $groupSlug . $valueSlug);
                                                         // Validate slug uniqueness and alpha-numeric stuff
-                                                        // $slugPath = $component->getContainer()->getStatePath() . ".slugs.{$languageId}";
-                                                        // self::validateSlugLive($livewire, $slugPath, $newSlug, $languageId, $excludeSelf($record));
+                                                        $slugPath = $component->getContainer()->getStatePath() . ".slugs.{$language->id}";
+                                                        self::validateSlugLive($livewire, $slugPath, $groupSlug . $valueSlug, $language->id, $excludeSelf($record));
                                                     })
                                                     ->hiddenLabel(),
                                                 TextInput::make("slugs.{$language->id}")
@@ -119,6 +123,48 @@ class AttributeForm
                                                     ->label(__('admin.catalog.attributes.fields.slug'))
                                                     ->placeholder(__('admin.catalog.attributes.fields.slug'))
                                                     ->hiddenLabel()
+
+                                                    // Check slug uniqueness live
+                                                    ->live(onBlur: false, debounce: 500)
+                                                    ->afterStateUpdated(function (Set $set, ?string $state, $component, $livewire, ?Model $record) use ($language, $excludeSelf) {
+                                                        // If user made any input into slug input mark it as touched, so autofill does not change it
+                                                        $set("slugs_touched.{$language->id}", true);
+
+                                                        self::validateSlugLive($livewire, $component->getStatePath(), $state, $language->id, $excludeSelf($record));
+                                                    })
+                                                    ->afterStateHydrated(function (Set $set, ?string $state) use ($language) {
+                                                        // If any slug state present after form values are filled mark it slug input touched, so autofill does not change it
+                                                        if (filled($state)) {
+                                                            $set("slugs_touched.{$language->id}", true);
+                                                        }
+                                                    })
+                                                    
+                                                    ->unique(
+                                                        table: 'slugs',
+                                                        column: 'slug',
+                                                        ignorable: fn() => null,
+                                                        modifyRuleUsing: function (Unique $rule, ?Model $record) use ($language) {
+                                                            $rule
+                                                                ->where('store_id', Filament::getTenant()->id)
+                                                                ->where('language_id', $language->id);
+
+                                                            if ($record) {
+                                                                $type = $record::class;
+
+                                                                $rule->where(function ($query) use ($type, $record) {
+                                                                    $query->where('sluggable_type', '!=', $type)
+                                                                        ->orWhere('sluggable_id', '!=', $record->getKey());
+                                                                });
+                                                            }
+
+                                                            return $rule;
+                                                        },
+                                                    )
+
+                                                    ->maxLength(255)
+                                                    ->rules(['alpha_dash:ascii'])
+                                                    ->validationMessages(['unique' => __('admin.seo.slugs.errors.slug_taken'), 'alpha_dash' => __('admin.seo.slugs.errors.alpha_dash')])
+
                                                     ->suffixAction(
                                                         Action::make(__('admin.common.buttons.create_slug'))
                                                             ->icon('heroicon-o-link')
@@ -184,7 +230,7 @@ class AttributeForm
                                             ->dense()
                                     )->all()
                                 ),
-                                
+
                                 Group::make([
                                     Toggle::make('is_active')
                                         ->label(__('admin.catalog.attributes.fields.is_active'))
@@ -206,7 +252,7 @@ class AttributeForm
                             ->orderColumn('sort_order')
                             ->collapsible()
                             ->collapsed(fn($operation) => $operation !== 'create')
-                            ->itemLabel(fn (array $state): ?string => \Illuminate\Support\Arr::first($state['name'] ?? []) ?? '')
+                            ->itemLabel(fn (array $state): ?string => $state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []) ?? '')
                             ->label(__('admin.catalog.attributes.fields.values'))
                     ])
                     ->columnSpanFull()
