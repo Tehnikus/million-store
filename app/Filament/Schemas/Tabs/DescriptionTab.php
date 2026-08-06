@@ -225,6 +225,19 @@ class DescriptionTab implements HasTranslatableTab
                         ->hint(self::characterCountHint(max: 250, recommended: 160, min: 20))
                         ->columnSpanFull(),
 
+                    Select::make('robots')
+                        ->options([
+                            'index, follow'     => 'index, follow',
+                            'noindex, nofollow' => 'noindex, nofollow',
+                            'index, nofollow'   => 'index, nofollow',
+                            'noindex, follow'   => 'noindex, follow',
+                        ])
+                        ->default('index, follow')
+                        ->label(__('admin.common.fields.robots'))
+                        ->helperText(__('admin.common.helpers.robots'))
+                        ->columnSpanFull(),
+                ]),
+
             RichEditor::make("description_short.{$locale}")
                 ->label(__('admin.common.fields.description_short'))
                 ->helperText(__('admin.common.helpers.description_short'))
