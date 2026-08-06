@@ -12,9 +12,12 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 
 class PricesTab
 {
@@ -68,6 +71,24 @@ class PricesTab
                             ->disableLabel()
                             ->label(__('admin.catalog.products.fields.prices')),
 
+                        // Price name badge
+                        Fieldset::make(__('admin.catalog.products.fields.price_name'))
+                            ->schema([
+                                ...collect($languages)->map(
+                                    fn($language) =>
+                                    TextInput::make("name.{$language->locale}")
+                                        ->prefix($language->locale)
+                                        ->placeholder(__('admin.catalog.products.fields.price_name'))
+                                        ->label(__('admin.catalog.products.fields.price_name'))
+                                        ->hiddenLabel()
+                                        ->live(),
+                                )->all(),
+                                Text::make(__('admin.catalog.products.helpers.price_name'))
+                                    ->columnSpanFull()
+                            ])
+                            ->columns(\count($languages))
+                            ->columnSpanFull(),
+
                         Group::make([
                             Toggle::make('is_discount')
                                 ->label(__('admin.catalog.products.fields.discount'))
@@ -111,27 +132,15 @@ class PricesTab
                                 ->required()
                                 ->label(__('admin.catalog.products.fields.priority'))
                                 ->helperText(__('admin.catalog.products.helpers.priority')),
-                            Group::make(
-                                collect($languages)->map(
-                                    fn($language) =>
-                                    TextInput::make("name.{$language->locale}")
-                                        // ->required()
-                                        ->prefix($language->locale)
-                                        ->columnSpanFull()
-                                        ->placeholder(__('admin.catalog.products.fields.price_name'))
-                                        ->label(__('admin.catalog.products.fields.price_name'))
-                                        ->helperText(__('admin.catalog.products.helpers.price_name'))
-                                        ->live(),
-                                )->all(),
-                            ),
+
                         ])
-                            ->columns(2)
-                            ->columnSpanFull(),
+                        ->columns(2)
+                        ->columnSpanFull(),
                     ])
                     ->orderColumn('priority')
                     ->itemLabel(
                         fn(array $state): ?string =>
-                        ($state['name'][app()->getLocale()] ?? null) . ' ' .
+                        ($state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []) ?? null) . ' ' .
 
 
                             // (!empty($state['prices']['price']) ? implode(', ', $state['prices']['price']) : null) . ' ' .

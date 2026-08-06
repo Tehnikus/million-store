@@ -180,49 +180,50 @@ class DescriptionTab implements HasTranslatableTab
                             ->tooltip(__('admin.common.buttons.create_slug'))
                     )
             ] : []),
-
-            TextInput::make("h1.{$locale}")
-                ->label(__('admin.common.fields.h1'))
-                ->helperText(__('admin.common.helpers.h1'))
-                ->columnSpanFull()
-                ->suffixAction(
-                    Action::make(__('admin.common.buttons.paste_title'))
-                        ->icon('heroicon-o-clipboard-document-check')
-                        ->actionJs(<<<JS
-                            \$set('h1.{$locale}',  \$get('name.{$locale}'))
-                            JS)
-                        ->tooltip(__('admin.common.buttons.paste_h1'))
-                ),
-
-            TextInput::make("meta_title.{$locale}")
-                ->label(__('admin.common.fields.meta_title'))
-                ->helperText(__('admin.common.helpers.meta_title'))
-                ->columnSpanFull()
-                ->suffixAction(
-                    Action::make(__('admin.common.buttons.paste_title'))
-                        ->icon('heroicon-o-clipboard-document-check')
-                        ->actionJs(<<<JS
-                            \$set('meta_title.{$locale}', \$get('h1.{$locale}') || \$get('name.{$locale}'))
-                            JS)
-                        ->tooltip(__('admin.common.buttons.paste_title'))
-                )
-                ->hint(self::characterCountHint(max: 160, recommended: 60, min: 10))
-                ->columnSpanFull(),
-
-            Textarea::make("meta_description.{$locale}")
-                ->label(__('admin.common.fields.meta_description'))
-                ->helperText(__('admin.common.helpers.meta_description'))
-                ->hintAction(
-                    Action::make(__('admin.common.buttons.paste_description'))
-                        ->icon('heroicon-o-clipboard-document-check')
-                        ->actionJs(<<<JS
-                            \$set('meta_description.{$locale}', ((\$get('meta_title.{$locale}') ?? '') + ' ' + (\$state ?? '')).trim())
-                            JS)
-                        ->hiddenLabel()
-                        ->tooltip(__('admin.common.buttons.paste_description'))
-                )
-                ->hint(self::characterCountHint(max: 250, recommended: 160, min: 20))
-                ->columnSpanFull(),
+            Fieldset::make('SEO')
+                ->schema([
+                    TextInput::make("h1.{$locale}")
+                        ->label(__('admin.common.fields.h1'))
+                        ->helperText(__('admin.common.helpers.h1'))
+                        ->columnSpanFull()
+                        ->suffixAction(
+                            Action::make(__('admin.common.buttons.paste_title'))
+                                ->icon('heroicon-o-clipboard-document-check')
+                                ->actionJs(<<<JS
+                                    \$set('h1.{$locale}',  \$get('name.{$locale}'))
+                                    JS)
+                                ->tooltip(__('admin.common.buttons.paste_h1'))
+                        ),
+        
+                    TextInput::make("meta_title.{$locale}")
+                        ->label(__('admin.common.fields.meta_title'))
+                        ->helperText(__('admin.common.helpers.meta_title'))
+                        ->columnSpanFull()
+                        ->suffixAction(
+                            Action::make(__('admin.common.buttons.paste_title'))
+                                ->icon('heroicon-o-clipboard-document-check')
+                                ->actionJs(<<<JS
+                                    \$set('meta_title.{$locale}', \$get('h1.{$locale}') || \$get('name.{$locale}'))
+                                    JS)
+                                ->tooltip(__('admin.common.buttons.paste_title'))
+                        )
+                        ->hint(self::characterCountHint(max: 160, recommended: 60, min: 10))
+                        ->columnSpanFull(),
+        
+                    Textarea::make("meta_description.{$locale}")
+                        ->label(__('admin.common.fields.meta_description'))
+                        ->helperText(__('admin.common.helpers.meta_description'))
+                        ->hintAction(
+                            Action::make(__('admin.common.buttons.paste_description'))
+                                ->icon('heroicon-o-clipboard-document-check')
+                                ->actionJs(<<<JS
+                                    \$set('meta_description.{$locale}', ((\$get('meta_title.{$locale}') ?? '') + ' ' + (\$state ?? '')).trim())
+                                    JS)
+                                ->hiddenLabel()
+                                ->tooltip(__('admin.common.buttons.paste_description'))
+                        )
+                        ->hint(self::characterCountHint(max: 250, recommended: 160, min: 20))
+                        ->columnSpanFull(),
 
             RichEditor::make("description_short.{$locale}")
                 ->label(__('admin.common.fields.description_short'))

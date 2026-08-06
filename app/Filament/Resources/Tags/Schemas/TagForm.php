@@ -45,7 +45,9 @@ class TagForm
                                 ->columnSpanFull(),
 
                                 CodeEditor::make('inline_style')
-                                    ->language(Language::Css),
+                                    ->language(Language::Css)
+                                    ->label(__('admin.catalog.tags.fields.inline_style'))
+                                    ->helperText(__('admin.catalog.tags.helpers.inline_style')),
 
                                 LanguageTabs::make($languages, [
                                     [DescriptionTab::class, ['withSlug' => true]],
