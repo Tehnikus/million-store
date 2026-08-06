@@ -21,6 +21,8 @@ return new class extends Migration
             // Descriptions
             $table->jsonb('name')->nullable()->default('{}');
             $table->timestamps();
+
+            $table->index(['store_id', 'is_active', 'sort_order']);
         });
     }
 
