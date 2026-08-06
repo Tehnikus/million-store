@@ -86,7 +86,7 @@ class AttributeForm
                                 ])
                                 ->columnSpanFull(),
                             ])
-                            ->columns(count($languages)),
+                            ->columns(\count($languages)),
 
                         Repeater::make('values')
                             ->schema([
@@ -255,7 +255,7 @@ class AttributeForm
                             ->orderColumn('sort_order')
                             ->collapsible()
                             ->collapsed(fn($operation) => $operation !== 'create')
-                            ->itemLabel(fn (array $state): ?string => $state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []) ?? '')
+                            ->itemLabel(fn (array $state): ?string => $state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []) ?? null)
                             ->label(__('admin.catalog.attributes.fields.values'))
                     ])
                     ->columnSpanFull()

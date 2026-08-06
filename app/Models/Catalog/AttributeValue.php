@@ -23,6 +23,7 @@ class AttributeValue extends Model
         'name',
         'description',
         'images',
+        'robots',
     ];
     protected $casts = [
         'store_id'         => 'integer',

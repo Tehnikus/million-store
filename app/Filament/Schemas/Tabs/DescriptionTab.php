@@ -4,10 +4,11 @@ namespace App\Filament\Schemas\Tabs;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Facades\Filament;
-use Filament\Schemas\JsContent;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Utilities\Get;
