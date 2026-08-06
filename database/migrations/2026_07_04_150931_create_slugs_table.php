@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->foreignId('language_id')->constrained('languages')->cascadeOnDelete();
             $table->string('slug');
-            $table->nullableMorphs('sluggable'); // Polymorph reference to entity: BlogTag, BlogPost, Product, Category, Filter Seo Pages (TODO)
+            $table->nullableMorphs('sluggable'); // Polymorph reference to entity: BlogTag, BlogPost, Product, Category, Filter Seo Pages
             $table->foreignId('redirected_to_id')->nullable()->constrained('slugs')->nullOnDelete(); // For 301 redirects. Old slug references to to new actual row of the same sluggable_type
             $table->boolean('is_active')->default(true);
+            $table->tinyText('robots')->default('index, follow');
             $table->timestamps();
             $table->unique(['store_id', 'language_id', 'slug']);
             $table->index(['sluggable_type', 'sluggable_id', 'store_id', 'language_id'], 'slugs_entity_lookup');
