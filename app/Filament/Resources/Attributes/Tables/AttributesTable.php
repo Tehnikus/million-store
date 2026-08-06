@@ -19,7 +19,7 @@ class AttributesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with('values')) // Eagel loading of attribute values
+            ->modifyQueryUsing(fn ($query) => $query->with('values')) // Eager loading of attribute values
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
