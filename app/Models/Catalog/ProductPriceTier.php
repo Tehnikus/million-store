@@ -38,4 +38,33 @@ class ProductPriceTier extends Model
     {
         return $this->belongsTo(CustomerGroup::class);
     }
+
+    
+    public function hasActiveSpecialPrice(int $quantity = 1): bool
+    {
+        if ($this->special_price === null) {
+            return false;
+        }
+
+        if ($this->special_valid_quantity !== null && $quantity < $this->special_valid_quantity) {
+            return false;
+        }
+
+        if ($this->special_valid_from && $this->special_valid_from->isFuture()) {
+            return false;
+        }
+
+        if ($this->special_valid_until && $this->special_valid_until->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function currentPrice(int $quantity = 1): string|null
+    {
+        return $this->hasActiveSpecialPrice($quantity)
+            ? $this->special_price
+            : $this->price;
+    }
 }
