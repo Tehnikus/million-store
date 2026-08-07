@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete(); 
 
             $table->string('sku')->nullable();
-            $table->boolean('stock_subtract')->nullable(); // null = не отслеживаем остаток для этой комбинации
-            $table->boolean('is_default')->default(false); // override дефолта конкретно для этого товара
+            $table->boolean('stock_subtract')->default(false);
+            $table->boolean('is_default')->default(false); // Override default behavior for the product
 
             // Descriptions - duplicate or override values from original option descriptions
             $table->jsonb('name')->nullable()->default('{}');
@@ -29,8 +29,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Одно значение опции не может быть добавлено к продукту дважды в рамках одной group-привязки
-            $table->unique(['product_option_id', 'option_value_id']);
+            $table->unique(['product_option_id', 'option_value_id']); // Same option value cannot be added to the same product twice within the same group binding.
             $table->index(['product_id', 'store_id']);
 
             // Composite foreign key on product_options
