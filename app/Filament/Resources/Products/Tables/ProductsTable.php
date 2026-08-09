@@ -136,28 +136,28 @@ class ProductsTable
                 //             })
                 //     ),
 
-                // Toggle product state. Has three states, actually: true, fasle and null (when not associated to store)
-                // Thus a little bit of logic used here
-                ToggleColumn::make('descriptions.is_active')
-                    ->updateStateUsing(function (Product $record, bool $state) {$record->descriptions->first()?->update(['is_active' => $state]);})
-                    ->getStateUsing(fn(Product $record) => $record->descriptions?->first()?->is_active)
-                    ->onColor('success')
-                    ->onIcon('heroicon-s-play')
-                    ->offColor(fn(Product $record) => $record->descriptions?->first()?->is_active === null ? 'black' : 'danger')
-                    ->offIcon(fn(Product $record) => $record->descriptions?->first()?->is_active === null ? 'heroicon-s-x-mark' : 'heroicon-s-stop')
-                    ->disabled(fn(Product $record) => $record->descriptions?->first()?->is_active === null)
-                    // // Due some kind of bug the tooltip is not updated with toggle state I have to comment this out and use single tooltip 
-                    // // TODO Report this bug
-                    // ->tooltip(fn(Product $record) => match ($record->descriptions?->first()?->is_active) {
-                    //     true   => __('admin.catalog.products.fields.is_active'),
-                    //     false  => __('admin.catalog.products.fields.is_not_active'),
-                    //     null   => __('admin.catalog.products.fields.is_not_associated'),
-                    // })
-                    ->tooltip(fn (Product $record) => $record->descriptions?->first()?->is_active === null ? __('admin.catalog.products.fields.is_not_associated') : null)
-                    ->label(__('admin.catalog.products.fields.is_active'))
-                    ->tooltip(__('admin.catalog.products.helpers.status'))
-                    ->wrapHeader()
-                    ->width('1%'),
+                // // Toggle product state. Has three states, actually: true, fasle and null (when not associated to store)
+                // // Thus a little bit of logic used here
+                // ToggleColumn::make('descriptions.is_active')
+                //     ->updateStateUsing(function (Product $record, bool $state) {$record->descriptions->first()?->update(['is_active' => $state]);})
+                //     ->getStateUsing(fn(Product $record) => $record->descriptions?->first()?->is_active)
+                //     ->onColor('success')
+                //     ->onIcon('heroicon-s-play')
+                //     ->offColor(fn(Product $record) => $record->descriptions?->first()?->is_active === null ? 'black' : 'danger')
+                //     ->offIcon(fn(Product $record) => $record->descriptions?->first()?->is_active === null ? 'heroicon-s-x-mark' : 'heroicon-s-stop')
+                //     ->disabled(fn(Product $record) => $record->descriptions?->first()?->is_active === null)
+                //     // // Due some kind of bug the tooltip is not updated with toggle state I have to comment this out and use single tooltip 
+                //     // // TODO Report this bug
+                //     // ->tooltip(fn(Product $record) => match ($record->descriptions?->first()?->is_active) {
+                //     //     true   => __('admin.catalog.products.fields.is_active'),
+                //     //     false  => __('admin.catalog.products.fields.is_not_active'),
+                //     //     null   => __('admin.catalog.products.fields.is_not_associated'),
+                //     // })
+                //     ->tooltip(fn (Product $record) => $record->descriptions?->first()?->is_active === null ? __('admin.catalog.products.fields.is_not_associated') : null)
+                //     ->label(__('admin.catalog.products.fields.is_active'))
+                //     ->tooltip(__('admin.catalog.products.helpers.status'))
+                //     ->wrapHeader()
+                //     ->width('1%'),
 
 
                 // Dates
@@ -169,7 +169,15 @@ class ProductsTable
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                
+                Action::make('toggleActive')
+                    ->requiresConfirmation(false)
+                    ->action(fn (Product $record) => $record->currentDescription()?->update(['is_active' => !$record->currentDescription()?->is_active]))
+                    ->visible(fn($record) => $record->currentDescription() !== null)
+                    ->icon(fn($record) => $record->currentDescription()?->is_active == true ? 'heroicon-s-play' : 'heroicon-s-stop')
+                    ->color(fn($record) => $record->currentDescription()?->is_active == true ? 'success' : 'danger')
+                    ->tooltip(fn($record) => $record->currentDescription()?->is_active == true ? __('admin.catalog.products.fields.is_active') : __('admin.catalog.products.fields.is_not_active')),
+                
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
