@@ -5,21 +5,19 @@ namespace App\Filament\Resources\Products\Tables;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductDescription;
 use App\Models\Global\Currency;
-// use Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
-// use Filament\Tables\Columns\IconColumn;
 use Filament\Support\Enums\Alignment;
-use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-// use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 
 class ProductsTable
@@ -187,6 +185,12 @@ class ProductsTable
                     ->modalHeading(__('admin.catalog.products.buttons.delete_from_store'))
                     ->modalDescription(__('admin.catalog.products.messages.delete_from_store'))
                     ->tooltip(__('admin.catalog.products.buttons.delete_from_store')),
+
+                DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->modalHeading(__('admin.catalog.products.buttons.delete_from_all_stores'))
+                    ->modalDescription(__('admin.catalog.products.messages.delete_from_all_stores'))
+                    ->tooltip(__('admin.catalog.products.buttons.delete_from_all_stores')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
