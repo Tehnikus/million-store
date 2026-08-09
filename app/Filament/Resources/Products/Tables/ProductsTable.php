@@ -178,6 +178,15 @@ class ProductsTable
                     ->color(fn($record) => $record->currentDescription()?->is_active == true ? 'success' : 'danger')
                     ->tooltip(fn($record) => $record->currentDescription()?->is_active == true ? __('admin.catalog.products.fields.is_active') : __('admin.catalog.products.fields.is_not_active')),
                 
+                Action::make('deleteFromStore')
+                    ->action(fn(Product $product) => ProductDescription::where('product_id', $product->id)->where('store_id', Filament::getTenant()->id)->delete())
+                    ->visible(fn($record) => $record->currentDescription() !== null)
+                    ->icon('heroicon-s-no-symbol')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading(__('admin.catalog.products.buttons.delete_from_store'))
+                    ->modalDescription(__('admin.catalog.products.messages.delete_from_store'))
+                    ->tooltip(__('admin.catalog.products.buttons.delete_from_store')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
