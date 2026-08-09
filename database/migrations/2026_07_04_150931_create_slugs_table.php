@@ -22,6 +22,8 @@ return new class extends Migration
             $table->tinyText('robots')->default('index, follow');
             $table->timestamps();
             $table->unique(['store_id', 'language_id', 'slug']);
+
+            // Indexes
             $table->index(['sluggable_type', 'sluggable_id', 'store_id', 'language_id'], 'slugs_entity_lookup');
         });
     }

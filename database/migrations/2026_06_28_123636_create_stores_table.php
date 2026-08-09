@@ -16,6 +16,10 @@ return new class extends Migration {
             $table->string('host')->unique(); // Store base host, e.g. store.com
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            // Indexes
+            $table->index('is_active');
+            $table->index('host');
         });
     }
 

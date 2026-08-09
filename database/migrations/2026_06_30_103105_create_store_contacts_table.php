@@ -42,6 +42,8 @@ return new class extends Migration
             $table->jsonb('social_contacts')->default('{}'); // {"uk": {"whatsapp": "..."}, "pl": {...}}
 
             $table->timestamps();
+
+            // Indexes
             $table->unique('store_id');
         });
     }

@@ -23,7 +23,9 @@ return new class extends Migration {
             $table->boolean('is_admin_reply')->default(false);  // If true it's admin reply
             $table->boolean('is_approved')->default(false); // Don't show on frontend until approved
             $table->timestamps();
-            $table->index(['blog_post_id', 'is_approved']);
+
+            // Indexes
+            $table->index(['blog_post_id', 'is_approved', 'locale']);
             $table->index('thread_id');
         });
     }

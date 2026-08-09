@@ -16,9 +16,11 @@ return new class extends Migration
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             $table->boolean('is_active')->default(false);
-            $table->integer('sort_order')->nullable();
+            $table->unsignedBigInteger('sort_order')->default(1);
             $table->timestamps();
-            $table->index(['store_id', 'is_active']);
+
+            // Indexes
+            $table->index(['store_id', 'is_active', 'sort_order']);
         });
     }
 

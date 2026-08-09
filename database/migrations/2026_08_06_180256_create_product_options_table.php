@@ -16,9 +16,11 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->foreignId('option_id')->constrained('options')->cascadeOnDelete();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete(); // Required for frontend requests omitting JOINs
-            $table->integer('sort_order')->default(1);
+            $table->unsignedBigInteger('sort_order')->default(1);
             $table->timestamps();
 
+            // Indexes
+            $table->unique(['id', 'product_id']);
             $table->unique(['product_id', 'option_id']); // unique index to fit composite foreign key in product_option_values
             $table->index(['product_id', 'store_id', 'sort_order']);
         });

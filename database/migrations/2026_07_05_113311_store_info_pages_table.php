@@ -27,9 +27,11 @@ return new class extends Migration
             $table->jsonb('images')->nullable()->default('{}');
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->boolean('is_active')->default(false);
-            $table->integer('sort_order')->nullable();
-            $table->index(['id', 'store_id', 'is_active']);
+            $table->unsignedBigInteger('sort_order')->default(1);
             $table->timestamps();
+            
+            // Indexes
+            $table->index(['store_id', 'is_active', 'sort_order']);
         });
     }
 

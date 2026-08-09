@@ -24,6 +24,8 @@ return new class extends Migration
             $table->jsonb('notification_settings')->nullable()->default('{}');  // E-Mail and other notifications
             $table->jsonb('maintenance_settings')->nullable()->default('{}');   // Put current store in maintenance mode
             $table->timestamps();
+
+            // Indexes
             $table->unique('store_id');
         });
     }

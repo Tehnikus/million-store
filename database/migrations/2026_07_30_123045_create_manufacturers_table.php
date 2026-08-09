@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(false);
             $table->boolean('show_in_facets')->default(false);
             $table->foreignId('parent_id')->nullable()->constrained('manufacturers')->cascadeOnDelete();
-            $table->integer('sort_order')->default(1);
+            $table->unsignedBigInteger('sort_order')->default(1);
             // Descriptions
             $table->jsonb('name')->nullable()->default('{}');
             $table->jsonb('h1')->nullable()->default('{}');
@@ -34,6 +34,7 @@ return new class extends Migration
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
 
+            // Indexes
             $table->index(['store_id', 'parent_id', 'is_active', 'show_in_facets', 'sort_order'], 'manufacturers_frontend_lookup');
         });
     }

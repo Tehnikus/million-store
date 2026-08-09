@@ -25,6 +25,9 @@ return new class extends Migration {
             $table->jsonb('footer')->nullable()->default('{}');
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
+
+            // Indexes
+            $table->unique('store_id');
         });
     }
 

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('is_available')->default(false);
             $table->dateTime('is_available_from')->nullable();
             $table->dateTime('is_available_to')->nullable();
-            $table->integer('sort_order')->default(1);
+            $table->unsignedBigInteger('sort_order')->default(1);
             // Descriptions
             $table->jsonb('name')->nullable()->default('{}');
             $table->jsonb('h1')->nullable()->default('{}');
@@ -39,6 +39,7 @@ return new class extends Migration
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
             
+            // Indexes
             $table->unique(['product_id', 'store_id']); // Enforce only one pair of product + store, also allow foreign composite key for cascade
             $table->index(['store_id', 'is_active', 'is_available', 'product_id'], 'product_admin_lookup');
             $table->index(['product_id', 'store_id', 'is_active', 'sort_order'], 'product_frontend_lookup');

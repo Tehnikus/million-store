@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('valid_quantity')->nullable();
             $table->timestamps();
 
+            // Indexes
             $table->index(['product_id', 'store_id', 'customer_group_id', 'priority']);
             $table->foreign(['product_id', 'store_id'])->references(['product_id', 'store_id'])->on('product_descriptions')->cascadeOnDelete();
         });

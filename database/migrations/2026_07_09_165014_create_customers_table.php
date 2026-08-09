@@ -37,7 +37,6 @@ return new class extends Migration {
             $table->timestamps();
 
             $table->index(['store_id', 'is_approved', 'is_anonymized'], 'admin_count_customers'); // Count approved customers in admin
-            // $table->uniqueIndex(['store_id', 'email'])->where('deleted_at is null');
         });
 
         DB::statement(

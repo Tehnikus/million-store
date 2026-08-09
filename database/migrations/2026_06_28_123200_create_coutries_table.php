@@ -21,6 +21,9 @@ return new class extends Migration
             $table->foreignId('default_currency_id')->constrained('currencies')->cascadeOnDelete();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            // Indexes
+            $table->index('is_active');
         });
     }
 

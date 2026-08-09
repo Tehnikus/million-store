@@ -21,6 +21,9 @@ return new class extends Migration {
             $table->boolean('rate_default')->default(false); // Default currency flag. Must be only one default currency system-wide. 
             $table->boolean('is_active')->default(true);     // Is currency enabled. Default currency cannot be disabled
             $table->timestamps();
+
+            // Indexes
+            $table->index('is_active');
             $table->uniqueIndex('rate_default')->where('rate_default = true');
         });
     }

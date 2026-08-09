@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->foreignId('option_value_id')->constrained('option_values')->cascadeOnDelete();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete(); 
-
+            $table->unsignedBigInteger('sort_order')->default(1);
             $table->string('sku')->nullable();
             $table->boolean('stock_subtract')->default(false);
             $table->boolean('is_default')->default(false); // Override default behavior for the product
@@ -29,12 +29,13 @@ return new class extends Migration
 
             $table->timestamps();
 
+            // Indexes
             $table->unique(['product_option_id', 'option_value_id']); // Same option value cannot be added to the same product twice within the same group binding.
-            $table->index(['product_id', 'store_id']);
+            $table->index(['product_id', 'store_id', 'sort_order']);
 
             // Composite foreign key on product_options
-            $table->foreign(['product_option_id', 'product_id'])
-                ->references(['option_id', 'product_id'])
+            $table->foreign(['product_option_id', 'product_id'], 'foreign_options_key')
+                ->references(['id', 'product_id'])
                 ->on('product_options')
                 ->onDelete('cascade');
         });

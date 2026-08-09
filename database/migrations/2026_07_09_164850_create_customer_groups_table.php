@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Tpetry\PostgresqlEnhanced\Schema\Blueprint;
+use Tpetry\PostgresqlEnhanced\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -26,11 +26,12 @@ return new class extends Migration
             $table->boolean('tax_exempt')->default(false);          // reverse charge taxes for B2B with VAT number (EU)
 
             $table->boolean('is_default')->default(false);
-            $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->unsignedBigInteger('sort_order')->default(1);
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
 
+            // Indexes
             $table->uniqueIndex(['is_default', 'store_id'])->where('is_default = true');
         });
     }

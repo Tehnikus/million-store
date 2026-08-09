@@ -28,8 +28,11 @@ return new class extends Migration
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_menu')->default(false);
-            $table->integer('sort_order')->nullable();
+            $table->unsignedBigInteger('sort_order')->default(1);
             $table->timestamps();
+
+            // Indexes
+            $table->index(['store_id', 'is_active', 'sort_order']);
         });
     }
 

@@ -25,8 +25,11 @@ return new class extends Migration {
             $table->jsonb('social_links')->nullable()->default('[]'); // [{"platform": "facebook", "url": "..."}, {"platform": "instagram", "url": "..."}]
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->boolean('is_active')->default(true);
-            $table->integer('sort_order')->nullable();
+            $table->unsignedBigInteger('sort_order')->default(1);
             $table->timestamps();
+
+            // Indexes
+            $table->index(['store_id', 'is_active', 'sort_order']);
         });
     }
 
