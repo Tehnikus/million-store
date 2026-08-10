@@ -14,20 +14,19 @@ use Filament\Schemas\Components\Utilities\Set;
 
 class CategoriesTab
 {
-    public static function schema(): array
+    public static function schema($storeId): array
     {
         return [
             Group::make([
                 Select::make('parent_id')
                     ->label(__('admin.catalog.products.fields.parent_id'))
-                    ->options(
-                        fn() => Category::query()
-                            ->where('store_id', Filament::getTenant()->id)
-                            ->get()
-                            ->mapWithKeys(fn(Category $category) => [$category->id => $category->name])
+                    ->options(fn() => Category::query()
+                        ->where('store_id', $storeId)
+                        ->get()
+                        ->mapWithKeys(fn(Category $category) => [$category->id => $category->name])
                     )
                     ->searchable()
-                    ->preload()
+                    // ->preload()
                     ->helperText(__('admin.catalog.products.helpers.parent_id'))
             ])
             ->statePath('description')
@@ -41,14 +40,13 @@ class CategoriesTab
                 ->schema([
                     Select::make('facet_value_id')
                         ->label(__('admin.catalog.products.fields.category'))
-                        ->options(
-                            fn() => Category::query()
-                                ->where('store_id', Filament::getTenant()->id)
+                        ->options(fn() => Category::query()
+                                ->where('store_id', $storeId)
                                 ->get()
                                 ->mapWithKeys(fn(Category $category) => [$category->id => $category->name])
                         )
                         ->searchable()
-                        ->preload()
+                        // ->preload()
                         ->required()
                         // Restricts same category selection  
                         ->distinct()

@@ -14,17 +14,16 @@ use Filament\Schemas\Components\Utilities\Set;
 
 class ManufacturersTab
 {
-    public static function schema(): array
+    public static function schema($storeId): array
     {
         return [
             Group::make([
                 Select::make('manufacturer_id')
                     ->label(__('admin.catalog.products.fields.manufacturer_id'))
-                    ->options(
-                        fn() => Manufacturer::query()
-                            ->where('store_id', Filament::getTenant()->id)
-                            ->get()
-                            ->mapWithKeys(fn(Manufacturer $manufacturer) => [$manufacturer->id => $manufacturer->name])
+                    ->options(fn() => Manufacturer::query()
+                        ->where('store_id', $storeId)
+                        ->get()
+                        ->mapWithKeys(fn(Manufacturer $manufacturer) => [$manufacturer->id => $manufacturer->name])
                     )
                     ->searchable()
                     ->preload()
@@ -41,11 +40,10 @@ class ManufacturersTab
                 ->schema([
                     Select::make('facet_value_id')
                         ->label(__('admin.catalog.products.fields.manufacturers'))
-                        ->options(
-                            fn() => Manufacturer::query()
-                                ->where('store_id', Filament::getTenant()->id)
-                                ->get()
-                                ->mapWithKeys(fn(Manufacturer $manufacturer) => [$manufacturer->id => $manufacturer->name])
+                        ->options(fn() => Manufacturer::query()
+                            ->where('store_id', $storeId)
+                            ->get()
+                            ->mapWithKeys(fn(Manufacturer $manufacturer) => [$manufacturer->id => $manufacturer->name])
                         )
                         ->searchable()
                         ->preload()
