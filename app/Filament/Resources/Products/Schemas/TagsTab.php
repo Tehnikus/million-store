@@ -13,7 +13,7 @@ use Filament\Schemas\Components\Utilities\Set;
 
 class TagsTab
 {
-    public static function schema(): array
+    public static function schema($storeId): array
     {
         return [
             Repeater::make('facet_tags')
@@ -26,7 +26,7 @@ class TagsTab
                         ->label(__('admin.catalog.products.fields.tag'))
                         ->options(
                             fn() => Tag::query()
-                                ->where('store_id', Filament::getTenant()->id)
+                                ->where('store_id', $storeId)
                                 ->get()
                                 ->mapWithKeys(fn(Tag $tag) => [$tag->id => $tag->name])
                         )

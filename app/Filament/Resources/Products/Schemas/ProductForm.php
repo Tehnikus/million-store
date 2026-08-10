@@ -27,7 +27,8 @@ class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
+        $storeId    = Filament::getTenant()->id;
+        $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
         $currencies = Filament::getTenant()->currencies()->wherePivot('is_active', true)->get();
 
         return $schema
@@ -79,15 +80,15 @@ class ProductForm
                             ]),
 
                         Tab::make(PricesTab::label())
-                            ->schema(PricesTab::schema()),
+                            ->schema(PricesTab::schema($storeId, $languages, $currencies)),
                         Tab::make(CategoriesTab::label())
-                            ->schema(CategoriesTab::schema()),
+                            ->schema(CategoriesTab::schema($storeId)),
                         Tab::make(ManufacturersTab::label())
-                            ->schema(ManufacturersTab::schema()),
+                            ->schema(ManufacturersTab::schema($storeId)),
                         Tab::make(TagsTab::label())
-                            ->schema(TagsTab::schema()),
+                            ->schema(TagsTab::schema($storeId)),
                         Tab::make(OptionsTab::label())
-                            ->schema(OptionsTab::schema()),
+                            ->schema(OptionsTab::schema($storeId, $languages, $currencies)),
                     ])
                     ->columnSpanFull(),
             ]);
