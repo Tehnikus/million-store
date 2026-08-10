@@ -8,6 +8,7 @@ use App\Filament\Concerns\StripsFacetsFormState;
 use App\Filament\Concerns\StripsSlugFormState;
 use App\Filament\Resources\Products\ProductResource;
 use App\Models\Catalog\FacetIndex;
+use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductDescription;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
@@ -137,6 +138,42 @@ class EditProduct extends EditRecord
         $record->update($data);
 
         return $record;
+    }
+
+    protected function afterSave(): void
+    {
+        $record  = $this->getRecord();
+        $storeId = Filament::getTenant()->id;
+
+        app(SyncProductFacets::class)->handle(
+            $record,
+            $storeId,
+            FacetType::Option,
+            $this->buildOptionFacetRows($record),
+        );
+    }
+
+    private function buildOptionFacetRows(Product $record): array
+    {
+        $productOptions = $record->productOptions()
+            ->with(['productOptionValues' => fn ($query) => $query
+                ->whereHas('optionValue', fn ($q) => $q
+                    ->where('is_active', true)
+                    ->where('show_in_facets', true))
+            ])
+            ->whereHas('option', fn ($query) => $query
+                ->where('is_active', true)
+                ->where('show_in_facets', true))
+            ->get();
+
+        return $productOptions
+            ->flatMap(fn ($option) => $option->productOptionValues->map(fn ($value) => [
+                'facet_group_id' => $option->option_id,
+                'facet_value_id' => $value->option_value_id,
+            ]))
+            ->values()
+            ->map(fn ($row, $i) => [...$row, 'sort_order' => $i + 1])
+            ->all();
     }
 
 }
