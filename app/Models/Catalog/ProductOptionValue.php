@@ -16,6 +16,7 @@ class ProductOptionValue extends Model
         'option_value_id',
         'product_id',
         'store_id',
+        'sort_order',
         'sku',
         'stock_subtract',
         'is_default',
@@ -28,6 +29,7 @@ class ProductOptionValue extends Model
         'option_value_id'   => 'integer',
         'product_id'        => 'integer',
         'store_id'          => 'integer',
+        'sort_order'        => 'integer',
         'sku'               => 'string',
         'stock_subtract'    => 'boolean',
         'is_default'        => 'boolean',
@@ -44,6 +46,11 @@ class ProductOptionValue extends Model
     public function optionGroup(): BelongsTo
     {
         return $this->belongsTo(ProductOption::class, 'product_option_id');
+    }
+
+    public function optionValue(): BelongsTo
+    {
+        return $this->belongsTo(OptionValue::class);
     }
 
     public function prices(): HasMany
