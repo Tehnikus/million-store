@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Support\Concerns\InheritsColumnFromParent;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -61,6 +62,16 @@ class ProductOptionValue extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class, 'store_id');
+    }
+
+    use InheritsColumnFromParent;
+
+    protected static function inheritedColumns(): array
+    {
+        return [
+            'product_id' => ['optionGroup', 'product_id'],
+            'store_id'   => ['optionGroup', 'store_id'],
+        ];
     }
 
 }
