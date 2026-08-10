@@ -166,8 +166,6 @@ class ProductsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                
                 Action::make('toggleActive')
                     ->requiresConfirmation(false)
                     ->action(fn (Product $record) => $record->currentDescription()?->update(['is_active' => !$record->currentDescription()?->is_active]))
@@ -175,6 +173,8 @@ class ProductsTable
                     ->icon(fn($record) => $record->currentDescription()?->is_active == true ? 'heroicon-s-play' : 'heroicon-s-stop')
                     ->color(fn($record) => $record->currentDescription()?->is_active == true ? 'success' : 'danger')
                     ->tooltip(fn($record) => $record->currentDescription()?->is_active == true ? __('admin.catalog.products.fields.is_active') : __('admin.catalog.products.fields.is_not_active')),
+
+                EditAction::make()->tooltip(__('admin.catalog.products.buttons.edit_product')),
                 
                 Action::make('deleteFromStore')
                     ->action(fn(Product $product) => ProductDescription::where('product_id', $product->id)->where('store_id', Filament::getTenant()->id)->delete())
