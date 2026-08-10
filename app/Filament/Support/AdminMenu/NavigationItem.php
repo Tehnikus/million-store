@@ -121,7 +121,7 @@ enum NavigationItem: string
             self::Attributes        => 'heroicon-o-list-bullet',
             self::Options           => 'heroicon-o-adjustments-horizontal',
             self::Tags              => 'heroicon-o-tag',
-            self::FacetPages        => 'heroicon-o-puzzle-piece',
+            self::FacetPages        => 'heroicon-s-squares-plus',
             self::FacetFilter       => 'heroicon-o-adjustments-vertical',
 
             // Orders
@@ -147,14 +147,14 @@ enum NavigationItem: string
 
             // SEO
             self::Analytics         => 'heroicon-o-chart-bar',
-            self::MetaEditor        => 'heroicon-o-wrench-screwdrive',
+            self::MetaEditor        => 'heroicon-o-puzzle-piece',
             self::Keywords          => 'heroicon-o-table-cells',
             self::Sitemap           => 'heroicon-o-share',
             self::Slugs             => 'heroicon-o-link',
             self::RobotsEditor      => 'heroicon-o-code-bracket',
 
             // Design
-            self::MenuEditor        => 'heroicon-s-squares-plus',
+            self::MenuEditor        => 'heroicon-s-queue-list',
             self::LayoutEditor      => 'heroicon-o-paint-brush',
             self::CssEditor         => 'heroicon-o-code-bracket',
             self::ImageSettings     => 'heroicon-o-photo',
