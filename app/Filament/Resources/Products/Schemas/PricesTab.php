@@ -21,20 +21,18 @@ use Illuminate\Support\Arr;
 
 class PricesTab
 {
-    public static function schema(): array
+    public static function schema($storeId, $languages, $currencies): array
     {
-        $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
-        $currencies = Filament::getTenant()->currencies()->wherePivot('is_active', true)->get();
 
         return [
             Group::make([
                 Repeater::make('product_price_tiers')
                     ->relationship(
                         name: 'priceTiers',
-                        modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
+                        modifyQueryUsing: fn(Builder $query) => $query->where('store_id', $storeId),
                     )
-                    ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
-                        $data['store_id'] = Filament::getTenant()->id;
+                    ->mutateRelationshipDataBeforeCreateUsing(function ($storeId, array $data): array {
+                        $data['store_id'] = $storeId;
                         return $data;
                     })
                     ->schema([
