@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Tag;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Collection;
 
 
 class TagsTab
@@ -24,12 +24,7 @@ class TagsTab
                 ->schema([
                     Select::make('facet_value_id')
                         ->label(__('admin.catalog.products.fields.tag'))
-                        ->options(
-                            fn() => Tag::query()
-                                ->where('store_id', $storeId)
-                                ->get()
-                                ->mapWithKeys(fn(Tag $tag) => [$tag->id => $tag->name])
-                        )
+                        ->options(fn () => static::tagChoices($storeId))
                         ->searchable()
                         ->preload()
                         ->required()
@@ -45,6 +40,25 @@ class TagsTab
                 ->defaultItems(0)
                 ->helperText(__('admin.catalog.products.helpers.facet_tags')),
         ];
+    }
+
+    // Cache option list for single request or multiple requests if Octane is used
+    protected static function tagChoices(int $storeId): Collection
+    {
+        $key = "tag_choices.{$storeId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = Tag::query()
+            ->where('store_id', $storeId)
+            ->get()
+            ->mapWithKeys(fn (Tag $tag) => [$tag->id => $tag->name]);
+
+        Context::add($key, $choices->all());
+
+        return $choices;
     }
 
     public static function label(): string
