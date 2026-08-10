@@ -201,6 +201,82 @@ class OptionsTab
             ->label(__('admin.catalog.products.fields.prices'));
     }
 
+    protected static function optionValueDescriptionsForm($languages)
+    {
+        return [
+            Group::make(
+                collect($languages)->map(
+                    fn($language) =>
+                    Fieldset::make($language->name)
+                        ->schema([
+                            TextInput::make("name.{$language->locale}")
+                                ->required()
+                                ->maxLength(255)
+                                ->prefix($language->locale)
+                                ->label(__('admin.catalog.options.fields.option_name'))
+                                ->placeholder(__('admin.catalog.options.fields.option_name'))
+                                ->hiddenLabel()
+                                ->columnSpanFull(),
+
+                            RichEditor::make("description.{$language->locale}")
+                                ->columnSpanFull()
+                                ->placeholder(__('admin.catalog.options.fields.description'))
+                                ->toolbarButtons([])
+                                ->floatingToolbars([
+                                    'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo'],
+                                ])
+                                ->extraInputAttributes([
+                                    'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
+                                ])
+                                ->hiddenLabel(),
+                        ])
+                        ->dense()
+                )->all()
+            )
+        ];
+    }
+
+
+    protected static function optionValueChoices(?int $optionId): Collection
+    {
+        if (blank($optionId)) {
+            return collect();
+        }
+
+        $key = "option_value_choices.{$optionId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = OptionValue::query()
+            ->where('option_id', $optionId)
+            ->where('is_active', true)
+            ->pluck('name', 'id');
+
+        Context::add($key, $choices->all());
+
+        return $choices;
+    }
+
+    protected static function optionChoices(int $storeId): Collection
+    {
+        $key = "option_choices.{$storeId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = Option::query()
+            ->where('store_id', $storeId)
+            ->where('is_active', true)
+            ->pluck('name', 'id');
+
+        Context::add($key, $choices->all());
+
+        return $choices;
+    }
+
     public static function label(): string
     {
         return __('admin.catalog.products.tabs.options');
