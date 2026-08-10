@@ -151,34 +151,14 @@ class PricesTab
                     )
                     ->itemNumbers()
                     ->defaultItems(1)
+                    ->minItems(1)
                     ->columnSpanFull()
                     ->collapsible()
-                    ->collapsed()
+                    ->collapsed(fn($operation) => $operation !== 'create')
                     ->label(__('admin.catalog.products.fields.price_tiers'))
                     ->addActionLabel(__('admin.catalog.products.buttons.add_price_tier'))
-                    ->deleteAction(
-                        fn($action) => $action->action(function (array $arguments, Repeater $component): void {
-                            $state = $component->getState();
-                            $keys = array_keys($state);
-
-                            // Check if the item being deleted is the first key
-                            if (!empty($keys) && $arguments['item'] === $keys[0]) {
-                                Notification::make()
-                                    ->danger()
-                                    // ->title(__('admin.catalog.products.errors.last_price_title'))
-                                    ->body(__('admin.catalog.products.errors.last_price_text'))
-                                    ->send();
-
-                                return;
-                            }
-
-                            // Proceed with deletion for other items
-                            unset($state[$arguments['item']]);
-                            $component->state($state);
-                        })
-                    ),
             ])
-                ->columnSpanFull(),
+            ->columnSpanFull(),
         ];
     }
 
