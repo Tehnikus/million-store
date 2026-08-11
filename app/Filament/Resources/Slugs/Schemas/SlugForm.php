@@ -11,12 +11,13 @@ use Filament\Facades\Filament;
 use Filament\Support\Icons\Heroicon;
 use App\Models\Seo\Slug;
 use App\Domain\Seo\ChecksSlugUniqueness;
+use Illuminate\Database\Eloquent\Builder;
 
 class SlugForm
 {
     use ChecksSlugUniqueness;
     public static function configure(Schema $schema): Schema
-    {
+    {        
         return $schema
             ->components([
                 Select::make('language_id')
@@ -56,42 +57,10 @@ class SlugForm
                             $livewire,
                             $component->getStatePath(),
                             $state,
-                            /* languageId */ (int) $get('language_id'),
-                            $record,
+                            (int) $get('language_id'),
+                            $record ? fn($query) => $query->whereKeyNot($record->getKey()) : null,
                         );
                     })
-                    // $path = $component->getStatePath();
-                    // $livewire->resetErrorBag($path);
-
-                    // if (blank($state)) {
-                    //     return;
-                    // }
-
-                    // $validator = Validator::make(
-                    //     ['slug' => $state],
-                    //     ['slug' => 'alpha_dash'],
-                    //     ['slug.alpha_dash' => __('admin.seo.slugs.errors.alpha_dash')],
-                    // );
-
-                    // if ($validator->fails()) {
-                    //     $livewire->addError($path, $validator->errors()->first('slug'));
-                    //     return;
-                    // }
-
-                    // if (blank($get('language_id'))) {
-                    //     return;
-                    // }
-
-                    // $taken = self::slugIsTaken(
-                    //     $state,
-                    //     (int) $get('language_id'),
-                    //     $record ? fn($query) => $query->whereKeyNot($record->getKey()) : null,
-                    // );
-
-                    // if ($taken) {
-                    //     $livewire->addError($path, __('admin.seo.slugs.errors.slug_taken'));
-                    // }
-                    // })
                     ->unique(
                         table: 'slugs',
                         column: 'slug',
@@ -126,11 +95,11 @@ class SlugForm
                         // List of models that may have SEO URL
                         \App\Models\Catalog\Product::class          => 'Product',
                         \App\Models\Catalog\Category::class         => 'Category',
-                        // \App\Models\Catalog\Manufacturer::class     => 'Manufacturer',
+                        \App\Models\Catalog\Manufacturer::class     => 'Manufacturer',
                         // \App\Models\Catalog\FilterSeoPage::class    => 'Filter SEO Page',
-                        // \App\Models\Catalog\ProductOption::class    => 'Option',
-                        // \App\Models\Catalog\ProductAttribute::class => 'Attribute',
-                        // \App\Models\Catalog\ProductTag::class       => 'Tag',
+                        \App\Models\Catalog\Option::class           => 'Option',
+                        \App\Models\Catalog\Attribute::class        => 'Attribute',
+                        \App\Models\Catalog\Tag::class              => 'Tag',
                         \App\Models\Blog\BlogPost::class            => 'Blog Post',
                         \App\Models\Blog\BlogTag::class             => 'Blog Tag',
                         \App\Models\Blog\BlogAuthor::class          => 'Blog Author',
@@ -150,7 +119,7 @@ class SlugForm
                     ->relationship(
                         name: 'redirectedTo',
                         titleAttribute: 'slug',
-                        modifyQueryUsing: fn(\Illuminate\Database\Eloquent\Builder $query, \Filament\Schemas\Components\Utilities\Get $get, ?\App\Models\Seo\Slug $record) => $query
+                        modifyQueryUsing: fn(Builder $query, Get $get, ?Slug $record) => $query
                             ->where('store_id', Filament::getTenant()->id)
                             ->where('language_id', $get('language_id'))
                             ->when($record, fn($q) => $q->whereKeyNot($record->id)),
