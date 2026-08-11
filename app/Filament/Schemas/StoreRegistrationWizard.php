@@ -22,10 +22,10 @@ class StoreRegistrationWizard
     public static function steps(): array
     {
         return [
+            self::storeStep(),
             self::currencyStep(),
             self::languageStep(),
             self::countryStep(), 
-            self::storeStep(),
         ];
     }
 
