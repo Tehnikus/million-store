@@ -16,19 +16,24 @@ return new class extends Migration
             $table->foreignId('attribute_id')->constrained('attributes', 'id')->cascadeOnDelete();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
 
-            // Flags
             $table->boolean('is_active')->default(false);
             $table->boolean('show_in_facets')->default(false);
             $table->unsignedBigInteger('sort_order')->default(1);
-            // Descriptions
             $table->jsonb('name')->nullable()->default('{}');
             $table->jsonb('description')->nullable()->default('{}');
             $table->jsonb('images')->nullable()->default('{}');
             $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
 
-            // Indexes
+            $table->unique(['id', 'store_id']); // To match foreign constrain on product_attribute_values
+
             $table->index(['attribute_id', 'store_id', 'is_active', 'sort_order']);
+
+            // Foreign key
+            $table->foreign(['attribute_id', 'store_id'])
+                ->references(['id', 'store_id'])
+                ->on('attributes')
+                ->cascadeOnDelete();
         });
     }
 

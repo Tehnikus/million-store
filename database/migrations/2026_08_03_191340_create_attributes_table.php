@@ -22,6 +22,8 @@ return new class extends Migration
             $table->jsonb('name')->nullable()->default('{}');
             $table->timestamps();
 
+            $table->unique(['id', 'store_id']); // To match foreign constrain on product_attributes
+
             // Indexes
             $table->index(['store_id', 'is_active', 'sort_order']);
         });
