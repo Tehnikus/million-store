@@ -68,7 +68,6 @@ class CustomersTable
                     ->alignment(Alignment::Center)
                     ->label(__('admin.customers.customer.fields.customer_group_id')),
                 TextColumn::make('email')
-                    ->label('Email address')
                     ->alignment(Alignment::Center)
                     ->label(__('admin.customers.customer.fields.email')),
                 IconColumn::make('marketing_opt_in')

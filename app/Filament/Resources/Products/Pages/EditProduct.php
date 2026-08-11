@@ -124,14 +124,6 @@ class EditProduct extends EditRecord
                 ->all(),
         );
 
-        // Update product manufacturer facets
-        // app(SyncProductFacets::class)->handle(
-        //     $record,
-        //     $storeId,
-        //     FacetType::Manufacturer,
-        //     $data['manufacturer_id'] ? [['facet_value_id' => $data['manufacturer_id']]] : [],
-        // );
-
         // Remove facets from data after save
         $data = $this->stripFacetsFormState($data);
 

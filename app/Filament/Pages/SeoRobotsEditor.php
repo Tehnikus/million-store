@@ -31,7 +31,7 @@ class SeoRobotsEditor extends Page
                     Section::make('Robots')
                         ->schema([
                             CodeEditor::make('robots')
-                                ->label('Edit File Content')
+                                ->label(__('admin.common.fields.edit_robots_file'))
                                 ->language(Language::Html)
                                 ->hiddenLabel()
                                 ->extraAttributes(['style' => 'max-height: 70vh; overflow-y: auto']),

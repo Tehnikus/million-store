@@ -157,7 +157,6 @@ class CustomerForm
                 Fieldset::make(__('admin.customers.customer.fields.email_data'))
                     ->schema([
                         TextInput::make('email')
-                            ->label('Email address')
                             ->email()
                             ->label(__('admin.customers.customer.fields.email')),
                         DateTimePicker::make('email_verified_at')

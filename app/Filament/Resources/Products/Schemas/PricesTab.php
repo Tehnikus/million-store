@@ -88,7 +88,7 @@ class PricesTab
                             ->columnSpanFull()
                             ->dense(true),
 
-                        Fieldset::make('admin.catalog.products.fields.price_terms')
+                        Fieldset::make(__('admin.catalog.products.fields.price_terms'))
                             ->schema([
                                 Group::make([
                                     Toggle::make('is_discount')

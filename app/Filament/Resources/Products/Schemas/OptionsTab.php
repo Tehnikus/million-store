@@ -43,7 +43,7 @@ class OptionsTab
                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                         ->required()
                         ->live()
-                        ->label('Option group'),
+                        ->label(__('admin.catalog.options.fields.group')),
 
                     Repeater::make('productOptionValues')
                         ->relationship('productOptionValues')
@@ -95,7 +95,7 @@ class OptionsTab
                                         ->nullable(),
     
                                     Toggle::make('stock_subtract')
-                                        ->label('Subtract from stock'),
+                                        ->label(__('admin.catalog.products.fields.stock_subtract')),
                                     
                                 ])->columnSpan(1),
     
@@ -140,8 +140,6 @@ class OptionsTab
 
                     $valueChoices = static::optionValueChoices($state['option_id'] ?? null);
 
-                    // Существующая запись — берём значения из БД напрямую, не полагаясь на вложенный form state
-                    // Новая, ещё не сохранённая строка — id ещё нет, тогда fallback на то, что реально успело попасть в $state
                     $valueIds = filled($state['id'] ?? null)
                         ? ProductOptionValue::where('product_option_id', $state['id'])->pluck('option_value_id')
                         : collect($state['productOptionValues'] ?? [])->pluck('option_value_id');

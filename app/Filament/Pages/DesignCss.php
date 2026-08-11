@@ -31,7 +31,7 @@ class DesignCss extends Page
                     Section::make('CSS')
                         ->schema([
                             CodeEditor::make('css')
-                                ->label('Edit File Content')
+                                ->label(__('admin.common.fields.edit_css_file'))
                                 ->language(Language::Css)
                                 ->hiddenLabel()
                                 ->extraAttributes(['style' => 'max-height: 70vh; overflow-y: auto']),

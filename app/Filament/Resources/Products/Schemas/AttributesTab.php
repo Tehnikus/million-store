@@ -40,7 +40,7 @@ class AttributesTab
                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                         ->required()
                         ->live()
-                        ->label('Attribute group'),
+                        ->label(__('admin.catalog.attributes.fields.group')),
 
                     Repeater::make('productAttributeValues')
                         ->relationship('productAttributeValues')
