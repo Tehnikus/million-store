@@ -4,7 +4,6 @@ namespace App\Filament\Support\Columns;
 
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 
 /**
@@ -24,16 +23,13 @@ class MultilangTextColumn extends TextColumn
         ;
     }
 
-    public function recordColumnSingle(\Closure $translationsUsing): static
-    {
-        $this->state(fn ($record) => static::fallbackColumn($translationsUsing($record)));
-
-        return $this;
-    }
-
     public function recordColumnAll(\Closure $translationsUsing): static
     {
-        $this->state(fn ($record) => static::allColumns($translationsUsing($record)));
+        $this->state(function ($record) use ($translationsUsing) {
+            $rawState = $translationsUsing($record);
+
+            return $rawState === null ? null : static::allColumns($rawState);
+        });
 
         return $this;
     }
@@ -55,25 +51,5 @@ class MultilangTextColumn extends TextColumn
         }
 
         return new HtmlString($result ?: '--');
-    }
-
-    /**
-     * Display only one fallback string and locale to which sting fell back
-     */
-    public static function fallbackColumn(array $rawState, ?string $locale = null): HtmlString
-    {
-        $locale ??= app()->getLocale();
-
-        if (filled($rawState[$locale] ?? null)) {
-            return new HtmlString(e($rawState[$locale]));
-        }
-
-        foreach ($rawState as $translationLocale => $value) {
-            if (filled($value)) {
-                return new HtmlString('<span class="inline-flex fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($translationLocale) . '</span> ' . e($value));
-            }
-        }
-
-        return new HtmlString('--');
     }
 }
