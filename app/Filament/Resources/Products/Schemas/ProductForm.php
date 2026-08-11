@@ -89,6 +89,8 @@ class ProductForm
                             ->schema(TagsTab::schema($storeId)),
                         Tab::make(OptionsTab::label())
                             ->schema(OptionsTab::schema($storeId, $languages, $currencies)),
+                        Tab::make(AttributesTab::label())
+                            ->schema(AttributesTab::schema($storeId, $languages)),
                     ])
                     ->columnSpanFull(),
             ]);
