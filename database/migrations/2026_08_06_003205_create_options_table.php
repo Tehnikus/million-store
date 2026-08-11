@@ -14,16 +14,15 @@ return new class extends Migration
         Schema::create('options', function (Blueprint $table) {
             $table->id();
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
-            // Flags
             $table->boolean('is_active')->default(false);
             $table->boolean('show_in_facets')->default(false);
             $table->unsignedBigInteger('sort_order')->default(1);
-            // Descriptions
             $table->jsonb('name')->nullable()->default('{}');
             $table->tinyText('type')->default('radio');
             $table->timestamps();
 
-            // Indexes
+            $table->unique(['id', 'store_id']); // To match foreign constrain
+
             $table->index(['store_id', 'is_active', 'sort_order']);
         });
     }

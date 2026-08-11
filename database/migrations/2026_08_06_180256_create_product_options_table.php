@@ -13,16 +13,25 @@ return new class extends Migration
     {
         Schema::create('product_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->foreignId('option_id')->constrained('options')->cascadeOnDelete();
-            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete(); // Required for frontend requests omitting JOINs
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('option_id');
+            $table->unsignedBigInteger('store_id');
             $table->unsignedBigInteger('sort_order')->default(1);
             $table->timestamps();
 
-            // Indexes
             $table->unique(['id', 'product_id']);
-            $table->unique(['product_id', 'option_id']); // unique index to fit composite foreign key in product_option_values
+            $table->unique(['product_id', 'option_id']);
             $table->index(['product_id', 'store_id', 'sort_order']);
+
+            $table->foreign(['option_id', 'store_id'])
+                ->references(['id', 'store_id'])
+                ->on('options')
+                ->cascadeOnDelete();
+
+            $table->foreign(['product_id', 'store_id'])
+                ->references(['product_id', 'store_id'])
+                ->on('product_descriptions')
+                ->cascadeOnDelete();
         });
     }
 
