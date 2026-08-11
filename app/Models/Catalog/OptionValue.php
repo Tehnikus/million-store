@@ -7,6 +7,7 @@ use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
 class OptionValue extends Model
@@ -46,6 +47,11 @@ class OptionValue extends Model
     public function facetType(): FacetType
     {
         return FacetType::Option;
+    }
+
+    public function option(): BelongsTo
+    {
+        return $this->belongsTo(Option::class);
     }
 
     // public function imageColumns(): array
