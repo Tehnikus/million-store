@@ -60,11 +60,6 @@ class ProductsTable
                 ConversionImageColumn::make('images')
                     ->conversion('miniature'),
 
-                MultilangTextColumn::make('descriptions.name')
-                    ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name') ?? [])
-                    ->label(__('admin.catalog.products.fields.store_name'))
-                    ->wrapHeader(),
-
                 // Global SKU and name
                 TextColumn::make('sku')
                     ->label(__('admin.catalog.products.fields.global_name') .'/'. __('admin.catalog.products.fields.sku'))
@@ -74,6 +69,12 @@ class ProductsTable
                             "<div style=\"color: var(--gray-400)\">{$record->sku}</div>" 
                         );
                     })
+                    ->wrapHeader(),
+
+                MultilangTextColumn::make('descriptions.name')
+                    ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name'))
+                    ->placeholder(__('admin.catalog.products.fields.is_not_associated'))
+                    ->label(__('admin.catalog.products.fields.store_name'))
                     ->wrapHeader(),
 
                 TextColumn::make('regular_price')
