@@ -26,16 +26,19 @@ return [
         'prices'                => 'Prices',
         'price'                 => 'Price',
         'price_name'            => 'Price name',
+        'price_terms'           => 'Price terms',
         'discount'              => 'Discount',
         'is_active'             => 'Active in this store',
         'is_not_active'         => 'Not active in this store',
         'is_not_associated'     => 'Not associated to this store',
         'prices_customer_group' => 'Customer group',
+        'customer_group_id_short' => 'Customers',
         'valid_from'            => 'Price valid from date',
         'valid_until'           => 'Price valid until date',
-        'valid_from_short'      => 'from',
-        'valid_until_short'     => 'until',
+        'valid_from_short'      => 'date from',
+        'valid_until_short'     => 'date until',
         'valid_quantity'        => 'Price valid quantity',
+        'valid_quantity_short'  => 'q-ty from',
         'priority'              => 'Priority',
         'parent_id'             => 'Parent category',
         'product_categories'    => 'Categories to display',
@@ -44,12 +47,15 @@ return [
         'manufacturers'         => 'Manufacturers',
         'product_tags'          => 'Product tags',
         'tag'                   => 'Tag',
+        'stock_subtract'        => 'Subtract from stock'
       ],
       'tabs' => [
         'prices'                => 'Prices',
         'categories'            => 'Categories',
         'manufacturers'         => 'Manufacturers',
         'tags'                  => 'Tags',
+        'attributes'            => 'Attributes',
+        'options'               => 'Options',
       ],
       'helpers' => [
         'global_data'           => 'Shared across every store this product is in - editing it here changes it everywhere',
@@ -74,9 +80,17 @@ return [
         'add_price_tier'        => 'Add price tier',
         'add_attribute'         => 'Add product attribute',
         'add_option'            => 'Add product options',
+        'add_option_value'      => 'Add option value',
         'add_tag'               => 'Add product tag',
         'add_category'          => 'Add category',
         'add_manufacturer'      => 'Add manufacturer',
+        'delete_from_store'     => 'Delete from current store',
+        'delete_from_all_stores'=> 'Delete product from all stores',
+        'edit_product'          => 'Edit product'
+      ],
+      'messages' => [
+        'delete_from_store'      => 'This action will delete this product from current store, but not from other stores. All product data in current store will be deleted. Continue?',
+        'delete_from_all_stores' => 'This action will delete this product all stores. All product data in all stores will be deleted. This action is irreversible. Continue?',
       ],
       'errors' => [
         'last_price_title'  => '',
@@ -176,6 +190,18 @@ return [
         'show_in_facets'  => 'Show this tag in filter block',
         'inline_style'    => 'Inline style to be applied to your tag on product miniature and product page',
       ],
+    ],
+    'facet_pages' => [
+      'navigation_label'      => 'Filter pages',
+      'model_label_singular'  => 'Filter page',
+      'fields' => [
+        'is_active'   => 'Is active',
+        'facet_list'  => 'Facet list',
+        'facet_index' => 'Facet index',
+      ],
+      'buttons' => [
+        'add_facet' => 'Add filter'
+      ]
     ],
     'facets' => [
       'types' => [
@@ -381,6 +407,8 @@ return [
       'created_at'        => 'Created at',
       'updated_at'        => 'Updated at',
       'is_active'         => 'Active',
+      'edit_css_file'     => 'Edit CSS',
+      'edit_css_robots'   => 'Edit robots.txt',
     ],
     'helpers' => [
       'name'              => 'Name',

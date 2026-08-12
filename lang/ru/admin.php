@@ -26,16 +26,19 @@ return [
         'prices'                => 'Цены',
         'price'                 => 'Цена',
         'price_name'            => 'Название цены',
+        'price_terms'           => 'Условия цены',
         'discount'              => 'Скидка',
         'is_active'             => 'Активен в этом магазине',
         'is_not_active'         => 'Не активен в этом магазине',
         'is_not_associated'     => 'Не связан с этим магазином',
         'prices_customer_group' => 'Группа клиентов',
+        'customer_group_id_short' => 'Клиенты',
         'valid_from'            => 'Цена действительна с даты',
         'valid_until'           => 'Цена действительна по дату',
         'valid_from_short'      => 'с',
         'valid_until_short'     => 'по',
         'valid_quantity'        => 'Количество для применения цены',
+        'valid_quantity_short'  => 'от кол-ва',
         'priority'              => 'Приоритет',
         'parent_id'             => 'Основная категория',
         'product_categories'    => 'Другие категории',
@@ -44,12 +47,15 @@ return [
         'manufacturers'         => 'Производители',
         'product_tags'          => 'Тери товара',
         'tag'                   => 'Тег',
+        'stock_subtract'        => 'Вычитать со склада'
       ],
       'tabs' => [
         'prices'                => 'Цены',
         'categories'            => 'Категории',
         'manufacturers'         => 'Производители',
-        'tags'                  => 'Теги'
+        'tags'                  => 'Теги',
+        'attributes'            => 'Атрибуты',
+        'options'               => 'Опции',
       ],
       'helpers' => [
         'global_data'           => 'Общие данные для всех магазинов, в которых есть этот товар - изменение здесь изменит их везде',
@@ -73,10 +79,18 @@ return [
       'buttons' => [
         'add_price_tier'        => 'Добавить группу цен',
         'add_attribute'         => 'Добавить атрибут товара',
-        'add_option'            => 'Добавить опции товара',
+        'add_option'            => 'Добавить опцию',
+        'add_option_value'      => 'Добавить значение опции',
         'add_tag'               => 'Добавить тег товара',
         'add_category'          => 'Добавить категорию',
         'add_manufacturer'      => 'Добавить производителя',
+        'delete_from_store'     => 'Удалить из этого магазина',
+        'delete_from_all_stores'=> 'Удалить из всех магазинов',
+        'edit_product'          => 'Редактировать товар'
+      ],
+      'messages' => [
+        'delete_from_store'      => 'Это действие удалит товар из текущего магазина, но не удалит из остальных магазинов. Все данные в текущем магазине товара будут удалены. Это дейцствие необратимо. Продолжить?',
+        'delete_from_all_stores' => 'Это действие удалит данные товара из всех магазинов. Все данные товара будут удалены из всех магазинов. Эото действие необратимо. Продолжить?',
       ],
       'errors' => [
         'last_price_title'  => '',
@@ -176,6 +190,18 @@ return [
         'show_in_facets'  => 'Показывать этот тег в фильтре',
         'inline_style'    => 'Встроенный стиль будет применен к тегу на страницах товаров и в миниатюрах',
       ],
+    ],
+    'facet_pages' => [
+      'navigation_label'      => 'Страницы фильтра',
+      'model_label_singular'  => 'Страница фильтра',
+      'fields' => [
+        'is_active'   => 'Активна',
+        'facet_list'  => 'Список фильтров',
+        'facet_index' => 'Список фильтров',
+      ],
+      'buttons' => [
+        'add_facet' => 'Добавить фильтр'
+      ]
     ],
     'facets' => [
       'types' => [
@@ -381,6 +407,8 @@ return [
       'created_at'        => 'Дата создания',
       'updated_at'        => 'Дата изменения',
       'is_active'         => 'Включен',
+      'edit_css_file'     => 'Редактировать CSS',
+      'edit_css_robots'   => 'Редактировать robots.txt',
     ],
     'helpers' => [
       'name'              => 'Имя',

@@ -26,16 +26,19 @@ return [
         'prices'                => 'Ціни',
         'price'                 => 'Ціна',
         'price_name'            => 'Назва ціни',
+        'price_terms'           => 'Умови ціни',
         'discount'              => 'Знижка',
         'is_active'             => 'Активний у цьому магазині',
         'is_not_active'         => 'Неактивний у цьому магазині',
         'is_not_associated'     => 'Не пов’язаний з цим магазином',
         'prices_customer_group' => 'Група клієнтів',
+        'customer_group_id_short' => 'Кліенти',
         'valid_from'            => 'Ціна дійсна з дати',
         'valid_until'           => 'Ціна дійсна по дату',
         'valid_from_short'      => 'з',
         'valid_until_short'     => 'по',
         'valid_quantity'        => 'Кількість для застосування ціни',
+        'valid_quantity_short'  => 'від кількості',
         'priority'              => 'Пріоритет',
         'parent_id'             => 'Основна категорія',
         'product_categories'    => 'Інші категорії',
@@ -44,12 +47,15 @@ return [
         'manufacturers'         => 'Виробники',
         'product_tags'          => 'Теги товару',
         'tag'                   => 'Тег',
+        'stock_subtract'        => 'Віднімати зі складу'
       ],
       'tabs' => [
         'prices'                => 'Ціни',
         'categories'            => 'Категорії',
         'manufacturers'         => 'Виробники',
-        'tags'                  => 'Теги'
+        'tags'                  => 'Теги',
+        'attributes'            => 'Атрибути',
+        'options'               => 'Опції',
       ],
       'helpers' => [
         'global_data'           => 'Спільні дані для кожного магазину, де є цей товар - редагування тут змінить їх усюди',
@@ -73,10 +79,18 @@ return [
       'buttons' => [
         'add_price_tier'        => 'Додати групу цін',
         'add_attribute'         => 'Додати атрибут товару',
-        'add_option'            => 'Додати опції товару',
+        'add_option'            => 'Додати опцію',
+        'add_option_value'      => 'Додати значеня опції',
         'add_tag'               => 'Додати тег товару',
         'add_category'          => 'Додати категорію',
         'add_manufacturer'      => 'Додати виробника',
+        'delete_from_store'     => 'Видалити з цього магазина',
+        'delete_from_all_stores'=> 'Видалити з усіх магазинів',
+        'edit_product'          => 'Редактировать товар'
+      ],
+      'messages' => [ 
+        'delete_from_store'       => 'Ця дія видалить товар з поточного магазину, але не видаляє з інших магазинів. Усі дані у поточному магазині товару будуть видалені. Ця дія необоротна. Продовжити?', 
+        'delete_from_all_stores'  => 'Ця дія видалить товар з усіх магазинів. Усі дані товару будуть видалені з усіх магазинів. Ця дія необоротна. Продовжити?', 
       ],
       'errors' => [
         'last_price_title'  => '',
@@ -166,8 +180,37 @@ return [
     'tags' => [
       'navigation_label'      => 'Теги',
       'model_label_singular'  => 'Тег',
-      'fields'  => [],
-      'helpers' => [],
+      'fields' => [
+        'show_in_facets'  => 'Показувати у фільтрі',
+        'is_active'       => 'Активний',
+        'inline_style'    => 'Вбудований CSS стиль',
+      ],
+      'helpers' => [
+        'is_active'       => 'Показувати цей тег на сторінці товару та у фільтрі',
+        'show_in_facets'  => 'Показувати цей тег у фільтрі',
+        'inline_style'    => 'Вбудований стиль буде застосований до тега на сторінках товарів та в мініатюрах',
+      ],
+    ],
+    'facet_pages' => [
+      'navigation_label'      => 'Сторінки фільтра',
+      'model_label_singular'  => 'Сторінка фільтра',
+      'fields' => [
+        'is_active'     => 'Активна',
+        'facet_list'    => 'Список фільтрів',
+        'facet_index'   => 'Список фільтрів',
+      ],
+      'buttons' => [
+        'add_facet'   => 'Додати фільтр'
+      ]
+    ],
+    'facets' => [
+      'types' => [
+        'category'      => 'Категорія',
+        'manufacturer'  => 'Виробник',
+        'attribute'     => 'Атрибут',
+        'option'        => 'Опція',
+        'tag'           => 'Тег',
+      ]
     ],
   ],
   'customers' => [
@@ -364,6 +407,8 @@ return [
       'created_at'        => 'Дата створення',
       'updated_at'        => 'Дата змінення',
       'is_active'         => 'Активний',
+      'edit_css_file'     => 'Редагувати CSS', 
+      'edit_css_robots'   => 'Редагувати robots.txt',
     ],
     'helpers' => [
       'name'              => 'Ім\'я',
