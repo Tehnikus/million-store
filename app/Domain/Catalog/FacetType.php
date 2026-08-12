@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Domain\Catalog;
+use Filament\Support\Contracts\HasLabel;
 
 /**
  * Facet type dictionary
  */
-enum FacetType: int
+enum FacetType: int implements HasLabel
 {
     case Category      = 1;
     case Manufacturer  = 2;
@@ -13,7 +14,7 @@ enum FacetType: int
     case Option        = 4;
     case Tag           = 5;
 
-    public function label(): string
+    public function getLabel(): string
     {
         return match ($this) {
             self::Category      => __('admin.catalog.facets.types.category'),
