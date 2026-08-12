@@ -81,6 +81,7 @@ return [
         'add_attribute'         => 'Добавить атрибут товара',
         'add_option'            => 'Добавить опцию',
         'add_option_value'      => 'Добавить значение опции',
+        'add_attribute_value'   => 'Добавить значение атрибута',
         'add_tag'               => 'Добавить тег товара',
         'add_category'          => 'Добавить категорию',
         'add_manufacturer'      => 'Добавить производителя',
@@ -130,7 +131,7 @@ return [
         'group_title'           => 'Атрибут',
         'group'                 => 'Группа',
         'group_name'            => 'Название группы атрибутов',
-        'values'                => 'Значения атрибутов',
+        'values'                => 'Значения группы атрибутов',
         'image'                 => 'Картинка',
         'description'           => 'Описание',
         'attribute_name'        => 'Название атрибута',
@@ -300,7 +301,16 @@ return [
         'alpha_dash' => 'Допускаются только латинские буквы цифры и тире вместо пробелов',
       ]
     ],
-    'robots' => [
+    'robots_editor' => [
+      'navigation_label' => 'Robots.txt',
+      'fields' => [
+        'edit_robots_file'        => 'Редактировать robots.txt',
+        'robots_file_description' => 'У каждого магазина есть отдельный файл robots.txt, они не мешают друг другу',
+      ],
+      'messages' => [
+        'file_saved'        => 'Файл Robots.txt успешно сохранен',
+        'error_saving_file' => 'Ошибка при сохранении файла Robots.txt. Возможно, вам потребуется создать symlink или установить права доступа к папке хранения',
+      ],
     ],
   ],
   'blog' => [
@@ -408,7 +418,6 @@ return [
       'updated_at'        => 'Дата изменения',
       'is_active'         => 'Включен',
       'edit_css_file'     => 'Редактировать CSS',
-      'edit_css_robots'   => 'Редактировать robots.txt',
     ],
     'helpers' => [
       'name'              => 'Имя',
@@ -498,7 +507,6 @@ return [
   'store_homepage'  => ['navigation_label' => 'Главная'],
   'image_settings'  => ['navigation_label' => 'Изображения'],
   'css_editor'      => ['navigation_label' => 'CSS Редактор'],
-  'robots_editor'   => ['navigation_label' => 'Robots.txt'],
 
   // Info pages
   'info_pages' => [

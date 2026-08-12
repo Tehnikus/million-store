@@ -31,18 +31,19 @@ class SeoRobotsEditor extends Page
                     Section::make('Robots')
                         ->schema([
                             CodeEditor::make('robots')
-                                ->label(__('admin.common.fields.edit_robots_file'))
+                                ->label(__('admin.seo.robots_editor.fields.edit_robots_file'))
                                 ->language(Language::Html)
                                 ->hiddenLabel()
                                 ->extraAttributes(['style' => 'max-height: 70vh; overflow-y: auto']),
                         ])
+                        ->description(__('admin.seo.robots_editor.fields.robots_file_description'))
                 ])
-                    ->livewireSubmitHandler('save')
-                    ->footer([
-                        Actions::make([
-                            Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
-                        ]),
+                ->livewireSubmitHandler('save')
+                ->footer([
+                    Actions::make([
+                        Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
                     ]),
+                ]),
             ])
             ->statePath('data');
         ;
@@ -73,11 +74,11 @@ class SeoRobotsEditor extends Page
 
             Notification::make()
                 ->success()
-                ->title(__('admin.messages.file_saved'))
+                ->title(__('admin.seo.robots_editor.messages.file_saved'))
                 ->send();
         } catch (\Exception $e) {
             Notification::make()
-                ->title(__('admin.messages.error_saving_file'))
+                ->title(__('admin.seo.robots_editor.messages.error_saving_file'))
                 ->danger()
                 ->send();
         }

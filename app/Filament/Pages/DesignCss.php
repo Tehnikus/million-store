@@ -36,6 +36,7 @@ class DesignCss extends Page
                                 ->hiddenLabel()
                                 ->extraAttributes(['style' => 'max-height: 70vh; overflow-y: auto']),
                         ])
+                        ->description(__('admin.design.css_editor.subheading'))
                 ])
                     ->livewireSubmitHandler('save')
                     ->footer([
@@ -89,10 +90,5 @@ class DesignCss extends Page
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::CssEditor;
-    }
-
-    public function getSubheading(): string|null
-    {
-        return __('admin.design.css_editor.subheading');
     }
 }

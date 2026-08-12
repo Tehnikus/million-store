@@ -85,14 +85,17 @@ class OptionsTab
                                             foreach ($defaultOptionData['description'] as $locale => $description) {
                                                 $set("description.{$locale}", $overrideOptionData['description'][$locale] ?? $description);
                                             }
-                                        }),
+                                        })
+                                        ->label(__('admin.catalog.options.fields.option_name')),
     
                                     Toggle::make('is_default')
                                         ->distinct()
-                                        ->fixIndistinctState(),
+                                        ->fixIndistinctState()
+                                        ->label(__('admin.catalog.options.fields.is_default')),
 
                                     TextInput::make('sku')
-                                        ->nullable(),
+                                        ->nullable()
+                                        ->label(__('admin.catalog.products.fields.sku')),
     
                                     Toggle::make('stock_subtract')
                                         ->label(__('admin.catalog.products.fields.stock_subtract')),
@@ -127,6 +130,7 @@ class OptionsTab
                                 ->icon('heroicon-m-plus')
                                 ->label(__('admin.catalog.products.buttons.add_option_value'))
                         )
+                        ->label(__('admin.catalog.options.fields.values'))
                 ])
                 ->maxItems(fn () => static::optionChoices($storeId)->count())
                 ->collapsible()
@@ -162,6 +166,8 @@ class OptionsTab
                         ->icon('heroicon-m-plus')
                         ->label(__('admin.catalog.products.buttons.add_option'))
                 )
+                ->label(__('admin.catalog.options.navigation_label'))
+                ->hiddenLabel()
         ];
     }
 

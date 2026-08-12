@@ -37,7 +37,7 @@ enum NavigationItem: string
     case BlogComments   = 'blog.comments';
 
     // SEO
-    case RobotsEditor   = 'robots_editor';
+    case RobotsEditor   = 'seo.robots_editor';
     case Sitemap        = 'seo.sitemap';
     case Keywords       = 'seo.keywords';
     case MetaEditor     = 'seo.meta_editor';
@@ -121,7 +121,7 @@ enum NavigationItem: string
             self::Attributes        => 'heroicon-o-list-bullet',
             self::Options           => 'heroicon-o-adjustments-horizontal',
             self::Tags              => 'heroicon-o-tag',
-            self::FacetPages        => 'heroicon-s-squares-plus',
+            self::FacetPages        => 'heroicon-o-squares-plus',
             self::FacetFilter       => 'heroicon-o-adjustments-vertical',
 
             // Orders

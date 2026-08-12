@@ -81,6 +81,7 @@ return [
         'add_attribute'         => 'Додати атрибут товару',
         'add_option'            => 'Додати опцію',
         'add_option_value'      => 'Додати значеня опції',
+        'add_attribute_value'   => 'Додати значеня атрибута',
         'add_tag'               => 'Додати тег товару',
         'add_category'          => 'Додати категорію',
         'add_manufacturer'      => 'Додати виробника',
@@ -300,7 +301,16 @@ return [
         'alpha_dash' => 'Дозволені тільки латинські літери, цифри і тире замість пробілів',
       ]
     ],
-    'robots' => [
+    'robots_editor' => [
+      'navigation_label' => 'Robots.txt',
+      'fields' => [
+        'edit_robots_file'        => 'Редагувати robots.txt',
+        'robots_file_description' => 'Кожен магазин має окремий файл robots.txt, вони не заважають один одному',
+      ],
+      'messages' => [
+        'file_saved'        => 'Файл Robots.txt успішно збережено',
+        'error_saving_file' => 'Помилка під час збереження файлу Robots.txt. Можливо, вам потрібно створити symlink або встановити CHMOD на папку зберігання',
+      ],
     ],
   ],
   'blog' => [
@@ -408,7 +418,6 @@ return [
       'updated_at'        => 'Дата змінення',
       'is_active'         => 'Активний',
       'edit_css_file'     => 'Редагувати CSS', 
-      'edit_css_robots'   => 'Редагувати robots.txt',
     ],
     'helpers' => [
       'name'              => 'Ім\'я',
@@ -498,7 +507,6 @@ return [
   'store_homepage'  => ['navigation_label' => 'Головна',],
   'image_settings'  => ['navigation_label' => 'Зображення',],
   'css_editor'      => ['navigation_label' => 'CSS Редактор',],
-  'robots_editor'   => ['navigation_label' => 'Robots.txt',],
 
   // Info pages
   'info_pages' => [

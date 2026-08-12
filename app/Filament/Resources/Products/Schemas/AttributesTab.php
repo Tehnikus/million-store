@@ -91,7 +91,7 @@ class AttributesTab
                                 // Attribute value related data
                                 Group::make([
                                     ...self::attributeValueDescriptionsForm($languages)
-                                ])->columnSpan(3),
+                                ])->columnSpan(4),
                         ])
                         ->minItems(1)
                         ->default([])
@@ -112,6 +112,7 @@ class AttributesTab
                                 ->icon('heroicon-m-plus')
                                 ->label(__('admin.catalog.products.buttons.add_attribute_value'))
                         )
+                        ->label(__('admin.catalog.attributes.fields.values'))
                 ])
                 ->maxItems(fn () => static::attributeChoices($storeId)->count())
                 ->collapsible()
@@ -143,10 +144,11 @@ class AttributesTab
                 ->addAction(fn (Action $action) => 
                     $action
                         ->color('success')
-                        
                         ->icon('heroicon-m-plus')
                         ->label(__('admin.catalog.products.buttons.add_attribute'))
                 )
+                ->label(__('admin.catalog.attributes.navigation_label'))
+                ->hiddenLabel()
         ];
     }
 

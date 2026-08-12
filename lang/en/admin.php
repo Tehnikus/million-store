@@ -81,6 +81,7 @@ return [
         'add_attribute'         => 'Add product attribute',
         'add_option'            => 'Add product options',
         'add_option_value'      => 'Add option value',
+        'add_attribute_value'   => 'Add attribute value',
         'add_tag'               => 'Add product tag',
         'add_category'          => 'Add category',
         'add_manufacturer'      => 'Add manufacturer',
@@ -300,7 +301,16 @@ return [
         'alpha_dash' => 'Only alpha-numeric and dashes allowed',
       ]
     ],
-    'robots' => [
+    'robots_editor' => [
+      'navigation_label'  => 'Robots.txt',
+      'fields' => [
+        'edit_robots_file'          => 'Edit robots.txt',
+        'robots_file_description'   => 'Every store has separate robots.txt file, they do not interfere',
+      ],
+      'messages' => [
+        'file_saved'        => 'Robots.txt saved successfuly',
+        'error_saving_file' => 'Error while saving Robots.txt file. You may need to make a symlink or set CHMOD to storage folder',
+      ],
     ],
   ],
   'blog' => [
@@ -408,7 +418,6 @@ return [
       'updated_at'        => 'Updated at',
       'is_active'         => 'Active',
       'edit_css_file'     => 'Edit CSS',
-      'edit_css_robots'   => 'Edit robots.txt',
     ],
     'helpers' => [
       'name'              => 'Name',
@@ -498,7 +507,6 @@ return [
   'store_homepage'  => ['navigation_label' => 'Homepage',],
   'image_settings'  => ['navigation_label' => 'Images settings',],
   'css_editor'      => ['navigation_label' => 'CSS Editor',],
-  'robots_editor'   => ['navigation_label' => 'Robots.txt',],
 
   // Info pages
   'info_pages' => [
