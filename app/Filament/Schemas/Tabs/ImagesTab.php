@@ -68,7 +68,10 @@ class ImagesTab
                         ->imageEditor()
                         ->imageEditorAspectRatioOptions([$aspectRatio, '16:9', '4:3', '1:1', null]) // Set actual aspect ration first
                         ->formatStateUsing(fn (Get $get) => static::resolvePreviewPath($get('conversions') ?? [])) // Display preview on edit page
+                        // ->statePath(function (Get $get) {return "{$get('id')}.image";})
                         // ->skipRenderAfterStateUpdated()
+                        // ->live()
+                        // ->partiallyRenderAfterStateUpdated()
                         // ->required(fn (Get $get) => blank($get('conversions'))) // Show error if image is still uploading
                         // ->multiple()
                         // ->maxParallelUploads(1)
@@ -86,6 +89,8 @@ class ImagesTab
                         )->all()
                     ),
                 ])
+                // ->live()
+                // ->partiallyRenderAfterStateUpdated()
                 ->addActionLabel(__('admin.common.buttons.add_image_row'))
                 ->reorderable(true)
                 ->columnSpanFull()

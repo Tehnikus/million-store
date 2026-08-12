@@ -28,22 +28,22 @@ class DesignCss extends Page
         return $schema
             ->components([
                 Form::make([
-                    Section::make('CSS')
+                    Section::make(__('admin.design.css_editor.navigation_label'))
                         ->schema([
                             CodeEditor::make('css')
-                                ->label(__('admin.common.fields.edit_css_file'))
+                                ->label(__('admin.design.css_editor.navigation_label'))
                                 ->language(Language::Css)
                                 ->hiddenLabel()
                                 ->extraAttributes(['style' => 'max-height: 70vh; overflow-y: auto']),
                         ])
                         ->description(__('admin.design.css_editor.subheading'))
                 ])
-                    ->livewireSubmitHandler('save')
-                    ->footer([
-                        Actions::make([
-                            Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
-                        ]),
+                ->livewireSubmitHandler('save')
+                ->footer([
+                    Actions::make([
+                        Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
                     ]),
+                ]),
             ])
             ->statePath('data');
         ;

@@ -48,7 +48,7 @@ enum NavigationItem: string
     case LayoutEditor   = 'layout_editor';
     case MenuEditor     = 'menu_editor';
     case ImageSettings  = 'image_settings';
-    case CssEditor      = 'css_editor';
+    case CssEditor      = 'design.css_editor';
 
     // Store settings
     case InfoPages      = 'info_pages';

@@ -173,42 +173,6 @@ class FacetPageForm
             ->all();
     }
 
-    // public static function optionList($typeId, int $storeId): array
-    // {
-    //     return match ($typeId) {
-    //         FacetType::Category => Category::query()
-    //             ->where('store_id', $storeId)
-    //             ->get()
-    //             ->mapWithKeys(fn (Category $category) => [$category->id => $category->name])
-    //             ->all(),
-
-    //         FacetType::Manufacturer => Manufacturer::query()
-    //             ->where('store_id', $storeId)
-    //             ->get()
-    //             ->mapWithKeys(fn (Manufacturer $manufacturer) => [$manufacturer->id => $manufacturer->name])
-    //             ->all(),
-
-    //         FacetType::Attribute => Attribute::query()
-    //             ->where('store_id', $storeId)
-    //             ->get()
-    //             ->mapWithKeys(fn (Attribute $attribute) => [$attribute->id => $attribute->name])
-    //             ->all(),
-
-    //         FacetType::Option => Option::query()
-    //             ->where('store_id', $storeId)
-    //             ->get()
-    //             ->mapWithKeys(fn (Option $option) => [$option->id => $option->name])
-    //             ->all(),
-
-    //         FacetType::Tag => Tag::query()
-    //             ->where('store_id', $storeId)
-    //             ->get()
-    //             ->mapWithKeys(fn (Tag $tag) => [$tag->id => $tag->name])
-    //             ->all(),
-
-    //     };
-    // }
-
     public static function groupIdFor(FacetType $type, int $valueId): int
     {
         return match ($type) {

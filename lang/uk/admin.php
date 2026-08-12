@@ -417,7 +417,6 @@ return [
       'created_at'        => 'Дата створення',
       'updated_at'        => 'Дата змінення',
       'is_active'         => 'Активний',
-      'edit_css_file'     => 'Редагувати CSS', 
     ],
     'helpers' => [
       'name'              => 'Ім\'я',
@@ -486,8 +485,8 @@ return [
       'height'              => 'Висота (px)',
     ],
     'css_editor' => [
-      'subheading' => 'Тут ви можете додати інші CSS стилі, які слідують після основного CSS файлу. Основний CSS файл не змінюється',
-      'css' => 'CSS',
+      'navigation_label'  => 'Редактор CSS',
+      'subheading'        => 'Тут ви можете додати стилі CSS, що перевизначаються, які відповідають основному файлу CSS. Основний файл CSS не змінюється.',
     ],
   ],
   'navigation' => [
@@ -506,7 +505,6 @@ return [
 
   'store_homepage'  => ['navigation_label' => 'Головна',],
   'image_settings'  => ['navigation_label' => 'Зображення',],
-  'css_editor'      => ['navigation_label' => 'CSS Редактор',],
 
   // Info pages
   'info_pages' => [

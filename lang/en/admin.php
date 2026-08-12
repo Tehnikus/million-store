@@ -417,7 +417,6 @@ return [
       'created_at'        => 'Created at',
       'updated_at'        => 'Updated at',
       'is_active'         => 'Active',
-      'edit_css_file'     => 'Edit CSS',
     ],
     'helpers' => [
       'name'              => 'Name',
@@ -486,8 +485,8 @@ return [
       'height'              => 'Height (px)',
     ],
     'css_editor' => [
-      'subheading' => 'Here you can add override CSS styles that follow the main CSS file. The main CSS file is not changed',
-      'css' => 'CSS',
+      'navigation_label'  => 'CSS Editor',
+      'subheading'        => 'Here you can add override CSS styles that follow the main CSS file. The main CSS file is not changed',
     ],
   ],
   'navigation' => [
@@ -506,7 +505,6 @@ return [
 
   'store_homepage'  => ['navigation_label' => 'Homepage',],
   'image_settings'  => ['navigation_label' => 'Images settings',],
-  'css_editor'      => ['navigation_label' => 'CSS Editor',],
 
   // Info pages
   'info_pages' => [

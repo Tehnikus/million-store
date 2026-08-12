@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Store extends Model
 {
-    protected $with = ['countries', 'currencies', 'languages'];
+    // protected $with = ['countries', 'currencies', 'languages'];
     protected $fillable = [
         'name',
         'host',

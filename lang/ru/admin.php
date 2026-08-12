@@ -417,7 +417,6 @@ return [
       'created_at'        => 'Дата создания',
       'updated_at'        => 'Дата изменения',
       'is_active'         => 'Включен',
-      'edit_css_file'     => 'Редактировать CSS',
     ],
     'helpers' => [
       'name'              => 'Имя',
@@ -486,8 +485,8 @@ return [
       'height'              => 'Высота (px)',
     ],
     'css_editor' => [
-      'subheading' => 'Здесь можно добавить другие CSS стили, которые следуют после основного CSS файла. Основной CSS файл не меняется',
-      'css' => 'CSS',
+      'navigation_label'  => 'Редактор CSS',
+      'subheading'        => 'Здесь вы можете добавить переопределяющие стили CSS, которые следуют за основным файлом CSS. Основной файл CSS при этом не изменяется',
     ],
   ],
   'navigation' => [
@@ -506,7 +505,6 @@ return [
 
   'store_homepage'  => ['navigation_label' => 'Главная'],
   'image_settings'  => ['navigation_label' => 'Изображения'],
-  'css_editor'      => ['navigation_label' => 'CSS Редактор'],
 
   // Info pages
   'info_pages' => [
