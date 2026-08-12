@@ -18,12 +18,10 @@ return new class extends Migration
             $table->unsignedTinyInteger('facet_type_id');                   // 1=category, 2=manufacturer, 3=attribute, 4=tag, 5=option
             $table->unsignedBigInteger('facet_group_id')->default(0);       // entity parent id, like parent category or option group parent 
             $table->unsignedBigInteger('facet_value_id');                   // entity id 
-            $table->unsignedBigInteger('sort_order')->default(1);                      // product sort order in particular facet combination
-
-            $table->timestamps();
+            $table->unsignedBigInteger('sort_order')->default(1);           // product sort order in particular facet combination
 
             $table->unique(['product_id', 'store_id', 'facet_type_id', 'facet_group_id', 'facet_value_id'], 'facet_natural_key');
-            $table->index(['store_id', 'facet_type_id', 'facet_value_id', 'product_id', 'sort_order'], 'facet_lookup');
+            $table->index(['store_id', 'facet_type_id', 'facet_group_id', 'facet_value_id', 'product_id', 'sort_order'], 'facet_lookup');
 
             // Composite foreign key on product_descriptions
             $table->foreign(['product_id', 'store_id'])
