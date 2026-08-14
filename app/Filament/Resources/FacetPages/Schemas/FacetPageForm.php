@@ -136,10 +136,9 @@ class FacetPageForm
 
                                     ])
                                     ->rules([
-                                        // Check facet combination uniqueness on form save to exclude filter page duplicates
                                         function (?Model $record) use ($store) {
                                             return function (string $attribute, $value, \Closure $fail) use ($record, $store) {
-                                                
+
                                                 $facets = collect($value ?? [])
                                                     ->filter(fn($i) => filled($i['facet_type_id'] ?? null) && filled($i['facet_value_id'] ?? null))
                                                     ->map(fn($i) => [
@@ -150,28 +149,30 @@ class FacetPageForm
                                                         'facet_value_id' => (int) $i['facet_value_id'],
                                                     ])
                                                     ->all();
-                                                
-                                                // Check selection state. One category or one manufacturer must be selected, but noy more than one
+
+                                                // Not more than one category or one manufacturer
                                                 foreach ([FacetType::Category->value => 'category', FacetType::Manufacturer->value => 'manufacturer'] as $typeValue => $key) {
                                                     $count = collect($facets)->where('facet_type_id', $typeValue)->count();
-                                                    // Only one category and one manufacturer allowed
+
                                                     if ($count > 1) {
-                                                        $fail(__("admin.catalog.facet_pages.errors.too_many_{$key}"));
+                                                        $fail(__("admin.catalog.facet_pages.errors.too_many_root"));
                                                         return;
                                                     }
                                                 }
-                                                
-                                                foreach ($facets as $selectedFacet) {
-                                                    if (in_array($selectedFacet['facet_type_id'], [FacetType::Category->value, FacetType::Manufacturer->value])) {
-                                                        break;
-                                                    }
-                                                    // Check if at least one category or one manufacturer is selected
-                                                    $fail(__("admin.catalog.facet_pages.errors.root_facet_not_selected"));
+
+                                                // At least one category or one manufacturer
+                                                $hasRootFacet = collect($facets)->contains(
+                                                    fn($f) => in_array($f['facet_type_id'], [FacetType::Category->value, FacetType::Manufacturer->value], true)
+                                                );
+
+                                                if (!$hasRootFacet) {
+                                                    $fail(__('admin.catalog.facet_pages.errors.root_facet_not_selected'));
                                                     return;
                                                 }
 
-                                                // Check facet page duplicates and show error
+                                                // Duplicates
                                                 $duplicateId = self::queryFilterPageByFacets($store->id, $facets, excludePageId: $record?->id);
+
                                                 if ($duplicateId) {
                                                     $fail(__('admin.catalog.facet_pages.errors.duplicate_combination'));
                                                 }
