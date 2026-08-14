@@ -20,7 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('facet_value_id');       // entity id 
             $table->timestamps();
 
-            $table->index(['store_id', 'facet_type_id', 'facet_group_id', 'facet_value_id'], 'facet_page_lookup');
+            $table->index(['facet_value_id',  'facet_group_id', 'facet_type_id','store_id'], 'facet_page_lookup');
+            $table->index(['facet_page_id', 'store_id'], 'facet_page_index_lookup');
         });
     }
 
