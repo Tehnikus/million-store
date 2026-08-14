@@ -7,6 +7,7 @@ use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
 class AttributeValue extends Model
@@ -38,6 +39,11 @@ class AttributeValue extends Model
         'name',
         'description',
     ];
+
+    public function attribute(): BelongsTo
+    {
+        return $this->belongsTo(Attribute::class);
+    }
 
     // Cleanup facet index on delete
     use HasFacetIndexCleanup;

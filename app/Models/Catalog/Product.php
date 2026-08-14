@@ -4,7 +4,10 @@ namespace App\Models\Catalog;
 
 use App\Domain\Catalog\FacetType;
 use App\Domain\Seo\HasSlugs;
+use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\ProductDescription;
+use App\Models\Catalog\ProductOption;
+use App\Models\Catalog\ProductPriceTier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
@@ -28,6 +31,16 @@ class Product extends Model
     public function descriptions(): HasMany
     {
         return $this->hasMany(ProductDescription::class);
+    }
+
+    public function productOptions(): HasMany
+    {
+        return $this->hasMany(ProductOption::class);
+    }
+    
+    public function productAttributes(): HasMany
+    {
+        return $this->hasMany(ProductAttribute::class);
     }
 
     public function currentDescription(): ?ProductDescription

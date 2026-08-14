@@ -34,6 +34,11 @@ class ProductPriceTier extends Model
         return $this->hasMany(ProductPrice::class);
     }
 
+    public function productDescription(): BelongsTo
+    {
+        return $this->belongsTo(ProductDescription::class, 'product_id', 'product_id');
+    }
+
     public function customerGroup(): BelongsTo
     {
         return $this->belongsTo(CustomerGroup::class);
