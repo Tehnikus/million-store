@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Catalog\FacetType;
 use App\Domain\Support\Concerns\InheritsColumnFromParent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +18,7 @@ class FacetPageIndex extends Model
     ];
     protected $casts = [
         'facet_page_id'     => 'integer',
-        'facet_type_id'     => 'integer',
+        'facet_type_id'     =>  FacetType::class,
         'facet_group_id'    => 'integer',
         'facet_value_id'    => 'integer',
     ];
