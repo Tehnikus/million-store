@@ -1,8 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+async function initKeywordsPage() {
   const interface = window.keywordsInterface;
-  console.log(interface);
-  
-  const keywords  = interface.keywords;
+  const keywords = await window.pageWire.call('getKeywords');
+
+  console.log(keywords);
+
   const addGroupBtns = document.querySelectorAll('.addKeywordGroupBtn');
   const groupList     = document.querySelectorAll('.keywordGroups');
 
@@ -46,10 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const tableElements = document.querySelectorAll('.keywordTable');
   tableElements.forEach(tableElement => {
-    keywords.forEach(row => { row.rowType = 'existing'; row.keyword_id = row.id; });
+    keywords.forEach(row => { row.rowType = 'existing'; row.id = row.id; });
     renderKeywords(interface, keywords, tableElement);
   });
-});
+}
+
+if (window.pageWire) {
+  initKeywordsPage();
+} else {
+  window.addEventListener('keywords:wire-ready', initKeywordsPage, { once: true });
+}
 
 // Save keyword group
 async function saveKeywordGroup(groupName) {
@@ -64,7 +71,7 @@ function appendKeywordGroup(el, target) {
 // Render keyword group element
 function renderKeywordGroupElm(id, name, interface) {
   const groupElement = document.createElement('span');
-  groupElement.className = 'fi-badge fi-color-gray inline-flex items-center gap-1';
+  groupElement.className = 'fi-badge';
   groupElement.dataset.groupId = id;
 
   const nameElement = document.createElement('span');
@@ -72,7 +79,6 @@ function renderKeywordGroupElm(id, name, interface) {
 
   const deleteButton = document.createElement('button');
   deleteButton.type = 'button';
-  // deleteButton.className = 'fi-icon-btn';
   deleteButton.innerHTML = `<svg class="fi-icon" style="width: 0.75rem; height: 0.75rem" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
 
   deleteButton.addEventListener('click', async () => {
@@ -90,39 +96,13 @@ function renderKeywordGroupElm(id, name, interface) {
   return groupElement;
 }
 
-// function renderKeywordGroupElm(id, name, interface) {
-//   const groupElement  = document.createElement('div');
-//   const nameElement   = document.createElement('span');
-//   const deleteButton  = document.createElement('button');
-//   groupElement.classList.add("keywordGroup");
-//   nameElement.innerText = name;
-
-//   deleteButton.classList.add("btn", "btn-danger", "btn-xs", "deleteKeywordGroup");
-//   deleteButton.innerHTML = `<i class="fa fa-times"></i>`;
-//   // Add event listener for remove button
-//   deleteButton.addEventListener('click', async () => {
-//     await window.pageWire.call('deleteKeywordGroup', id);
-//     groupElement.remove();
-//     document.querySelectorAll('[data-search-column="keyword_group_id"], [data-add-row-column="keyword_group_id"], [data-column="keyword_group_id"]').forEach(select => {
-//       select.querySelector(`option[value="${id}"]`)?.remove();
-//     });
-//     interface.groupSelect.querySelector(`option[value="${id}"]`)?.remove();
-//   });
-
-//   groupElement.appendChild(nameElement);
-//   groupElement.appendChild(deleteButton);
-//   groupElement.dataset.groupId = id;
-
-//   return groupElement;
-// }
-
 // Render keywords table
 function renderKeywords(interface, keywords, tableElement) {
 
     // Table instance
     const keywordTable = new nimbleTable({
       table: tableElement,
-      idField:  'keyword_id',
+      idField:  'id',
       pagination: {perPage: 200},
       template: (row) => renderRow(interface, row),
       addEventListeners: (table) => {
@@ -131,14 +111,14 @@ function renderKeywords(interface, keywords, tableElement) {
           if (e.target.closest('[data-id]')) {
             const tr = e.target.closest('[data-id]');
             const newData = {};
-            newData.keyword_id = tr.dataset.id;
+            newData.id = tr.dataset.id;
             newData.rowType = 'updatedRow'
             const inputs = tr.querySelectorAll('input, select');
             inputs.forEach(input => {
               newData[input.dataset.column] = input.value;
             });
             saveKeywords([newData]);
-            keywordTable.updateRow(newData.keyword_id, newData, false);
+            keywordTable.updateRow(newData.id, newData, false);
             tr.className = '';
             tr.classList.add('updatedRow');
             tr.querySelector('.rowType').innerText = interface.lang.option_updated;
@@ -149,7 +129,7 @@ function renderKeywords(interface, keywords, tableElement) {
         // console.log(filteredMap);
       },
       onRowDelete: async (row) => {
-        await window.pageWire.call('deleteKeywords', [row.keyword_id]);
+        await window.pageWire.call('deleteKeywords', [row.id]);
       }
     });
 
@@ -291,11 +271,11 @@ function renderKeywords(interface, keywords, tableElement) {
       const savedData = [];
       rows.forEach((row) => {
         savedData.push({
-          keyword_id:   row.id,
-          keyword_text: row.keyword_text,
-          keyword_url:  row.keyword_url,
-          language_id:  row.language_id,
-          store_id:     row.store_id,
+          id:               row.id,
+          keyword:          row.keyword,
+          url:              row.url,
+          language_id:      row.language_id,
+          keyword_group_id: row.keyword_group_id,
         })
       });
       saveKeywords(savedData);
@@ -307,60 +287,13 @@ function renderKeywords(interface, keywords, tableElement) {
     });
 }
 
-// Render table row
-// function renderRow(interface, row) {
-//   const tr = document.createElement('tr');
-//   const rowTypeOptions  = {updatedRow: interface.lang.option_updated, newRow: interface.lang.option_new, importedRow: interface.lang.option_imported, existing: interface.lang.option_existing};
-//   let   rowTypeLabel = '';
-
-//   tr.dataset.id = row.keyword_id || '';
-
-//   if (row.rowType) {
-//     tr.classList.add(row.rowType);
-//     rowTypeLabel = rowTypeOptions[row.rowType];
-//   }
-
-//   const languageSelect  = interface.languageSelect.cloneNode(true);
-//   const groupSelect     = interface.groupSelect.cloneNode(true);
-//   languageSelect.dataset.column  = 'language_id';
-//   groupSelect.dataset.column     = 'keyword_group_id';
-
-//   [...languageSelect.options].forEach(opt => {
-//     if (opt.value == row.language_id) {
-//       opt.setAttribute('selected', 'selected');
-//     }
-//   });
-//   [...groupSelect.options].forEach(opt => {
-//     if (opt.value == row.keyword_group_id) {
-//       opt.setAttribute('selected', 'selected');
-//     }
-//   });
-
-//   tr.innerHTML = `
-//     <td><input data-column="keyword_text" value="${row.keyword_text}" class="form-control"></td>
-//     <td><input data-column="keyword_url"  value="${row.keyword_url}"  class="form-control"></td>
-//     <td>${languageSelect.outerHTML}</td>
-//     <td>${groupSelect.outerHTML}</td>
-//     <td class="text-center rowType">${rowTypeLabel}</td>
-//     <td class="text-center">
-//       <div class="btn-group">
-//         <button type="button" class="btn btn-success" data-add-to-page    title="${interface.lang.button_add_to_page}"><i class="fa fa-plus-circle"></i></button>
-//         <button type="button" class="btn btn-default" data-copy-row=""    title="${interface.lang.button_copy}"><i class="fa fa-copy"></i></button>
-//         <button type="button" class="btn btn-danger"  data-remove-row=""  title="${interface.lang.button_delete}"><i class="fa fa-times"></i></button>
-//       </div>
-//     </td>
-//   `;
-  
-//   return tr;
-// }
-
 function renderRow(interface, row) {
   const tr = document.createElement('tr');
-  tr.className = 'fi-ta-row';
+  tr.className = '';
   const rowTypeOptions = {updatedRow: interface.lang.option_updated, newRow: interface.lang.option_new, importedRow: interface.lang.option_imported, existing: interface.lang.option_existing};
   let rowTypeLabel = '';
 
-  tr.dataset.id = row.keyword_id || '';
+  tr.dataset.id = row.id || '';
 
   if (row.rowType) {
     tr.classList.add(row.rowType);
@@ -380,20 +313,20 @@ function renderRow(interface, row) {
   });
 
   tr.innerHTML = `
-    <td class="fi-ta-cell"><input data-column="keyword_text" value="${row.keyword_text}" class="fi-input block w-full"></td>
-    <td class="fi-ta-cell"><input data-column="keyword_url"  value="${row.keyword_url}"  class="fi-input block w-full"></td>
-    <td class="fi-ta-cell">${languageSelect.outerHTML}</td>
-    <td class="fi-ta-cell">${groupSelect.outerHTML}</td>
-    <td class="fi-ta-cell text-center rowType">${rowTypeLabel}</td>
-    <td class="fi-ta-cell text-center">
-      <div class="flex gap-1 justify-center">
-        <button type="button" class="fi-btn fi-btn-size-sm fi-background-success " data-add-to-page title="${interface.lang.button_add_to_page}">
+    <td class=""><input data-column="keyword" value="${row.keyword}" class="fi-input"></td>
+    <td class=""><input data-column="url"  value="${row.url}"  class="fi-input"></td>
+    <td class="">${languageSelect.outerHTML}</td>
+    <td class="">${groupSelect.outerHTML}</td>
+    <td class=" text-center rowType">${rowTypeLabel}</td>
+    <td class=" text-center">
+      <div class="inputGroup">
+        <button type="button" class="" data-add-to-page title="${interface.lang.button_add_to_page}">
           <span><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></span>
         </button>
-        <button type="button" class="fi-btn fi-btn-size-sm fi-background-gray " data-copy-row="" title="${interface.lang.button_copy}">
+        <button type="button" class="" data-copy-row="" title="${interface.lang.button_copy}">
           <span><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></span>
         </button>
-        <button type="button" class="fi-btn fi-btn-size-sm fi-background-danger " data-remove-row="" title="${interface.lang.button_delete}">
+        <button type="button" class="" data-remove-row="" title="${interface.lang.button_delete}">
           <span><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></span>
         </button>
       </div>
@@ -430,54 +363,54 @@ function renderHeader(interface) {
   
   thead.innerHTML = `
     <tr>
-      <th class="fi-ta-header-cell fi-align-center">
-        <div class="fi-input-wrp">
-          <input type="text" class="fi-input fi-input-wrp-content-ctn" data-add-row-column="keyword_text" placeholder="${interface.lang.column_add_keyword}/${interface.lang.column_edit_keyword} ${interface.lang.column_seo_keyword}">
-          <button type="button" title="${interface.lang.button_add_to_beginning}" class="  fi-input-wrp-suffix fi-btn-size-sm fi-color-gray addToBeginning"><i class="fa fa-fast-backward"></i></button>
-          <button type="button" title="${interface.lang.button_add_to_end}" class="  fi-input-wrp-suffix fi-btn-size-sm fi-color-gray addToEnd"><i class="fa fa-fast-forward"></i></button>
-          <button type="button" title="${interface.lang.button_replace}" class=" fi-input-wrp-suffix fi-btn-size-sm fi-color-gray replace"><i class="fa fa-random"></i></button>
+      <th class="">
+        <div class="inputGroup">
+          <input type="text" class="fi-input" data-add-row-column="keyword" placeholder="${interface.lang.column_add_keyword}/${interface.lang.column_edit_keyword} ${interface.lang.column_seo_keyword}">
+          <button type="button" title="${interface.lang.button_add_to_beginning}" class=" addToBeginning"><i class="fa fa-fast-backward"></i></button>
+          <button type="button" title="${interface.lang.button_add_to_end}"       class=" addToEnd"><i class="fa fa-fast-forward"></i></button>
+          <button type="button" title="${interface.lang.button_replace}"          class=" replace"><i class="fa fa-random"></i></button>
         </div>
       </th>
-      <th class="fi-ta-header-cell fi-align-center">
-        <div class="fi-input-wrp">
-          <input type="text" class="fi-input" data-add-row-column="keyword_url" placeholder="${interface.lang.column_url}">
-          <button type="button" title="${interface.lang.button_add_to_beginning}" class="fi-btn addToBeginning"><i class="fa fa-fast-backward"></i></button>
-          <button type="button" title="${interface.lang.button_add_to_end}" class="fi-btn addToEnd"><i class="fa fa-fast-forward"></i></button>
-          <button type="button" title="${interface.lang.button_replace}" class="fi-btn btn-warning replace"><i class="fa fa-random"></i></button>
+      <th class="">
+        <div class="inputGroup">
+          <input type="text" class="fi-input" data-add-row-column="url" placeholder="${interface.lang.column_url}">
+          <button type="button" title="${interface.lang.button_add_to_beginning}" class=" addToBeginning"><i class="fa fa-fast-backward"></i></button>
+          <button type="button" title="${interface.lang.button_add_to_end}"       class=" addToEnd"><i class="fa fa-fast-forward"></i></button>
+          <button type="button" title="${interface.lang.button_replace}"          class=" btn-warning replace"><i class="fa fa-random"></i></button>
         </div>
       </th>
-      <th class="fi-ta-header-cell fi-align-center">
-        <div class="fi-input-wrp">
-         ${addRowLangSelect.outerHTML}<button type="button" title="${interface.lang.button_replace}" class="fi-btn btn-warning replace"><i class="fa fa-random"></i></button>
+      <th class="">
+        <div class="inputGroup">
+         ${addRowLangSelect.outerHTML}<button type="button" title="${interface.lang.button_replace}" class=" btn-warning replace"><i class="fa fa-random"></i></button>
         </div>
       </th>
       <th class="text-center">
-        <div class="fi-input-wrp">
-         ${addRowGroupSelect.outerHTML}<button type="button" title="${interface.lang.button_replace}" class="fi-btn btn-warning replace"><i class="fa fa-random"></i></button>
+        <div class="inputGroup">
+         ${addRowGroupSelect.outerHTML}<button type="button" title="${interface.lang.button_replace}" class=" btn-warning replace"><i class="fa fa-random"></i></button>
         </div>
       </th>
       <th class="text-center"></th>
       <th class="text-center">
-        <div class="fi-input-wrp-content-ctn">
-          <button type="button" class="fi-btn btn-success addRow" title="${interface.lang.button_add_row}"><i class="fa fa-plus-circle"></i></button>
+        <div class="inputGroup">
+          <button type="button" class=" btn-success addRow" title="${interface.lang.button_add_row}"><i class="fa fa-plus-circle"></i></button>
           <label class="btn btn-primary importCSV" title="${interface.lang.button_import}">
             <i class="fa fa-cloud-upload"></i>&nbsp;
             <input type="file" accept=".csv" style="display: none;" />
           </label>
-          <button type="button" class="fi-btn btn-success saveAllKeywords" title="${interface.lang.button_save_all}"><i class="fa fa-save"></i></button>
+          <button type="button" class=" btn-success saveAllKeywords" title="${interface.lang.button_save_all}"><i class="fa fa-save"></i></button>
         </div>
       </th>
     </tr>
     <tr>
-      <th style="width: auto"   class="fi-ta-header-cell"><div class="fi-input-wrp"><input type="text" class="fi-input" data-search-column="keyword_text" placeholder="${interface.lang.text_search} ${interface.lang.column_seo_keyword}"></div></th>
-      <th style="width: auto"   class="fi-ta-header-cell"><div class="fi-input-wrp"><input type="text" class="fi-input" data-search-column="keyword_url" placeholder="${interface.lang.text_search} ${interface.lang.column_url}"></div></th>
-      <th style="width: 180px"  class="fi-ta-header-cell"><div class="fi-input-wrp">${languageSelect.outerHTML}</div></th>
-      <th style="width: 180px"  class="fi-ta-header-cell"><div class="fi-input-wrp">${groupSelect.outerHTML}</div></th>
-      <th style="width: 130px"  class="fi-ta-header-cell"><div class="fi-input-wrp">${filterRowTypeSelect.outerHTML}</div></th>
-      <th style="width: 130px"  class="fi-ta-header-cell">
-        <div class="fi-input-wrp-content-ctn">
-          <button type="button" class="fi-btn findDuplicates" title="${interface.lang.button_find_duplicates}"><i class="fa fa-search-plus"></i></button>
-          <button type="button" class="fi-btn clearFilters" title="${interface.lang.button_clear_filters}"><i class="fa fa-times"></i></button>
+      <th style="width: auto"   class=""><input type="text" class="fi-input" data-search-column="keyword" placeholder="${interface.lang.text_search} ${interface.lang.column_seo_keyword}"></th>
+      <th style="width: auto"   class=""><input type="text" class="fi-input" data-search-column="url" placeholder="${interface.lang.text_search} ${interface.lang.column_url}"></th>
+      <th style="width: 180px"  class="">${languageSelect.outerHTML}</th>
+      <th style="width: 180px"  class="">${groupSelect.outerHTML}</th>
+      <th style="width: 130px"  class="">${filterRowTypeSelect.outerHTML}</th>
+      <th style="width: 130px"  class="">
+        <div class="inputGroup">
+          <button type="button" class=" findDuplicates" title="${interface.lang.button_find_duplicates}"><i class="fa fa-search-plus"></i></button>
+          <button type="button" class=" clearFilters" title="${interface.lang.button_clear_filters}"><i class="fa fa-times"></i></button>
         </div>
       </th>
     </tr>
@@ -489,7 +422,7 @@ function renderHeader(interface) {
 // Render select from options list 
 function renderSelect(options, datasetAttr) {
   const select = document.createElement('select');
-  select.className = 'fi-select-input fi-input block w-full';
+  select.className = 'fi-select-input fi-input';
 
   if (datasetAttr) {
     Object.entries(datasetAttr).forEach(([k, v]) => {
@@ -535,7 +468,6 @@ function addRow(keywordTable, newRow) {
 function copyRow(keywordTable, e) {
   const id = Number(e.target.closest('[data-id]').dataset.id);
   const rowData = {...keywordTable.rowMap.get(id)}; // Copy row instead of reusing it, because in JavaScript objects are reference types (assignments copy references, not the actual object)
-  delete rowData.keyword_id; // Delete values that are treated as row identifier. If not deleted, Map() will skip duplicate ids
   delete rowData.id; // Delete values that are treated as row identifier. If not deleted, Map() will skip duplicate ids
   rowData.rowType = 'newRow';
   keywordTable.setData([rowData]);
@@ -555,21 +487,21 @@ function addKeywordToPage(keywordTable, interface, e) {
         <input 
           name="${name_prefix}[${languageId}][seo_keywords][${index}][keyword]"
           value="${rowData.keyword_text}"
-          class="form-control"
+          class="fi-input"
         />
       </td>
       <td>
         <input 
           name="${name_prefix}[${languageId}][seo_keywords][${index}][url]"
-          value="${rowData.keyword_url}"
-          class="form-control"
+          value="${rowData.url}"
+          class="fi-input"
         />
       </td>
       <td style="text-align: center">
         <div class="btn-group">
-          <button type="button" onclick="moveRow(this, 'up')" class="fi-btn" title="${interface.lang.button_move_up}"><i class="fa fa-arrow-up"></i></button>
-          <button type="button" onclick="moveRow(this, 'down')" class="fi-btn" title="${interface.lang.button_move_down}"><i class="fa fa-arrow-down"></i></button>
-          <button type="button" onclick="this.closest('tr').remove()" class="btn btn-danger" title="${interface.lang.button_remove_keyword}"><i class="fa fa-times"></i></button>
+          <button type="button" onclick="moveRow(this, 'up')" class="" title="${interface.lang.button_move_up}"><i class="fa fa-arrow-up"></i></button>
+          <button type="button" onclick="moveRow(this, 'down')" class="" title="${interface.lang.button_move_down}"><i class="fa fa-arrow-down"></i></button>
+          <button type="button" onclick="this.closest('tr').remove()" class=" btn-danger" title="${interface.lang.button_remove_keyword}"><i class="fa fa-times"></i></button>
         </div>
       </td>
     </tr>
@@ -579,6 +511,7 @@ function addKeywordToPage(keywordTable, interface, e) {
 
 // Save keyword to DB
 function saveKeywords(data) {
+  console.log(data);
   return window.pageWire.call('saveKeywords', data)
     .then(r => console.log(r));
 }
@@ -637,12 +570,11 @@ function importCSV(input, keywordTable) {
 
   function parseCSV(data, delimiter = ',') {
     const allowedColumns = [
-      'keyword_id',
-      'keyword_text',
-      'keyword_url',
+      'id',
+      'keyword',
+      'url',
       'keyword_group_id',
       'language_id',
-      'store_id'
     ];
     data = data.replace(/^\uFEFF/, ''); // Replace Excel-specific character
     const rows = [];
@@ -702,11 +634,8 @@ function importCSV(input, keywordTable) {
     
         let val = (line[i] ?? '').trim();
     
-        if (['keyword_group_id', 'language_id', 'store_id'].includes(header)) {
+        if (['keyword_group_id', 'language_id'].includes(header)) {
           val = parseInt(val) || 1;
-        }
-        if (['store_id'].includes(header)) {
-          val = parseInt(val) || 0;
         }
     
         obj[header] = val;
@@ -724,12 +653,12 @@ function findDuplicates(data) {
   const map = new Map();
 
   data.forEach(item => {
-    const key = item.keyword_text.trim().toLowerCase();
+    const key = item.keyword.trim().toLowerCase();
     map.set(key, (map.get(key) || 0) + 1);
   });
 
   return data.filter(item => {
-    const key = item.keyword_text.trim().toLowerCase();
+    const key = item.keyword.trim().toLowerCase();
     return map.get(key) > 1;
   });
 }
