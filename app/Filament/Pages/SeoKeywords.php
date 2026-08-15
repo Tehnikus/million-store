@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Pages;
 
 use App\Models\Seo\Keyword;
@@ -14,9 +15,8 @@ class SeoKeywords extends Page
 {
     protected string $view = 'filament.pages.seo-keywords';
 
-    public array $keywords      = [];
     public array $keywordGroups = [];
-    public array $languages     = [];
+    public array $languages = [];
 
     public function mount(): void
     {
@@ -32,15 +32,17 @@ class SeoKeywords extends Page
             ->orderBy('name')
             ->get(['id', 'name'])
             ->toArray();
+    }
 
-        $this->keywords = Keyword::where('store_id', $storeId)
+    public function getKeywords(): array
+    {
+        return Keyword::where('store_id', Filament::getTenant()->id)
             ->get(['id', 'keyword', 'url', 'language_id', 'keyword_group_id'])
             ->toArray();
     }
 
     /**
-     * Принимает массив строк из таблицы, сохраняет батчем в транзакции.
-     * Строка без id (или id <= 0) — новая запись, иначе — обновление существующей.
+     * @param array<int, array{id: ?int, keyword: string, url: string, language_id: int, keyword_group_id: ?int}> $rows
      */
     public function saveKeywords(array $rows): array
     {
@@ -49,18 +51,16 @@ class SeoKeywords extends Page
 
         DB::transaction(function () use ($rows, $storeId, &$saved) {
             foreach ($rows as $row) {
-                $id = $row['id'] ?? null;
-
                 $attributes = [
                     'store_id'         => $storeId,
-                    'keyword'          => $row['keyword'] ?? '',
-                    'url'              => $row['url'] ?? '',
-                    'language_id'      => $row['language_id'] ?? null,
-                    'keyword_group_id' => $row['keyword_group_id'] ?: null,
+                    'keyword'          => $row['keyword'],
+                    'url'              => $row['url'],
+                    'language_id'      => $row['language_id'],
+                    'keyword_group_id' => $row['keyword_group_id'],
                 ];
 
-                $keyword = filled($id)
-                    ? tap(Keyword::where('store_id', $storeId)->findOrFail($id))->update($attributes)
+                $keyword = filled($row['id'] ?? null)
+                    ? tap(Keyword::where('store_id', $storeId)->findOrFail($row['id']))->update($attributes)
                     : Keyword::create($attributes);
 
                 $saved[] = $keyword->fresh()->toArray();
@@ -79,9 +79,10 @@ class SeoKeywords extends Page
 
     public function saveKeywordGroup(string $name): array
     {
-        $group = KeywordGroup::firstOrCreate(
-            ['store_id' => Filament::getTenant()->id, 'name' => $name],
-        );
+        $group = KeywordGroup::firstOrCreate([
+            'store_id' => Filament::getTenant()->id,
+            'name'     => $name,
+        ]);
 
         return $group->toArray();
     }
