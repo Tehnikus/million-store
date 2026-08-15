@@ -1,0 +1,103 @@
+
+
+.keywordTable {
+    background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+
+    /* Elements */
+    thead, tfoot {
+        background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+    }
+    th, td {
+        padding: 0.5rem;
+    }
+
+    tr {
+        &.newRow      { background-color: color-mix(in oklab, var(--success-500) 20%, transparent 80% )}
+        &.updatedRow  { background-color: color-mix(in oklab, var(--info-500) 20%, transparent 80% )}
+        &.importedRow { background-color: color-mix(in oklab, var(--info-300) 20%, transparent 80% )}
+    }
+
+    .inputGroup {
+        display: flex;
+        &>*:not(:first-child) {border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none;}
+        &>*:not(:last-child) {border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;}
+
+    }
+
+    /* Inputs */
+    input, select {
+        background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+        border: 2px solid color-mix(in oklab, var(--color-white) 20%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--gray-950) 10%, transparent);
+        border-radius: var(--radius-lg);
+        &:focus {
+            border: 2px solid color-mix(in oklab, var(--primary-500) 80%, transparent);
+        }
+    }
+    /* Buttons */
+    button {
+        border: 2px solid color-mix(in oklab, var(--color-white) 20%, transparent);
+        border-radius: var(--radius-lg);
+        min-width: 2.3rem;
+        min-height: 2.3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-inline: calc(var(--spacing) * 3);
+        padding: calc(var(--spacing) * 1.5);
+
+        &[data-add-to-page], &.btn-success {background-color: color-mix(in oklab, var(--success-500) 40%, transparent 60% )}
+        &[data-copy-row]    {background-color: color-mix(in oklab, var(--info-500) 40%, transparent 60% )}
+        &[data-remove-row], &.btn-danger  {background-color: color-mix(in oklab, var(--danger-500) 40%, transparent 60% )}
+        &.btn-warning  {background-color: color-mix(in oklab, var(--warning-500) 40%, transparent 60% )}
+    }
+
+    .tablePagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.25rem;
+        list-style: none;
+        padding: 0.5rem 0;
+        margin: 0;
+    }
+}
+
+/*  {
+    
+}
+
+.tablePagination button {
+    min-width: 2rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--rounded-md);
+    border: 1px solid var(--gray-200);
+    background: var(--gray-0, #fff);
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.tablePagination button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.tablePagination button:not(:disabled):hover {
+    background: var(--gray-50);
+}
+
+.tablePagination .ellipsis {
+    padding: 0.25rem 0.25rem;
+    color: var(--gray-400);
+}
+
+.keywordGroups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+} */
