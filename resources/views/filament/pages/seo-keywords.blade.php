@@ -1,20 +1,14 @@
 <x-filament-panels::page>
-    {{-- <div x-data x-init="window.pageWire = $wire"> --}}
-    <script>
-        document.addEventListener('livewire:init', () => {
-            window.pageWire = @this;
-            console.log(window.pageWire);
-        });
+    <div wire:ignore x-data x-init="window.pageWire = $wire; window.dispatchEvent(new CustomEvent('keywords:wire-ready'))">
+        <script>
+            window.keywordsInterface = {
+                lang:          @json(__('admin.seo.keywords.js')),
+                languages:     @json($languages),
+                keywordGroups: @json($keywordGroups),
+            };
+        </script>
 
-        window.keywordsInterface = {
-            lang:           @json(__('admin.seo.keywords.js')),
-            languages:      @json($languages),
-            keywordGroups:  @json($keywordGroups),
-            keywords:       @json($keywords),
-        };
-    </script>
-
-        <div class="keywordGroups"></div>
+        <link rel="stylesheet" href="{{ asset('css/admin/keywords.css') }}">
 
         <div class="keywordGroups"></div>
         <div class="flex gap-2 my-2">
@@ -22,9 +16,9 @@
             <button type="button" class="addKeywordGroupBtn">{{ __('admin.seo.keywords.js.button_add_group') }}</button>
         </div>
 
-        <table class="keywordTable fi-ta-table"></table>
-        <link rel="stylesheet" href="{{ asset('css/admin/keywords.css') }}">
+        <table class="keywordTable"></table>
+
         <script src="{{ asset('js/admin/nimbleTable.js') }}"></script>
         <script src="{{ asset('js/admin/keywords.js') }}"></script>
-    {{-- </div> --}}
+    </div>
 </x-filament-panels::page>
