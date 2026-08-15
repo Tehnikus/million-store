@@ -317,8 +317,8 @@ function renderRow(interface, row) {
     <td class=""><input data-column="url"  value="${row.url}"  class="fi-input"></td>
     <td class="">${languageSelect.outerHTML}</td>
     <td class="">${groupSelect.outerHTML}</td>
-    <td class=" text-center rowType">${rowTypeLabel}</td>
-    <td class=" text-center">
+    <td class="text-center rowType">${rowTypeLabel}</td>
+    <td class="text-center">
       <div class="inputGroup">
         <button type="button" class="" data-add-to-page title="${interface.lang.button_add_to_page}">
           <span><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></span>
@@ -366,38 +366,82 @@ function renderHeader(interface) {
       <th class="">
         <div class="inputGroup">
           <input type="text" class="fi-input" data-add-row-column="keyword" placeholder="${interface.lang.column_add_keyword}/${interface.lang.column_edit_keyword} ${interface.lang.column_seo_keyword}">
-          <button type="button" title="${interface.lang.button_add_to_beginning}" class=" addToBeginning"><i class="fa fa-fast-backward"></i></button>
-          <button type="button" title="${interface.lang.button_add_to_end}"       class=" addToEnd"><i class="fa fa-fast-forward"></i></button>
-          <button type="button" title="${interface.lang.button_replace}"          class=" replace"><i class="fa fa-random"></i></button>
+          <button type="button" title="${interface.lang.button_add_to_beginning}" class="addToBeginning">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061A1.125 1.125 0 0 1 21 8.689v8.122ZM11.25 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061a1.125 1.125 0 0 1 1.683.977v8.122Z" />
+            </svg>
+          </button>
+          <button type="button" title="${interface.lang.button_add_to_end}" class="addToEnd">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061A1.125 1.125 0 0 1 3 16.811V8.69ZM12.75 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061a1.125 1.125 0 0 1-1.683-.977V8.69Z" />
+            </svg>
+          </button>
+          <button type="button" title="${interface.lang.button_replace}" class="replace">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+            </svg>
+          </button>
         </div>
       </th>
       <th class="">
         <div class="inputGroup">
           <input type="text" class="fi-input" data-add-row-column="url" placeholder="${interface.lang.column_url}">
-          <button type="button" title="${interface.lang.button_add_to_beginning}" class=" addToBeginning"><i class="fa fa-fast-backward"></i></button>
-          <button type="button" title="${interface.lang.button_add_to_end}"       class=" addToEnd"><i class="fa fa-fast-forward"></i></button>
-          <button type="button" title="${interface.lang.button_replace}"          class=" btn-warning replace"><i class="fa fa-random"></i></button>
+          <button type="button" title="${interface.lang.button_add_to_beginning}" class="addToBeginning">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061A1.125 1.125 0 0 1 21 8.689v8.122ZM11.25 16.811c0 .864-.933 1.406-1.683.977l-7.108-4.061a1.125 1.125 0 0 1 0-1.954l7.108-4.061a1.125 1.125 0 0 1 1.683.977v8.122Z" />
+            </svg>
+          </button>
+          <button type="button" title="${interface.lang.button_add_to_end}" class="addToEnd">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061A1.125 1.125 0 0 1 3 16.811V8.69ZM12.75 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061a1.125 1.125 0 0 1-1.683-.977V8.69Z" />
+            </svg>
+          </button>
+          <button type="button" title="${interface.lang.button_replace}" class="btn-warning replace">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+            </svg>
+          </button>
         </div>
       </th>
       <th class="">
         <div class="inputGroup">
-         ${addRowLangSelect.outerHTML}<button type="button" title="${interface.lang.button_replace}" class=" btn-warning replace"><i class="fa fa-random"></i></button>
+          ${addRowLangSelect.outerHTML}
+          <button type="button" title="${interface.lang.button_replace}" class="btn-warning replace">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+            </svg>
+          </button>
         </div>
       </th>
       <th class="text-center">
         <div class="inputGroup">
-         ${addRowGroupSelect.outerHTML}<button type="button" title="${interface.lang.button_replace}" class=" btn-warning replace"><i class="fa fa-random"></i></button>
+          ${addRowGroupSelect.outerHTML}
+          <button type="button" title="${interface.lang.button_replace}" class="btn-warning replace">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+            </svg>
+          </button>
         </div>
       </th>
       <th class="text-center"></th>
       <th class="text-center">
         <div class="inputGroup">
-          <button type="button" class=" btn-success addRow" title="${interface.lang.button_add_row}"><i class="fa fa-plus-circle"></i></button>
+          <button type="button" class="btn-success addRow" title="${interface.lang.button_add_row}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </button>
           <label class="btn btn-primary importCSV" title="${interface.lang.button_import}">
-            <i class="fa fa-cloud-upload"></i>&nbsp;
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+            </svg>
             <input type="file" accept=".csv" style="display: none;" />
           </label>
-          <button type="button" class=" btn-success saveAllKeywords" title="${interface.lang.button_save_all}"><i class="fa fa-save"></i></button>
+          <button type="button" class="btn-success saveAllKeywords" title="${interface.lang.button_save_all}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </button>
         </div>
       </th>
     </tr>
@@ -409,8 +453,16 @@ function renderHeader(interface) {
       <th style="width: 130px"  class="">${filterRowTypeSelect.outerHTML}</th>
       <th style="width: 130px"  class="">
         <div class="inputGroup">
-          <button type="button" class=" findDuplicates" title="${interface.lang.button_find_duplicates}"><i class="fa fa-search-plus"></i></button>
-          <button type="button" class=" clearFilters" title="${interface.lang.button_clear_filters}"><i class="fa fa-times"></i></button>
+          <button type="button" class="findDuplicates" title="${interface.lang.button_find_duplicates}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+            </svg>
+          </button>
+          <button type="button" class="clearFilters" title="${interface.lang.button_clear_filters}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM13.5 10.5h-6" />
+            </svg>
+          </button>
         </div>
       </th>
     </tr>
@@ -499,9 +551,21 @@ function addKeywordToPage(keywordTable, interface, e) {
       </td>
       <td style="text-align: center">
         <div class="btn-group">
-          <button type="button" onclick="moveRow(this, 'up')" class="" title="${interface.lang.button_move_up}"><i class="fa fa-arrow-up"></i></button>
-          <button type="button" onclick="moveRow(this, 'down')" class="" title="${interface.lang.button_move_down}"><i class="fa fa-arrow-down"></i></button>
-          <button type="button" onclick="this.closest('tr').remove()" class=" btn-danger" title="${interface.lang.button_remove_keyword}"><i class="fa fa-times"></i></button>
+          <button type="button" onclick="moveRow(this, 'up')" class="" title="${interface.lang.button_move_up}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+            </svg>
+          </button>
+          <button type="button" onclick="moveRow(this, 'down')" class="" title="${interface.lang.button_move_down}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+            </svg>
+          </button>
+          <button type="button" onclick="this.closest('tr').remove()" class="btn-danger" title="${interface.lang.button_remove_keyword}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </td>
     </tr>
