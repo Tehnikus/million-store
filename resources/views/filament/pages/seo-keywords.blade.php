@@ -10,10 +10,12 @@
 
         <link rel="stylesheet" href="{{ asset('css/admin/keywords.css') }}">
 
-        <div class="keywordGroups"></div>
-        <div class="flex gap-2 my-2">
-            <input type="text" data-add-keyword-group placeholder="{{ __('admin.seo.keywords.js.new_group_placeholder') }}">
-            <button type="button" class="addKeywordGroupBtn">{{ __('admin.seo.keywords.js.button_add_group') }}</button>
+        <div class="keywordGroupWrapper">
+            <div class="keywordGroups"></div>
+            <div class="inputGroup">
+                <input type="text" class="fi-input" data-add-keyword-group placeholder="{{ __('admin.seo.keywords.js.new_group_placeholder') }}">
+                <button type="button" class="fi-btn addKeywordGroupBtn">{{ __('admin.seo.keywords.js.button_add_group') }}</button>
+            </div>
         </div>
 
         <table class="keywordTable"></table>

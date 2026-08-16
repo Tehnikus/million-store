@@ -127,7 +127,7 @@ class nimbleTable {
 
     // Previous page button
     const prevBtn = document.createElement('button');
-    prevBtn.innerHTML = '&#9664;';
+    prevBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>';
     prevBtn.type = 'button';
     prevBtn.disabled = currentPage === 1;
     prevBtn.addEventListener('click', e => {
@@ -179,7 +179,7 @@ class nimbleTable {
 
     // Next page button
     const nextBtn = document.createElement('button');
-    nextBtn.innerHTML = '&#9654;';
+    nextBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>';
     nextBtn.type = 'button';
     nextBtn.disabled = currentPage === totalPages;
     nextBtn.addEventListener('click', e => {

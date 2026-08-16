@@ -71,7 +71,7 @@ function appendKeywordGroup(el, target) {
 // Render keyword group element
 function renderKeywordGroupElm(id, name, interface) {
   const groupElement = document.createElement('span');
-  groupElement.className = 'fi-badge';
+  groupElement.className = 'fi-badge fi-size-md';
   groupElement.dataset.groupId = id;
 
   const nameElement = document.createElement('span');
@@ -103,7 +103,7 @@ function renderKeywords(interface, keywords, tableElement) {
     const keywordTable = new nimbleTable({
       table: tableElement,
       idField:  'id',
-      pagination: {perPage: 200},
+      pagination: {perPage: 50},
       template: (row) => renderRow(interface, row),
       addEventListeners: (table) => {
         table.addEventListener('change', e => {
@@ -376,7 +376,7 @@ function renderHeader(interface) {
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061A1.125 1.125 0 0 1 3 16.811V8.69ZM12.75 8.689c0-.864.933-1.406 1.683-.977l7.108 4.061a1.125 1.125 0 0 1 0 1.954l-7.108 4.061a1.125 1.125 0 0 1-1.683-.977V8.69Z" />
             </svg>
           </button>
-          <button type="button" title="${interface.lang.button_replace}" class="replace">
+          <button type="button" title="${interface.lang.button_replace}" class="btn-warning replace">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
             </svg>
