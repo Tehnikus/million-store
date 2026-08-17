@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('entity_type');
             $table->string('target_field');
             $table->string('locale');
+            $table->boolean('is_active')->default(false);
             $table->unsignedBigInteger('currency_id')->nullable();
             $table->text('formula');
             $table->timestamps();
