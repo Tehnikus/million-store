@@ -82,13 +82,24 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                         $this->resetTable();
                     }),
             ])
+            // Toolbar actions
             ->toolbarActions([
+                
+                // Save all staging changes
                 Action::make('saveAll')
                     ->label(__('admin.common.buttons.save'))
                     ->color('success')
                     ->icon('heroicon-o-check')
                     ->action(fn () => $this->saveResults())
-                    // ->visible(!empty($this->resultsTable))
+                    ->visible(fn($records) => collect($this->resultsTable)->count() > 0)
+                    ->accessSelectedRecords(),
+
+                // Clear all staging rows
+                Action::make('clearAll')
+                    ->label(__('admin.common.buttons.clear'))
+                    ->color('danger')
+                    ->icon('heroicon-o-no-symbol')
+                    ->action(function() {$this->resultsTable = []; $this->resetTable();})
                     ->visible(fn($records) => collect($this->resultsTable)->count() > 0)
                     ->accessSelectedRecords(),
             ])
