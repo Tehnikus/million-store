@@ -29,3 +29,5 @@ Thumbs.db
 TODO*
 plan.md
 migrations.md
+*.bak
+__*.*
