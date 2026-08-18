@@ -52,7 +52,7 @@ enum FacetType: int implements HasLabel
             self::Attribute     => NavigationItem::Attributes->icon(),
             self::Option        => NavigationItem::Options->icon(),
             self::Tag           => NavigationItem::Tags->icon(),
-            self::IsFeatured    => 'heroicon-o-fire',
+            self::IsFeatured    => 'heroicon-o-star',
             self::HasDiscount   => 'heroicon-o-currency-dollar',
             self::Bestseller    => 'heroicon-o-arrow-trending-up',
             self::BestReviews   => 'heroicon-o-hand-thumb-up',
