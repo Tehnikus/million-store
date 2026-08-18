@@ -148,7 +148,7 @@ enum NavigationItem: string
             // SEO
             self::Analytics         => 'heroicon-o-chart-bar',
             self::MetaEditor        => 'heroicon-o-puzzle-piece',
-            self::Keywords          => 'heroicon-o-table-cells',
+            self::Keywords          => 'heroicon-o-bars-3-bottom-left',
             self::Sitemap           => 'heroicon-o-share',
             self::Slugs             => 'heroicon-o-link',
             self::RobotsEditor      => 'heroicon-o-code-bracket',
