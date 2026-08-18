@@ -28,6 +28,8 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
 
     abstract protected function toResultRow(Model $record): array;
 
+    abstract protected function editRecordUrl(Model $record): ?string;
+
     public function table(Table $table): Table
     {
         return $table
@@ -35,13 +37,12 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
             ->columns($this->entityColumns())
             ->searchable(false)
             ->recordActions([
-                Action::make('addToResults')
-                    ->label(__('admin.seo.meta_editor.buttons.add_to_results'))
+                Action::make('edit')
+                    ->label(__('admin.common.buttons.edit'))
                     ->icon('heroicon-o-pencil-square')
-                    ->action(fn (Model $record) => $this->dispatch(
-                        'meta-editor:add-to-results',
-                        row: $this->toResultRow($record),
-                    )),
+                    ->url(fn (Model $record) => $this->editRecordUrl($record))
+                    ->visible(fn (Model $record) => filled($this->editRecordUrl($record)))
+                    ->openUrlInNewTab(),
                 Action::make('addToResults')
                     ->label(__('admin.seo.meta_editor.buttons.add_to_results'))
                     ->icon('heroicon-o-arrow-right')
