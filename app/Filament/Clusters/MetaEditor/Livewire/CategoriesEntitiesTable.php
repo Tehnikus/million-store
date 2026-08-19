@@ -11,9 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class CategoriesEntitiesTable extends AbstractEntitiesTable
 {
+    private function storeData(): Model {
+        return once(fn() => Filament::getTenant());
+    }
+
     protected function getEntitiesQuery(): Builder
     {
-        return Category::query()->where('store_id', Filament::getTenant()->id);
+        return Category::query()->where('store_id', $this->storeData()->id);
     }
 
     protected function editRecordUrl(Model $record): ?string
@@ -31,6 +35,11 @@ class CategoriesEntitiesTable extends AbstractEntitiesTable
         ];
     }
 
+    /**
+     * Pass variables to staging table
+     * @param Model $record
+     * @return array{h1: mixed, id: mixed, meta_description: mixed, meta_title: mixed, name: mixed}
+     */
     protected function toResultRow(Model $record): array
     {
         return [
@@ -39,6 +48,7 @@ class CategoriesEntitiesTable extends AbstractEntitiesTable
             'meta_title'        => $record->getTranslations('meta_title'),
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
+            'parent'            => Category::find($record->parent_id)?->getTranslations('name'),
         ];
     }
 }
