@@ -113,13 +113,17 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             return;
         }
 
-        // TODO Make bulk update instead of foreach
-        DB::transaction(function () {
+        $skipped = [];
+
+        DB::transaction(function () use (&$skipped) {
             foreach ($this->resultsTable as $id => $row) {
-                // Check if entity record exists
+                if ($row['has_error'] ?? false) {
+                    $skipped[] = $row;
+                    continue;
+                }
+
                 $entity = $this->resolveEntity($id);
 
-                // Skip record if it does not exist
                 if (! $entity) {
                     continue;
                 }
@@ -134,10 +138,12 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             }
         });
 
-        $this->resultsTable = [];
+        $this->resultsTable = $skipped;
         $this->resetTable();
 
-        Notification::make()->success()->title(__('admin.messages.settings_saved'))->send();
+        count($skipped) > 0
+            ? Notification::make()->warning()->title(__('admin.seo.meta_editor.messages.saved_with_errors', ['count' => count($skipped)]))->send()
+            : Notification::make()->success()->title(__('admin.seo.meta_editor.messages.staging_saved'))->send();
     }
 
     public function render()
