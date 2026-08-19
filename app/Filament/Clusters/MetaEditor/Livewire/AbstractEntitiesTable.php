@@ -8,6 +8,8 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -53,7 +55,9 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
             ])
             ->toolbarActions([
                 BulkAction::make('addFilteredToResults')
-                    ->label(__('admin.seo.meta_editor.buttons.add_filtered_to_results'))
+                    ->label(__('admin.seo.meta_editor.buttons.add_selected_to_results'))
+                    ->icon(Heroicon::ArrowRight)
+                    ->iconPosition(IconPosition::After)
                     ->action(function ($records) {
                         foreach ($records as $record) {
                             $this->dispatch('meta-editor:add-to-results', row: $this->toResultRow($record));
