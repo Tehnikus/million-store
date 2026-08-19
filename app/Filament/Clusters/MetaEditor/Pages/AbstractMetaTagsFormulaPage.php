@@ -18,6 +18,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 abstract class AbstractMetaTagsFormulaPage extends Page
 {
@@ -50,10 +51,10 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                         Action::make('submit')
                             ->label(__('admin.seo.meta_editor.buttons.save_formulas'))
                             ->icon('heroicon-o-check')
-                            ->submit('submit')
+                            ->submit('save')
                             ->visible(fn (Get $get): bool => filled($get('formulas')))
                     ])
-                    ->alignRight()
+                    ->alignLeft()
                     ->columnSpanFull(),
                     Repeater::make('formulas')
                         ->hiddenLabel()
@@ -84,19 +85,44 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                             Toggle::make('is_active'),
                         ])
                         ->extraItemActions([
-                            Action::make('applyFormula')
+                            Action::make('generate')
+                                ->label(__('admin.seo.meta_editor.buttons.generate'))
                                 ->icon('heroicon-s-puzzle-piece')
-                                ->color('success')
-                                ->action(function (array $arguments, Repeater $component): void {
-                                    // Apply formula to $resultsTable rows
-                                })
-                                ->requiresConfirmation(),
+                                ->color('info')
+                                // ->requiresConfirmation()
+                                // ->modalIcon('heroicon-s-puzzle-piece')
+                                // ->modalDescription(function(array $arguments, Repeater $component) {
+                                //     $rowId = $arguments['item'];                 
+                                //     $rowData = $component->getItemState($rowId);
+                                //     return new HtmlString(__('admin.seo.meta_editor.messages.generate_confirmation', [
+                                //         'target_field'  => __("admin.common.fields.{$rowData['target_field']}"),
+                                //         'locale'        => $rowData['locale']
+                                //     ]));
+                                // })
+                                // ->beforeFormValidated(function (Action $action, array $data) {
+                                //     // Inspect repeater data in $data
+                                //     if (empty($data['items'])) {
+                                //         Notification::make()
+                                //             ->title('Validation failed')
+                                //             ->body('The items repeater cannot be empty.')
+                                //             ->danger()
+                                //             ->send();
+
+                                //         $action->halt();
+                                //     }
+                                // })
+                                ->action(function (array $arguments, Repeater $component) {
+                                    $row = $component->getRawItemState($arguments['item']);
+                                    $this->dispatch('meta-editor:apply-formula', formula: $row);
+                                }),
                         ])
                         ->addActionLabel(__('admin.seo.meta_editor.buttons.add_formula'))
                         ->reorderable(false)
+                        ->cloneable(true)
                         ->columnSpanFull()
-                        ->defaultItems(0)
-                        ->live(),
+                        ->defaultItems(1)
+                        ->minItems(1)
+                        ,
                 ])
                 ->collapsible()
                 ->description(__('admin.seo.meta_editor.helpers.formulas_subheading')),
