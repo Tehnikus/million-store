@@ -10,10 +10,10 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -28,9 +28,6 @@ abstract class AbstractMetaTagsFormulaPage extends Page
 
     abstract protected function entityType(): string;
 
-    /** @return array<string, string> target_field => label */
-    abstract protected function metaFields(): array;
-
     public function mount(): void
     {
         $this->form->fill(['formulas' => $this->loadFormulas()]);
@@ -38,8 +35,8 @@ abstract class AbstractMetaTagsFormulaPage extends Page
 
     public function form(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
-        $currencies = Filament::getTenant()->currencies()->wherePivot('is_active', true)->get();
+        $languages = once(fn() => Filament::getTenant()->languages()->wherePivot('is_active', true)->get());
+        $currencies = once(fn() => Filament::getTenant()->currencies()->wherePivot('is_active', true)->get());
 
         return $schema
             ->statePath('data')
@@ -63,15 +60,14 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                             TableColumn::make(__('admin.seo.meta_editor.fields.target_field'))->width('180px'),
                             TableColumn::make(__('admin.seo.meta_editor.fields.locale'))->width('100px'),
                             TableColumn::make(__('admin.seo.meta_editor.fields.currency'))->width('140px'),
-                            TableColumn::make(__('admin.seo.meta_editor.fields.is_active'))->width('80px'),
                         ])
                         ->schema([
                             TextInput::make('formula')
                                 ->required()
                                 ->placeholder(__('admin.seo.meta_editor.helpers.formula_placeholder')),
-    
+
                             Select::make('target_field')
-                                ->options($this->metaFields())
+                                ->options(self::metaFields())
                                 ->required(),
     
                             Select::make('locale')
@@ -80,49 +76,21 @@ abstract class AbstractMetaTagsFormulaPage extends Page
     
                             Select::make('currency_id')
                                 ->options($currencies->mapWithKeys(fn ($c) => [$c->id => $c->iso_code]))
-                                ->placeholder('—'),
-    
-                            Toggle::make('is_active'),
-                        ])
-                        ->extraItemActions([
-                            Action::make('generate')
-                                ->label(__('admin.seo.meta_editor.buttons.generate'))
-                                ->icon('heroicon-s-puzzle-piece')
-                                ->color('info')
-                                // ->requiresConfirmation()
-                                // ->modalIcon('heroicon-s-puzzle-piece')
-                                // ->modalDescription(function(array $arguments, Repeater $component) {
-                                //     $rowId = $arguments['item'];                 
-                                //     $rowData = $component->getItemState($rowId);
-                                //     return new HtmlString(__('admin.seo.meta_editor.messages.generate_confirmation', [
-                                //         'target_field'  => __("admin.common.fields.{$rowData['target_field']}"),
-                                //         'locale'        => $rowData['locale']
-                                //     ]));
-                                // })
-                                // ->beforeFormValidated(function (Action $action, array $data) {
-                                //     // Inspect repeater data in $data
-                                //     if (empty($data['items'])) {
-                                //         Notification::make()
-                                //             ->title('Validation failed')
-                                //             ->body('The items repeater cannot be empty.')
-                                //             ->danger()
-                                //             ->send();
+                                ->required(),
 
-                                //         $action->halt();
-                                //     }
-                                // })
-                                ->action(function (array $arguments, Repeater $component) {
-                                    $row = $component->getRawItemState($arguments['item']);
-                                    $this->dispatch('meta-editor:apply-formula', formula: $row);
-                                }),
                         ])
                         ->addActionLabel(__('admin.seo.meta_editor.buttons.add_formula'))
+                        ->addActionAlignment('right')
                         ->reorderable(false)
                         ->cloneable(true)
                         ->columnSpanFull()
                         ->defaultItems(1)
                         ->minItems(1)
-                        ,
+                        ->live(),
+                    Callout::make()
+                        ->description(new HtmlString(__('admin.seo.meta_editor.helpers.formulas_description')))
+                        ->info()
+                        ->columnSpanFull(),
                 ])
                 ->collapsible()
                 ->description(__('admin.seo.meta_editor.helpers.formulas_subheading')),
@@ -131,7 +99,7 @@ abstract class AbstractMetaTagsFormulaPage extends Page
 
     public function save(): void
     {
-        $storeId = Filament::getTenant()->id;
+        $storeId = once(fn() => Filament::getTenant()->id);
         $formulas = $this->form->getState()['formulas'] ?? [];
 
         DB::transaction(function () use ($storeId, $formulas) {
@@ -159,11 +127,22 @@ abstract class AbstractMetaTagsFormulaPage extends Page
 
     protected function loadFormulas(): array
     {
+        $storeId = once(fn() => Filament::getTenant()->id);
         return MetaTagFormula::query()
-            ->where('store_id', Filament::getTenant()->id)
+            ->where('store_id', $storeId)
             ->where('entity_type', $this->entityType())
             ->get()
-            ->map(fn (MetaTagFormula $f) => $f->only(['formula', 'target_field', 'locale', 'currency_id', 'is_active']))
+            ->map(fn (MetaTagFormula $f) => $f->only(['formula']))
             ->all();
+    }
+
+    public static function metaFields(): array
+    {
+        return [
+            // 'name'              => __('admin.common.fields.name'),
+            'meta_title'        => __('admin.common.fields.meta_title'),
+            'h1'                => __('admin.common.fields.h1'),
+            'meta_description'  => __('admin.common.fields.meta_description'),
+        ];
     }
 }
