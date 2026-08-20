@@ -2,8 +2,11 @@
 
 namespace App\Filament\Clusters\MetaEditor\Livewire;
 
+use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\FacetPages\FacetPageResource;
+use App\Models\Catalog\Category;
 use App\Models\Catalog\FacetPage;
+use App\Models\Catalog\Manufacturer;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +17,7 @@ class FacetPagesEntitiesTable extends AbstractEntitiesTable
     protected function getEntitiesQuery(): Builder
     {
         $storeId = once(fn() => Filament::getTenant()->id);
-        return FacetPage::query()->where('store_id', $storeId);
+        return FacetPage::query()->where('store_id', $storeId)->with('facetIndex');
     }
 
     protected function editRecordUrl(Model $record): ?string
@@ -40,6 +43,32 @@ class FacetPagesEntitiesTable extends AbstractEntitiesTable
             'meta_title'        => $record->getTranslations('meta_title'),
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
+            'parent'            => $this->resolveParent($record),
+            'manufacturer'      => $this->resolveManufacturer($record),
         ];
+    }
+
+    private function resolveParent(Model $facetPage): ?array
+    {
+        $categoryFacet = $facetPage->facetIndex
+            ->firstWhere('facet_type_id', FacetType::Category->value);
+
+        if (! $categoryFacet) {
+            return null;
+        }
+
+        return Category::find($categoryFacet->facet_value_id)?->getTranslations('name');
+    }
+
+    private function resolveManufacturer(Model $facetPage): ?array
+    {
+        $categoryFacet = $facetPage->facetIndex
+            ->firstWhere('facet_type_id', FacetType::Category->value);
+
+        if (! $categoryFacet) {
+            return null;
+        }
+
+        return Manufacturer::find($categoryFacet->facet_value_id)?->getTranslations('name');
     }
 }
