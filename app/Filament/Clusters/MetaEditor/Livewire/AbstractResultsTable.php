@@ -66,11 +66,14 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                             ->default(__('admin.common.fields.meta_title'))
                             ->color(Color::Gray)
                             ->size(TextSize::Small),
-                        ...collect($languages)->map(fn ($locale) => TextInputColumn::make("meta_title.{$locale}")
-                            ->getStateUsing(fn (array $record) => $record['meta_title'][$locale] ?? '')
-                            ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('meta_title', $state, $record, $locale))
-                            ->prefix($locale)
-                            ->placeholder(__('admin.common.fields.meta_title'))),
+                        ...collect($languages)->map(fn ($locale) => 
+                            TextInputColumn::make("meta_title.{$locale}")
+                                ->getStateUsing(fn (array $record) => $record['meta_title'][$locale] ?? '')
+                                ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('meta_title', $state, $record, $locale))
+                                ->prefix($locale)
+                                ->placeholder(__('admin.common.fields.meta_title'))
+                                ->suffix(fn ($state): string => strval(str($state)->length()))
+                            ),
                     ])->space(2)->columnSpan(['lg' => 1, 'xl' => 1]),
 
                     Stack::make([
@@ -78,11 +81,14 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                             ->default(__('admin.common.fields.h1'))
                             ->color(Color::Gray)
                             ->size(TextSize::Small),
-                        ...collect($languages)->map(fn ($locale) => TextInputColumn::make("h1.{$locale}")
-                            ->getStateUsing(fn (array $record) => $record['h1'][$locale] ?? '')
-                            ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('h1', $state, $record, $locale))
-                            ->prefix($locale)
-                            ->placeholder(__('admin.common.fields.h1'))),
+                        ...collect($languages)->map(fn ($locale) => 
+                            TextInputColumn::make("h1.{$locale}")
+                                ->getStateUsing(fn (array $record) => $record['h1'][$locale] ?? '')
+                                ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('h1', $state, $record, $locale))
+                                ->prefix($locale)
+                                ->placeholder(__('admin.common.fields.h1'))
+                                ->suffix(fn ($state): string => strval(str($state)->length()))
+                            ),
                     ])->space(2)->columnSpan(['lg' => 1, 'xl' => 1]),
 
                     Stack::make([
@@ -90,11 +96,14 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                             ->default(__('admin.common.fields.meta_description'))
                             ->color(Color::Gray)
                             ->size(TextSize::Small),
-                        ...collect($languages)->map(fn ($locale) => TextInputColumn::make("meta_description.{$locale}")
-                            ->getStateUsing(fn (array $record) => $record['meta_description'][$locale] ?? '')
-                            ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('meta_description', $state, $record, $locale))
-                            ->prefix($locale)
-                            ->placeholder(__('admin.common.fields.meta_description'))),
+                        ...collect($languages)->map(fn ($locale) => 
+                            TextInputColumn::make("meta_description.{$locale}")
+                                ->getStateUsing(fn (array $record) => $record['meta_description'][$locale] ?? '')
+                                ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('meta_description', $state, $record, $locale))
+                                ->prefix($locale)
+                                ->placeholder(__('admin.common.fields.meta_description'))
+                                ->suffix(fn ($state): string => strval(str($state)->length()))
+                            ),
                     ])->space(2)->columnSpan(['lg' => 1, 'xl' => 2]),
                 ]),
         ];
