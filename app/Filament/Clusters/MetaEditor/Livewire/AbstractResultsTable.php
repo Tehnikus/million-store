@@ -48,7 +48,106 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
 
     public array $resultsTable = [];
 
-    /** @return array<\Filament\Tables\Columns\Column> */
+    /**
+     * Staging table layout and actions
+     * @param \Filament\Tables\Table $table
+     * @return \Filament\Tables\Table
+     */
+    public function table(Table $table): Table
+    {
+        return $table
+            // Pagination
+            // Uncomment this if pagination glitches FIX
+            // ->records(fn () => array_values($this->resultsTable))
+            // Comment this if pagination glitches
+            ->records(function (int $page, int $recordsPerPage): LengthAwarePaginator {
+                $records = collect($this->resultsTable)->values()->forPage($page, $recordsPerPage);
+
+                return new LengthAwarePaginator(
+                    $records,
+                    total: count($this->resultsTable),
+                    perPage: $recordsPerPage,
+                    currentPage: $page,
+                );
+            })
+            ->columns($this->resultColumns())
+            // Rows background color
+            ->recordClasses(function ($record) {
+                return (!empty($record['has_error']) && $record['has_error'] !== false)
+                    ? 'bg-danger-300 dark:bg-danger-600' 
+                    : 'bg-success-300 dark:bg-success-600';
+            })
+            // Row actions
+            ->recordActions([
+
+                Action::make('delete')
+                    ->action(function (array $record): void {
+                        $this->removeRecordByKey($record['id']);
+                        $this->resetTable();
+                    })
+                    ->color('danger')
+                    ->icon('heroicon-s-no-symbol')
+                    
+            ])
+            // Toolbar actions
+            ->toolbarActions([
+
+                // Save all staging changes
+                Action::make('saveAll')
+                    ->label(__('admin.seo.meta_editor.buttons.save_staging'))
+                    ->color('success')
+                    ->icon('heroicon-o-check')
+                    ->action(fn () => $this->saveResults())
+                    ->visible(fn() => $this->resultsTable !== [])
+                    ->accessSelectedRecords(),
+
+                // Clear all staging rows
+                Action::make('clearAll')
+                    ->label(__('admin.seo.meta_editor.buttons.clear_staging'))
+                    ->color('danger')
+                    ->icon('heroicon-o-no-symbol')
+                    ->action(function() {$this->resultsTable = []; $this->resetTable();})
+                    ->visible(fn() => $this->resultsTable !== [])
+                    ->accessSelectedRecords(),
+
+                // Action::make('applyFormula')
+                //     ->label(__('admin.seo.meta_editor.buttons.apply_formula_all'))
+                //     ->icon(NavigationItem::MetaEditor->icon())
+                //     ->color('info')
+                //     ->visible(fn() => $this->resultsTable !== [])
+                //     ->schema($this->generateModalSchema())
+                //     ->action(function (array $data) {
+                //         $formula = $this->availableFormulas()->firstWhere('id', (int) $data['formula_id']);
+                        
+                //         if (!$formula) return;
+
+                //         collect(array_keys($this->resultsTable))
+                //             ->each(fn($id) => $this->applyFormulaToRow($id, $formula, $data['target_field'], $data['locale'], $data['currency_id']));
+                //     }),
+                BulkAction::make('applyFormula')
+                    ->schema($this->generateModalSchema())
+                    ->action(function (Collection $records, array $data) {
+                        $formula = $this->availableFormulas()->firstWhere('id', (int) $data['formula_id']);
+                        if (!$formula) return;
+
+                        $records->each(fn ($record) => $this->applyFormulaToRow($record['id'], $formula, $data['target_field'], $data['locale'], $data['currency_id']));
+
+                        $this->resetTable();
+                    })
+                    ->deselectRecordsAfterCompletion()
+                    ->label(__('admin.seo.meta_editor.buttons.apply_formula'))
+                    ->icon(NavigationItem::MetaEditor->icon())
+                    ->color('info'),
+            ])
+            ->emptyStateHeading(__('admin.seo.meta_editor.helpers.empty_results_table_title'))
+            ->emptyStateDescription(__('admin.seo.meta_editor.helpers.empty_results_table_descriptions'))
+            ->emptyStateIcon('heroicon-o-clock');
+    }
+
+    /**
+     * Staging table columns
+     * @return \Filament\Tables\Columns\Layout\Grid[]
+     */
     protected function resultColumns(): array {
         $languages = once(fn () => Filament::getTenant()->languages()->wherePivot('is_active', true)->pluck('locale'));
         return [
@@ -139,16 +238,33 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
         ];
     }
 
+    /**
+     * Update staging array after user input in field 
+     * @param string $field
+     * @param mixed $state
+     * @param array $record
+     * @param string $locale
+     * @return void
+     */
     protected function updateResultField(string $field, mixed $state, array $record, string $locale): void
     {
         $this->resultsTable[$record['id']][$field][$locale] = $state ?? '';
     }
 
+    /**
+     * Remove row from staging table
+     * @param int|string $id
+     * @return void
+     */
     protected function removeRecordByKey(int|string $id): void
     {
         unset($this->resultsTable[$id]);
     }
 
+    /**
+     * Entity type to separate formulas by type: category, product, etc.
+     * @return void
+     */
     abstract protected function entityType(): string;
 
     protected function availableFormulas(): Collection
@@ -160,6 +276,15 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             ->get();
     }
 
+    /**
+     * Applt formula to the input value
+     * @param int|string $id
+     * @param MetaTagFormula $formula
+     * @param mixed $target_field
+     * @param mixed $locale
+     * @param mixed $currency_id
+     * @return void
+     */
     protected function applyFormulaToRow(int|string $id, MetaTagFormula $formula, $target_field, $locale, $currency_id): void
     {
         $row = $this->resultsTable[$id] ?? null;
@@ -173,98 +298,10 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
         $this->resultsTable[$id]['has_error'] = ($this->resultsTable[$id]['has_error'] ?? false) || ($result['errors'] !== []);
     }
 
-
-    public function table(Table $table): Table
-    {
-        return $table
-            // Pagination
-            // Uncomment this if pagination glitches FIX
-            // ->records(fn () => array_values($this->resultsTable))
-            // Comment this if pagination glitches
-            ->records(function (int $page, int $recordsPerPage): LengthAwarePaginator {
-                $records = collect($this->resultsTable)->values()->forPage($page, $recordsPerPage);
-
-                return new LengthAwarePaginator(
-                    $records,
-                    total: count($this->resultsTable),
-                    perPage: $recordsPerPage,
-                    currentPage: $page,
-                );
-            })
-            ->columns($this->resultColumns())
-            // Rows background color
-            ->recordClasses(function ($record) {
-                return (!empty($record['has_error']) && $record['has_error'] !== false)
-                    ? 'bg-danger-300 dark:bg-danger-600' 
-                    : 'bg-success-300 dark:bg-success-600';
-            })
-            // Row actions
-            ->recordActions([
-
-                Action::make('delete')
-                    ->action(function (array $record): void {
-                        $this->removeRecordByKey($record['id']);
-                        $this->resetTable();
-                    })
-                    ->color('danger')
-                    ->icon('heroicon-s-no-symbol')
-                    
-            ])
-            // Toolbar actions
-            ->toolbarActions([
-
-                // Save all staging changes
-                Action::make('saveAll')
-                    ->label(__('admin.seo.meta_editor.buttons.save_staging'))
-                    ->color('success')
-                    ->icon('heroicon-o-check')
-                    ->action(fn () => $this->saveResults())
-                    ->visible(fn() => $this->resultsTable !== [])
-                    ->accessSelectedRecords(),
-
-                // Clear all staging rows
-                Action::make('clearAll')
-                    ->label(__('admin.seo.meta_editor.buttons.clear_staging'))
-                    ->color('danger')
-                    ->icon('heroicon-o-no-symbol')
-                    ->action(function() {$this->resultsTable = []; $this->resetTable();})
-                    ->visible(fn() => $this->resultsTable !== [])
-                    ->accessSelectedRecords(),
-
-                Action::make('applyFormula')
-                    ->label(__('admin.seo.meta_editor.buttons.apply_formula'))
-                    ->icon(NavigationItem::MetaEditor->icon())
-                    ->color('info')
-                    ->visible(fn() => $this->resultsTable !== [])
-                    ->schema($this->generateModelSchema())
-                    ->action(function (array $data) {
-                        $formula = $this->availableFormulas()->firstWhere('id', (int) $data['formula_id']);
-                        
-                        if (!$formula) return;
-
-                        collect(array_keys($this->resultsTable))
-                            ->each(fn($id) => $this->applyFormulaToRow($id, $formula, $data['target_field'], $data['locale'], $data['currency_id']));
-                    }),
-                BulkAction::make('applyFormula')
-                    ->schema($this->generateModelSchema())
-                    ->action(function (Collection $records, array $data) {
-                        $formula = $this->availableFormulas()->firstWhere('id', (int) $data['formula_id']);
-                        if (!$formula) return;
-
-                        $records->each(fn ($record) => $this->applyFormulaToRow($record['id'], $formula, $data['target_field'], $data['locale'], $data['currency_id']));
-
-                        $this->resetTable();
-                    })
-                    ->deselectRecordsAfterCompletion()
-                    ->label(__('admin.seo.meta_editor.buttons.apply_formula'))
-                    ->icon(NavigationItem::MetaEditor->icon())
-                    ->color('info'),
-            ])
-            ->emptyStateHeading(__('admin.seo.meta_editor.helpers.empty_results_table_title'))
-            ->emptyStateDescription(__('admin.seo.meta_editor.helpers.empty_results_table_descriptions'))
-            ->emptyStateIcon('heroicon-o-clock');
-    }
-
+    /**
+     * Save staging table to DB
+     * @return void
+     */
     protected function saveResults(): void
     {
         if ($this->resultsTable === []) {
@@ -309,7 +346,11 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
         return view('filament.clusters.meta-editor.livewire.results-table');
     }
 
-    protected function generateModelSchema(): array {
+    /**
+     * Modal window schema that appears on click on genegate buttons
+     * @return \Filament\Forms\Components\Select[]
+     */
+    protected function generateModalSchema(): array {
         $languages =  once(fn() => Filament::getTenant()->languages()->wherePivot('is_active', true)->get());
         $currencies = once(fn() => Filament::getTenant()->currencies()->wherePivot('is_active', true)->get());
 
