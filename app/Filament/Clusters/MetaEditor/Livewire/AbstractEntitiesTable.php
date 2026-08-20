@@ -40,18 +40,18 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
             ->searchable(false)
             ->recordActions([
                 Action::make('edit')
-                    ->label(__('admin.common.buttons.edit'))
-                    ->icon('heroicon-o-pencil-square')
                     ->url(fn (Model $record) => $this->editRecordUrl($record))
                     ->visible(fn (Model $record) => filled($this->editRecordUrl($record)))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->label(__('admin.seo.meta_editor.buttons.edit'))
+                    ->icon('heroicon-o-pencil-square'),
                 Action::make('addToResults')
-                    ->label(__('admin.seo.meta_editor.buttons.add_to_results'))
-                    ->icon('heroicon-o-arrow-right')
                     ->action(fn (Model $record) => $this->dispatch(
                         'meta-editor:add-to-results',
                         row: $this->toResultRow($record),
-                    )),
+                    ))
+                    ->label(__('admin.seo.meta_editor.buttons.add_to_results'))
+                    ->icon('heroicon-o-arrow-right'),
             ])
             ->toolbarActions([
                 BulkAction::make('addFilteredToResults')

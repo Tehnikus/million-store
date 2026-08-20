@@ -97,6 +97,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                     })
                     ->color('danger')
                     ->icon('heroicon-s-no-symbol')
+                    ->label(__('admin.seo.meta_editor.buttons.delete'))
                     
             ])
             // Toolbar actions
@@ -149,8 +150,8 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                     ->icon(NavigationItem::MetaEditor->icon())
                     ->color('info'),
             ])
-            ->emptyStateHeading(__('admin.seo.meta_editor.helpers.empty_results_table_title'))
-            ->emptyStateDescription(__('admin.seo.meta_editor.helpers.empty_results_table_descriptions'))
+            ->emptyStateHeading(__('admin.seo.meta_editor.helpers.results_table_title'))
+            ->emptyStateDescription(__('admin.seo.meta_editor.helpers.results_table_descriptions'))
             ->emptyStateIcon('heroicon-o-clock');
     }
 
@@ -383,11 +384,13 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
 
             Select::make('locale')
                 ->options($languages->mapWithKeys(fn ($lang) => [$lang->locale => $lang->locale]))
-                ->required(),
+                ->required()
+                ->label(__('admin.seo.meta_editor.fields.locale')),
 
             Select::make('currency_id')
                 ->options($currencies->mapWithKeys(fn ($c) => [$c->id => $c->iso_code]))
-                ->required(),
+                ->required()
+                ->label(__('admin.seo.meta_editor.fields.currency_id')),
         ];
     }
 

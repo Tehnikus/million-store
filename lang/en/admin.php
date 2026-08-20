@@ -147,6 +147,9 @@ return [
         'value_is_active'       => 'Show this attribute value on product pages',
         'value_show_in_facets'  => 'Show this attribute value in filter block',
       ],
+      'buttons' => [
+        'add_attribute_value' => 'Add attribute value'
+      ]
     ],
     'options' => [
       'navigation_label'      => 'Options',
@@ -177,6 +180,9 @@ return [
         'is_default'            => 'Set this value pre-checked. Can be overriden by product settings',
         'type'                  => 'Option type defines how option can be selected: one of the options list (radio button) or multiple (checkbox)',
       ],
+      'buttons' => [
+        'add_option_value' => 'Add option value'
+      ]
     ],
     'tags' => [
       'navigation_label'      => 'Tags',
@@ -359,6 +365,46 @@ return [
         'button_add_group'          => 'Add group',
       ],
     ],
+    'meta_editor' => [
+      'navigation_label'      => 'Meta editor',
+      'model_label_singular'  => 'Meta editor',
+      'fields' => [
+        'formula'       => 'Formula',
+        'target_field'  => 'Target field',
+        'locale'        => 'Language',
+        'currency_id'   => 'Currency',
+      ],
+      'buttons' => [
+        'add_formula'                 => 'Add formula',
+        'add_to_results'              => 'Add to Staging table',
+        'add_selected_to_results'     => 'Add selected to Staging table',
+        'save_formulas'               => 'Save formulas',
+        'apply_formula'               => 'Generate',
+        'save_staging'                => 'Save changes',
+        'clear_staging'               => 'Clear changes',
+        'delete'                      => 'Delete from staging',
+        'edit'                        => 'Edit main record',
+      ],
+      'filters' => [
+        'incomplete'                  => 'Incomplete fields',
+        'incomplete_all'              => 'All',
+        'incomplete_true'             => 'Only incomplete',
+        'incomplete_false'            => 'Only filled',
+      ],
+      'helpers' => [
+        'formula_placeholder'         => 'Supported tags: {{name}}, {{manufacturer}}, {{price}}, {{minPrice}}, {{maxPrice}}',
+        'results_table_title'         => 'Staging table',
+        'results_table_descriptions'  => 'Select rows from the table above by clicking the "Add to Staging table" button. Rows appearing here can be edited or filled all at once by applying a Generation formula. Rows are saved only after hitting "Save" button',
+        'formulas_heading'            => 'Generation formulas',
+        'formulas_subheading'         => 'Create formulas here. Save formulas before applying them to rows',
+        'formulas_description'        => 'Formulas howto',
+      ],
+      'messages' => [
+        'generate_confirmation'       => 'This action will apply formula to :target_field fields in language :locale', 
+        'saved_with_errors'           => 'Some rows had errors while generation and were not saved. Faulty rows count - :count. See faulty rows in Staging table',
+        'staging_saved'               => 'All rows saved! Good work!',
+      ],
+    ],
   ],
   'blog' => [
     'authors'  => [
@@ -495,6 +541,7 @@ return [
     'buttons' => [
       'save'              => 'Save',
       'cancel'            => 'Cancel',
+      'edit'              => 'Edit',
       'add_faq_row'       => 'Add new Question/Answer',
       'add_image_row'     => 'Add new image',
       'add_how_to_step'   => 'Add new HowTo step',
