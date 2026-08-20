@@ -72,11 +72,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             })
             ->columns($this->resultColumns())
             // Rows background color
-            ->recordClasses(function ($record) {
-                return (!empty($record['has_error']) && $record['has_error'] !== false)
-                    ? 'bg-danger-300 dark:bg-danger-600' 
-                    : 'bg-success-300 dark:bg-success-600';
-            })
+            ->recordClasses(fn ($record) => (!empty($record['has_error']) && $record['has_error'] == true) ? 'meta-editor-row-error' : (!isset($record['has_error']) ? '' : 'meta-editor-row-ok'))
             // Row actions
             ->recordActions([
 
@@ -155,7 +151,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                 ->schema([
                     TextColumn::make('name')
                         ->weight(FontWeight::Bold)
-                        ->color(fn($record) => (!empty($record['has_error']) && $record['has_error'] !== false) ? 'danger' : 'success')
+                        ->color(fn($record) => (!empty($record['has_error']) && $record['has_error'] == true) ? 'danger' : (!isset($record['has_error']) ? '' : 'success'))
                         ->columnSpanFull()
                         ->alignCenter()
                         ->size(TextSize::Medium),
