@@ -32,6 +32,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Filament\Tables\Filters\Filter;
 
 
 /**
@@ -63,6 +64,14 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             ->records(function (int $page, int $recordsPerPage): LengthAwarePaginator {
                 $records = collect($this->resultsTable)->values()->forPage($page, $recordsPerPage);
 
+                if (filled($this->tableSearch)) {
+                    $records = $records->filter(fn (array $row) => $this->rowMatchesSearch($row, $this->tableSearch));
+                }
+
+                if ($filters['incomplete']['isActive'] ?? false) {
+                    $records = $records->filter(fn (array $row) => $this->rowHasEmptyField($row));
+                }
+
                 return new LengthAwarePaginator(
                     $records,
                     total: count($this->resultsTable),
@@ -70,6 +79,11 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                     currentPage: $page,
                 );
             })
+            ->filters([
+                Filter::make('incomplete')
+                    ->label(__('admin.seo.meta_editor.filters.incomplete'))
+                    ->toggle(),
+            ])
             ->columns($this->resultColumns())
             // Rows background color
             ->recordClasses(fn ($record) => (!empty($record['has_error']) && $record['has_error'] == true) ? 'meta-editor-row-error' : (!isset($record['has_error']) ? '' : 'meta-editor-row-ok'))
@@ -154,7 +168,8 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                         ->color(fn($record) => (!empty($record['has_error']) && $record['has_error'] == true) ? 'danger' : (!isset($record['has_error']) ? '' : 'success'))
                         ->columnSpanFull()
                         ->alignCenter()
-                        ->size(TextSize::Medium),
+                        ->size(TextSize::Medium)
+                        ->searchable(),
 
                     Stack::make([
                         TextColumn::make('column_meta_title')
@@ -374,5 +389,42 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                 ->options($currencies->mapWithKeys(fn ($c) => [$c->id => $c->iso_code]))
                 ->required(),
         ];
+    }
+
+    protected function rowMatchesSearch(array $row, string $search): bool
+    {
+        $negate = str_starts_with(trim($search), '!');
+        $needle = mb_strtolower(trim($negate ? substr(trim($search), 1) : $search));
+
+        if ($needle === '') {
+            return true;
+        }
+
+        $found = false;
+
+        foreach ($this->translatableFields() as $field) {
+            foreach ($row[$field] ?? [] as $value) {
+                if (str_contains(mb_strtolower((string) $value), $needle)) {
+                    $found = true;
+                    break 2;
+                }
+            }
+        }
+
+        return $negate ? ! $found : $found;
+    }
+
+    protected function rowHasEmptyField(array $row): bool
+    {
+        $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->pluck('locale');
+        foreach ($this->translatableFields() as $field) {
+            foreach ($languages as $locale) {
+                if (blank($row[$field][$locale] ?? null)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
