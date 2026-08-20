@@ -122,35 +122,20 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
         $this->resultsTable[$row['id']] = $row;
     }
 
-    // /**
-    //  * Apply formula row action in repeater
-    //  */
-    // #[On('meta-editor:apply-formula')]
-    // public function applyFormulaToResults(array $formula): void
-    // {
-        
-    //     $targetField = $formula['target_field'];
-    //     $locale      = $formula['locale'];
-
-    //     foreach ($this->resultsTable as $id => $row) {
-    //         $result = ApplyMetaFormula::apply($formula['formula'], $this->buildFormulaVars($row, $locale));
-
-    //         $this->resultsTable[$id][$targetField][$locale] = $result['text'];
-    //         $this->resultsTable[$id]['has_error'] = $result['errors'] !== [];
-    //         $this->resetTable();
-    //     }
-        
-    // }
-
     /**
      * Formula variables
      */
     protected function buildFormulaVars(array $row, string $locale): array
     {
         return [
-            'name'      => $row['name'][$locale] ?? null,
-            'store'     => once(fn() => Filament::getTenant()->name),
-            'parent'    => $row['parent'][$locale] ?? null,
+            'name'          => $row['name'][$locale] ?? null,
+            'store'         => once(fn() => Filament::getTenant()->name),
+            'parent'        => $row['parent'][$locale] ?? null,
+            // TODO
+            'minPrice'      => null,
+            'maxPrice'      => null,
+            'ratingAvg'     => null,
+            'productCount'  => null,
         ];
     }
 
