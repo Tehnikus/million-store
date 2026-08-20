@@ -56,10 +56,10 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                     Repeater::make('formulas')
                         ->hiddenLabel()
                         ->table([
-                            TableColumn::make(__('admin.seo.meta_editor.fields.formula')),
-                            TableColumn::make(__('admin.seo.meta_editor.fields.target_field'))->width('180px'),
-                            TableColumn::make(__('admin.seo.meta_editor.fields.locale'))->width('100px'),
-                            TableColumn::make(__('admin.seo.meta_editor.fields.currency'))->width('140px'),
+                            TableColumn::make(__('admin.seo.meta_editor.fields.formula'))->markAsRequired(),
+                            TableColumn::make(__('admin.seo.meta_editor.fields.target_field'))->width('180px')->markAsRequired(),
+                            TableColumn::make(__('admin.seo.meta_editor.fields.locale'))->width('100px')->markAsRequired(),
+                            TableColumn::make(__('admin.seo.meta_editor.fields.currency_id'))->width('140px')->markAsRequired(),
                         ])
                         ->schema([
                             TextInput::make('formula')

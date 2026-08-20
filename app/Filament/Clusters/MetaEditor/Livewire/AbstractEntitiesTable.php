@@ -6,12 +6,14 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Facades\Filament;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -37,7 +39,18 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
         return $table
             ->query($this->getEntitiesQuery())
             ->columns($this->entityColumns())
-            ->searchable(false)
+            ->filters([
+                Filter::make('incomplete')
+                    ->query(function(Builder $query) {
+                        $languages = once(fn () => Filament::getTenant()->languages()->wherePivot('is_active', true)->pluck('locale'));
+                        foreach ($languages as $locale) {
+                            $query->whereNull("name->{$locale}")->orWhereNull("h1->{$locale}")->orWhereNull("meta_title->{$locale}")->orWhereNull("meta_description->{$locale}");
+                        }
+                        return $query;
+                    })
+                    ->label(__('admin.seo.meta_editor.filters.incomplete'))
+                    ->toggle()
+            ])
             ->recordActions([
                 Action::make('edit')
                     ->url(fn (Model $record) => $this->editRecordUrl($record))
@@ -55,7 +68,7 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
             ])
             ->toolbarActions([
                 BulkAction::make('addFilteredToResults')
-                    ->label(__('admin.seo.meta_editor.buttons.add_selected_to_results'))
+                    ->label(__('admin.seo.meta_editor.buttons.add_to_results'))
                     ->icon(Heroicon::ArrowRight)
                     ->iconPosition(IconPosition::After)
                     ->action(function ($records) {

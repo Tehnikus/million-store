@@ -61,7 +61,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             // Uncomment this if pagination glitches FIX
             // ->records(fn () => array_values($this->resultsTable))
             // Comment this if pagination glitches
-            ->records(function (int $page, int $recordsPerPage): LengthAwarePaginator {
+            ->records(function (int $page, int $recordsPerPage, array $filters, ?string $search): LengthAwarePaginator {
                 $records = collect($this->resultsTable)->values()->forPage($page, $recordsPerPage);
 
                 if (filled($this->tableSearch)) {

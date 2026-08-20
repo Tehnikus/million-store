@@ -377,7 +377,6 @@ return [
       'buttons' => [
         'add_formula'                 => 'Добавить формулу',
         'add_to_results'              => 'Добавить в промежуточную таблицу',
-        'add_selected_to_results'     => 'Добавить выбранное в промежуточную таблицу',
         'save_formulas'               => 'Сохранить формулы',
         'apply_formula'               => 'Сгенерировать',
         'apply_formula_all'           => 'Сгенерировать все',

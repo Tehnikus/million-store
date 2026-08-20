@@ -377,7 +377,6 @@ return [
       'buttons' => [
         'add_formula'                 => 'Add formula',
         'add_to_results'              => 'Add to Staging table',
-        'add_selected_to_results'     => 'Add selected to Staging table',
         'save_formulas'               => 'Save formulas',
         'apply_formula'               => 'Generate',
         'save_staging'                => 'Save changes',
