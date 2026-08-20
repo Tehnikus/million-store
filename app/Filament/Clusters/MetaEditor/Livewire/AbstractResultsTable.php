@@ -242,6 +242,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             'name'          => $row['name'][$locale] ?? null,
             'store'         => once(fn() => Filament::getTenant()->name),
             'parent'        => $row['parent'][$locale] ?? null,
+            'manufacturer'  => $row['manufacturer'][$locale] ?? null,
             // TODO
             'minPrice'      => null,
             'maxPrice'      => null,

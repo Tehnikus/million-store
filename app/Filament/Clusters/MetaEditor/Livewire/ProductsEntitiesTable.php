@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\MetaEditor\Livewire;
 
 use App\Filament\Resources\Products\ProductResource;
 use App\Models\Catalog\Category;
+use App\Models\Catalog\Manufacturer;
 use App\Models\Catalog\ProductDescription;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
@@ -41,6 +42,7 @@ class ProductsEntitiesTable extends AbstractEntitiesTable
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
             'parent'            => Category::find($record->parent_id)?->getTranslations('name'),
+            'manufacturer'      => Manufacturer::find($record->manufacturer_id)->getTranslations('name')
         ];
     }
 }
