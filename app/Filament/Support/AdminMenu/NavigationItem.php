@@ -42,6 +42,7 @@ enum NavigationItem: string
     case Keywords       = 'seo.keywords';
     case MetaEditor     = 'seo.meta_editor';
     case Analytics      = 'seo.analytics';
+    case GoogleAds      = 'seo.google_ads';
     case Slugs          = 'seo.slugs';
     
     // Design
@@ -93,7 +94,7 @@ enum NavigationItem: string
                 => NavigationGroup::Blog,
 
             // Seo
-            self::RobotsEditor, self::Slugs, self::Sitemap, self::Keywords, self::MetaEditor, self::Analytics, 
+            self::RobotsEditor, self::Slugs, self::Sitemap, self::Keywords, self::MetaEditor, self::Analytics, self::GoogleAds,
                 => NavigationGroup::Seo,
 
             // Design
@@ -152,6 +153,7 @@ enum NavigationItem: string
             self::Sitemap           => 'heroicon-o-share',
             self::Slugs             => 'heroicon-o-link',
             self::RobotsEditor      => 'heroicon-o-code-bracket',
+            self::GoogleAds         => 'heroicon-o-rss',
 
             // Design
             self::MenuEditor        => 'heroicon-s-queue-list',
@@ -216,6 +218,7 @@ enum NavigationItem: string
             self::Sitemap           => 4,
             self::Slugs             => 5,
             self::RobotsEditor      => 6,
+            self::GoogleAds         => 7,
 
             // Design
             self::MenuEditor        => 1,
