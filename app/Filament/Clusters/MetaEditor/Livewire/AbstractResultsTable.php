@@ -244,6 +244,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             'parent'        => $row['parent'][$locale] ?? null,
             'manufacturer'  => $row['manufacturer'][$locale] ?? null,
             // TODO
+            'price'         => null,
             'minPrice'      => null,
             'maxPrice'      => null,
             'ratingAvg'     => null,

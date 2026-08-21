@@ -391,12 +391,35 @@ return [
         'incomplete_false'            => 'Only filled',
       ],
       'helpers' => [
-        'formula_placeholder'         => 'Supported tags: {{name}}, {{manufacturer}}, {{price}}, {{minPrice}}, {{maxPrice}}',
+        'formula_placeholder'         => 'Supported tokens: {{name}}, {{manufacturer}}, {{price}}, {{minPrice}}, {{maxPrice}}',
         'results_table_title'         => 'Staging table',
         'results_table_descriptions'  => 'Select rows from the table above by clicking the "Add to Staging table" button. Rows appearing here can be edited or filled all at once by applying a Generation formula. Rows are saved only after hitting "Save" button',
         'formulas_heading'            => 'Generation formulas',
         'formulas_subheading'         => 'Create formulas here. Save formulas before applying them to rows',
-        'formulas_description'        => 'Formulas howto',
+        'formulas_section'            => 'Formulas HowTo',
+        'formulas_description'        => ' 
+          <p class="fi-callout-description">Basic usage: {{token}} in curly braces</p>
+          <p class="fi-callout-description">Tokens supported:</p>
+            <ul class="fi-callout-description">
+              <li><b style="user-select: all">{{name}}</b> - entity name</li>
+              <li><b style="user-select: all">{{parent}}</b> - entity parent, e.g. parent category, parent manufacturer, etc.</li>
+              <li><b style="user-select: all">{{manufacturer}}</b> - manufacturer, only applicable for products and filter pages (if filter page has one)</li>
+              <li><b style="user-select: all">{{store}}</b> - store name</li>
+              <li><b style="user-select: all">{{price}}</b> - price, only applicable for products</li>
+              <li><b style="user-select: all">{{minPrice}}</b> - minimum price. Lowest price in categories, manufacturers and filter pages. Lowest price for product option, if the product has one</li>
+              <li><b style="user-select: all">{{maxPrice}}</b> - maximum price. Highest price in categories, manufacturers and filter pages. Highest price for product option, if the product has one</li>
+              <li><b style="user-select: all">{{ratingAvg}}</b> - average rating for product. Category, manufacturer and filter page calculate average rating of all related products</li>
+              <li><b style="user-select: all">{{productCount}}</b> - product count</li>
+            </ul>
+            <p class="fi-callout-description">Filters can be applied to tokens using colon: {{token:upper}}, {{token:lower}}, {{token:capitalize}}, {{token:number}}, {{token:currency}}. Example: {{store:upper}}, {{parent:lower}}</p>
+            <p class="fi-callout-description">Tokens can be chained with vertical bar: {{manufacturer|parent|name}}. The first not empty token will be used in this case.</p>
+            <p class="fi-callout-description">Literal placeholders can be applied using vertical bar and literal text in double quotes if the token is empty: {{token|"literal text"}}. Literal text will appear if all previously chained tokens are empty</p>
+            <p class="fi-callout-description">Prefixes and suffixes can be applied to token by chaining them with vertical bar: {{minPrice|prefix:" as low as "|suffix:" and other deals "}}</p>
+            <p class="fi-callout-description">Full examples:</p>
+            <ul class="fi-callout-description">
+              <li>Buy {{name}} and other {{parent:lower|"high quality products"}} from {{minPrice:currency}} in our store {{store:upper}}</li>
+            </ul>
+        ',
       ],
       'messages' => [
         'generate_confirmation'       => 'This action will apply formula to :target_field fields in language :locale', 

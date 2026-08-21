@@ -87,9 +87,17 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                         ->defaultItems(1)
                         ->minItems(1)
                         ->live(),
-                    Callout::make()
-                        ->description(new HtmlString(__('admin.seo.meta_editor.helpers.formulas_description')))
-                        ->info()
+                    Section::make(__('admin.seo.meta_editor.helpers.formulas_section'))
+                        ->schema([
+                            Callout::make()
+                                ->description(new HtmlString(__('admin.seo.meta_editor.helpers.formulas_description')))
+                                ->info()
+                                ->columnSpanFull(),
+                        ])
+                        ->collapsible()
+                        ->collapsed()
+                        ->icon('heroicon-o-information-circle')
+                        ->iconColor('info')
                         ->columnSpanFull(),
                 ])
                 ->collapsible()
@@ -132,7 +140,7 @@ abstract class AbstractMetaTagsFormulaPage extends Page
             ->where('store_id', $storeId)
             ->where('entity_type', $this->entityType())
             ->get()
-            ->map(fn (MetaTagFormula $f) => $f->only(['formula']))
+            ->map(fn (MetaTagFormula $f) => $f->only(['formula', 'target_field', 'locale', 'currency_id']))
             ->all();
     }
 

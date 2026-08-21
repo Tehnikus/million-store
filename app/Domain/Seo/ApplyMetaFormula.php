@@ -7,6 +7,7 @@ class ApplyMetaFormula
     private const array FILTERS = ['upper', 'lower', 'capitalize', 'number', 'currency'];
 
     /**
+     * Apply formula to string
      * @param array<string, mixed> $vars
      * @return array{text: string, errors: string[]}
      */
@@ -16,13 +17,22 @@ class ApplyMetaFormula
 
         $text = preg_replace_callback(
             '/{{(.*?)}}/s',
-            fn (array $matches) => self::resolvePlaceholder(trim($matches[1]), $vars, $errors),
+            function (array $matches) use ($vars, &$errors) {
+                return self::resolvePlaceholder(trim($matches[1]), $vars, $errors);
+            },
             $formula
         );
 
         return ['text' => $text, 'errors' => $errors];
     }
 
+    /**
+     * Resolve each {{token}} inside curly braces
+     * @param string $content token itself
+     * @param array $vars translated row vars one of which replace token if matches: {{manufacturer}} => ['manufacturer'] => 'Manufacturer name'
+     * @param array $errors Errors collector if no matches found
+     * @return string
+     */
     private static function resolvePlaceholder(string $content, array $vars, array &$errors): string
     {
         $prefix = '';
@@ -54,8 +64,6 @@ class ApplyMetaFormula
 
             $value = $vars[$candidate['token']] ?? null;
 
-            // 0 намеренно считается "пустым" значением — не имеет смысла для мета-тегов
-            // (например "цена от 0"), по аналогии со старой логикой на OpenCart
             if ($value === null || $value === '' || $value === 0 || $value === '0') {
                 // $errors[] = $lastChecked;
                 continue;
@@ -89,6 +97,12 @@ class ApplyMetaFormula
         return ['token' => $token, 'filter' => null, 'isLiteral' => false];
     }
 
+    /**
+     * Apply various filters to token value
+     * @param string $value
+     * @param mixed $filter
+     * @return array|bool|string|null
+     */
     private static function applyFilter(string $value, ?string $filter): string
     {
         return match ($filter) {
@@ -96,7 +110,8 @@ class ApplyMetaFormula
             'lower'      => mb_strtolower($value),
             'capitalize' => mb_strtoupper(mb_substr($value, 0, 1)) . mb_substr($value, 1),
             'number'     => number_format((float) $value),
-            default      => $value, // null и 'currency' — пока no-op
+            'currency'   => $value, // TODO format currency
+            default      => $value,
         };
     }
 
