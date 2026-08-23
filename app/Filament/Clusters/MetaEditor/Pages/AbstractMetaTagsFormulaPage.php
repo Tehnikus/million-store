@@ -85,8 +85,7 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                         ->cloneable(true)
                         ->columnSpanFull()
                         ->defaultItems(1)
-                        ->minItems(1)
-                        ->live(),
+                        ->minItems(1),
                     Section::make(__('admin.seo.meta_editor.helpers.formulas_section'))
                         ->schema([
                             Callout::make()
