@@ -11,6 +11,11 @@ use Filament\Support\Contracts\HasLabel;
  */
 enum FacetType: int implements HasLabel
 {
+
+    /**
+     * Most crucial: facet_type_id which is saved to DB
+     * Other stuf here is mostly cosmetic
+     */
     case Category      = 1;
     case Manufacturer  = 2;
     case Attribute     = 3;
@@ -20,6 +25,31 @@ enum FacetType: int implements HasLabel
     case HasDiscount   = 7;
     case Bestseller    = 8;
     case BestReviews   = 9;
+
+    /**
+     * List of facet that can be selected as root for FacetPage and FacetPageIndex
+     * @return bool
+     */
+    public function canBeRoot(): bool
+    {
+        return match ($this) {
+            self::Category, self::Manufacturer => true,
+            default => false,
+        };
+    }
+
+    /**
+     * Defines wether facet type can be selected multiple times
+     * @return bool
+     */
+    public function isSingleton(): bool
+    {
+        return match ($this) {
+            self::Category, self::Manufacturer => true,
+            self::Attribute, self::Option, self::Tag => false,
+            default => true, // static flag facets are also singletons
+        };
+    }
 
     /**
      * Get label for app\Filament\Resources\FacetPages\Tables\FacetPagesTable.php
@@ -60,6 +90,10 @@ enum FacetType: int implements HasLabel
         };
     }
 
+    /**
+     * Facets badge color in admin FacetPage table in facet column
+     * @return int
+     */    
     public function getColor(): ?string
     {
         return match ($this) {
@@ -75,6 +109,10 @@ enum FacetType: int implements HasLabel
         };
     }
 
+    /**
+     * Facets sort in admin FacetPage table in facet column
+     * @return int
+     */
     public function sortPriority(): int
     {
         return match ($this) {
