@@ -50,25 +50,28 @@ class FacetPagesEntitiesTable extends AbstractEntitiesTable
 
     private function resolveParent(Model $facetPage): ?array
     {
-        $categoryFacet = $facetPage->facetIndex
-            ->firstWhere('facet_type_id', FacetType::Category->value);
+        $parentFacet = $facetPage->facetIndex
+            ->firstWhere('is_root', true);
 
-        if (! $categoryFacet) {
-            return null;
+        if (!$parentFacet) return null;
+
+        if ($parentFacet->facet_type_id == FacetType::Category->value) {
+            return Category::find($parentFacet->facet_value_id)?->getTranslations('name');
         }
-
-        return Category::find($categoryFacet->facet_value_id)?->getTranslations('name');
+        if ($parentFacet->facet_type_id == FacetType::Manufacturer->value) {
+            return Manufacturer::find($parentFacet->facet_value_id)?->getTranslations('name');
+        }
     }
 
     private function resolveManufacturer(Model $facetPage): ?array
     {
-        $categoryFacet = $facetPage->facetIndex
-            ->firstWhere('facet_type_id', FacetType::Category->value);
+        $manufacturerFacet = $facetPage->facetIndex
+            ->firstWhere('facet_type_id', FacetType::Manufacturer->value);
 
-        if (! $categoryFacet) {
+        if (! $manufacturerFacet) {
             return null;
         }
 
-        return Manufacturer::find($categoryFacet->facet_value_id)?->getTranslations('name');
+        return Manufacturer::find($manufacturerFacet->facet_value_id)?->getTranslations('name');
     }
 }
