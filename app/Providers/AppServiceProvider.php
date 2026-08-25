@@ -34,14 +34,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Relation::enforceMorphMap([
-        //     'product'          => \App\Models\Catalog\Product::class,
-        //     'category'         => \App\Models\Catalog\Category::class,
-        //     'manufacturer'     => \App\Models\Catalog\Manufacturer::class,
-        //     'blog_post'        => \App\Models\Blog\BlogPost::class,
-        //     'blog_tag'         => \App\Models\Blog\BlogTag::class,
-        //     'blog_author'      => \App\Models\Blog\BlogAuthor::class,
-        //     'info_page'        => \App\Models\Store\StoreInfoPage::class,
-        // ]);
+        Relation::morphMap([
+            'product'          => \App\Models\Catalog\Product::class,
+            'category'         => \App\Models\Catalog\Category::class,
+            'manufacturer'     => \App\Models\Catalog\Manufacturer::class,
+            'tag'              => \App\Models\Catalog\Tag::class,
+            'facet_page'       => \App\Models\Catalog\FacetPage::class,
+            'blog_post'        => \App\Models\Blog\BlogPost::class,
+            'blog_tag'         => \App\Models\Blog\BlogTag::class,
+            'blog_author'      => \App\Models\Blog\BlogAuthor::class,
+            'store_info_page'  => \App\Models\Store\StoreInfoPage::class,
+            'attribute_value'  => \App\Models\Catalog\AttributeValue::class,
+            'option_value'     => \App\Models\Catalog\OptionValue::class,
+        ]);
     }
 }
