@@ -98,6 +98,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                     ->color('danger')
                     ->icon('heroicon-s-no-symbol')
                     ->label(__('admin.seo.meta_editor.buttons.delete'))
+                    ->tooltip(__('admin.seo.meta_editor.buttons.delete'))
                     
             ])
             // Toolbar actions

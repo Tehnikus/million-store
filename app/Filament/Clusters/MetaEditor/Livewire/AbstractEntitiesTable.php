@@ -57,6 +57,7 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
                     ->visible(fn (Model $record) => filled($this->editRecordUrl($record)))
                     ->openUrlInNewTab()
                     ->label(__('admin.seo.meta_editor.buttons.edit'))
+                    ->tooltip(__('admin.seo.meta_editor.buttons.edit'))
                     ->icon('heroicon-o-pencil-square'),
                 Action::make('addToResults')
                     ->action(fn (Model $record) => $this->dispatch(
@@ -64,6 +65,7 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
                         row: $this->toResultRow($record),
                     ))
                     ->label(__('admin.seo.meta_editor.buttons.add_to_results'))
+                    ->tooltip(__('admin.seo.meta_editor.buttons.add_to_results'))
                     ->icon('heroicon-o-arrow-right'),
             ])
             ->toolbarActions([
