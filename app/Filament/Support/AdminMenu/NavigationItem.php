@@ -9,10 +9,10 @@ enum NavigationItem: string
     case Products       = 'catalog.products';
     case Categories     = 'catalog.categories';
     case Manufacturers  = 'catalog.manufacturers';
+    case FacetPages     = 'catalog.facet_pages';
     case Attributes     = 'catalog.attributes';
     case Options        = 'catalog.options';
     case Tags           = 'catalog.tags';
-    case FacetPages     = 'catalog.facet_pages';
     case FacetFilter    = 'catalog.facet_filter';
 
     // Order
@@ -74,7 +74,7 @@ enum NavigationItem: string
         return match($this) {
             
             // Catalog
-            self::Products, self::Categories, self::Manufacturers, self::Attributes, self::Options, self::Tags, self::FacetPages, self::FacetFilter,
+            self::Products, self::Categories, self::Manufacturers, self::FacetPages, self::Attributes, self::Options, self::Tags, self::FacetFilter,
                 => NavigationGroup::Catalog,
 
             // Orders
@@ -119,10 +119,10 @@ enum NavigationItem: string
             self::Products          => 'heroicon-o-shopping-cart',
             self::Categories        => 'heroicon-o-squares-2x2',
             self::Manufacturers     => 'heroicon-o-home-modern',
+            self::FacetPages        => 'heroicon-o-squares-plus',
             self::Attributes        => 'heroicon-o-list-bullet',
             self::Options           => 'heroicon-o-adjustments-horizontal',
             self::Tags              => 'heroicon-o-tag',
-            self::FacetPages        => 'heroicon-o-squares-plus',
             self::FacetFilter       => 'heroicon-o-adjustments-vertical',
 
             // Orders
@@ -188,10 +188,10 @@ enum NavigationItem: string
             self::Products          => 1,
             self::Categories        => 2,
             self::Manufacturers     => 3,
-            self::Attributes        => 4,
-            self::Options           => 5,
-            self::Tags              => 6,
-            self::FacetPages        => 7,
+            self::FacetPages        => 4,
+            self::Attributes        => 5,
+            self::Options           => 6,
+            self::Tags              => 7,
             self::FacetFilter       => 8,
 
             // Customers
