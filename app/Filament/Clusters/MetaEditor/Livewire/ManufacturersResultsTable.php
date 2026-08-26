@@ -10,7 +10,7 @@ class ManufacturersResultsTable extends AbstractResultsTable
 {
     protected function entityType(): string
     {
-        return 'manufacturers';
+        return 'manufacturer';
     }
 
     protected function translatableFields(): array
