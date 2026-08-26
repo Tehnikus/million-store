@@ -25,6 +25,7 @@ class SlugInput
         
         $nameField         = $config['nameField'] ?? "name.{$language->locale}";
         $generateSlugUsing = $config['generateSlugUsing'] ?? null;
+        $siblingsPath      = $config['siblingsPath'] ?? null;
 
         $slugKey    = "slugs_{$language->id}";
         $touchedKey = "slugs_touched_{$language->id}";
@@ -66,7 +67,24 @@ class SlugInput
                 ->columnSpanFull()
                 ->live(onBlur: false, debounce: 500)
                 ->maxLength(255)
-                ->rules(['alpha_dash:ascii'])
+                ->rules([
+                    'alpha_dash:ascii',
+                    $siblingsPath ? function (Get $get) use ($siblingsPath, $slugKey) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get, $siblingsPath, $slugKey) {
+                            if (blank($value)) {
+                                return;
+                            }
+
+                            $duplicates = collect($get($siblingsPath) ?? [])
+                                ->filter(fn ($row) => ($row[$slugKey] ?? null) === $value)
+                                ->count();
+
+                            if ($duplicates > 1) {
+                                $fail(__('admin.seo.slugs.errors.slug_duplicate_in_form'));
+                            }
+                        };
+                    } : null,
+                ])
                 ->dehydrated(false)
                 ->dehydrateStateUsing(fn () => null)
                 ->suffixIcon(function (?string $state, Component $component, $livewire) {
@@ -144,10 +162,10 @@ class SlugInput
             Select::make($robotsKey)
                 ->label(__('admin.seo.slugs.fields.robots'))
                 ->options([
-                    'index, follow'     => __('admin.seo.slugs.robots.index_follow'),
-                    'noindex, follow'   => __('admin.seo.slugs.robots.noindex_follow'),
-                    'index, nofollow'   => __('admin.seo.slugs.robots.index_nofollow'),
-                    'noindex, nofollow' => __('admin.seo.slugs.robots.noindex_nofollow'),
+                    'index, follow'     => __('admin.seo.slugs.fields.index_follow'),
+                    'noindex, follow'   => __('admin.seo.slugs.fields.noindex_follow'),
+                    'index, nofollow'   => __('admin.seo.slugs.fields.index_nofollow'),
+                    'noindex, nofollow' => __('admin.seo.slugs.fields.noindex_nofollow'),
                 ])
                 ->default('index, follow')
                 ->dehydrated(false)
