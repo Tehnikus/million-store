@@ -37,6 +37,6 @@ class Option extends Model
 
     public function values(): HasMany
     {
-        return $this->hasMany(OptionValue::class)->with('currentStoreSlugs');
+        return $this->hasMany(OptionValue::class);
     }
 }
