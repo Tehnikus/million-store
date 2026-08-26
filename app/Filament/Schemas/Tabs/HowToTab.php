@@ -8,9 +8,16 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Tabs\Tab;
 
-class HowToTab implements HasTranslatableTab
+class HowToTab
 {
-   public static function schema(string $locale, array $config = []): array
+    public static function make($language): Tab
+    {
+        return Tab::make("howto.{$language->locale}")
+            ->schema(self::schema($language->locale))
+            ->label(self::label());
+    }
+
+   private static function schema(string $locale): array
     {
         return [
                 Repeater::make("how_to.{$locale}")
@@ -32,7 +39,7 @@ class HowToTab implements HasTranslatableTab
             ];
     }
 
-    public static function label(): string {
+    private static function label(): string {
         return __('admin.common.tabs.how_to');
     }
 }

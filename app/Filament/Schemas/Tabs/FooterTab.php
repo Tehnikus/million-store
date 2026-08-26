@@ -7,10 +7,18 @@ use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Callout;
+use Filament\Schemas\Components\Tabs\Tab;
 
-class FooterTab implements HasTranslatableTab
+class FooterTab
 {
-    public static function schema(string $locale, array $config = []): array
+    public static function make($language): Tab
+    {
+        return Tab::make("footer.{$language->locale}")
+            ->schema(self::schema($language->locale))
+            ->label(self::label());
+
+    }
+    private static function schema(string $locale): array
     {
         return [
             Repeater::make("footer.{$locale}")
@@ -45,7 +53,6 @@ class FooterTab implements HasTranslatableTab
                 ])
                 ->addActionLabel(__('admin.common.buttons.add_footer_tab'))
                 ->reorderable(true)
-                // ->compact()
                 ->columnSpanFull()
                 ->helperText(__('admin.common.helpers.footer_tab'))
                 ->defaultItems(0),
@@ -53,7 +60,7 @@ class FooterTab implements HasTranslatableTab
         ];
     }
 
-    public static function label(): string
+    private static function label(): string
     {
         return __('admin.common.tabs.footer');
     }

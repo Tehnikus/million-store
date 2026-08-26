@@ -6,10 +6,18 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Tabs\Tab;
 
-class FaqTab implements HasTranslatableTab
+class FaqTab
 {
-    public static function schema(string $locale, array $config = []): array
+    public static function make($language): Tab
+    {
+        return Tab::make("faq.{$language->locale}")
+            ->schema(self::schema($language->locale))
+            ->label(self::label());
+    }
+
+    private static function schema(string $locale): array
     {
         return [
                 Repeater::make("faq.{$locale}")
@@ -31,7 +39,7 @@ class FaqTab implements HasTranslatableTab
             ];
     }
 
-    public static function label(): string {
+    private static function label(): string {
         return __('admin.common.tabs.faq');
     }
 }
