@@ -45,6 +45,7 @@ class FacetPagesEntitiesTable extends AbstractEntitiesTable
             'meta_description'  => $record->getTranslations('meta_description'),
             'parent'            => $this->resolveParent($record),
             'manufacturer'      => $this->resolveManufacturer($record),
+            'product_count'     => null, // TODO
         ];
     }
 
