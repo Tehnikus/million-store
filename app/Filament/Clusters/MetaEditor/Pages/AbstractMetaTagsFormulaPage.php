@@ -49,7 +49,6 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                             ->label(__('admin.seo.meta_editor.buttons.save_formulas'))
                             ->icon('heroicon-o-check')
                             ->submit('save')
-                            ->visible(fn (Get $get): bool => filled($get('formulas')))
                     ])
                     ->alignLeft()
                     ->columnSpanFull(),
