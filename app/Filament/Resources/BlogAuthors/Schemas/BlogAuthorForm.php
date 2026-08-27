@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\BlogAuthors\Schemas;
 
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -17,10 +18,9 @@ class BlogAuthorForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()
-            ->languages()
-            ->wherePivot('is_active', true)
-            ->get();
+        $store      = Filament::getTenant();
+        $languages  = $store->activeLanguages();
+
         return $schema
             ->components([
 
@@ -88,8 +88,19 @@ class BlogAuthorForm
                     ])
                     ->columnSpanFull(),
 
-                    LanguageTabs::make($languages, [
-                        [DescriptionTab::class, ['withSlug' => true]],
+                Tabs::make('languages')
+                    ->schema([
+                        ...collect($languages)->map(fn($language) =>
+                            Tab::make($language->locale)
+                                ->label("{$language->name}")
+                                ->schema([
+                                    Tabs::make("content.{$language->locale}")
+                                        ->schema([
+                                            DescriptionTab::make($language, ['withSlug' => true]),
+                                        ])
+
+                                ])
+                        )
                     ])
                     ->columnSpanFull(),
             ]);

@@ -3,12 +3,12 @@ namespace App\Filament\Pages;
 
 use App\Models\Store\StoreContact;
 use Filament\Schemas\Components\Form;
-use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\StoreContactForm;
 use Filament\Facades\Filament;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Filament\Actions\Action;
 use Filament\Schemas\Components\Actions;
@@ -32,25 +32,26 @@ class StoreContactSettings extends Page implements HasForms
 
     public function form(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()
-            ->languages()
-            ->wherePivot('is_active', true)
-            ->get();
+        $store      = Filament::getTenant();
+        $languages  = $store->activeLanguages();
 
         return $schema
             ->statePath('data')
             ->components([
                 Form::make([
-                    LanguageTabs::make($languages, [
-                        StoreContactForm::class,
-                    ])
+                    Tabs::make('languages')
+                        ->schema([
+                            ...collect($languages)->map(fn($language) =>
+                                StoreContactForm::make($language),
+                            )
+                        ])
                 ])
-                    ->livewireSubmitHandler('save')
-                    ->footer([
-                        Actions::make([
-                            Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
-                        ]),
+                ->livewireSubmitHandler('save')
+                ->footer([
+                    Actions::make([
+                        Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
                     ]),
+                ]),
             ]);
     }
 

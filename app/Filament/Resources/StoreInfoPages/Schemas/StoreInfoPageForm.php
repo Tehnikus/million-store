@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\StoreInfoPages\Schemas;
 use Filament\Facades\Filament;
-use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\HowToTab;
@@ -16,10 +15,9 @@ class StoreInfoPageForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()
-            ->languages()
-            ->wherePivot('is_active', true)
-            ->get();
+        $store = Filament::getTenant()->load(['languages']);
+        $languages = $store->languages()->wherePivot('is_active', true)->get();
+
         return $schema
             ->components([
                 Tabs::make('info_page')
@@ -30,13 +28,24 @@ class StoreInfoPageForm
                                     ->label(__('admin.blog.posts.fields.is_active'))
                                     ->default(true)
                                     ->columnSpanFull(),
-                                LanguageTabs::make($languages, [
-                                    [DescriptionTab::class, ['withSlug' => true]],
-                                    FaqTab::class,
-                                    HowToTab::class,
-                                    FooterTab::class,
+                                Tabs::make('languages')
+                                    ->schema([
+                                        ...collect($languages)->map(fn($language) =>
+                                            Tab::make($language->locale)
+                                                ->label("{$language->name}")
+                                                ->schema([
+                                                    Tabs::make("content.{$language->locale}")
+                                                        ->schema([
+                                                            DescriptionTab::make($language, ['withSlug' => true]),
+                                                            FaqTab::make($language),
+                                                            HowToTab::make($language),
+                                                            FooterTab::make($language),
+                                                        ])
 
-                                ])
+                                                ])
+                                        )
+                                    ])
+
                             ])
                     ])
                     ->columnSpanFull()

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Filament\Resources\Products\Schemas;
+use App\Filament\Schemas\Tabs\ImagesTab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
@@ -11,7 +12,6 @@ use Filament\Facades\Filament;
 use Filament\Schemas\Components\Section;
 
 // Reusable description tabs
-use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\FooterTab;
@@ -27,9 +27,10 @@ class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $storeId    = Filament::getTenant()->id;
-        $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
-        $currencies = Filament::getTenant()->currencies()->wherePivot('is_active', true)->get();
+        $store      = Filament::getTenant();
+        $languages  = $store->activeLanguages();
+        $currencies = $store->activeCurrencies();
+        $countries  = $store->activeCountries();
 
         return $schema
             ->components([
@@ -67,30 +68,36 @@ class ProductForm
                                     Toggle::make('is_active')
                                         ->label(__('admin.catalog.products.fields.is_active'))
                                         ->helperText(__('admin.catalog.products.helpers.is_active')),
-                                    LanguageTabs::make($languages, [
-                                        [DescriptionTab::class, ['withSlug' => true]],
-                                        FaqTab::class,
-                                        HowToTab::class,
-                                        FooterTab::class,
-                                    ])
+                                    Tabs::make('languages')
+                                        ->schema([
+                                            ...collect($languages)->map(fn($language) =>
+                                                Tab::make($language->locale)
+                                                    ->label("{$language->name}")
+                                                    ->schema([
+                                                        Tabs::make("content.{$language->locale}")
+                                                            ->schema([
+                                                                DescriptionTab::make($language, ['withSlug' => true]),
+                                                                FaqTab::make($language),
+                                                                HowToTab::make($language),
+                                                                FooterTab::make($language),
+                                                            ])
+
+                                                    ])
+                                            )
+                                        ])
                                 ])
                                 // ->relationship(name:'storeDescription')
                                 ->statePath('description')
                                 ->columnSpanFull(),
                             ]),
 
-                        Tab::make(PricesTab::label())
-                            ->schema(PricesTab::schema($storeId, $languages, $currencies)),
-                        Tab::make(CategoriesTab::label())
-                            ->schema(CategoriesTab::schema($storeId)),
-                        Tab::make(ManufacturersTab::label())
-                            ->schema(ManufacturersTab::schema($storeId)),
-                        Tab::make(TagsTab::label())
-                            ->schema(TagsTab::schema($storeId)),
-                        Tab::make(OptionsTab::label())
-                            ->schema(OptionsTab::schema($storeId, $languages, $currencies)),
-                        Tab::make(AttributesTab::label())
-                            ->schema(AttributesTab::schema($storeId, $languages)),
+                        Tab::make(PricesTab::label())->schema(PricesTab::schema($store->id, $languages, $currencies)),
+                        Tab::make(CategoriesTab::label())->schema(CategoriesTab::schema($store->id)),
+                        Tab::make(ManufacturersTab::label())->schema(ManufacturersTab::schema($store->id)),
+                        Tab::make(TagsTab::label())->schema(TagsTab::schema($store->id)),
+                        Tab::make(OptionsTab::label())->schema(OptionsTab::schema($store->id, $languages, $currencies)),
+                        Tab::make(AttributesTab::label())->schema(AttributesTab::schema($store->id, $languages)),
+                        ImagesTab::make($store, $languages, ['type' => 'product']),
                     ])
                     ->columnSpanFull(),
             ]);

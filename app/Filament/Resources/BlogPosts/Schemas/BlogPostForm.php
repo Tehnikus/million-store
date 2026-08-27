@@ -4,7 +4,6 @@ namespace App\Filament\Resources\BlogPosts\Schemas;
 
 use App\Models\Blog\BlogTag;
 use App\Models\Blog\BlogAuthor;
-use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\HowToTab;
@@ -23,10 +22,9 @@ class BlogPostForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()
-            ->languages()
-            ->wherePivot('is_active', true)
-            ->get();
+        $store = Filament::getTenant();
+        $languages = $store->activeLanguages();
+
         return $schema
             ->components([
                 Tabs::make('blog_post')
@@ -62,17 +60,27 @@ class BlogPostForm
                                     ->searchable()
                                     ->preload()
                                     ->columnSpanFull(),
-                                LanguageTabs::make($languages, [
-                                    [DescriptionTab::class, ['withSlug' => true]],
-                                    FaqTab::class,
-                                    HowToTab::class,
-                                    FooterTab::class,
 
-                                ])
+                                        Tabs::make('languages')
+                                            ->schema([
+                                                ...collect($languages)->map(fn($language) =>
+                                                    Tab::make($language->locale)
+                                                        ->label("{$language->name}")
+                                                        ->schema([
+                                                            Tabs::make("content.{$language->locale}")
+                                                                ->schema([
+                                                                    DescriptionTab::make($language, ['withSlug' => true]),
+                                                                    FaqTab::make($language),
+                                                                    HowToTab::make($language),
+                                                                    FooterTab::make($language),
+                                                                ])
+
+                                                        ])
+                                                )
+                                            ])
+
                             ]),
-                        Tab::make('images')
-                            ->label(ImagesTab::label())
-                            ->schema(ImagesTab::schema(['type' => 'blog']))
+                        ImagesTab::make($store, $languages, ['type' => 'blog_post'])
                     ])
                     ->columnSpanFull(),
             ]);

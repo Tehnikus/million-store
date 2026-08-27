@@ -4,12 +4,13 @@ namespace App\Filament\Pages;
 
 use App\Models\Store\StoreHomepageDescription;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Actions;
 use Filament\Actions\Action;
-use App\Filament\Schemas\LanguageTabs;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\HowToTab;
@@ -33,28 +34,37 @@ class StoreHomepage extends Page
 
     public function form(Schema $schema): Schema
     {
-        $languages = Filament::getTenant()
-            ->languages()
-            ->wherePivot('is_active', true)
-            ->get();
+        $store      = Filament::getTenant();
+        $languages  = $store->activeLanguages();
 
         return $schema
             ->statePath('data')
             ->components([
                 Form::make([
-                    LanguageTabs::make($languages, [
-                        DescriptionTab::class,
-                        FaqTab::class,
-                        HowToTab::class,
-                        FooterTab::class,
-                    ])
+                    Tabs::make('languages')
+                        ->schema([
+                            ...collect($languages)->map(fn($language) =>
+                                Tab::make($language->locale)
+                                    ->label("{$language->name}")
+                                    ->schema([
+                                        Tabs::make("content.{$language->locale}")
+                                            ->schema([
+                                                DescriptionTab::make($language, ['withSlug' => true]),
+                                                FaqTab::make($language),
+                                                HowToTab::make($language),
+                                                FooterTab::make($language),
+                                            ])
+
+                                    ])
+                            )
+                        ])
                 ])
-                    ->livewireSubmitHandler('save')
-                    ->footer([
-                        Actions::make([
-                            Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
-                        ]),
+                ->livewireSubmitHandler('save')
+                ->footer([
+                    Actions::make([
+                        Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
                     ]),
+                ]),
             ]);            
     }
 

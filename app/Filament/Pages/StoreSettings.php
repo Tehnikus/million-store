@@ -2,17 +2,15 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Models\Store\StoreInfoPage;
 use App\Models\Store\StoreSettings as StoreSettingsModel;
-// use App\Models\Currency;
-
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
-// use Illuminate\Database\Eloquent\Builder;
-
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -21,14 +19,11 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
-use App\Filament\Support\AdminMenu\NavigationItem;
-use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
 class StoreSettings extends Page
 {
@@ -53,13 +48,9 @@ class StoreSettings extends Page
     public function form(Schema $schema): Schema
     {
 
-        // Get languages for inputs that require translatable values
-        $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
-        // Get currencies for inputs that
-        // $currencies = Currency::get()->where('is_active', true);
-        $currencies = Filament::getTenant()->currencies()->wherePivot('is_active', true)->get();
-
-        
+        $store      = Filament::getTenant();
+        $languages  = $store->activeLanguages();
+        $currencies = $store->activeCurrencies();        
 
         return $schema
             ->components([
@@ -68,6 +59,7 @@ class StoreSettings extends Page
                         ->tabs([
 
                             Tab::make(__('admin.store_settings.tabs.delivery_settings'))
+                                ->icon(NavigationItem::Delivery->icon())
                                 ->schema([
                                     TextInput::make('delivery_settings.transit_min')
                                         ->numeric()
@@ -91,6 +83,7 @@ class StoreSettings extends Page
                                         ->helperText(__('admin.store_settings.delivery_settings.helpers.return_cost')),
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.checkout_settings'))
+                                ->icon(NavigationItem::Payment->icon())
                                 ->schema([
                                     Fieldset::make('admin.store_settings.checkout_settings.fields.minimal_order_total')
                                         ->schema(
@@ -117,7 +110,7 @@ class StoreSettings extends Page
                                         ->schema([
                                             Select::make('checkout_settings.service_agreement')
                                                 ->options(fn () => StoreInfoPage::query()
-                                                    ->where('store_id', Filament::getTenant()->id)
+                                                    ->where('store_id', $store->id)
                                                     ->where('is_active', true)
                                                     ->pluck('name', 'id')
                                                 )
@@ -129,7 +122,7 @@ class StoreSettings extends Page
 
                                             Select::make('checkout_settings.return_agreement')
                                                 ->options(fn () => StoreInfoPage::query()
-                                                    ->where('store_id', Filament::getTenant()->id)
+                                                    ->where('store_id', $store->id)
                                                     ->where('is_active', true)
                                                     ->pluck('name', 'id')
                                                 )
@@ -144,8 +137,8 @@ class StoreSettings extends Page
                                             // Address fields
                                             Repeater::make('checkout_settings.checkout_fields')
                                                 ->table([
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_type'))->width('50%'),
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_name'))->width('50%'),
+                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_type'))->width('50%')->markAsRequired(),
+                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_name'))->width('50%')->markAsRequired(),
                                                     TableColumn::make(__('admin.store_settings.checkout_settings.fields.is_required'))->width('1%'),
                                                 ])                                    
                                                 ->schema([
@@ -164,7 +157,7 @@ class StoreSettings extends Page
                                                         ])
                                                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                                         ->required(),
-                                                    Group::make()
+                                                    FusedGroup::make()
                                                         ->schema(
                                                             collect($languages)->map(
                                                                 fn($language) =>
@@ -172,22 +165,26 @@ class StoreSettings extends Page
                                                                     ->required()
                                                                     ->columnSpanFull()
                                                                     ->prefix($language->locale)
+                                                                    ->label(__('admin.store_settings.checkout_settings.fields.field_name'))
+                                                                    ->hiddenLabel()
                                                             )->all()
                                                         ),
                                                         Toggle::make('is_required')
                                                             ->label(__('admin.store_settings.checkout_settings.fields.is_required'))
                                                 ])
-                                                ->label(__('admin.store_settings.checkout_settings.fields.checkout_address_fields'))
-                                                ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
                                                 ->reorderable()
+                                                ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
+                                                ->addActionAlignment('right')
+                                                ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
+                                                ->label(__('admin.store_settings.checkout_settings.fields.checkout_address_fields'))
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.checkout_fields'))
                                                 ->columnSpanFull(),
                                             
                                             // Additional custom fields
                                             Repeater::make('checkout_settings.custom_fields')
                                                 ->table([
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_type'))->width('50%'),
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_name'))->width('50%'),
+                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_type'))->width('50%')->markAsRequired(),
+                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_name'))->width('50%')->markAsRequired(),
                                                     TableColumn::make(__('admin.store_settings.checkout_settings.fields.is_required'))->width('1%'),
                                                 ])
                                                 ->schema([
@@ -201,7 +198,7 @@ class StoreSettings extends Page
                                                             'checkbox'  => __('admin.store_settings.checkout_settings.fields.checkbox'),
                                                         ]),
                                                     Hidden::make('name'),
-                                                    Group::make()
+                                                    FusedGroup::make()
                                                         ->schema(
                                                             collect($languages)->map(
                                                                 fn($language) =>
@@ -209,35 +206,44 @@ class StoreSettings extends Page
                                                                     ->required()
                                                                     ->columnSpanFull()
                                                                     ->prefix($language->locale)
+                                                                    ->label(__('admin.store_settings.checkout_settings.fields.field_name'))
+                                                                    ->hiddenLabel()
                                                             )->all()
                                                         ),
                                                         Toggle::make('is_required')
                                                             ->label(__('admin.store_settings.checkout_settings.fields.is_required'))
                                                 ])
-                                                ->label(__('admin.store_settings.checkout_settings.fields.checkout_custom_fields'))
-                                                ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
                                                 ->reorderable()
+                                                ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
+                                                ->addActionAlignment('right')
+                                                ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
+                                                ->label(__('admin.store_settings.checkout_settings.fields.checkout_custom_fields'))
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.custom_fields'))
                                                 ->columnSpanFull(),
                                         ]),
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.legal_settings'))
+                                ->icon('heroicon-o-shield-check')
                                 ->schema([
 
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.tax_settings'))
+                                ->icon(NavigationItem::Taxes->icon())
                                 ->schema([
 
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.analytics_settings'))
+                                ->icon(NavigationItem::Analytics->icon())
                                 ->schema([
 
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.notification_settings'))
+                                ->icon(NavigationItem::Notifications->icon())
                                 ->schema([
 
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.maintenance_settings'))
+                                ->icon('heroicon-o-wrench-screwdriver')
                                 ->schema([
 
                                 ]),
