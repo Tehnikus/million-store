@@ -29,6 +29,7 @@ enum NavigationItem: string
     // Customers
     case Customers      = 'customers.customer';
     case CustomerGroups = 'customers.customer_groups';
+    case Notifications  = 'customers.notifications';
 
     // Blog
     case BlogPosts      = 'blog.posts';
@@ -86,7 +87,7 @@ enum NavigationItem: string
                 => NavigationGroup::Stock,
 
             // Customers
-            self::Customers, self::CustomerGroups,
+            self::Customers, self::CustomerGroups, self::Notifications,
                 => NavigationGroup::Customers,
 
             // Blog
@@ -139,6 +140,7 @@ enum NavigationItem: string
             // Customers
             self::Customers         => 'heroicon-o-user',
             self::CustomerGroups    => 'heroicon-o-users',
+            self::Notifications     => 'heroicon-o-paper-airplane',
 
             // Blog
             self::BlogPosts         => 'heroicon-o-pencil-square',
@@ -197,6 +199,11 @@ enum NavigationItem: string
             // Customers
             self::Customers         => 1,
             self::CustomerGroups    => 2,
+            self::Notifications     => 3,
+
+            // Orders
+            self::Orders            => 1,
+            self::Returns           => 2,
             self::Statuses          => 3,
             self::Delivery          => 4,
             self::Payment           => 5,
