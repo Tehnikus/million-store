@@ -184,7 +184,7 @@ class SlugInput
             ->orWhere('sluggable_id', '!=', $record->getKey()));
     }
 
-    protected static function slugIsTaken(string $slug, int $languageId, ?\Closure $excludeUsing = null): bool
+    public static function slugIsTaken(string $slug, int $languageId, ?\Closure $excludeUsing = null): bool
     {
         return Slug::query()
             ->where('store_id', Filament::getTenant()->id)
