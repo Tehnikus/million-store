@@ -3,7 +3,6 @@
 namespace App\Filament\Schemas\Tabs;
 
 use App\Models\Store\StoreSettings;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -11,6 +10,7 @@ use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Arr;
 use Illuminate\Support\HtmlString;
@@ -18,10 +18,16 @@ use Illuminate\Support\Str;
 
 class ImagesTab
 {
-    public static function schema($config = []): array
+    public static function make($store, $languages, $config = []): Tab
     {
-        $storeId    = Filament::getTenant()->id;
-        $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
+        return Tab::make('images')
+            ->schema(self::schema($store, $languages, $config))
+            ->label(self::label());
+    }
+
+    public static function schema($store, $languages, $config = []): array
+    {
+        $storeId    = $store->id;
         $type       = $config['type'] ?? 'misc';
         $dimensions = StoreSettings::where('store_id', $storeId)->first()?->image_dimensions;
 
@@ -56,6 +62,7 @@ class ImagesTab
                     TableColumn::make(__('admin.common.fields.image'))->width('300px'),
                     TableColumn::make(__('admin.common.fields.image_description')),
                 ])
+                ->skipRenderAfterStateUpdated()
                 ->schema([
                     // Service inputs for saving()/saved() interaction
                     Hidden::make('id')->default(fn () => (string) Str::ulid()),
