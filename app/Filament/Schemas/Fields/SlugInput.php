@@ -67,7 +67,7 @@ class SlugInput
                 ->columnSpanFull()
                 ->live(onBlur: false, debounce: 500)
                 ->maxLength(255)
-                ->rules([
+                ->rules(array_filter([
                     'alpha_dash:ascii',
                     $siblingsPath ? function (Get $get) use ($siblingsPath, $slugKey) {
                         return function (string $attribute, $value, \Closure $fail) use ($get, $siblingsPath, $slugKey) {
@@ -84,7 +84,7 @@ class SlugInput
                             }
                         };
                     } : null,
-                ])
+                ]))
                 ->dehydrated(false)
                 ->dehydrateStateUsing(fn () => null)
                 ->suffixIcon(function (?string $state, Component $component, $livewire) {
