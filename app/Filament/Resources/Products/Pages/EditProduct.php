@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Products\Pages;
 use App\Domain\Catalog\Actions\SyncProductFacets;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Concerns\StripsFacetsFormState;
-use App\Filament\Concerns\StripsSlugFormState;
 use App\Filament\Resources\Products\ProductResource;
 use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\Product;
@@ -19,7 +18,6 @@ use Illuminate\Support\Arr;
 
 class EditProduct extends EditRecord
 {
-    use StripsSlugFormState; 
     use StripsFacetsFormState;
     protected static string $resource = ProductResource::class;
 
@@ -79,9 +77,6 @@ class EditProduct extends EditRecord
     {
         // Store id is used only here to save data. Otherwise model does not know about store id
         $storeId = Filament::getTenant()->id;
-        
-        // Remove slugs from saved form data. Slugs are saved by the form itself
-        $data = $this->stripSlugFormState($data);
         
         // Remove descriptions from data to save them separately
         $description  = Arr::pull($data, 'description', []);

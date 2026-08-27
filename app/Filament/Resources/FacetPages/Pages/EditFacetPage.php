@@ -6,11 +6,9 @@ use App\Filament\Resources\FacetPages\FacetPageResource;
 use App\Filament\Resources\FacetPages\Schemas\FacetPageForm;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use App\Filament\Concerns\StripsSlugFormState;
 
 class EditFacetPage extends EditRecord
 {
-    use StripsSlugFormState;
     protected static string $resource = FacetPageResource::class;
     protected ?array $pendingRootFacet = null;
 
@@ -29,7 +27,7 @@ class EditFacetPage extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        [$data, $this->pendingRootFacet] = FacetPageForm::extractRootFacet($this->stripSlugFormState($data));
+        [$data, $this->pendingRootFacet] = FacetPageForm::extractRootFacet($data);
         return $data;
     }
 
