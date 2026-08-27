@@ -26,12 +26,12 @@ class OptionForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $storeId    = Filament::getTenant()->id;
-        $languages  = Filament::getTenant()->languages()->wherePivot('is_active', true)->get();
-        $prepareValueData = function (array $data) use ($storeId): array {
+        $store      = Filament::getTenant();
+        $languages  = $store->activeLanguages();
+        $prepareValueData = function (array $data) use ($store): array {
             // unset($data['slugs'], $data['slugs_touched']);
 
-            return [...$data, 'store_id' => $storeId];
+            return [...$data, 'store_id' => $store->id];
         };
 
         return $schema
