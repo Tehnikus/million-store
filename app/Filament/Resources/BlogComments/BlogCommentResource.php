@@ -21,7 +21,6 @@ use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 class BlogCommentResource extends Resource
 {
     protected static ?string $model = BlogComment::class;
-    protected static ?string $recordTitleAttribute = 'name';
     protected static bool $isGloballySearchable = false;
     protected static bool $isScopedToTenant = false; // is filtered by blog post and does not relate to store_id in any way
 
