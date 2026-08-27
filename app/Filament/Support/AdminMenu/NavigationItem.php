@@ -14,6 +14,7 @@ enum NavigationItem: string
     case Options        = 'catalog.options';
     case Tags           = 'catalog.tags';
     case FacetFilter    = 'catalog.facet_filter';
+    case ProductReviews = 'catalog.product_reviews';
 
     // Order
     case Orders         = 'orders.orders';
@@ -75,7 +76,7 @@ enum NavigationItem: string
         return match($this) {
             
             // Catalog
-            self::Products, self::Categories, self::Manufacturers, self::FacetPages, self::Attributes, self::Options, self::Tags, self::FacetFilter,
+            self::Products, self::Categories, self::Manufacturers, self::FacetPages, self::Attributes, self::Options, self::Tags, self::FacetFilter, self::ProductReviews,
                 => NavigationGroup::Catalog,
 
             // Orders
@@ -125,6 +126,7 @@ enum NavigationItem: string
             self::Options           => 'heroicon-o-adjustments-horizontal',
             self::Tags              => 'heroicon-o-tag',
             self::FacetFilter       => 'heroicon-o-adjustments-vertical',
+            self::ProductReviews   => 'heroicon-o-chat-bubble-left-right',
 
             // Orders
             self::Orders            => 'heroicon-o-banknotes',
@@ -195,6 +197,7 @@ enum NavigationItem: string
             self::Options           => 6,
             self::Tags              => 7,
             self::FacetFilter       => 8,
+            self::ProductReviews   => 9,
 
             // Customers
             self::Customers         => 1,
