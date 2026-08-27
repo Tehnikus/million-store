@@ -18,9 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ProductReviewResource extends Resource
 {
-   protected static ?string $model = ProductReview::class;
+    protected static ?string $model = ProductReview::class;
     protected static bool $isGloballySearchable = false;
-    protected static bool $isScopedToTenant = false; // is filtered by blog post and does not relate to store_id in any way
 
     public static function getEloquentQuery(): Builder
     {

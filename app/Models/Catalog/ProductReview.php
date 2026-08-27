@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,7 +43,10 @@ class ProductReview extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
 
     protected static function booted(): void
     {
