@@ -8,13 +8,19 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\HtmlString;
 
-class StoreContactForm implements HasTranslatableTab
+class StoreContactForm
 {
+    public static function make($language): Tab
+    {
+        return Tab::make("contacts.{$language->locale}")
+            ->schema(self::schema($language->locale))
+            ->label($language->name);
+    }
 
-
-    public static function schema(string $locale, array $config = []): array
+    private static function schema(string $locale): array
     {
         return [
                 Fieldset::make(__('admin.store_contacts.fields.legal_infos'))
@@ -179,10 +185,5 @@ class StoreContactForm implements HasTranslatableTab
                     ])
                     ->columnSpanFull(),
             ];
-    }
-
-    public static function label(): string
-    {
-        return __('admin.navigation.items.store_contacts');
     }
 }
