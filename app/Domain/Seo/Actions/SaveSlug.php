@@ -40,8 +40,6 @@ class SaveSlug
         }
 
         return DB::transaction(function () use ($existing, $type, $id, $storeId, $languageId, $slugValue, $robots) {
-            
-            // Create new slug in any case
             $new = Slug::create([
                 'store_id'       => $storeId,
                 'language_id'    => $languageId,
@@ -52,11 +50,23 @@ class SaveSlug
                 'robots'         => $robots ?? 'index, follow',
             ]);
 
-            // If previous slug is changed keep previous slug but set redirect to new one
-            $existing?->update([
-                'is_active'        => true, // If slug is not active it will response with 404, so keep it active explicitly
-                'redirected_to_id' => $new->id,
-            ]);
+            if ($existing) {
+                // Collapse the whole redirect chain: every slug that pointed to $existing now points directly to $new.
+                // Thanks to the fact that we do this on EVERY renaming, 
+                // the chain never grows deeper than one level
+                // it is enough to rebind only the direct “children” of $existing.
+                Slug::where('sluggable_type', $type)
+                    ->where('sluggable_id', $id)
+                    ->where('store_id', $storeId)
+                    ->where('language_id', $languageId)
+                    ->where('redirected_to_id', $existing->id)
+                    ->update(['redirected_to_id' => $new->id]);
+
+                $existing->update([
+                    'is_active'        => false,
+                    'redirected_to_id' => $new->id,
+                ]);
+            }
 
             return $new;
         });
