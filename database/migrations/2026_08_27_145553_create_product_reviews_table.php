@@ -18,10 +18,12 @@ return new class extends Migration
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->unsignedBigInteger('thread_id')->nullable()->after('parent_id');
             $table->string('locale'); // Review language
-            $table->string('author_name');
+            $table->string('author');
             $table->string('author_email')->nullable();
-            $table->text('body')->nullable();
-            $table->unsignedTinyInteger('rating')->nullable(); // 1..5
+            $table->text('reviewBody')->nullable();
+            $table->jsonb('positiveNotes')->nullable();
+            $table->jsonb('negativeNotes')->nullable();
+            $table->unsignedTinyInteger('reviewRating')->nullable(); // 1..5
             $table->boolean('is_admin_reply')->default(false);  // If true it's admin reply
             $table->boolean('is_approved')->default(false); // Don't show on frontend until approved
             $table->timestamps();
