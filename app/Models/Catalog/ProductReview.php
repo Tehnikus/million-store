@@ -14,10 +14,12 @@ class ProductReview extends Model
         'parent_id',
         'store_id',
         'locale',
-        'author_name',
+        'author', 
+        'reviewBody', 
+        'positiveNotes', 
+        'negativeNotes', 
+        'reviewRating',
         'author_email',
-        'body',
-        'rating',
         'is_admin_reply',
         'is_approved',
     ];
@@ -26,6 +28,8 @@ class ProductReview extends Model
         'rating'            => 'integer',
         'is_admin_reply'    => 'boolean',
         'is_approved'       => 'boolean',
+        'positiveNotes'     => 'array',
+        'negativeNotes'     => 'array',
     ];
 
     public function product(): BelongsTo

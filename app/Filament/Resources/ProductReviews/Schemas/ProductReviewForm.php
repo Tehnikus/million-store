@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\ProductReviews\Schemas;
 
 use App\Models\Catalog\Product;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -21,7 +23,7 @@ class ProductReviewForm
                 Hidden::make('store_id')
                     ->default(Filament::getTenant()->id),
                 Select::make('product_id')
-                    ->label(__('admin.blog.comments.fields.post'))
+                    ->label(__('admin.catalog.product_reviews.fields.product'))
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'global_name',
@@ -41,17 +43,39 @@ class ProductReviewForm
                             ->pluck('name', 'locale')
                     )
                     ->required(),
-                TextInput::make('author_name')
+                TextInput::make('author')
                     ->required()
                     ->label(__('admin.blog.comments.fields.author')),
                 TextInput::make('author_email')
                     ->email()
                     ->label(__('admin.blog.comments.fields.email')),
-                Textarea::make('body')
+                Textarea::make('reviewBody')
                     ->columnSpanFull()
                     ->rows(6)
                     ->label(__('admin.blog.comments.fields.body')),
-                ToggleButtons::make('rating')
+                Repeater::make('positiveNotes')
+                    ->simple(
+                        Textarea::make('name')->rows(2)
+                    )
+                    ->maxItems(3)
+                    ->default([])
+                    ->columnSpanFull()
+                    ->label(__('admin.catalog.product_reviews.fields.positive_notes'))
+                    ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_positive'))
+                    ->addActionAlignment('left')
+                    ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
+                Repeater::make('negativeNotes')
+                    ->simple(
+                        Textarea::make('name')->rows(2)
+                    )
+                    ->maxItems(3)
+                    ->default([])
+                    ->columnSpanFull()
+                    ->label(__('admin.catalog.product_reviews.fields.negative_notes'))
+                    ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_negative'))
+                    ->addActionAlignment('left')
+                    ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
+                ToggleButtons::make('reviewRating')
                     ->required()
                     ->options([
                         '1' => '1',
