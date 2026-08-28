@@ -46,25 +46,39 @@ class ProductReviewsTable
                     ->width('1%')
                     ->color('primary'),
 
-                TextColumn::make('body')
+                TextColumn::make('reviewBody')
                     ->label(__('admin.catalog.product_reviews.fields.body'))
                     ->limit(60)
                     ->wrap()
                     ->formatStateUsing(function (ProductReview $record) {
                         $stars = '';
-                        if ($record->rating) {
-                            $stars = '<div style="margin-bottom: 4px;">'
-                                . str_repeat('<span style="color: #f59e0b;">★</span>', $record->rating)
-                                . str_repeat('<span style="color: #d1d5db;">☆</span>', 5 - $record->rating)
-                                . '</div>';
+                        $positives = [];
+                        $negatives = [];
+                        if ($record->reviewRating) {
+                            $stars = '<span>'
+                                . str_repeat('<span style="color: #f59e0b;">★</span>', $record->reviewRating)
+                                . str_repeat('<span style="color: #d1d5db;">☆</span>', 5 - $record->reviewRating)
+                                . '</span>';
+                        }
+
+                        foreach ($record->positiveNotes ?? [] as $str) {
+                            $positives[] = "<span>+ " . mb_strimwidth($str, 0, 255, "...") . "</span>";
+                        }
+
+                        foreach ($record->negativeNotes ?? [] as $str) {
+                            $negatives[] = "<span>- " . mb_strimwidth($str, 0, 255, "...") . "</span>";
                         }
 
                         return new HtmlString(
-                            '<div><strong>' . e($record->author_name) . '</strong></div>'
-                            . $stars
-                            . '<div class="text-gray-400">' . e($record->body) . '</div>'
+                            '<div><strong>' . e($record->author) . ' ' . $stars . '</strong> </div>'
+                            
+                            . '<div style="color: grey">' . e(mb_strimwidth($record->reviewBody, 0, 255, "...")) . '</div>'
+                            . '<div class="fi-color fi-color-success fi-text-color-700 dark:fi-text-color-600 fi-ta-text-item">' . implode('<br>', $positives) . '</div>'
+                            . '<div class="fi-color fi-color-danger fi-text-color-700 dark:fi-text-color-600 fi-ta-text-item">' . implode('<br>', $negatives) . '</div>'
                         );
-                    }),
+                    })
+                    // ->color('success')
+                    ,
 
                 ToggleColumn::make('is_approved')
                     ->label(__('admin.catalog.product_reviews.fields.is_approved'))
@@ -97,12 +111,12 @@ class ProductReviewsTable
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->visible(fn (ProductReview $record) => ! $record->is_admin_reply && $record->replies()->where('is_admin_reply', true)->doesntExist())
                     ->schema([
-                        TextInput::make('author_name')
+                        TextInput::make('author')
                             ->label(__('admin.catalog.product_reviews.fields.reply_author'))
                             ->default(Filament::getUserName(filament()->auth()->user()))
                             ->required(),
 
-                        Textarea::make('body')
+                        Textarea::make('reviewBody')
                             ->label(__('admin.catalog.product_reviews.fields.reply_body'))
                             ->required()
                             ->rows(6),
@@ -110,8 +124,8 @@ class ProductReviewsTable
                     ->action(function (ProductReview $record, array $data) {
                         $record->replies()->create([
                             'product_id'        => $record->product_id,
-                            'author_name'       => $data['author_name'],
-                            'body'              => $data['body'],
+                            'author'            => $data['author'],
+                            'reviewBody'        => $data['reviewBody'],
                             'is_admin_reply'    => true,
                             'is_approved'       => $record->is_approved,
                             'locale'            => $record->locale,
