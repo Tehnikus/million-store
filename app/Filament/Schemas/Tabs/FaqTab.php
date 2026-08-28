@@ -2,6 +2,7 @@
 
 namespace App\Filament\Schemas\Tabs;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Textarea;
@@ -31,6 +32,8 @@ class FaqTab
                         Textarea::make('answer')->placeholder(__('admin.common.fields.faq_answer')),
                     ])
                     ->addActionLabel(__('admin.common.buttons.add_faq_row'))
+                    ->addActionAlignment('start')
+                    ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                     ->reorderable(true)
                     ->compact()
                     ->columnSpanFull()

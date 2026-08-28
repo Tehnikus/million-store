@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Filament\Schemas\Tabs;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
@@ -28,16 +29,19 @@ class StoreContactForm
                         TextInput::make("legal_name.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.legal_name'))
+                            ->placeholder(__('admin.store_contacts.fields.legal_name'))
                             ->helperText(__('admin.store_contacts.helpers.legal_name'))
                             ->columnSpanFull(),
 
                         Textarea::make("organization_description.{$locale}")
                             ->label(__('admin.store_contacts.fields.organization_description'))
+                            ->placeholder(__('admin.store_contacts.fields.organization_description'))
                             ->helperText(__('admin.store_contacts.helpers.organization_description'))
                             ->columnSpanFull(),
 
                         Textarea::make("local_business_description.{$locale}")
                             ->label(__('admin.store_contacts.fields.local_business_description'))
+                            ->placeholder(__('admin.store_contacts.fields.local_business_description'))
                             ->helperText(__('admin.store_contacts.helpers.local_business_description'))
                             ->columnSpanFull(),
                     ])
@@ -48,32 +52,38 @@ class StoreContactForm
                         TextInput::make("address_country.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.country'))
+                            ->placeholder(__('admin.store_contacts.fields.country'))
                             ->helperText(__('admin.store_contacts.helpers.country')),
 
                         TextInput::make("address_region.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.region'))
+                            ->placeholder(__('admin.store_contacts.fields.region'))
                             ->helperText(__('admin.store_contacts.helpers.region')),
 
                         TextInput::make("address_locality.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.city'))
+                            ->placeholder(__('admin.store_contacts.fields.city'))
                             ->helperText(__('admin.store_contacts.helpers.city')),
 
                         TextInput::make("address_street.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.street'))
+                            ->placeholder(__('admin.store_contacts.fields.street'))
                             ->helperText(__('admin.store_contacts.helpers.street')),
 
                         TextInput::make("country_iso.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.iso_code'))
+                            ->placeholder(__('admin.store_contacts.fields.iso_code'))
                             ->helperText(__('admin.store_contacts.helpers.iso_code'))
                             ->maxLength(2),
 
                         TextInput::make("postal_code.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.postal_code'))
+                            ->placeholder(__('admin.store_contacts.fields.postal_code'))
                             ->helperText(__('admin.store_contacts.helpers.postal_code')),
                     ])
                     ->columnSpanFull(),
@@ -82,17 +92,20 @@ class StoreContactForm
                         TextInput::make("latitude.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.latitude'))
+                            ->placeholder(__('admin.store_contacts.fields.latitude'))
                             ->helperText(__('admin.store_contacts.helpers.latitude')),
 
                         TextInput::make("longitude.{$locale}")
                             ->prefix($locale)
                             ->label(__('admin.store_contacts.fields.longitude'))
+                            ->placeholder(__('admin.store_contacts.fields.longitude'))
                             ->helperText(__('admin.store_contacts.helpers.longitude')),
                     ])
                     ->columnSpanFull(),
                 TextInput::make("email.{$locale}")
                     ->prefix($locale)
                     ->label(__('admin.store_contacts.fields.email'))
+                    ->placeholder(__('admin.store_contacts.fields.email'))
                     ->email(),
 
                 // Phones
@@ -101,14 +114,16 @@ class StoreContactForm
                         Repeater::make("phones.{$locale}")
                             ->hiddenLabel()
                             ->table([
-                                TableColumn::make(__('admin.store_contacts.fields.phone_name'))->width('50%'),
-                                TableColumn::make(__('admin.store_contacts.fields.phone_number'))->width('50%'),
+                                TableColumn::make(__('admin.store_contacts.fields.phone_name'))->width('50%')->markAsRequired(),
+                                TableColumn::make(__('admin.store_contacts.fields.phone_number'))->width('50%')->markAsRequired(),
                             ])
                             ->schema([
-                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.phone_name')),
-                                TextInput::make('number')->placeholder(__('admin.store_contacts.fields.phone_number')),
+                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.phone_name'))->required(),
+                                TextInput::make('number')->placeholder(__('admin.store_contacts.fields.phone_number'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_phone'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->compact()
                             ->columnSpanFull(),
                     ])
@@ -120,16 +135,18 @@ class StoreContactForm
                         Repeater::make("open_hours.{$locale}")
                             ->hiddenLabel()
                             ->table([
-                                TableColumn::make(__('admin.store_contacts.fields.day')),
-                                TableColumn::make(__('admin.store_contacts.fields.opens')),
-                                TableColumn::make(__('admin.store_contacts.fields.closes')),
+                                TableColumn::make(__('admin.store_contacts.fields.day'))->markAsRequired(),
+                                TableColumn::make(__('admin.store_contacts.fields.opens'))->markAsRequired(),
+                                TableColumn::make(__('admin.store_contacts.fields.closes'))->markAsRequired(),
                             ])
                             ->schema([
-                                TextInput::make('day')->placeholder(__('admin.store_contacts.fields.day')),
-                                TextInput::make('opens')->placeholder(__('admin.store_contacts.fields.opens')),
-                                TextInput::make('closes')->placeholder(__('admin.store_contacts.fields.closes')),
+                                TextInput::make('day')->placeholder(__('admin.store_contacts.fields.day'))->required(),
+                                TextInput::make('opens')->placeholder(__('admin.store_contacts.fields.opens'))->required(),
+                                TextInput::make('closes')->placeholder(__('admin.store_contacts.fields.closes'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_open_hours'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull()
@@ -144,15 +161,17 @@ class StoreContactForm
                             ->hiddenLabel()
                             ->table([
                                 TableColumn::make(__('admin.store_contacts.fields.social_link_icon'))->width('100px'),
-                                TableColumn::make(__('admin.store_contacts.fields.social_link_title')),
-                                TableColumn::make(__('admin.store_contacts.fields.social_link_link')),
+                                TableColumn::make(__('admin.store_contacts.fields.social_link_title'))->markAsRequired(),
+                                TableColumn::make(__('admin.store_contacts.fields.social_link_link'))->markAsRequired(),
                             ])
                             ->schema([
                                 FileUpload::make('icon')->placeholder(__('admin.store_contacts.fields.social_link_icon'))->panelLayout('compact'),
-                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.social_link_title')),
-                                TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_link_link')),
+                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.social_link_title'))->required(),
+                                TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_link_link'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_social_link'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull(),
@@ -166,15 +185,17 @@ class StoreContactForm
                             ->hiddenLabel()
                             ->table([
                                 TableColumn::make(__('admin.store_contacts.fields.social_contact_icon'))->width('100px'),
-                                TableColumn::make(__('admin.store_contacts.fields.social_contact_title')),
-                                TableColumn::make(__('admin.store_contacts.fields.social_contact_link')),
+                                TableColumn::make(__('admin.store_contacts.fields.social_contact_title'))->markAsRequired(),
+                                TableColumn::make(__('admin.store_contacts.fields.social_contact_link'))->markAsRequired(),
                             ])
                             ->schema([
                                 FileUpload::make('icon')->placeholder(__('admin.store_contacts.fields.social_contact_icon'))->panelLayout('compact'),
-                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.social_contact_title')),
-                                TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_contact_link')),
+                                TextInput::make('name')->placeholder(__('admin.store_contacts.fields.social_contact_title'))->required(),
+                                TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_contact_link'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_social_contact'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull(),

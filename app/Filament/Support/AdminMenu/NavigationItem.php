@@ -65,6 +65,7 @@ enum NavigationItem: string
     case Currencies     = 'global.currencies';
     case Countries      = 'global.countries';
     case Users          = 'users';
+    case Permissions    = 'global.permissions';
     case Stores         = 'stores';
     case StoreWizard    = 'global.store_wizard';
     
@@ -108,7 +109,7 @@ enum NavigationItem: string
                 => NavigationGroup::StoreSettings,
 
             // Global settings
-            self::Stores, self::Countries, self::Languages, self::Currencies, self::Users, self::StoreWizard,
+            self::Stores, self::Countries, self::Languages, self::Currencies, self::Users, self::Permissions, self::StoreWizard,
                 => NavigationGroup::GlobalSettings,
         };
     }
@@ -131,7 +132,7 @@ enum NavigationItem: string
             // Orders
             self::Orders            => 'heroicon-o-banknotes',
             self::Returns           => 'heroicon-o-arrow-path-rounded-square',
-            self::Statuses          => 'heroicon-o-check-circle',
+            self::Statuses          => 'heroicon-o-clock',
             self::Delivery          => 'heroicon-o-truck',
             self::Payment           => 'heroicon-o-credit-card',
 
@@ -177,6 +178,7 @@ enum NavigationItem: string
             self::Currencies        => 'heroicon-o-currency-dollar',
             self::Countries         => 'heroicon-o-flag',
             self::Users             => 'heroicon-o-lock-closed',
+            self::Permissions       => 'heroicon-o-key',
             self::Stores            => 'heroicon-o-globe-alt',
             self::StoreWizard       => 'heroicon-o-cursor-arrow-rays',
 
@@ -248,8 +250,9 @@ enum NavigationItem: string
             self::Currencies        => 2,
             self::Countries         => 3,
             self::Users             => 4,
-            self::Stores            => 5,
-            self::StoreWizard       => 6,
+            self::Permissions       => 5,
+            self::Stores            => 6,
+            self::StoreWizard       => 7,
         };
     }
 

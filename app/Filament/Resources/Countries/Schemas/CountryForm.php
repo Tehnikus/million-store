@@ -3,19 +3,19 @@
 namespace App\Filament\Resources\Countries\Schemas;
 
 use App\Models\Global\Language;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Schema;
 
 
 class CountryForm
 {
-
     public static function configure(Schema $schema): Schema
     {
         // Get all active languages instead of only stores active languages
@@ -27,18 +27,21 @@ class CountryForm
             ->components([
                 Fieldset::make(__('admin.global.countries.fields.name'))
                     ->schema([
-                        ...$activeLanguages
-                            ->map(fn($language) =>
-                                TextInput::make("name.{$language->locale}")
-                                    ->required()
-                                    ->columnSpanFull()
-                                    ->required()
-                                    ->prefix($language->locale)
-                                    ->label(__('admin.global.countries.fields.name') . " ({$language->name})")
-                                    ->placeholder(__('admin.global.countries.fields.name') . " ({$language->name})")
-                            )
-                            ->all(),
+                        FusedGroup::make([
+                            ...$activeLanguages
+                                ->map(fn($language) =>
+                                    TextInput::make("name.{$language->locale}")
+                                        ->required()
+                                        ->columnSpanFull()
+                                        ->required()
+                                        ->prefix($language->locale)
+                                        ->label(__('admin.global.countries.fields.name') . " ({$language->name})")
+                                        ->placeholder(__('admin.global.countries.fields.name') . " ({$language->name})")
+                                )
+                                ->all(),
+                        ])
                     ])
+                    ->columns(1)
                     ->columnSpanFull(),
                 Fieldset::make(__('admin.global.countries.fields.localization_settings'))
                     ->schema([
@@ -78,7 +81,7 @@ class CountryForm
                                 TextInput::make('iso_code')
                                     ->required()
                                     ->placeholder(__('admin.global.countries.fields.iso_code')),
-                                Group::make([
+                                FusedGroup::make([
                                     ...$activeLanguages->map(fn($language) => 
                                         TextInput::make("name.{$language->locale}")
                                             ->required()
@@ -88,6 +91,8 @@ class CountryForm
                                 ]),
                             ])
                             ->addActionLabel(__('admin.global.countries.fields.add_region'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->columnSpanFull()
                             ->defaultItems(0),

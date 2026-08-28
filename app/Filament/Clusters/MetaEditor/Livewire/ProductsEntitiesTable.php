@@ -42,7 +42,7 @@ class ProductsEntitiesTable extends AbstractEntitiesTable
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
             'parent'            => Category::find($record->parent_id)?->getTranslations('name'),
-            'manufacturer'      => Manufacturer::find($record->manufacturer_id)->getTranslations('name'),
+            'manufacturer'      => Manufacturer::find($record->manufacturer_id)?->getTranslations('name'),
             'product_count'     => null, // TODO Option variant count
             'attributes_list'   => null, // TODO
             'options_list'      => null, // TODO

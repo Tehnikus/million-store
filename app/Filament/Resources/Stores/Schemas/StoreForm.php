@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Stores\Schemas;
 
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Callout;
@@ -23,6 +24,7 @@ class StoreForm
                     ->required()
                     ->maxLength(255)
                     ->label(__('admin.stores.fields.name'))
+                    ->placeholder(__('admin.stores.fields.name'))
                     ->helperText(new HtmlString(__('admin.stores.helpers.name'))),
 
                 TextInput::make('host')
@@ -30,6 +32,7 @@ class StoreForm
                     ->unique(ignoreRecord: true)
                     ->maxLength(255)
                     ->label(__('admin.stores.fields.host'))
+                    ->placeholder(__('admin.stores.helpers.host_placeholder'))
                     ->helperText(new HtmlString(__('admin.stores.helpers.host')))
                     ->prefix('https://'),
 
@@ -47,12 +50,15 @@ class StoreForm
                             ->reorderable()
                             ->orderColumn('sort_order')
                             ->table([
-                                TableColumn::make(__('admin.stores.fields.languages'))->alignment('center'),
+                                TableColumn::make(__('admin.stores.fields.languages'))->alignment('center')->markAsRequired(),
                                 TableColumn::make(__('admin.global.languages.fields.is_active'))->alignment('center')->width('100px'),
                                 TableColumn::make(__('admin.global.languages.fields.is_default'))->alignment('center')->width('100px'),
                             ])
                             ->addActionLabel(__('admin.stores.fields.add_language'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->hiddenLabel()
+                            ->minItems(1)
                             ->schema([
                                 Select::make('language_id')
                                     ->relationship(
@@ -94,11 +100,14 @@ class StoreForm
                             ->reorderable()
                             ->orderColumn('sort_order')
                             ->table([
-                                TableColumn::make(__('admin.stores.fields.currencies'))->alignment('center'),
+                                TableColumn::make(__('admin.stores.fields.currencies'))->alignment('center')->markAsRequired(),
                                 TableColumn::make(__('admin.global.currencies.fields.is_active'))->alignment('center')->width('100px'),
                             ])
                             ->hiddenLabel()
+                            ->minItems(1)
                             ->addActionLabel(__('admin.stores.fields.add_currency'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->schema([
                                 Select::make('currency_id')
                                     ->relationship(
@@ -119,11 +128,14 @@ class StoreForm
                             ->reorderable()
                             ->orderColumn('sort_order')
                             ->table([
-                                TableColumn::make(__('admin.stores.fields.countries'))->alignment('center'),
+                                TableColumn::make(__('admin.stores.fields.countries'))->alignment('center')->markAsRequired(),
                                 TableColumn::make(__('admin.global.countries.fields.is_active'))->alignment('center')->width('100px'),
                             ])
                             ->hiddenLabel()
+                            ->minItems(1)
                             ->addActionLabel(__('admin.stores.fields.add_country'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->schema([
                                 Select::make('country_id')
                                     ->relationship(

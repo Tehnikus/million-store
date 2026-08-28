@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Customers\Schemas;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -48,15 +49,18 @@ class CustomerForm
                         TextInput::make('first_name')
                             ->required()
                             ->columnSpanFull()
+                            ->placeholder(__('admin.customers.customer.fields.first_name'))
                             ->label(__('admin.customers.customer.fields.first_name')),
                         TextInput::make('last_name')
                             ->required()
                             ->columnSpanFull()
+                            ->placeholder(__('admin.customers.customer.fields.last_name'))
                             ->label(__('admin.customers.customer.fields.last_name')),
                         TextInput::make('phone')
                             ->required()
                             ->tel()
                             ->columnSpanFull()
+                            ->placeholder(__('admin.customers.customer.fields.phone'))
                             ->label(__('admin.customers.customer.fields.phone')),
                         DateTimePicker::make('created_at')
                             ->dehydrated(false)
@@ -88,17 +92,19 @@ class CustomerForm
                                 Toggle::make('is_default_shipping')
                                     ->label(__('admin.customers.customer.fields.is_default_shipping'))
                                     ->live()
-                                    ->afterStateUpdated(fn (bool $state, Set $set, Get $get, Component $component) =>
-                                        self::unsetOtherDefaults($state, $set, $get, $component, 'is_default_shipping')),
+                                    ->distinct()
+                                    ->fixIndistinctState(),
 
                                 Toggle::make('is_default_billing')
                                     ->label(__('admin.customers.customer.fields.is_default_billing'))
                                     ->live()
-                                    ->afterStateUpdated(fn (bool $state, Set $set, Get $get, Component $component) =>
-                                        self::unsetOtherDefaults($state, $set, $get, $component, 'is_default_billing')),
+                                    ->distinct()
+                                    ->fixIndistinctState(),
                             ])
                             ->itemLabel(fn(array $state): ?string => $state['label'] ?? null)
                             ->addActionLabel(__('admin.customers.customer.fields.add_address'))
+                            ->addActionAlignment('start')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->collapsible()
                             ->reorderable(false)
                             ->defaultItems(0)
@@ -149,6 +155,7 @@ class CustomerForm
                             ->required(fn(string $operation) => $operation === 'create')
                             ->dehydrated(fn(?string $state) => filled($state))
                             ->dehydrateStateUsing(fn(?string $state) => filled($state) ? Hash::make($state) : null)
+                            ->placeholder(__('admin.customers.customer.fields.password'))
                             ->label(__('admin.customers.customer.fields.password'))
                             ->columnSpanFull(),
                     ])
@@ -158,7 +165,8 @@ class CustomerForm
                     ->schema([
                         TextInput::make('email')
                             ->email()
-                            ->label(__('admin.customers.customer.fields.email')),
+                            ->placeholder(__('admin.customers.customer.fields.email'))
+                            ->label(__('admin.customers.customer.fields.email'))                            ,
                         DateTimePicker::make('email_verified_at')
                             ->dehydrated(false)
                             ->disabled()
@@ -171,8 +179,10 @@ class CustomerForm
                 Fieldset::make(__('admin.customers.customer.fields.company_data'))
                     ->schema([
                         TextInput::make('company_name')
+                            ->placeholder(__('admin.customers.customer.fields.company_name'))
                             ->label(__('admin.customers.customer.fields.company_name')),
                         TextInput::make('vat_number')
+                            ->placeholder(__('admin.customers.customer.fields.vat_number'))
                             ->label(__('admin.customers.customer.fields.vat_number')),
                     ])
                     ->columnSpanFull()
@@ -274,21 +284,5 @@ class CustomerForm
         return $field['label'][app()->getLocale()]
             ?? $field['label']['en']
             ?? $field['type'] ?? '';
-    }
-
-    private static function unsetOtherDefaults(bool $state, Set $set, Get $get, Component $component, string $field): void
-    {
-        if (! $state) {
-            return;
-        }
-
-        $segments = explode('.', $component->getStatePath());
-        $currentUuid = $segments[count($segments) - 2] ?? null;
-
-        foreach ($get('../') ?? [] as $itemUuid => $item) {
-            if ($itemUuid !== $currentUuid && ! empty($item[$field])) {
-                $set("../{$itemUuid}.{$field}", false);
-            }
-        }
     }
 }

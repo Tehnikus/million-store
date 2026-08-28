@@ -21,7 +21,6 @@ use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -230,13 +229,9 @@ class FacetPageForm
                                             ->minItems(1)
                                             ->reorderable(false)
                                             ->hiddenLabel()
-                                            ->addAction(
-                                                fn(Action $action) => $action
-                                                    ->color('success')
-                                                    ->icon('heroicon-m-plus')
-                                                    ->label(__('admin.catalog.facet_pages.buttons.add_facet'))
-                                            )
-                                            ->addActionAlignment(Alignment::End),
+                                            ->addActionLabel(__('admin.catalog.facet_pages.buttons.add_facet'))
+                                            ->addActionAlignment('end')
+                                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus')),
                                         Text::make(__('admin.catalog.facet_pages.helpers.additional_facets'))
                                     ])
                                     ->columns(1),

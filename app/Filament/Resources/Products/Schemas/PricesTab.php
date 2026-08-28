@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Customer\CustomerGroup;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
@@ -193,6 +194,8 @@ class PricesTab
                     ->collapsed(fn($operation) => $operation !== 'create')
                     ->label(__('admin.catalog.products.fields.price_tiers'))
                     ->addActionLabel(__('admin.catalog.products.buttons.add_price_tier'))
+                    ->addActionAlignment('end')
+                    ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
             ])
             ->columnSpanFull(),
         ];

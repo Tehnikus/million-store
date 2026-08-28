@@ -2,6 +2,7 @@
 
 namespace App\Filament\Schemas\Tabs;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
@@ -52,6 +53,8 @@ class FooterTab
                         ->placeholder(__('admin.common.fields.footer_content')),
                 ])
                 ->addActionLabel(__('admin.common.buttons.add_footer_tab'))
+                ->addActionAlignment('start')
+                ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                 ->reorderable(true)
                 ->columnSpanFull()
                 ->helperText(__('admin.common.helpers.footer_tab'))

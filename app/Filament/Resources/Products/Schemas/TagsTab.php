@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Tag;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -36,6 +37,8 @@ class TagsTab
                 ])
                 ->reorderable(true) // repeater elements order = sort_order
                 ->addActionLabel(__('admin.catalog.products.buttons.add_tag'))
+                ->addActionAlignment('end')
+                ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                 ->columnSpanFull()
                 ->defaultItems(0)
                 ->helperText(__('admin.catalog.products.helpers.facet_tags')),

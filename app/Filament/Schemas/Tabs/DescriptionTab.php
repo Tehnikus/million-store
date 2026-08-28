@@ -53,6 +53,7 @@ class DescriptionTab
         return [
             TextInput::make("name.{$language->locale}")
                 ->label(__('admin.common.fields.name'))
+                ->placeholder(__('admin.common.fields.name'))
                 ->helperText(__('admin.common.helpers.name'))
                 ->columnSpanFull()
                 ->live(onBlur: false, debounce: 500, condition: $withSlug === true)
@@ -79,6 +80,7 @@ class DescriptionTab
                 ->schema([
                     TextInput::make("h1.{$language->locale}")
                         ->label(__('admin.common.fields.h1'))
+                        ->placeholder(__('admin.common.fields.h1'))
                         ->helperText(__('admin.common.helpers.h1'))
                         ->columnSpanFull()
                         ->suffixActions([
@@ -104,6 +106,7 @@ class DescriptionTab
         
                     TextInput::make("meta_title.{$language->locale}")
                         ->label(__('admin.common.fields.meta_title'))
+                        ->placeholder(__('admin.common.fields.meta_title'))
                         ->helperText(__('admin.common.helpers.meta_title'))
                         ->columnSpanFull()
                         ->suffixAction(
@@ -119,6 +122,7 @@ class DescriptionTab
         
                     Textarea::make("meta_description.{$language->locale}")
                         ->label(__('admin.common.fields.meta_description'))
+                        ->placeholder(__('admin.common.fields.meta_description'))
                         ->helperText(__('admin.common.helpers.meta_description'))
                         ->hintAction(
                             Action::make(__('admin.common.buttons.paste_description'))
@@ -135,6 +139,7 @@ class DescriptionTab
 
             RichEditor::make("description_short.{$language->locale}")
                 ->label(__('admin.common.fields.description_short'))
+                ->placeholder(__('admin.common.fields.description_short'))
                 ->helperText(__('admin.common.helpers.description_short'))
                 ->columnSpanFull()
                 ->resizableImages()
@@ -158,6 +163,7 @@ class DescriptionTab
 
             RichEditor::make("description_full.{$language->locale}")
                 ->label(__('admin.common.fields.description_full'))
+                ->placeholder(__('admin.common.fields.description_full'))
                 ->helperText(__('admin.common.helpers.description_full'))
                 ->columnSpanFull()
                 ->resizableImages()

@@ -49,6 +49,8 @@ class CustomerGroupForm
                             ->prefix('%')
                             ->columnSpanFull()
                             ->hiddenLabel()
+                            ->label(__('admin.customers.customer_groups.fields.price_modifier_percent'))
+                            ->placeholder(__('admin.customers.customer_groups.fields.price_modifier_percent'))
                             ->helperText(__('admin.customers.customer_groups.helpers.price_modifier_percent')),
                     ])
                     ->columnSpanFull(),

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogAuthors\Schemas;
 
+use Filament\Actions\Action;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -25,11 +26,7 @@ class BlogAuthorForm
             ->components([
 
                 Section::make()
-                    ->columns([
-                        'sm'    => 5,
-                        'xl'    => 5,
-                        '2xl'   => 5,
-                    ])
+                    ->columns(5)
                     ->schema([
                         FileUpload::make('avatar.path')
                             ->label(__('admin.blog.authors.fields.avatar'))
@@ -42,12 +39,7 @@ class BlogAuthorForm
                                 . '.' . $file->getClientOriginalExtension(),
                             )
                             ->avatar()
-                            ->columnSpan([
-                                'default' => 1,
-                                'sm' => 1,
-                                'xl' => 1,
-                                '2xl' => 1,
-                            ])
+                            ->columnSpan(1)
                             ->alignCenter()
                             ->extraFieldWrapperAttributes(['class' => 'label-center']),
 
@@ -76,15 +68,15 @@ class BlogAuthorForm
 
                                 TextInput::make('url')
                                     ->url()
-                                    ->hiddenLabel(),
+                                    ->label(__('admin.blog.authors.fields.social_url'))
+                                    ->hiddenLabel()
+                                    ->placeholder(__('admin.blog.authors.fields.social_url')),
                             ])
                             ->compact()
-                            ->columnSpan([
-                                'default'   => 4,
-                                'sm'        => 4,
-                                'xl'        => 4,
-                                '2xl'       => 4,
-                            ]),
+                            ->columnSpan(4)
+                            ->addActionAlignment('end')
+                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
+                            ->default([]),
                     ])
                     ->columnSpanFull(),
 

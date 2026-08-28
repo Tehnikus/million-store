@@ -105,13 +105,9 @@ class AttributesTab
                         ->reorderable()
                         ->orderColumn('sort_order')
                         ->columns(5)
-                        ->addActionAlignment(Alignment::End)
-                        ->addAction(fn (Action $action) => 
-                            $action
-                                ->color('success')
-                                ->icon('heroicon-m-plus')
-                                ->label(__('admin.catalog.products.buttons.add_attribute_value'))
-                        )
+                        ->addActionLabel(__('admin.catalog.products.buttons.add_attribute_value'))
+                        ->addActionAlignment('end')
+                        ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                         ->label(__('admin.catalog.attributes.fields.values'))
                 ])
                 ->maxItems(fn () => static::attributeChoices($storeId)->count())
@@ -140,13 +136,9 @@ class AttributesTab
                 })
                 ->reorderable()
                 ->orderColumn('sort_order')
-                ->addActionAlignment(Alignment::Start)
-                ->addAction(fn (Action $action) => 
-                    $action
-                        ->color('success')
-                        ->icon('heroicon-m-plus')
-                        ->label(__('admin.catalog.products.buttons.add_attribute'))
-                )
+                ->addActionLabel(__('admin.catalog.products.buttons.add_attribute'))
+                ->addActionAlignment('start')
+                ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                 ->label(__('admin.catalog.attributes.navigation_label'))
                 ->hiddenLabel()
         ];

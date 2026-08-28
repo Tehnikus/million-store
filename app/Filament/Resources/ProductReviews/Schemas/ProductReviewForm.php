@@ -62,7 +62,7 @@ class ProductReviewForm
                     ->columnSpanFull()
                     ->label(__('admin.catalog.product_reviews.fields.positive_notes'))
                     ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_positive'))
-                    ->addActionAlignment('left')
+                    ->addActionAlignment('start')
                     ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
                 Repeater::make('negativeNotes')
                     ->simple(
@@ -73,7 +73,7 @@ class ProductReviewForm
                     ->columnSpanFull()
                     ->label(__('admin.catalog.product_reviews.fields.negative_notes'))
                     ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_negative'))
-                    ->addActionAlignment('left')
+                    ->addActionAlignment('start')
                     ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
                 ToggleButtons::make('reviewRating')
                     ->required()

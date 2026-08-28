@@ -2,6 +2,7 @@
 
 namespace App\Filament\Schemas\Tabs;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Textarea;
@@ -31,6 +32,8 @@ class HowToTab
                         Textarea::make('text'),
                     ])
                     ->addActionLabel(__('admin.common.buttons.add_how_to_step'))
+                    ->addActionAlignment('start')
+                    ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                     ->reorderable(true)
                     ->compact()
                     ->columnSpanFull()

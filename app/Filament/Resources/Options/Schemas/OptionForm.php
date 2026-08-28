@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Options\Schemas;
 
 use App\Filament\Schemas\Fields\SlugInput;
+use App\Models\Store\StoreSettings;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
@@ -34,6 +36,11 @@ class OptionForm
             return [...$data, 'store_id' => $store->id];
         };
 
+        $dimensions  = StoreSettings::where('store_id', $store->id)->first()?->image_dimensions['attribute'] ?? [];
+        $width       = $dimensions['miniature']['width'] ?? 300;
+        $height      = $dimensions['miniature']['height'] ?? 300;
+        $aspectRatio = ($width / $width) . ':' . ($height / $width);
+
         return $schema
             ->components([
                 Section::make(__('admin.catalog.options.fields.group_title'))
@@ -42,16 +49,18 @@ class OptionForm
 
                         Fieldset::make(__('admin.catalog.options.fields.group_name'))
                             ->schema([
-                                ...collect($languages)->map(
-                                    fn($language) =>
-                                    TextInput::make("name.{$language->locale}")
-                                        ->required()
-                                        ->maxLength(255)
-                                        ->prefix($language->locale)
-                                        ->placeholder(__('admin.catalog.options.fields.group_name'))
-                                        ->label(__('admin.catalog.options.fields.group_name'))
-                                        ->hiddenLabel(),
-                                )->all(),
+                                FusedGroup::make([
+                                    ...collect($languages)->map(
+                                        fn($language) =>
+                                        TextInput::make("name.{$language->locale}")
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->prefix($language->locale)
+                                            ->placeholder(__('admin.catalog.options.fields.group_name'))
+                                            ->label(__('admin.catalog.options.fields.group_name'))
+                                            ->hiddenLabel(),
+                                    )->all(),
+                                ]),
 
                                 Text::make(__('admin.catalog.options.helpers.group_name'))
                                     ->columnSpanFull(),
@@ -80,11 +89,18 @@ class OptionForm
                                 ])
                                 ->columnSpanFull(),
                             ])
-                            ->columns(\count($languages)),
+                            ->columns(1),
 
                         Repeater::make('values')
                             ->schema([
-                                FileUpload::make('images'),
+                                FileUpload::make('images')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory("{$store->id}/images/staging")
+                                    ->imageEditor()
+                                    ->imageEditorAspectRatioOptions([$aspectRatio, null]) // Set actual aspect ratio first
+                                    // ->formatStateUsing(fn (Get $get) => static::resolvePreviewPath($get('conversions') ?? [])) // Display preview on edit page
+                                    ->panelLayout('integrated'),
                                 Group::make(
                                     collect($languages)->map(
                                         fn($language) =>
@@ -112,6 +128,18 @@ class OptionForm
                                                     })
                                                     ->hiddenLabel(),
 
+                                                RichEditor::make("description.{$language->locale}")
+                                                    ->columnSpanFull()
+                                                    ->placeholder(__('admin.catalog.options.fields.description'))
+                                                    ->toolbarButtons([
+                                                        'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo']
+                                                    ])
+                                                    ->floatingToolbars([])
+                                                    ->extraInputAttributes([
+                                                        'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
+                                                    ])
+                                                    ->hiddenLabel(),
+
                                                 // Slugs
                                                 ...SlugInput::makeSlug($language, [
                                                     'generateSlugUsing' => function (Get $get, string $locale) {
@@ -123,21 +151,12 @@ class OptionForm
                                                     'siblingsPath' => '../../values',
                                                 ]),
 
-                                                RichEditor::make("description.{$language->locale}")
-                                                    ->columnSpanFull()
-                                                    ->placeholder(__('admin.catalog.options.fields.description'))
-                                                    ->toolbarButtons([])
-                                                    ->floatingToolbars([
-                                                        'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo'],
-                                                    ])
-                                                    ->extraInputAttributes([
-                                                        'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
-                                                    ])
-                                                    ->hiddenLabel(),
                                             ])
                                             ->dense()
+                                            ->columns(1)
                                     )->all()
-                                ),
+                                )
+                                ->columns(1),
 
                                 Toggle::make('is_default')
                                     ->label(__('admin.catalog.options.fields.is_default'))
@@ -157,7 +176,7 @@ class OptionForm
                                         ->helperText(__('admin.catalog.options.helpers.value_show_in_facets'))
                                         ->default(true),
                                 ])
-                                ->columns(2)
+                                ->columns(1)
                                 ->columnSpanFull()
                             ])
                             ->relationship('values')
@@ -175,5 +194,17 @@ class OptionForm
                     ])
                     ->columnSpanFull()
             ]);
+    }
+
+    /**
+     * Resolve preview
+     * Needed because after the image was uploaded and the form was saved saved data structure does not match format expected by the Repeater component
+     * So it passes original or large conversion to display in FileUpload component
+     * Try to load orginal first, then main image, then first array element
+     * @param array $conversions
+     */
+    private static function resolvePreviewPath(array $conversions): ?string
+    {
+        return $conversions['original'] ?? $conversions['main'] ?? Arr::first($conversions);
     }
 }
