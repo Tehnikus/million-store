@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Filament\Resources\OrderStatuses\Pages;
+
+use App\Filament\Resources\OrderStatuses\OrderStatusResource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditOrderStatus extends EditRecord
+{
+    protected static string $resource = OrderStatusResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
+        ];
+    }
+}
