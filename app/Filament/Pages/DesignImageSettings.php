@@ -27,131 +27,131 @@ class DesignImageSettings extends Page
         return $schema
             ->components([
                 Form::make([
-                    Section::make(__('admin.design.image_types.logo'))
+                    Section::make(__('admin.design.image_settings.logo'))
                         ->schema([
-                            Fieldset::make(__('admin.design.image_types.logo'))
+                            Fieldset::make(__('admin.design.image_settings.logo'))
                                 ->schema([
                                     TextInput::make("image_dimensions.logo.miniature.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.logo.miniature.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
                         ]),
 
-                    Section::make(__('admin.design.image_types.product'))
+                    Section::make(__('admin.design.image_settings.product'))
                         ->schema([
-                            Fieldset::make(__('admin.design.image_types.product_miniature'))
+                            Fieldset::make(__('admin.design.image_settings.product_miniature'))
                                 ->schema([
                                     TextInput::make("image_dimensions.product.miniature.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.product.miniature.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
-                            Fieldset::make(__('admin.design.image_types.product_main'))
+                            Fieldset::make(__('admin.design.image_settings.product_main'))
                                 ->schema([
                                     TextInput::make("image_dimensions.product.main.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.product.main.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
 
                         ]),
                     
-                    Section::make(__('admin.design.image_types.options_attributes'))
+                    Section::make(__('admin.design.image_settings.options_attributes'))
                         ->schema([
-                            Fieldset::make(__('admin.design.image_types.options'))
+                            Fieldset::make(__('admin.design.image_settings.options'))
                                 ->schema([
                                     TextInput::make("image_dimensions.option.miniature.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.option.miniature.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
-                            Fieldset::make(__('admin.design.image_types.attributes'))
+                            Fieldset::make(__('admin.design.image_settings.attributes'))
                                 ->schema([
                                     TextInput::make("image_dimensions.attribute.miniature.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.attribute.miniature.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
                         ]),
 
-                    Section::make(__('admin.design.image_types.category'))
+                    Section::make(__('admin.design.image_settings.category'))
                         ->schema([
-                            Fieldset::make(__('admin.design.image_types.category_miniature'))
+                            Fieldset::make(__('admin.design.image_settings.category_miniature'))
                                 ->schema([
                                     TextInput::make("image_dimensions.category.miniature.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.category.miniature.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
-                            Fieldset::make(__('admin.design.image_types.category_main'))
+                            Fieldset::make(__('admin.design.image_settings.category_main'))
                                 ->schema([
                                     TextInput::make("image_dimensions.category.main.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.category.main.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
                         ]),
 
-                    Section::make(__('admin.design.image_types.blog'))
+                    Section::make(__('admin.design.image_settings.blog'))
                         ->schema([
-                            Fieldset::make(__('admin.design.image_types.blog_miniature'))
+                            Fieldset::make(__('admin.design.image_settings.blog_miniature'))
                                 ->schema([
                                     TextInput::make("image_dimensions.blog.miniature.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.blog.miniature.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
-                            Fieldset::make(__('admin.design.image_types.blog_main'))
+                            Fieldset::make(__('admin.design.image_settings.blog_main'))
                                 ->schema([
                                     TextInput::make("image_dimensions.blog.main.width")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.width')),
+                                        ->label(__('admin.design.image_settings.width')),
                                     TextInput::make("image_dimensions.blog.main.height")
                                         ->numeric()
                                         ->required()
-                                        ->label(__('admin.design.image_types.height')),
+                                        ->label(__('admin.design.image_settings.height')),
                                 ])
                                 ->columns(2),
                         ]),
@@ -199,7 +199,7 @@ class DesignImageSettings extends Page
 
     public function getSubheading(): string|null
     {
-        return __('admin.design.image_types.subheading');
+        return __('admin.design.image_settings.subheading');
     }
 
 

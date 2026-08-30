@@ -563,7 +563,9 @@ return [
         'created_at'  => 'Дата создания',
         'posts_count' => 'Статьи',
       ],
-      'helpers' => [],
+      'helpers' => [
+        'manage_posts_title' => 'Статьи в теге ":name"',
+      ],
     ],
     'posts' => [
       'navigation_label'      => 'Статьи',
@@ -645,8 +647,8 @@ return [
     ],
   ],
   'design' => [
-    'image_types' => [
-      'title'               => 'Типы и размеры изображений',
+    'image_settings' => [
+      'navigation_label'    => 'Изображения',
       'subheading'          => 'Здесь можно изменить логотип магазина и задать глобальные размеры изображений',
       'logo'                => 'Логотип',
       'product'             => 'Товар',
@@ -688,7 +690,6 @@ return [
   ],
 
   'store_homepage'  => ['navigation_label' => 'Главная'],
-  'image_settings'  => ['navigation_label' => 'Изображения'],
 
   // Info pages
   'info_pages' => [

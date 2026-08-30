@@ -563,7 +563,9 @@ return [
         'created_at'  => 'Created at',
         'posts_count' => 'Posts count',
       ],
-      'helpers' => [],
+      'helpers' => [
+        'manage_posts_title' => 'Posts in ":name" tag',
+      ],
     ],
     'posts' => [
       'navigation_label'      => 'Posts',
@@ -645,8 +647,8 @@ return [
     ],
   ],
   'design' => [
-    'image_types' => [
-      'title'               => 'Image types and dimensions',
+    'image_settings' => [
+      'navigation_label'    => 'Images settings',
       'subheading'          => 'Here you can set your store logo and global image dimensions',
       'logo'                => 'Logo',
       'product'             => 'Product',
@@ -688,7 +690,6 @@ return [
   ],
 
   'store_homepage'  => ['navigation_label' => 'Homepage',],
-  'image_settings'  => ['navigation_label' => 'Images settings',],
 
   // Info pages
   'info_pages' => [

@@ -563,7 +563,9 @@ return [
         'created_at'  => 'Дата створення',
         'posts_count' => 'Статті',
       ],
-      'helpers' => [],
+      'helpers' => [
+        'manage_posts_title' => 'Статті в тегу ":name"',
+      ],
     ],
     'posts' => [
       'navigation_label'      => 'Статті',
@@ -645,8 +647,8 @@ return [
     ],
   ],
   'design' => [
-    'image_types' => [
-      'title'               => 'Типи та розміри зображень',
+    'image_settings' => [
+      'navigation_label'    => 'Зображення',
       'subheading'          => 'Тут можна змінити логотип магазина і задати глобальні розміри зображень',
       'logo'                => 'Логотип',
       'product'             => 'Товар',
@@ -688,7 +690,6 @@ return [
   ],
 
   'store_homepage'  => ['navigation_label' => 'Головна',],
-  'image_settings'  => ['navigation_label' => 'Зображення',],
 
   // Info pages
   'info_pages' => [
