@@ -10,6 +10,22 @@ return [
     'delete_restricted_title'   => 'Warning! You cannot delete this because of dependent resources!',
     'delete_cascade_warning'    => 'Warning! If you delete this other resources bill be affected!',
   ],
+  'orders' => [
+    'statuses' => [
+      'navigation_label'      => 'Statuses',
+      'model_label_singular'  => 'Status',
+      'fields' => [
+        'name'            => 'Status name',
+        'color'           => 'Status color',
+        'icon'            => 'Icon',
+        'notification'    => 'Notify customer',
+        'is_default'      => 'Default',
+        'is_shipped'      => 'Shipped',
+        'is_finished'     => 'Finished',
+        'is_active'       => 'Active',
+      ],
+    ],
+  ],
   'catalog' => [
     'products' => [
       'navigation_label'      => 'Products',
@@ -133,7 +149,7 @@ return [
         'group_name'            => 'Attribute group name',
         'values'                => 'Attibute entries',
         'image'                 => 'Image',
-        'description'           => 'Description',
+        'description'           => 'Attribute description',
         'attribute_name'        => 'Attribute name',
         'slug'                  => 'URL',
         'show_in_facets'        => 'Show in filter',
@@ -146,6 +162,7 @@ return [
         'show_in_facets'        => 'Show this group in filter block',
         'value_is_active'       => 'Show this attribute value on product pages',
         'value_show_in_facets'  => 'Show this attribute value in filter block',
+        'description'           => 'The description will be diplsayed on product page. Can be overridden from product settings',
       ],
       'buttons' => [
         'add_attribute_value' => 'Add attribute value'
@@ -202,9 +219,11 @@ return [
       'navigation_label'      => 'Filter pages',
       'model_label_singular'  => 'Filter page',
       'fields' => [
-        'is_active'   => 'Is active',
-        'facet_list'  => 'Facet list',
-        'facet_index' => 'Facet index',
+        'is_active'         => 'Is active',
+        'facet_list'        => 'Facet list',
+        'facet_index'       => 'Facet index',
+        'root_facet'        => 'Root filter',
+        'additional_facets' => 'Additional filters'
       ],
       'buttons' => [
         'add_facet' => 'Add filter'
@@ -214,6 +233,10 @@ return [
         'root_facet_not_selected' => 'Select at least one category or one manufacturer as root for this Filter page',
         'facet_type_required'     => 'Select filter type',
         'facet_value_required'    => 'Select filter value',
+      ],
+      'helpers' => [
+        'root_facet'        => 'The root filter determines which filter will be the main and mandatory filter for this filter page',
+        'additional_facets' => 'Additional filters define the combination of other filters together with the root filter for this filter page',
       ]
     ],
     'facets' => [
@@ -229,6 +252,45 @@ return [
         'best_reviews' => 'Best reviews',
       ]
     ],
+    'product_reviews' => [
+      'navigation_label'      => 'Product reviews',
+      'model_label_singular'  => 'Product review',
+      'fields' => [
+        'product'            => 'Product',
+        'type'               => 'Type',        
+        'author'             => 'Author',
+        'email'              => 'Email',
+        'body'               => 'Review',
+        'rating'             => 'Rating',
+        'is_approved'        => 'Approved',
+        'created_at'         => 'Created at',
+        'reply_body'         => 'Reply',
+        'locale'             => 'Language',
+        'thread'             => 'Replies',
+        'reply_author'       => 'Store reply author',
+        'positive_notes'     => 'Pros',
+        'negative_notes'     => 'Cons',
+      ],
+      'filters' => [
+        'is_approved'        => 'Approved',
+        'rating'             => 'Rating',
+      ],
+      'actions' => [
+        'reply'              => 'Reply',
+      ],
+      'notifications' => [
+        'reply_sent'         => 'Reply sent successfully',
+      ],
+      'buttons' => [
+        'add_positive' => 'Add pro',
+        'add_negative' => 'Add con',
+      ],
+      'labels' => [
+        'admin_reply'        => 'Admin reply',
+        'customer_review'    => 'Customer review',
+        'store_reply_author' => 'Store reply author',
+      ]
+    ]
   ],
   'customers' => [
     'customer' => [
@@ -304,17 +366,24 @@ return [
         'type'                  => 'Type',
         'id'                    => 'ID',
         'redirect'              => 'Redirect 301',
-        'sluggable_id'          => 'Page ID'
+        'sluggable_id'          => 'Page ID',
+        'robots'                => 'Robots tag',
+        'index_follow'          => 'Index, Follow',
+        'noindex_follow'        => 'Noindex, Follow',
+        'index_nofollow'        => 'Index, Nofollow',
+        'noindex_nofollow'      => 'Noindex, Nofollow',
       ],
       'helpers' => [
         'redirect'  => 'Redirect with 301 code from current URL to this one',
         'is_active' => 'If is not active, both URL and Redirect will return 410 code',
         'type'      => 'Page type, e.g. BlogPost, Product, ProductOption Category, Manufacturer, etc.',
         'id'        => 'Page ID so controller can determine which page to open',
+        'robots'    => 'Robots meta tag is needed to tell search robots how this page should be added to the search index',
       ],
       'errors' => [
-        'slug_taken' => 'This URL is already in use',
-        'alpha_dash' => 'Only alpha-numeric and dashes allowed',
+        'slug_taken'              => 'This URL is already in use',
+        'alpha_dash'              => 'Only alpha-numeric and dashes allowed',
+        'slug_duplicate_in_form'  => 'URL duplicate in this form', 
       ]
     ],
     'robots_editor' => [
@@ -520,7 +589,7 @@ return [
       'h1'                => 'H1',
       'meta_title'        => 'Meta title',
       'meta_description'  => 'Meta description',
-      'robots'            => 'Robots tag',
+      
       'faq_question'      => 'Question',
       'faq_answer'        => 'Answer',
       'how_to_step_name'  => 'Step name',
@@ -541,7 +610,6 @@ return [
       'h1'                => 'Include your primary target keyword, match closely to title tag',
       'meta_title'        => 'Recommended 50–60 chars. Longer title will be truncated by Google. Max length is 160 chars',
       'meta_description'  => 'Recommended 120 chars for mobile and 150 chars for desktop. Longer description will be truncated by Google. Max length is 255 chars',
-      'robots'            => 'Robots meta tag is needed to tell search robots how this page should be added to the search index',
       'image_description' => 'Alt image attribute, best under 125 chars',
       'images_tab'        => 'Don\'t forget to set image\'s Alt attribue, it helps Search engines to understand what\'s depicted, thus better SEO ranking',
       'footer_tab'        => 'You can add some content here in form of tabs, mainly for SEO to enrich the page with missing keywords',
@@ -783,10 +851,9 @@ return [
       ],
     ],
     'helpers' => [
-      'name'          => 'Name to display in admin panel',
-      'host'          => 'Store domain name name without http:// or https://. <br> Example <u><b>store.com</b></u>',
-      'on_save_title' => 'Info',
-      'on_save_info'  => 'Language, currency, and country settings will be displayed after saving the store. Don\'t forget to set them up',
+      'name'              => 'Name to display in admin panel',
+      'host'              => 'Store domain name name without http:// or https://. <br> Example <u><b>store.com</b></u>',
+      'host_placeholder'  => 'store.com'
     ],
   ],
 
