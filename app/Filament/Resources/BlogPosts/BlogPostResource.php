@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\BlogPosts;
 
+use App\Filament\Resources\BlogPosts\Pages\ManageBlogBostComments;
 use App\Models\Blog\BlogPost;
+use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -11,7 +13,6 @@ use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
 use App\Filament\Resources\BlogPosts\Pages\ListBlogPosts;
 use App\Filament\Resources\BlogPosts\Schemas\BlogPostForm;
 use App\Filament\Resources\BlogPosts\Tables\BlogPostsTable;
-
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 
@@ -40,10 +41,19 @@ class BlogPostResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListBlogPosts::route('/'),
-            'create' => CreateBlogPost::route('/create'),
-            'edit' => EditBlogPost::route('/{record}/edit'),
+            'index'     => ListBlogPosts::route('/'),
+            'create'    => CreateBlogPost::route('/create'),
+            'edit'      => EditBlogPost::route('/{record}/edit'),
+            'comments'  => ManageBlogBostComments::route('/{record}/comments')
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\EditBlogPost::class,
+            Pages\ManageBlogBostComments::class,
+        ]);
     }
 
     // Only search by name to avoid excessive overhead and search results bloat

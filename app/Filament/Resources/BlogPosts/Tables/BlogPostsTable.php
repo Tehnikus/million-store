@@ -12,7 +12,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Filament\Support\Enums\Alignment;
-use Illuminate\Database\Eloquent\Model;
 
 class BlogPostsTable
 {
