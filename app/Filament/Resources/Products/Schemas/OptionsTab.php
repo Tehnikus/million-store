@@ -16,7 +16,6 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 
@@ -123,7 +122,7 @@ class OptionsTab
                         ->reorderable()
                         ->orderColumn('sort_order')
                         ->columns(5)
-                        ->addActionAlignment(Alignment::End)
+                        ->addActionAlignment('end')
                         ->addAction(fn (Action $action) => 
                             $action
                                 ->color('success')
@@ -158,7 +157,7 @@ class OptionsTab
                 })
                 ->reorderable()
                 ->orderColumn('sort_order')
-                ->addActionAlignment(Alignment::Start)
+                ->addActionAlignment('start')
                 ->addAction(fn (Action $action) => 
                     $action
                         ->color('success')

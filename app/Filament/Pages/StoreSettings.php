@@ -174,8 +174,6 @@ class StoreSettings extends Page
                                                 ])
                                                 ->reorderable()
                                                 ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
-                                                ->addActionAlignment('right')
-                                                ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                                                 ->label(__('admin.store_settings.checkout_settings.fields.checkout_address_fields'))
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.checkout_fields'))
                                                 ->columnSpanFull(),
@@ -215,8 +213,6 @@ class StoreSettings extends Page
                                                 ])
                                                 ->reorderable()
                                                 ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
-                                                ->addActionAlignment('right')
-                                                ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                                                 ->label(__('admin.store_settings.checkout_settings.fields.checkout_custom_fields'))
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.custom_fields'))
                                                 ->columnSpanFull(),

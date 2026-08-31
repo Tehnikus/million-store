@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Filament\Tables\Filters\Filter;
@@ -157,7 +158,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                     ->color('info'),
             ])
             ->emptyStateHeading(__('admin.seo.meta_editor.helpers.results_table_title'))
-            ->emptyStateDescription(__('admin.seo.meta_editor.helpers.results_table_descriptions'))
+            ->emptyStateDescription(new HtmlString(__('admin.seo.meta_editor.helpers.results_table_descriptions')))
             ->emptyStateIcon('heroicon-o-clock');
     }
 

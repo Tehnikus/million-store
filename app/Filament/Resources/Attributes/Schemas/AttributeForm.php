@@ -172,7 +172,7 @@ class AttributeForm
                             ->itemLabel(fn (array $state): ?string => $state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []) ?? null)
                             ->label(__('admin.catalog.attributes.fields.values'))
                             ->addActionLabel(__('admin.catalog.attributes.buttons.add_attribute_value'))
-                            ->addActionAlignment('right')
+                            ->addActionAlignment('end')
                             ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->columns(1)
                     ])

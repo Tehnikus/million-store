@@ -189,7 +189,7 @@ class OptionForm
                             ->itemLabel(fn (array $state): ?string => $state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []) ?? null)
                             ->label(__('admin.catalog.options.fields.values'))
                             ->addActionLabel(__('admin.catalog.options.buttons.add_option_value'))
-                            ->addActionAlignment('right')
+                            ->addActionAlignment('end')
                             ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                     ])
                     ->columnSpanFull()

@@ -79,7 +79,6 @@ abstract class AbstractMetaTagsFormulaPage extends Page
 
                         ])
                         ->addActionLabel(__('admin.seo.meta_editor.buttons.add_formula'))
-                        ->addActionAlignment('right')
                         ->reorderable(false)
                         ->cloneable(true)
                         ->columnSpanFull()
