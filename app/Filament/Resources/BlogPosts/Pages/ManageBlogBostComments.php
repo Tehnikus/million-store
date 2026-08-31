@@ -43,7 +43,7 @@ class ManageBlogBostComments extends ManageRelatedRecords
 
     public static function getNavigationBadge(): ?string
     {
-        return Livewire::current()->getRecord()->comments->count();
+        return Livewire::current()->getRecord()->comments()->count();
     }
 
 }

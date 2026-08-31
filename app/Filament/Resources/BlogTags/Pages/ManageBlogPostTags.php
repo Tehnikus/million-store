@@ -53,6 +53,6 @@ class ManageBlogPostTags extends ManageRelatedRecords
 
     public static function getNavigationBadge(): ?string
     {
-        return Livewire::current()->getRecord()->blogPosts->count();
+        return Livewire::current()->getRecord()->blogPosts()->count();
     }
 }
