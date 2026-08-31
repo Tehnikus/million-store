@@ -48,6 +48,12 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
     use InteractsWithTable;
 
     public array $resultsTable = [];
+    // protected $listeners = ['refreshRelation' => '$refresh']; // Old livewire syntax
+
+    // New livewire syntax
+    // Refresh staging table row after action apply or input value change
+    #[On('refreshRelation')] 
+    public function refreshRelation(): void {} 
 
     /**
      * Staging table layout and actions
@@ -89,7 +95,21 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             ->recordClasses(fn ($record) => (!empty($record['has_error']) && $record['has_error'] == true) ? 'meta-editor-row-error' : (!isset($record['has_error']) ? '' : 'meta-editor-row-ok'))
             // Row actions
             ->recordActions([
+                Action::make('applyFormula')
+                    ->schema($this->generateModalSchema())
+                    ->action(function (array $record, array $data) {
+                        $formula = $this->availableFormulas()->firstWhere('id', (int) $data['formula_id']);
 
+                        if (! $formula) {
+                            return;
+                        }
+
+                        $this->applyFormulaToRow($record['id'], $formula, $data['target_field'], $data['locale'], $data['currency_id']);
+
+                        $this->dispatch('refreshRelation');
+                    })
+                    ->color('info')
+                    ->icon(NavigationItem::MetaEditor->icon()),
                 Action::make('delete')
                     ->action(function (array $record): void {
                         $this->removeRecordByKey($record['id']);
@@ -122,20 +142,6 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                     ->visible(fn() => $this->resultsTable !== [])
                     ->accessSelectedRecords(),
 
-                // Action::make('applyFormula')
-                //     ->label(__('admin.seo.meta_editor.buttons.apply_formula_all'))
-                //     ->icon(NavigationItem::MetaEditor->icon())
-                //     ->color('info')
-                //     ->visible(fn() => $this->resultsTable !== [])
-                //     ->schema($this->generateModalSchema())
-                //     ->action(function (array $data) {
-                //         $formula = $this->availableFormulas()->firstWhere('id', (int) $data['formula_id']);
-                        
-                //         if (!$formula) return;
-
-                //         collect(array_keys($this->resultsTable))
-                //             ->each(fn($id) => $this->applyFormulaToRow($id, $formula, $data['target_field'], $data['locale'], $data['currency_id']));
-                //     }),
                 BulkAction::make('applyFormula')
                     ->schema($this->generateModalSchema())
                     ->action(function (Collection $records, array $data) {
@@ -143,8 +149,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                         if (!$formula) return;
 
                         $records->each(fn ($record) => $this->applyFormulaToRow($record['id'], $formula, $data['target_field'], $data['locale'], $data['currency_id']));
-
-                        $this->resetTable();
+                        $this->dispatch('refreshRelation'); // Insted of $this->resetTable() - does not reset pagination
                     })
                     ->deselectRecordsAfterCompletion()
                     ->label(__('admin.seo.meta_editor.buttons.apply_formula'))
@@ -182,6 +187,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                             TextInputColumn::make("meta_title.{$locale}")
                                 ->getStateUsing(fn (array $record) => $record['meta_title'][$locale] ?? '')
                                 ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('meta_title', $state, $record, $locale))
+                                ->afterStateUpdated(fn() => $this->dispatch('refreshRelation'))
                                 ->prefix($locale)
                                 ->placeholder(__('admin.common.fields.meta_title'))
                                 ->suffix(fn ($state): string => strval(str($state)->length()))
@@ -197,6 +203,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                             TextInputColumn::make("h1.{$locale}")
                                 ->getStateUsing(fn (array $record) => $record['h1'][$locale] ?? '')
                                 ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('h1', $state, $record, $locale))
+                                ->afterStateUpdated(fn() => $this->dispatch('refreshRelation'))
                                 ->prefix($locale)
                                 ->placeholder(__('admin.common.fields.h1'))
                                 ->suffix(fn ($state): string => strval(str($state)->length()))
@@ -212,6 +219,14 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
                             TextInputColumn::make("meta_description.{$locale}")
                                 ->getStateUsing(fn (array $record) => $record['meta_description'][$locale] ?? '')
                                 ->updateStateUsing(fn ($state, array $record) => $this->updateResultField('meta_description', $state, $record, $locale))
+                                ->afterStateUpdated(fn() => $this->dispatch('refreshRelation'))
+                                // Keep this for reference or if row update events glitch 
+                                // ->extraInputAttributes([
+                                //     'x-on:input' => <<<'JS'
+                                //         $el.closest('.fi-ta-record')?.classList.remove('meta-editor-row-error');
+                                //     JS,
+                                //     'x-on:blur' => 'setTimeout(() => $wire.$refresh(), 300)'
+                                // ])
                                 ->prefix($locale)
                                 ->placeholder(__('admin.common.fields.meta_description'))
                                 ->suffix(fn ($state): string => strval(str($state)->length()))
@@ -264,6 +279,8 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
     protected function updateResultField(string $field, mixed $state, array $record, string $locale): void
     {
         $this->resultsTable[$record['id']][$field][$locale] = $state ?? '';
+        unset($this->resultsTable[$record['id']]['has_error']);
+        // $this->dispatch('$refresh');
     }
 
     /**
@@ -292,7 +309,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
     }
 
     /**
-     * Applt formula to the input value
+     * Apply formula to the input value
      * @param int|string $id
      * @param MetaTagFormula $formula
      * @param mixed $target_field
@@ -397,6 +414,13 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
         ];
     }
 
+    /**
+     * Filter staging table
+     * Supports negation if search string starts with "!" exclamation mark 
+     * @param array $row
+     * @param string $search
+     * @return bool
+     */
     protected function rowMatchesSearch(array $row, string $search): bool
     {
         $negate = str_starts_with(trim($search), '!');
@@ -420,6 +444,11 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
         return $negate ? ! $found : $found;
     }
 
+    /**
+     * Filter staging table by any empty fields
+     * @param array $row
+     * @return bool
+     */
     protected function rowHasEmptyField(array $row): bool
     {
         $languages = Filament::getTenant()->languages()->wherePivot('is_active', true)->pluck('locale');
