@@ -5,9 +5,11 @@ namespace App\Filament\Resources\Categories;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Categories\Pages\ListCategories;
+use App\Filament\Resources\Categories\Pages\ManageCategotyProducts;
 use App\Filament\Resources\Categories\Schemas\CategoryForm;
 use App\Filament\Resources\Categories\Tables\CategoriesTable;
 use App\Models\Catalog\Category;
+use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -43,10 +45,19 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListCategories::route('/'),
-            'create' => CreateCategory::route('/create'),
-            'edit' => EditCategory::route('/{record}/edit'),
+            'index'     => ListCategories::route('/'),
+            'create'    => CreateCategory::route('/create'),
+            'edit'      => EditCategory::route('/{record}/edit'),
+            'products'  => ManageCategotyProducts::route('{record}/products'),
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            EditCategory::class,
+            ManageCategotyProducts::class,
+        ]);
     }
 
     // Global search columns list
