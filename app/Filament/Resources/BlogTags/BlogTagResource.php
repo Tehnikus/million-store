@@ -5,6 +5,7 @@ namespace App\Filament\Resources\BlogTags;
 use App\Filament\Resources\BlogTags\Pages\CreateBlogTag;
 use App\Filament\Resources\BlogTags\Pages\EditBlogTag;
 use App\Filament\Resources\BlogTags\Pages\ListBlogTags;
+use App\Filament\Resources\BlogTags\Pages\ManageBlogPostTags;
 use App\Filament\Resources\BlogTags\Schemas\BlogTagForm;
 use App\Filament\Resources\BlogTags\Tables\BlogTagsTable;
 use App\Models\Blog\BlogTag;
@@ -42,18 +43,18 @@ class BlogTagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListBlogTags::route('/'),
-            'create' => CreateBlogTag::route('/create'),
-            'edit' => EditBlogTag::route('/{record}/edit'),
-            'posts' => Pages\ManageBlogPostTags::route('/{record}/posts')
+            'index'     => ListBlogTags::route('/'),
+            'create'    => CreateBlogTag::route('/create'),
+            'edit'      => EditBlogTag::route('/{record}/edit'),
+            'posts'     => ManageBlogPostTags::route('/{record}/posts')
         ];
     }
 
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\EditBlogTag::class,
-            Pages\ManageBlogPostTags::class,
+            EditBlogTag::class,
+            ManageBlogPostTags::class,
         ]);
     }
 

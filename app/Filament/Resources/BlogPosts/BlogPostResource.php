@@ -51,8 +51,8 @@ class BlogPostResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\EditBlogPost::class,
-            Pages\ManageBlogBostComments::class,
+            EditBlogPost::class,
+            ManageBlogBostComments::class,
         ]);
     }
 
