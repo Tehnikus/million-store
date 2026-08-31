@@ -27,7 +27,9 @@ class ManageBlogBostComments extends ManageRelatedRecords
     {
         return BlogCommentsTable::configure($table)
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->color('primary')
+                    ->icon('heroicon-o-plus'),
             ]);
     }
 

@@ -23,7 +23,9 @@ class ManageBlogPostTags extends ManageRelatedRecords
     {
         return BlogPostsTable::configure($table)
             ->headerActions([
-                AttachAction::make(),
+                AttachAction::make()
+                    ->color('primary')
+                    ->icon('heroicon-o-plus'),
             ])
             ->recordAction(null) // Reset previous actions (remove "edit on click")
             ->recordActions([
