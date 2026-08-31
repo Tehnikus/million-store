@@ -58,8 +58,7 @@ class CustomerResource extends Resource
     // Show count badge of not approved customers in admin navigation
     public static function getNavigationBadge(): ?string
     {
-        $count = static::getModel()::query()
-            // ->where('store_id', Filament::getTenant()->id) // Duplicates same constrain, not needed
+        $count = static::getEloquentQuery()
             ->where('is_approved', false)
             ->where('is_anonymized', false)
             ->count();

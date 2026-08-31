@@ -65,7 +65,7 @@ class BlogPostResource extends Resource
     // Badge with count of posts that are NOT active. Nifty!
     public static function getNavigationBadge(): ?string
     {
-        $count =  static::getModel()::where('is_active', false)->count();
+        $count = static::getEloquentQuery()->where('is_active', false)->count();
         return $count > 0 ? (string) $count : null;
     }
     

@@ -57,7 +57,7 @@ class ProductReviewResource extends Resource
     // Badge with count of reviews that are NOT approved. Nifty!
     public static function getNavigationBadge(): ?string
     {
-        $count = static::getModel()::where('is_approved', false)->where('is_admin_reply', false)->count();
+        $count = static::getEloquentQuery()->where('is_approved', false)->where('is_admin_reply', false)->count();
         return $count > 0 ? (string) $count : null;
     }
 
