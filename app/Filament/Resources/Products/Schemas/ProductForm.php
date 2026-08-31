@@ -97,7 +97,7 @@ class ProductForm
                         Tab::make(TagsTab::label())->schema(TagsTab::schema($store->id)),
                         Tab::make(OptionsTab::label())->schema(OptionsTab::schema($store->id, $languages, $currencies)),
                         Tab::make(AttributesTab::label())->schema(AttributesTab::schema($store->id, $languages)),
-                        ImagesTab::make($store, $languages, ['type' => 'product']),
+                        ImagesTab::make($store, $languages, ['type' => 'product'])->statePath('description'),
                     ])
                     ->columnSpanFull(),
             ]);
