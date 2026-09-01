@@ -9,7 +9,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -17,6 +16,7 @@ use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
@@ -46,33 +46,32 @@ class ProductReviewsTable
                     ->width('1%')
                     ->color('primary'),
 
-                TextColumn::make('reviewBody')
+                TextColumn::make('review_body')
                     ->label(__('admin.catalog.product_reviews.fields.body'))
-                    ->limit(60)
                     ->wrap()
                     ->formatStateUsing(function (ProductReview $record) {
                         $stars = '';
                         $positives = [];
                         $negatives = [];
-                        if ($record->reviewRating) {
+                        if ($record->review_rating) {
                             $stars = '<span>'
-                                . str_repeat('<span style="color: #f59e0b;">★</span>', $record->reviewRating)
-                                . str_repeat('<span style="color: #d1d5db;">☆</span>', 5 - $record->reviewRating)
+                                . str_repeat('<span style="color: #f59e0b;">★</span>', $record->review_rating)
+                                . str_repeat('<span style="color: #d1d5db;">☆</span>', 5 - $record->review_rating)
                                 . '</span>';
                         }
 
-                        foreach ($record->positiveNotes ?? [] as $str) {
+                        foreach ($record->positive_notes ?? [] as $str) {
                             $positives[] = "<span>+ " . mb_strimwidth($str, 0, 255, "...") . "</span>";
                         }
 
-                        foreach ($record->negativeNotes ?? [] as $str) {
+                        foreach ($record->negative_notes ?? [] as $str) {
                             $negatives[] = "<span>- " . mb_strimwidth($str, 0, 255, "...") . "</span>";
                         }
 
                         return new HtmlString(
                             '<div><strong>' . e($record->author) . ' ' . $stars . '</strong> </div>'
                             
-                            . '<div style="color: grey">' . e(mb_strimwidth($record->reviewBody, 0, 255, "...")) . '</div>'
+                            . '<div style="color: grey">' . e(mb_strimwidth($record->review_body, 0, 255, "...")) . '</div>'
                             . '<div class="fi-color fi-color-success fi-text-color-700 dark:fi-text-color-600 fi-ta-text-item">' . implode('<br>', $positives) . '</div>'
                             . '<div class="fi-color fi-color-danger fi-text-color-700 dark:fi-text-color-600 fi-ta-text-item">' . implode('<br>', $negatives) . '</div>'
                         );
@@ -109,14 +108,14 @@ class ProductReviewsTable
                 Action::make('reply')
                     ->label(__('admin.catalog.product_reviews.actions.reply'))
                     ->icon('heroicon-o-arrow-uturn-left')
-                    ->visible(fn (ProductReview $record) => ! $record->is_admin_reply && $record->replies()->where('is_admin_reply', true)->doesntExist())
+                    // ->visible(fn (ProductReview $record) => !$record->is_admin_reply && $record->replies()->where('is_admin_reply', true)->doesntExist())
                     ->schema([
                         TextInput::make('author')
                             ->label(__('admin.catalog.product_reviews.fields.reply_author'))
                             ->default(Filament::getUserName(filament()->auth()->user()))
                             ->required(),
 
-                        Textarea::make('reviewBody')
+                        Textarea::make('review_body')
                             ->label(__('admin.catalog.product_reviews.fields.reply_body'))
                             ->required()
                             ->rows(6),
@@ -125,7 +124,7 @@ class ProductReviewsTable
                         $record->replies()->create([
                             'product_id'        => $record->product_id,
                             'author'            => $data['author'],
-                            'reviewBody'        => $data['reviewBody'],
+                            'review_body'       => $data['review_body'],
                             'is_admin_reply'    => true,
                             'is_approved'       => $record->is_approved,
                             'locale'            => $record->locale,
@@ -144,13 +143,9 @@ class ProductReviewsTable
             ->groups([
                 Group::make('thread_id')
                     ->label(__('admin.catalog.product_reviews.fields.thread'))
-                    // ->getTitleFromRecordUsing(function (ProductReview $record) {
-                    //     $root = $record->parent_id ? $record->parent : $record;
-                    //     return \Illuminate\Support\Str::limit($root->body ?? $root->author_name, 40);
-                    // })
                     ->getTitleFromRecordUsing(function (ProductReview $record) {
                         $root = $record->parent_id ? $record->parent : $record;
-                        return $record->product->global_name . ' - ' . \Illuminate\Support\Str::limit($root->body ?? $root->author_name, 40);
+                        return $record->product->global_name . ' - ' . \Illuminate\Support\Str::limit($root->review_body ?? $root->author, 40);
                     })
                     ->orderQueryUsing(
                         fn(Builder $query, string $direction) => $query
@@ -161,7 +156,6 @@ class ProductReviewsTable
                     ),
             ])
             // ->defaultGroup('thread_id')
-
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

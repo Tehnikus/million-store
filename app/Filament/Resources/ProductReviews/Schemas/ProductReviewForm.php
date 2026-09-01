@@ -49,11 +49,11 @@ class ProductReviewForm
                 TextInput::make('author_email')
                     ->email()
                     ->label(__('admin.blog.comments.fields.email')),
-                Textarea::make('reviewBody')
+                Textarea::make('review_body')
                     ->columnSpanFull()
                     ->rows(6)
                     ->label(__('admin.blog.comments.fields.body')),
-                Repeater::make('positiveNotes')
+                Repeater::make('positive_notes')
                     ->simple(
                         Textarea::make('name')->rows(2)
                     )
@@ -64,7 +64,7 @@ class ProductReviewForm
                     ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_positive'))
                     ->addActionAlignment('start')
                     ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
-                Repeater::make('negativeNotes')
+                Repeater::make('negative_notes')
                     ->simple(
                         Textarea::make('name')->rows(2)
                     )
@@ -75,7 +75,7 @@ class ProductReviewForm
                     ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_negative'))
                     ->addActionAlignment('start')
                     ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
-                ToggleButtons::make('reviewRating')
+                ToggleButtons::make('review_rating')
                     ->required()
                     ->options([
                         '1' => '1',

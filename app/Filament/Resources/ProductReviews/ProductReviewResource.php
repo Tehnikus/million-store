@@ -25,7 +25,6 @@ class ProductReviewResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('product', fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id))
             ->with('product', 'parent');
     }
 

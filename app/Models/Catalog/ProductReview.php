@@ -17,21 +17,21 @@ class ProductReview extends Model
         'store_id',
         'locale',
         'author', 
-        'reviewBody', 
-        'positiveNotes', 
-        'negativeNotes', 
-        'reviewRating',
+        'review_body', 
+        'positive_notes', 
+        'negative_notes', 
+        'review_rating',
         'author_email',
         'is_admin_reply',
         'is_approved',
     ];
 
     protected $casts = [
-        'rating'            => 'integer',
+        'review_rating'     => 'integer',
         'is_admin_reply'    => 'boolean',
         'is_approved'       => 'boolean',
-        'positiveNotes'     => 'array',
-        'negativeNotes'     => 'array',
+        'positive_notes'    => 'array',
+        'negative_notes'    => 'array',
     ];
 
     public function product(): BelongsTo

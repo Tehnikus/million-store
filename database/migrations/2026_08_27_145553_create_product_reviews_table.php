@@ -20,16 +20,17 @@ return new class extends Migration
             $table->string('locale'); // Review language
             $table->string('author');
             $table->string('author_email')->nullable();
-            $table->text('reviewBody')->nullable();
-            $table->jsonb('positiveNotes')->nullable();
-            $table->jsonb('negativeNotes')->nullable();
-            $table->unsignedTinyInteger('reviewRating')->nullable(); // 1..5
+            $table->text('review_body')->nullable();
+            $table->jsonb('positive_notes')->nullable();
+            $table->jsonb('negative_notes')->nullable();
+            $table->unsignedTinyInteger('review_rating')->nullable(); // 1..5
             $table->boolean('is_admin_reply')->default(false);  // If true it's admin reply
             $table->boolean('is_approved')->default(false); // Don't show on frontend until approved
             $table->timestamps();
 
             // Indexes
             $table->index(['product_id', 'is_approved', 'locale']);
+            $table->index(['store_id', 'is_approved', 'is_admin_reply']);
             $table->index('thread_id');
         });
     }
