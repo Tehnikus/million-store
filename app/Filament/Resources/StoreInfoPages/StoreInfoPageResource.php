@@ -7,6 +7,7 @@ use App\Filament\Resources\StoreInfoPages\Pages\EditStoreInfoPage;
 use App\Filament\Resources\StoreInfoPages\Pages\ListStoreInfoPages;
 use App\Filament\Resources\StoreInfoPages\Schemas\StoreInfoPageForm;
 use App\Filament\Resources\StoreInfoPages\Tables\StoreInfoPagesTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Store\StoreInfoPage;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -47,12 +48,6 @@ class StoreInfoPageResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()->where('is_active', false)->count();
-        return $count > 0 ? (string) $count : null;
-    }
-
     // Skip on global search, no need to show info pages
     public static function getGloballySearchableAttributes(): array
     {
@@ -64,5 +59,13 @@ class StoreInfoPageResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::InfoPages;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_active', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }

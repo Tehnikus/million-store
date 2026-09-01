@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogComments;
 
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Blog\BlogComment;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Resource;
@@ -57,13 +58,6 @@ class BlogCommentResource extends Resource
         ];
     }
 
-    // Badge with count of comments that are NOT approved. Nifty!
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()->where('is_approved', false)->where('is_admin_reply', false)->count();
-        return $count > 0 ? (string) $count : null;
-    }
-
     // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
@@ -77,4 +71,11 @@ class BlogCommentResource extends Resource
         return NavigationItem::BlogComments;
     }
 
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_approved', false)->where('is_admin_reply', false)->count();
+        return $count > 0 ? (string) $count : null;
+    }
 }

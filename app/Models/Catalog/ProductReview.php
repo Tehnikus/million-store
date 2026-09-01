@@ -2,6 +2,8 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\ProductReviews\ProductReviewResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -80,5 +82,12 @@ class ProductReview extends Model
                 );
             }
         });
+    }
+
+    // Clear navigation badge cache on save
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [ProductReviewResource::class];
     }
 }

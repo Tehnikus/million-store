@@ -2,6 +2,8 @@
 
 namespace App\Models\Blog;
 
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\BlogComments\BlogCommentResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -71,5 +73,12 @@ class BlogComment extends Model
                 );
             }
         });
+    }
+
+    // Clear navigation badge cache on save
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [BlogCommentResource::class];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models\Blog;
 
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\BlogPosts\BlogPostResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -101,4 +103,10 @@ class BlogPost extends Model
         ];
     }
 
+    // Clear cache of admin navigation badges when model is changed
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [BlogPostResource::class];
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BlogPosts;
 
 use App\Filament\Resources\BlogPosts\Pages\ManageBlogBostComments;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Blog\BlogPost;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
@@ -62,17 +63,18 @@ class BlogPostResource extends Resource
         return ['name'];
     }
 
-    // Badge with count of posts that are NOT active. Nifty!
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()->where('is_active', false)->count();
-        return $count > 0 ? (string) $count : null;
-    }
-    
     // Some repeating navigation methods in one place
     use HasCentralizedNavigation;
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::BlogPosts;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_active', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }

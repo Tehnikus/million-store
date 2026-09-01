@@ -2,6 +2,8 @@
 
 namespace App\Models\Customer;
 
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\Customers\CustomerResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -89,5 +91,12 @@ class Customer extends Model
             'email_verified_at' => null,
             'gdpr_consent_at'   => null,
         ]);
+    }
+
+    // Clear navigation badge cache on save
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [CustomerResource::class];
     }
 }

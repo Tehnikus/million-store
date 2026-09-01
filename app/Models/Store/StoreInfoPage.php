@@ -2,6 +2,8 @@
 
 namespace App\Models\Store;
 
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\StoreInfoPages\StoreInfoPageResource;
 use App\Models\Global\Store;
 use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Model;
@@ -68,4 +70,10 @@ class StoreInfoPage extends Model
         return $this->belongsTo(Store::class, 'store_id');
     }
 
+    // Clear navigation badge cache on save
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [StoreInfoPageResource::class];
+    }
 }

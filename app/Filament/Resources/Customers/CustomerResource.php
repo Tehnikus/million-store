@@ -9,6 +9,7 @@ use App\Filament\Resources\Customers\Pages\ViewCustomer;
 use App\Filament\Resources\Customers\Schemas\CustomerForm;
 use App\Filament\Resources\Customers\Schemas\CustomerInfolist;
 use App\Filament\Resources\Customers\Tables\CustomersTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Customer\Customer;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -55,17 +56,6 @@ class CustomerResource extends Resource
         ];
     }
 
-    // Show count badge of not approved customers in admin navigation
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()
-            ->where('is_approved', false)
-            ->where('is_anonymized', false)
-            ->count();
-
-        return $count > 0 ? (string) $count : null;
-    }
-
     // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
@@ -77,5 +67,13 @@ class CustomerResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::Customers;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_approved', false)->where('is_anonymized', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }

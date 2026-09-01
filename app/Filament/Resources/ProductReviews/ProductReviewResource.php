@@ -7,6 +7,7 @@ use App\Filament\Resources\ProductReviews\Pages\EditProductReview;
 use App\Filament\Resources\ProductReviews\Pages\ListProductReviews;
 use App\Filament\Resources\ProductReviews\Schemas\ProductReviewForm;
 use App\Filament\Resources\ProductReviews\Tables\ProductReviewsTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\ProductReview;
@@ -54,13 +55,6 @@ class ProductReviewResource extends Resource
         ];
     }
 
-    // Badge with count of reviews that are NOT approved. Nifty!
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()->where('is_approved', false)->where('is_admin_reply', false)->count();
-        return $count > 0 ? (string) $count : null;
-    }
-
     // Skip global search
     public static function getGloballySearchableAttributes(): array
     {
@@ -72,5 +66,13 @@ class ProductReviewResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::ProductReviews;
+    }
+    
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_approved', false)->where('is_admin_reply', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }
