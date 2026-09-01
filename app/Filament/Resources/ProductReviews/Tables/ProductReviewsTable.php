@@ -101,6 +101,13 @@ class ProductReviewsTable
                     ->label(__('admin.catalog.product_reviews.filters.rating'))
                     ->options(['1' => '★☆☆☆☆', '2' => '★★☆☆☆', '3' => '★★★☆☆', '4' => '★★★★☆', '5' => '★★★★★']),
 
+                Filter::make('no_reply')
+                    ->label(__('admin.catalog.product_reviews.filters.no_reply'))
+                    ->query(fn (Builder $query): Builder => 
+                        $query->where('is_admin_reply', false)
+                            ->doesntHave('replies')
+                    )
+                    ->toggle()
             ])
 
             ->recordActions([
@@ -154,6 +161,11 @@ class ProductReviewsTable
                             ->orderByRaw('parent_id IS NULL DESC') //  parent (true) before reply (false)
                             ->orderBy('id')
                     ),
+                Group::make('product_id')
+                    ->label(__('admin.catalog.product_reviews.fields.product'))
+                    ->getTitleFromRecordUsing(function(Productreview $record) {
+                        return $record->product->global_name;
+                    }),
             ])
             // ->defaultGroup('thread_id')
             ->toolbarActions([
