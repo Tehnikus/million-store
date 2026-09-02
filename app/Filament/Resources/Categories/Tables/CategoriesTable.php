@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Categories\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
+use App\Models\Catalog\Category;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -12,7 +13,9 @@ use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CategoriesTable
 {
@@ -54,7 +57,16 @@ class CategoriesTable
                 //
             ])
             ->groups([
-                'parent_id'
+                Group::make('parent_id')
+                    ->label(__('admin.catalog.categories.fields.parent_id'))
+                    ->getTitleFromRecordUsing(function (Category $record) {
+                        return $record->parent?->name ?? __('admin.catalog.categories.fields.is_root');
+                    })
+                    ->orderQueryUsing(
+                        fn(Builder $query, string $direction) => $query
+                        ->orderByRaw('parent_id IS NULL DESC') //  parent (true) before reply (false)
+                        ->orderBy('sort_order', $direction)
+                    )
             ])
             ->defaultGroup('parent_id')
             ->recordActions([
