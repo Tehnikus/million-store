@@ -7,6 +7,7 @@ use App\Domain\Catalog\FacetType;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
@@ -71,7 +72,7 @@ class Category extends Model
         return $this->belongsTo(Store::class);
     }
 
-    public function parentId(): BelongsTo
+    public function parent(): BelongsTo
     {
         // Pass the class itself and the explicit foreign key column
         return $this->belongsTo(self::class, 'parent_id');

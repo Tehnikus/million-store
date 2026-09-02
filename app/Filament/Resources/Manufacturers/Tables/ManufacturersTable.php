@@ -29,7 +29,7 @@ class ManufacturersTable
                     ->label(__('admin.catalog.manufacturers.model_label_singular')),
 
                 SelectColumn::make('parent_id')
-                    ->optionsRelationship(name: 'parentId', titleAttribute: 'name')
+                    ->optionsRelationship(name: 'parent', titleAttribute: 'name')
                     ->wrapHeader()
                     ->width('220px')
                     ->label(__('admin.catalog.manufacturers.fields.parent_id')),

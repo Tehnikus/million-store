@@ -32,7 +32,7 @@ class ManufacturerForm
                                 Select::make('parent_id')
                                     ->label(__('admin.catalog.manufacturers.fields.parent_id'))
                                     ->relationship(
-                                        name: 'parentId', // Function name in Manufacturer model
+                                        name: 'parent', // Function name in Manufacturer model
                                         titleAttribute: 'name',
                                         ignoreRecord: true,
                                         modifyQueryUsing: fn(Builder $query, $record) => $query->where('store_id', Filament::getTenant()->id)

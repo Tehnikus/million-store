@@ -32,7 +32,7 @@ class CategoryForm
                                 Select::make('parent_id')
                                     ->label(__('admin.catalog.categories.fields.parent_id'))
                                     ->relationship(
-                                        name: 'parentId', // Function name in Category model
+                                        name: 'parent', // Function name in Category model
                                         titleAttribute: 'name',
                                         ignoreRecord: true,
                                         modifyQueryUsing: fn(Builder $query, $record) => $query->where('store_id', $store->id)

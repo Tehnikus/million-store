@@ -71,7 +71,7 @@ class Manufacturer extends Model
         return $this->belongsTo(Store::class);
     }
 
-    public function parentId(): BelongsTo
+    public function parent(): BelongsTo
     {
         // Pass the class itself and the explicit foreign key column
         return $this->belongsTo(self::class, 'parent_id');

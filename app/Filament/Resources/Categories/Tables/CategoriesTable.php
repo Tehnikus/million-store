@@ -30,7 +30,7 @@ class CategoriesTable
                     ->label(__('admin.catalog.categories.model_label_singular')),
 
                 SelectColumn::make('parent_id')
-                    ->optionsRelationship(name: 'parentId', titleAttribute: 'name')
+                    ->optionsRelationship(name: 'parent', titleAttribute: 'name')
                     ->width('220px')
                     ->wrapHeader()
                     ->label(__('admin.catalog.categories.fields.parent_id')),
