@@ -8,17 +8,19 @@ use App\Filament\Resources\Manufacturers\ManufacturerResource;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\FacetIndex;
+use App\Models\Catalog\Manufacturer;
 use App\Models\Catalog\Product;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Context;
 use Livewire\Livewire;
 
 class ManageManufacturerProducts extends ManageRelatedRecords
@@ -43,14 +45,14 @@ class ManageManufacturerProducts extends ManageRelatedRecords
         return ProductsTable::configure($table)
             ->recordTitleAttribute('global_name')
             ->reorderable('sort_order')
+            ->defaultSort('sort_order')
             ->headerActions([
                 AttachAction::make()
                     ->recordSelect(
                         fn (Select $select) => $select
+                            ->options(fn (): array => self::productOptions($this->getOwnerRecord()))
                             ->getSearchResultsUsing(
-                                fn (string $search): array => ProductSearch::search(search: $search, limit: 20)
-                                        ->mapWithKeys(fn (Product $product) => [$product->id => $product->global_name])
-                                        ->toArray()
+                                fn (string $search): array => self::productOptions($this->getOwnerRecord(), $search)
                             )
                             ->getOptionLabelUsing(
                                 fn ($value): ?string => Product::find($value)?->global_name
@@ -63,6 +65,8 @@ class ManageManufacturerProducts extends ManageRelatedRecords
                         $data['facet_group_id'] = $parentRecord->parent_id ?? 0;
                         return $data;
                     })
+                    ->label(__('admin.common.buttons.attach_record'))
+                    ->modalHeading(__('admin.common.helpers.manager_page_modal_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
             ])
             ->recordAction(null) // Reset previous actions (remove "edit on click")
             ->recordActions([
@@ -75,6 +79,36 @@ class ManageManufacturerProducts extends ManageRelatedRecords
             ]);
     }
 
+    /**
+     * Get already selected product ids to exclude them from search
+     * @param Manufacturer $manufacturer
+     * @return array
+     */
+    private static function excludedProductIds(Manufacturer $manufacturer): array
+    {
+        $key = "manufacturer_products_excluded:{$manufacturer->id}";
+
+        return Context::get($key) ?? tap(
+            $manufacturer->products()->pluck('products.id')->all(),
+            fn (array $ids) => Context::add($key, $ids),
+        );
+    }
+
+    /**
+     * Search products and preload options
+     * @param Manufacturer $manufacturer
+     * @param string $search
+     * @return array
+     */
+    private static function productOptions(Manufacturer $manufacturer, string $search = ''): array
+    {
+        return ProductSearch::query($search, Filament::getTenant()->id)
+            ->whereNotIn('products.id', self::excludedProductIds($manufacturer))
+            ->limit(20)
+            ->get()
+            ->mapWithKeys(fn (Product $product) => [$product->id => $product->global_name])
+            ->toArray();
+    }
 
     public static function getNavigationIcon(): string
     {
@@ -84,6 +118,11 @@ class ManageManufacturerProducts extends ManageRelatedRecords
     public static function getNavigationLabel(): string
     {
         return NavigationItem::Products->labelPlural();
+    }
+
+    public function getTitle(): string
+    {
+        return __('admin.common.helpers.manager_page_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $this->getOwnerRecord()?->name]);
     }
 
     public static function getNavigationBadge(): ?string
