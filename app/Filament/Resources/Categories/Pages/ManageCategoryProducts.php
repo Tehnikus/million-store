@@ -4,19 +4,20 @@ namespace App\Filament\Resources\Categories\Pages;
 
 use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\Categories\CategoryResource;
+use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\FacetIndex;
+use App\Models\Catalog\Product;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
-use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Livewire\Livewire;
 
-class ManageCategotyProducts extends ManageRelatedRecords
+class ManageCategoryProducts extends ManageRelatedRecords
 {
     protected static string $resource = CategoryResource::class;
 
@@ -25,35 +26,36 @@ class ManageCategotyProducts extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         $parentRecord = $this->getOwnerRecord(); // Current category
-
-        return $table
+        return ProductsTable::configure($table)
             ->recordTitleAttribute('global_name')
-            ->columns([
-                TextColumn::make('sku')
-                    ->label(__('admin.catalog.products.fields.sku'))
-                    ->searchable(),
-                TextColumn::make('global_name')
-                    ->label(__('admin.catalog.products.fields.global_name'))
-                    ->searchable(),
-            ])
-            ->filters([
-                //
-            ])
+            ->reorderable('sort_order')
             ->headerActions([
                 AttachAction::make()
-                    // ->form(fn (AttachAction $action): array => [])
+                    ->recordSelect(
+                        fn (Select $select) => $select
+                            ->getSearchResultsUsing(
+                                fn (string $search): array => Product::query()
+                                    ->whereRaw('global_name::text ilike ?', ['%' . $search . '%'])
+                                    ->limit(50)
+                                    ->get()
+                                    ->mapWithKeys(fn (Product $product) => [$product->id => $product->global_name])
+                                    ->toArray()
+                            )
+                            ->getOptionLabelUsing(
+                                fn ($value): ?string => Product::find($value)?->global_name
+                            )
+                    )
                     ->mutateDataUsing(function (array $data) use ($parentRecord): array {
-                        $data['store_id'] = Filament::getTenant()->id;
-                        $data['facet_type_id'] = FacetType::Category->value;
+                        $data['store_id']       = $parentRecord->store_id;
+                        $data['facet_type_id']  = FacetType::Category->value;
                         $data['facet_group_id'] = $parentRecord->parent_id ?? 0;
-
                         return $data;
                     })
                     ->color('primary')
                     ->icon('heroicon-o-plus')
             ])
+            ->recordAction(null) // Reset previous actions (remove "edit on click")
             ->recordActions([
-                // EditAction::make(),
                 DetachAction::make(),
             ])
             ->toolbarActions([
@@ -62,6 +64,7 @@ class ManageCategotyProducts extends ManageRelatedRecords
                 ]),
             ]);
     }
+
 
     public static function getNavigationIcon(): string
     {
