@@ -5,9 +5,11 @@ namespace App\Filament\Resources\Manufacturers;
 use App\Filament\Resources\Manufacturers\Pages\CreateManufacturer;
 use App\Filament\Resources\Manufacturers\Pages\EditManufacturer;
 use App\Filament\Resources\Manufacturers\Pages\ListManufacturers;
+use App\Filament\Resources\Manufacturers\Pages\ManageManufacturerProducts;
 use App\Filament\Resources\Manufacturers\Schemas\ManufacturerForm;
 use App\Filament\Resources\Manufacturers\Tables\ManufacturersTable;
 use App\Models\Catalog\Manufacturer;
+use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -43,10 +45,19 @@ class ManufacturerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListManufacturers::route('/'),
-            'create' => CreateManufacturer::route('/create'),
-            'edit' => EditManufacturer::route('/{record}/edit'),
+            'index'     => ListManufacturers::route('/'),
+            'create'    => CreateManufacturer::route('/create'),
+            'edit'      => EditManufacturer::route('/{record}/edit'),
+            'products'  => ManageManufacturerProducts::route('{record}/products'),
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            EditManufacturer::class,
+            ManageManufacturerProducts::class,
+        ]);
     }
 
         // Global search columns list

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Manufacturers\Pages;
 
 use App\Filament\Resources\Manufacturers\ManufacturerResource;
+use App\Filament\Support\AdminMenu\NavigationItem;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -15,5 +16,10 @@ class EditManufacturer extends EditRecord
         return [
             DeleteAction::make(),
         ];
+    }
+
+    public static function getNavigationIcon(): string
+    {
+        return NavigationItem::Manufacturers->icon();
     }
 }
