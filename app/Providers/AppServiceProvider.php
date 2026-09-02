@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        Route::pattern('tenant', '[0-9]+'); // Fix SQL error when tenant id is replaced with any string in address bar
+        Route::pattern('tenant', '[0-9]+'); // Fixes SQL error when tenant id is replaced with any string in address bar
         DB::prohibitDestructiveCommands(App::environment(['production'])); // Prevent destructive artisan commands on production
         Model::shouldBeStrict(!App::environment(['production']));
         // Date::use(CarbonImmutable::class);

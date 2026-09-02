@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('product_reviews')->cascadeOnDelete(); // Self-reference for replies. Also allows to delete the whole review thread if parent is deleted
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->unsignedBigInteger('thread_id')->nullable()->after('parent_id');
-            $table->string('locale'); // Review language
+            $table->string('locale'); // Reviews language
             $table->string('author');
             $table->string('author_email')->nullable();
             $table->text('review_body')->nullable();

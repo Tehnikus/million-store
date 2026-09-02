@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Facet page
- * Allows to select ONE categoty and/or ONE manufacturer and unlimited number of other facets
+ * Allows to select ONE category and/or ONE manufacturer and unlimited number of other facets
  * Checks facets set duplicate
  */
 
