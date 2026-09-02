@@ -45,6 +45,7 @@ class ManageCategoryProducts extends ManageRelatedRecords
                                 fn ($value): ?string => Product::find($value)?->global_name
                             )
                     )
+                    ->preloadRecordSelect()
                     ->mutateDataUsing(function (array $data) use ($parentRecord): array {
                         $data['store_id']       = $parentRecord->store_id;
                         $data['facet_type_id']  = FacetType::Category->value;
