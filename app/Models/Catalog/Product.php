@@ -9,6 +9,7 @@ use App\Models\Catalog\ProductDescription;
 use App\Models\Catalog\ProductOption;
 use App\Models\Catalog\ProductPriceTier;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
@@ -73,5 +74,13 @@ class Product extends Model
     {
         return $this->hasMany(FacetIndex::class)
             ->where('facet_type_id', FacetType::Tag->value);
+    }
+
+    // Reverse category relation for ManageCategoryProducts
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'facet_index', 'product_id', 'facet_value_id')
+            ->withPivotValue('facet_type_id', FacetType::Category->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 }

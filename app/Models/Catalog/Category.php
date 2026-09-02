@@ -85,6 +85,14 @@ class Category extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    // Reverse category relation for ManageCategoryProducts
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'facet_index', 'facet_value_id', 'product_id')
+            ->withPivotValue('facet_type_id', FacetType::Category->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    }
+
     // Cleanup facet index on delete
     use HasFacetIndexCleanup;
     public function facetType(): FacetType
