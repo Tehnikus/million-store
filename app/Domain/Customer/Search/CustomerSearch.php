@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class CustomerSearch
 {
 
-    private const float SIMILARITY_THRESHOLD = 0.4;
+    private const float SIMILARITY_THRESHOLD = 0.3;
     /**
      * Strict search
      * Break search string into separate words and search every word
@@ -43,18 +43,18 @@ class CustomerSearch
         $words = preg_split('/\s+/u', trim($search), -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($words as $word) {
-            if (mb_strlen($word) < 3) {
-                $query->whereRaw('addresses_search_text ilike ?', ['%' . $word . '%']);
-                continue;
-            }
+            // if (mb_strlen($word) < 3) {
+            //     $query->whereRaw('addresses_search_text ilike ?', ['%' . $word . '%']);
+            //     continue;
+            // }
 
-            $query->whereRaw('? <% addresses_search_text', [$word]);
+            // $query->whereRaw('? <% addresses_search_text', [$word]);
 
             // Test this when more customers
-            // $query->whereRaw(
-            //     'word_similarity(?, addresses_search_text) > ?',
-            //     [$word, self::SIMILARITY_THRESHOLD]
-            // );
+            $query->whereRaw(
+                'word_similarity(?, addresses_search_text) > ?',
+                [$word, self::SIMILARITY_THRESHOLD]
+            );
         }
 
 
