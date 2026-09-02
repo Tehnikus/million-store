@@ -1,6 +1,10 @@
 <?php
 namespace App\Domain\Catalog\Search;
 
+use App\Models\Catalog\Product;
+use Illuminate\Database\Eloquent\Builder;
+
+
 class ProductSearch
 {
     /**
@@ -25,11 +29,19 @@ class ProductSearch
      * @param int $limit
      * @return \Illuminate\Support\Collection<int, \stdClass>
      */
-    public static function search(string $search, int $limit = 20): \Illuminate\Support\Collection
+    public static function query(string $search = '', ?int $storeId = null): Builder
     {
-        return \App\Models\Catalog\Product::query()
-            ->whereRaw('global_name::text ilike ?', ['%' . $search . '%'])
-            ->limit($limit)
-            ->get();
+        return Product::query()
+            ->when(
+                $storeId !== null,
+                fn (Builder $query) => $query->whereHas(
+                    'descriptions',
+                    fn (Builder $q) => $q->where('store_id', $storeId),
+                ),
+            )
+            ->when(
+                $search !== '',
+                fn (Builder $query) => $query->whereRaw('global_name::text ilike ?', ['%' . $search . '%']),
+            );
     }
 }
