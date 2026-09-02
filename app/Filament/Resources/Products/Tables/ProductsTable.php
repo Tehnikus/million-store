@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Product;
@@ -55,6 +56,17 @@ class ProductsTable
                     }])
                 ;
             })
+            ->searchUsing(function (Builder $query, $search): Builder {
+                if (filled($search)) {
+                    $query->whereIn(
+                        'products.id',
+                        ProductSearch::query($search, Filament::getTenant()->id)->pluck('id'),
+                    );
+                }
+
+                return $query;
+            })
+            ->searchDebounce('250ms')
 
             ->columns([
                 ConversionImageColumn::make('images')
@@ -69,13 +81,15 @@ class ProductsTable
                             "<div style=\"color: var(--gray-400)\">{$record->sku}</div>" 
                         );
                     })
-                    ->wrapHeader(),
+                    ->wrapHeader()
+                    ->searchable(isIndividual: true),
 
                 MultilangTextColumn::make('descriptions.name')
                     ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name'))
                     ->placeholder(__('admin.catalog.products.fields.is_not_associated'))
                     ->label(__('admin.catalog.products.fields.store_name'))
-                    ->wrapHeader(),
+                    ->wrapHeader()
+                    ->searchable(isIndividual: true),
 
                 TextColumn::make('regular_price')
                     ->label(__('admin.catalog.products.fields.price'))
