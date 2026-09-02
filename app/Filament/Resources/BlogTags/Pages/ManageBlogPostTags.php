@@ -22,10 +22,14 @@ class ManageBlogPostTags extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return BlogPostsTable::configure($table)
+            ->recordTitleAttribute('name')
+            ->reorderable('blog_post_tag.sort_order')
+            ->defaultSort('blog_post_tag.sort_order')
             ->headerActions([
                 AttachAction::make()
-                    ->color('primary')
-                    ->icon('heroicon-o-plus'),
+                    ->preloadRecordSelect()
+                    ->label(__('admin.common.buttons.attach_record'))
+                    ->modalHeading(__('admin.common.helpers.manager_page_modal_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $this->getOwnerRecord()?->name]))
             ])
             ->recordAction(null) // Reset previous actions (remove "edit on click")
             ->recordActions([
@@ -50,7 +54,7 @@ class ManageBlogPostTags extends ManageRelatedRecords
 
     public function getTitle(): string
     {
-        return __('admin.blog.tags.helpers.manage_posts_title', ['name' => $this->getOwnerRecord()?->name]);
+        return __('admin.common.helpers.manager_page_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $this->getOwnerRecord()?->name]);
     }
 
     public static function getNavigationBadge(): ?string

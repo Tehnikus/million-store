@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('blog_post_tag', function (Blueprint $table) {
             $table->foreignId('blog_post_id')->constrained('blog_posts')->cascadeOnDelete();
             $table->foreignId('blog_tag_id')->constrained('blog_tags')->cascadeOnDelete();
+            $table->bigInteger('sort_order')->default(1);
             $table->timestamps();
             $table->primary(['blog_post_id', 'blog_tag_id']);
         });
