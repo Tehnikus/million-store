@@ -25,11 +25,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Columns\Layout\Stack;
-use Filament\Support\Icons\Heroicon;
 use Filament\Support\Enums\Alignment;
-use Filament\Support\Enums\FontWeight;
-
 
 class CustomersTable
 {
@@ -134,7 +130,7 @@ class CustomersTable
                 // Anonymize action
                 Action::make('anonymize')
                     ->label(__('admin.customers.customer.fields.anonymize'))
-                    ->icon(Heroicon::OutlinedFingerPrint)
+                    ->icon('heroicon-o-finger-print')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->modalHeading(__('admin.customers.customer.messages.anonymize_title'))

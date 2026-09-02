@@ -55,8 +55,6 @@ class StoreForm
                                 TableColumn::make(__('admin.global.languages.fields.is_default'))->alignment('center')->width('100px'),
                             ])
                             ->addActionLabel(__('admin.stores.fields.add_language'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->hiddenLabel()
                             ->minItems(1)
                             ->schema([
@@ -106,8 +104,6 @@ class StoreForm
                             ->hiddenLabel()
                             ->minItems(1)
                             ->addActionLabel(__('admin.stores.fields.add_currency'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->schema([
                                 Select::make('currency_id')
                                     ->relationship(
@@ -134,8 +130,6 @@ class StoreForm
                             ->hiddenLabel()
                             ->minItems(1)
                             ->addActionLabel(__('admin.stores.fields.add_country'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->schema([
                                 Select::make('country_id')
                                     ->relationship(

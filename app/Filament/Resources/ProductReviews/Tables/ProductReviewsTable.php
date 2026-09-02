@@ -75,9 +75,7 @@ class ProductReviewsTable
                             . '<div class="fi-color fi-color-success fi-text-color-700 dark:fi-text-color-600 fi-ta-text-item">' . implode('<br>', $positives) . '</div>'
                             . '<div class="fi-color fi-color-danger fi-text-color-700 dark:fi-text-color-600 fi-ta-text-item">' . implode('<br>', $negatives) . '</div>'
                         );
-                    })
-                    // ->color('success')
-                    ,
+                    }),
 
                 ToggleColumn::make('is_approved')
                     ->label(__('admin.catalog.product_reviews.fields.is_approved'))

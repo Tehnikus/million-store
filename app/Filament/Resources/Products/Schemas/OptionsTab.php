@@ -123,12 +123,7 @@ class OptionsTab
                         ->orderColumn('sort_order')
                         ->columns(5)
                         ->addActionAlignment('end')
-                        ->addAction(fn (Action $action) => 
-                            $action
-                                ->color('success')
-                                ->icon('heroicon-m-plus')
-                                ->label(__('admin.catalog.products.buttons.add_option_value'))
-                        )
+                        ->addActionLabel(__('admin.catalog.products.buttons.add_option_value'))
                         ->label(__('admin.catalog.options.fields.values'))
                 ])
                 ->maxItems(fn () => static::optionChoices($storeId)->count())
@@ -157,14 +152,7 @@ class OptionsTab
                 })
                 ->reorderable()
                 ->orderColumn('sort_order')
-                ->addActionAlignment('start')
-                ->addAction(fn (Action $action) => 
-                    $action
-                        ->color('success')
-                        
-                        ->icon('heroicon-m-plus')
-                        ->label(__('admin.catalog.products.buttons.add_option'))
-                )
+                ->addActionLabel(__('admin.catalog.products.buttons.add_option'))
                 ->label(__('admin.catalog.options.navigation_label'))
                 ->hiddenLabel()
         ];

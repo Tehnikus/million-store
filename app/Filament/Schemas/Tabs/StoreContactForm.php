@@ -122,8 +122,6 @@ class StoreContactForm
                                 TextInput::make('number')->placeholder(__('admin.store_contacts.fields.phone_number'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_phone'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->compact()
                             ->columnSpanFull(),
                     ])
@@ -145,8 +143,6 @@ class StoreContactForm
                                 TextInput::make('closes')->placeholder(__('admin.store_contacts.fields.closes'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_open_hours'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull()
@@ -170,8 +166,6 @@ class StoreContactForm
                                 TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_link_link'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_social_link'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull(),
@@ -194,8 +188,6 @@ class StoreContactForm
                                 TextInput::make('link')->placeholder(__('admin.store_contacts.fields.social_contact_link'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_social_contact'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->compact()
                             ->columnSpanFull(),

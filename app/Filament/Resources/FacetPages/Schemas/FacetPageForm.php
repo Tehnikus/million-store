@@ -230,8 +230,7 @@ class FacetPageForm
                                             ->reorderable(false)
                                             ->hiddenLabel()
                                             ->addActionLabel(__('admin.catalog.facet_pages.buttons.add_facet'))
-                                            ->addActionAlignment('end')
-                                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus')),
+                                            ->addActionAlignment('end'),
                                         Text::make(__('admin.catalog.facet_pages.helpers.additional_facets'))
                                     ])
                                     ->columns(1),
@@ -354,11 +353,12 @@ class FacetPageForm
     private static function groupIdFor(FacetType $type, int $valueId): int
     {
         return match ($type) {
-            FacetType::Category => Category::find($valueId)?->parent_id ?? 0,
+            FacetType::Category     => Category::find($valueId)?->parent_id ?? 0,
             FacetType::Manufacturer => Manufacturer::find($valueId)?->parent_id ?? 0,
-            FacetType::Attribute => AttributeValue::find($valueId)?->attribute_id ?? 0,
-            FacetType::Option => OptionValue::find($valueId)?->option_group_id ?? 0,
-            FacetType::Tag => 0, // Tag has no parent, so always 0
+            FacetType::Attribute    => AttributeValue::find($valueId)?->attribute_id ?? 0,
+            FacetType::Option       => OptionValue::find($valueId)?->option_id ?? 0,
+            FacetType::Tag          => 0, // Tag has no parent, so always 0
+
             default => 0, // Static facets, like "discount" or "featured" - no parent
         };
     }

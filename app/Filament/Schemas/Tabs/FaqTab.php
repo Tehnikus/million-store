@@ -32,8 +32,6 @@ class FaqTab
                         Textarea::make('answer')->placeholder(__('admin.common.fields.faq_answer')),
                     ])
                     ->addActionLabel(__('admin.common.buttons.add_faq_row'))
-                    ->addActionAlignment('start')
-                    ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                     ->reorderable(true)
                     ->compact()
                     ->columnSpanFull()

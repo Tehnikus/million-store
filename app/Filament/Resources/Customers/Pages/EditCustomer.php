@@ -3,12 +3,10 @@
 namespace App\Filament\Resources\Customers\Pages;
 
 use App\Filament\Resources\Customers\CustomerResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
-
-use Filament\Actions\Action;
-use Filament\Support\Icons\Heroicon;
 
 class EditCustomer extends EditRecord
 {
@@ -22,7 +20,7 @@ class EditCustomer extends EditRecord
             // Anonymize action
             Action::make('anonymize')
                 ->label(__('admin.customers.customer.fields.anonymize'))
-                ->icon(Heroicon::OutlinedFingerPrint)
+                ->icon('heroicon-o-finger-print')
                 ->color('danger')
                 ->requiresConfirmation()
                 ->modalHeading(__('admin.customers.customer.messages.anonymize_title'))

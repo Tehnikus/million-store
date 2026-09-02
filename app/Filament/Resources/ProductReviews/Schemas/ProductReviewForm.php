@@ -53,6 +53,7 @@ class ProductReviewForm
                     ->columnSpanFull()
                     ->rows(6)
                     ->label(__('admin.blog.comments.fields.body')),
+                    
                 Repeater::make('positive_notes')
                     ->simple(
                         Textarea::make('name')->rows(2)
@@ -61,9 +62,8 @@ class ProductReviewForm
                     ->default([])
                     ->columnSpanFull()
                     ->label(__('admin.catalog.product_reviews.fields.positive_notes'))
-                    ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_positive'))
-                    ->addActionAlignment('start')
-                    ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
+                    ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_positive')),
+
                 Repeater::make('negative_notes')
                     ->simple(
                         Textarea::make('name')->rows(2)
@@ -72,9 +72,8 @@ class ProductReviewForm
                     ->default([])
                     ->columnSpanFull()
                     ->label(__('admin.catalog.product_reviews.fields.negative_notes'))
-                    ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_negative'))
-                    ->addActionAlignment('start')
-                    ->addAction(fn(Action $action) => $action->color('success')->icon('heroicon-o-plus')),
+                    ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_negative')),
+
                 ToggleButtons::make('review_rating')
                     ->required()
                     ->options([

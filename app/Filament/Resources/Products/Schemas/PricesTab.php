@@ -195,7 +195,6 @@ class PricesTab
                     ->label(__('admin.catalog.products.fields.price_tiers'))
                     ->addActionLabel(__('admin.catalog.products.buttons.add_price_tier'))
                     ->addActionAlignment('end')
-                    ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
             ])
             ->columnSpanFull(),
         ];

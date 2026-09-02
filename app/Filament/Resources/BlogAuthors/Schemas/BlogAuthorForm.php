@@ -75,7 +75,6 @@ class BlogAuthorForm
                             ->compact()
                             ->columnSpan(4)
                             ->addActionAlignment('end')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->default([]),
                     ])
                     ->columnSpanFull(),

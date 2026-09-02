@@ -91,8 +91,6 @@ class CountryForm
                                 ]),
                             ])
                             ->addActionLabel(__('admin.global.countries.fields.add_region'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->reorderable(false)
                             ->columnSpanFull()
                             ->defaultItems(0),

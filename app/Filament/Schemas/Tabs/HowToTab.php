@@ -32,8 +32,6 @@ class HowToTab
                         Textarea::make('text'),
                     ])
                     ->addActionLabel(__('admin.common.buttons.add_how_to_step'))
-                    ->addActionAlignment('start')
-                    ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                     ->reorderable(true)
                     ->compact()
                     ->columnSpanFull()

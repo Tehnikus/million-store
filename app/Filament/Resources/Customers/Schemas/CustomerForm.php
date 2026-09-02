@@ -103,8 +103,6 @@ class CustomerForm
                             ])
                             ->itemLabel(fn(array $state): ?string => $state['label'] ?? null)
                             ->addActionLabel(__('admin.customers.customer.fields.add_address'))
-                            ->addActionAlignment('start')
-                            ->addAction(fn (Action $action) => $action->color('success')->icon('heroicon-o-plus'))
                             ->collapsible()
                             ->reorderable(false)
                             ->defaultItems(0)

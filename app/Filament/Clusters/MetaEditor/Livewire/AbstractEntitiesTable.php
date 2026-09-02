@@ -10,7 +10,6 @@ use Filament\Facades\Filament;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Support\Enums\IconPosition;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\Filter;
@@ -71,7 +70,7 @@ abstract class AbstractEntitiesTable extends Component implements HasActions, Ha
             ->toolbarActions([
                 BulkAction::make('addFilteredToResults')
                     ->label(__('admin.seo.meta_editor.buttons.add_to_results'))
-                    ->icon(Heroicon::ArrowRight)
+                    ->icon('heroicon-o-arrow-right')
                     ->iconPosition(IconPosition::After)
                     ->action(function ($records) {
                         foreach ($records as $record) {
