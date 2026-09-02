@@ -32,6 +32,8 @@ class CustomersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->splitSearchTerms(false)
+            ->searchDebounce('250ms')
             ->columns([
 
             // Stack::make([
