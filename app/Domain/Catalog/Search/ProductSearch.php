@@ -25,7 +25,7 @@ class ProductSearch
      * @param int $limit
      * @return \Illuminate\Support\Collection<int, \stdClass>
      */
-    public static function search(string $search, int $limit = 50): \Illuminate\Support\Collection
+    public static function search(string $search, int $limit = 20): \Illuminate\Support\Collection
     {
         return \App\Models\Catalog\Product::query()
             ->whereRaw('global_name::text ilike ?', ['%' . $search . '%'])

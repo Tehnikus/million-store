@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Categories\Pages;
 
 use App\Domain\Catalog\FacetType;
+use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Filament\Support\AdminMenu\NavigationItem;
@@ -34,12 +35,9 @@ class ManageCategoryProducts extends ManageRelatedRecords
                     ->recordSelect(
                         fn (Select $select) => $select
                             ->getSearchResultsUsing(
-                                fn (string $search): array => Product::query()
-                                    ->whereRaw('global_name::text ilike ?', ['%' . $search . '%'])
-                                    ->limit(50)
-                                    ->get()
-                                    ->mapWithKeys(fn (Product $product) => [$product->id => $product->global_name])
-                                    ->toArray()
+                                fn (string $search): array => ProductSearch::search(search: $search, limit: 20)
+                                        ->mapWithKeys(fn (Product $product) => [$product->id => $product->global_name])
+                                        ->toArray()
                             )
                             ->getOptionLabelUsing(
                                 fn ($value): ?string => Product::find($value)?->global_name
