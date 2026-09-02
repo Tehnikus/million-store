@@ -81,6 +81,35 @@ class SupermasterPanelProvider extends PanelProvider
                         ->defaultPaginationPageOption(50) // Set the default option selected initially
                         ->modifyUngroupedRecordActionsUsing(fn (Action $action) => $action->iconButton());
                 });
+
+                Action::configureUsing(function (Action $action): void {
+                    if ($action->getName() === 'save') {
+                        $action
+                            ->color('success')
+                            ->icon('heroicon-o-check');
+                    }
+                    if ($action->getName() === 'create') {
+                        $action
+                            ->color('success')
+                            ->icon('heroicon-o-plus');
+                    }
+                    if ($action->getName() === 'attach') {
+                        $action
+                            ->color('primary')
+                            ->icon('heroicon-o-plus');
+                    }
+                });
+
+                TextInput::configureUsing(function(TextInput $textInput) {
+                    $textInput
+                        ->placeholder($textInput->getLabel() ?? '');
+                });
+
+                Repeater::configureUsing(function (Repeater $repeater): void {
+                    $repeater
+                        ->addActionAlignment('start')
+                        ->addAction(fn (Action $action) => $action->color('primary')->icon('heroicon-o-plus'));
+                });
             })
             ->sidebarCollapsibleOnDesktop() // Set admin main menu to collapsible
             ->maxContentWidth(Width::Full)  // Set main page content to fill width
