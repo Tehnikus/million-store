@@ -2,11 +2,11 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Catalog\FacetType;
 use App\Models\Global\Store;
-// use App\Models\Catalog\ProductManufacturers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-// use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
@@ -83,6 +83,14 @@ class Manufacturer extends Model
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+    // Reverse manufacturer relation for ManageManufacturerProducts
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'facet_index', 'facet_value_id', 'product_id')
+            ->withPivotValue('facet_type_id', FacetType::Manufacturer->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
     public function imageColumns(): array

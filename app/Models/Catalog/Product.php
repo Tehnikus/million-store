@@ -83,4 +83,12 @@ class Product extends Model
             ->withPivotValue('facet_type_id', FacetType::Category->value)
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
+
+    // Reverse category relation for ManageManufacturerProducts
+    public function manufacturers(): BelongsToMany
+    {
+        return $this->belongsToMany(Manufacturer::class, 'facet_index', 'product_id', 'facet_value_id')
+            ->withPivotValue('facet_type_id', FacetType::Manufacturer->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    }
 }
