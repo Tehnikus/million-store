@@ -29,16 +29,6 @@ class ManageManufacturerProducts extends ManageRelatedRecords
 
     protected static string $relationship = 'products';
 
-    public function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                TextInput::make('global_name')
-                    ->required()
-                    ->maxLength(255),
-            ]);
-    }
-
     public function table(Table $table): Table
     {
         $parentRecord = $this->getOwnerRecord(); // Current manufacturer

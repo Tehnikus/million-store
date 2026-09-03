@@ -6,7 +6,6 @@ namespace App\Filament\Resources\Products\Schemas;
 use App\Models\Catalog\Attribute;
 use App\Models\Catalog\AttributeValue;
 use App\Models\Catalog\ProductAttributeValue;
-use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
@@ -16,7 +15,6 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 
@@ -28,7 +26,9 @@ class AttributesTab
         
         return [
             Repeater::make('productAttributes')
-                ->relationship('productAttributes')
+                ->relationship('productAttributes', modifyQueryUsing: fn ($query) => $query
+                    ->where('store_id', $storeId)
+                )
                 ->schema([
                     // Hidden::make('store_id')->default($storeId),
 
