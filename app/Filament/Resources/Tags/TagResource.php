@@ -5,11 +5,13 @@ namespace App\Filament\Resources\Tags;
 use App\Filament\Resources\Tags\Pages\CreateTag;
 use App\Filament\Resources\Tags\Pages\EditTag;
 use App\Filament\Resources\Tags\Pages\ListTags;
+use App\Filament\Resources\Tags\Pages\ManageTagProducts;
 use App\Filament\Resources\Tags\Schemas\TagForm;
 use App\Filament\Resources\Tags\Tables\TagsTable;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Tag;
+use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -42,10 +44,19 @@ class TagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListTags::route('/'),
-            'create' => CreateTag::route('/create'),
-            'edit' => EditTag::route('/{record}/edit'),
+            'index'     => ListTags::route('/'),
+            'create'    => CreateTag::route('/create'),
+            'edit'      => EditTag::route('/{record}/edit'),
+            'products'  => ManageTagProducts::route('{record}/products'),
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            EditTag::class,
+            ManageTagProducts::class,
+        ]);
     }
 
     // Global search columns list
