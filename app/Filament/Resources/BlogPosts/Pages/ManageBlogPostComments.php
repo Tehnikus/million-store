@@ -12,7 +12,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Livewire\Livewire;
 
-class ManageBlogBostComments extends ManageRelatedRecords
+class ManageBlogPostComments extends ManageRelatedRecords
 {
     protected static string $resource = BlogPostResource::class;
 

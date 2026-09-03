@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\BlogPosts;
 
-use App\Filament\Resources\BlogPosts\Pages\ManageBlogBostComments;
+use App\Filament\Resources\BlogPosts\Pages\ManageBlogPostComments;
 use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Blog\BlogPost;
 use Filament\Pages\Page;
@@ -45,7 +45,7 @@ class BlogPostResource extends Resource
             'index'     => ListBlogPosts::route('/'),
             'create'    => CreateBlogPost::route('/create'),
             'edit'      => EditBlogPost::route('/{record}/edit'),
-            'comments'  => ManageBlogBostComments::route('/{record}/comments')
+            'comments'  => ManageBlogPostComments::route('/{record}/comments')
         ];
     }
 
@@ -53,7 +53,7 @@ class BlogPostResource extends Resource
     {
         return $page->generateNavigationItems([
             EditBlogPost::class,
-            ManageBlogBostComments::class,
+            ManageBlogPostComments::class,
         ]);
     }
 
