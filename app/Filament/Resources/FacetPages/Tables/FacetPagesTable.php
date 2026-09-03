@@ -111,14 +111,14 @@ class FacetPagesTable
                 ->get()->mapWithKeys(fn($m) => [$m->id => $m->name])->all(),
 
             // Get parent entity name for the following facets
-            FacetType::Attribute => AttributeValue::query()
+            FacetType::AttributeValue => AttributeValue::query()
                 ->where('store_id', $storeId)
                 ->with('attribute') // relation function name to parent model Attribute in in AttributeValue model
                 ->get()
                 ->mapWithKeys(fn($v) => [$v->id => self::withParentName($v->attribute?->name, $v->name)])
                 ->all(),
 
-            FacetType::Option => OptionValue::query()
+            FacetType::OptionValue => OptionValue::query()
                 ->where('store_id', $storeId)
                 ->with('option') // relation function name to parent model Option in in OptionValue model
                 ->get()

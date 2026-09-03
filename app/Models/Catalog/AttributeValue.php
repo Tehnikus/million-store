@@ -49,7 +49,7 @@ class AttributeValue extends Model
     use HasFacetIndexCleanup;
     public function facetType(): FacetType
     {
-        return FacetType::Attribute;
+        return FacetType::AttributeValue;
     }
 
     // public function imageColumns(): array

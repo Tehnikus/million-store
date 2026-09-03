@@ -259,19 +259,24 @@ class FacetPageForm
             ]);
     }
 
-
+    /**
+     * Search options for facet value id
+     * @param mixed     $type FacetType::Case
+     * @param int       $storeId
+     * @param string    $search
+     * @param array     $excludedIds
+     * @return array
+     */
     public static function searchOptions($type, int $storeId, string $search, array $excludedIds): array
     {
-        $query = match ($type) {
-            FacetType::Category => Category::query()->where('store_id', $storeId),
-            FacetType::Manufacturer => Manufacturer::query()->where('store_id', $storeId),
-            FacetType::Attribute => AttributeValue::query()->where('store_id', $storeId),
-            FacetType::Option => OptionValue::query()->where('store_id', $storeId),
-            FacetType::Tag => Tag::query()->where('store_id', $storeId),
-            default => null
-        };
+        $modelClass = $type->modelClass();
 
-        return !$query ? [$type->getLabel()] : $query
+        if (!$modelClass) {
+            return [$type->getLabel()];
+        }
+
+        return $modelClass::query()
+            ->where('store_id', $storeId)
             ->whereRaw("name::text ilike ?", ["%{$search}%"])
             ->when($excludedIds !== [], fn($q) => $q->whereNotIn('id', $excludedIds))
             ->limit(50)
@@ -281,21 +286,16 @@ class FacetPageForm
     }
 
     /**
-     * Get option labels for live seach
+     * Get option labels for live search
      */
     public static function optionLabel($type, int $storeId, int $id): ?string
     {
-        $model = match ($type) {
-            FacetType::Category => Category::find($id),
-            FacetType::Manufacturer => Manufacturer::find($id),
-            FacetType::Attribute => AttributeValue::find($id),
-            FacetType::Option => OptionValue::find($id),
-            FacetType::Tag => Tag::find($id),
-            default => null
-        };
+        $modelClass = $type->modelClass();
+        $model = $modelClass ? $modelClass::where('store_id', $storeId)->find($id) : null;
 
         return $model?->name ?? $type->getLabel();
     }
+
     /**
      * Separates root_facet_* (UI service fields, not facet_pages columns) from the rest of the form data
      */
@@ -352,15 +352,14 @@ class FacetPageForm
      */
     private static function groupIdFor(FacetType $type, int $valueId): int
     {
-        return match ($type) {
-            FacetType::Category     => Category::find($valueId)?->parent_id ?? 0,
-            FacetType::Manufacturer => Manufacturer::find($valueId)?->parent_id ?? 0,
-            FacetType::Attribute    => AttributeValue::find($valueId)?->attribute_id ?? 0,
-            FacetType::Option       => OptionValue::find($valueId)?->option_id ?? 0,
-            FacetType::Tag          => 0, // Tag has no parent, so always 0
+        $modelClass = $type->modelClass();
+        $column = $type->groupIdColumn();
 
-            default => 0, // Static facets, like "discount" or "featured" - no parent
-        };
+        if (!$modelClass || !$column) {
+            return 0;
+        }
+
+        return $modelClass::find($valueId)?->{$column} ?? 0;
     }
 
     /**

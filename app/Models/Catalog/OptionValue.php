@@ -46,7 +46,7 @@ class OptionValue extends Model
     use HasFacetIndexCleanup;
     public function facetType(): FacetType
     {
-        return FacetType::Option;
+        return FacetType::OptionValue;
     }
 
     public function option(): BelongsTo
