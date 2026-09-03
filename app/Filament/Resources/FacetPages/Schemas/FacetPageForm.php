@@ -88,7 +88,7 @@ class FacetPageForm
                                                 ->disabled(fn(Get $get) => blank($get('root_facet_type_id')))
                                                 ->afterStateUpdated(function (Set $set, Get $get, $component, $livewire, ?string $state) use ($store) {
                                                     $type = self::toFacetType($get('root_facet_type_id'));
-                                                    $set('root_facet_group_id', filled($state) && $type ? self::groupIdFor($type, (int) $state) : 0);
+                                                    $set('root_facet_group_id', filled($state) && $type ? self::groupIdFor($type, $store->id, (int) $state) : 0);
 
                                                     $facets    = self::currentFacetSet($get, $get('facetIndex') ?? []);
                                                     $excludeId = method_exists($livewire, 'getRecord') ? $livewire->getRecord()?->id : null;
@@ -177,7 +177,7 @@ class FacetPageForm
                                                         ->disabled(fn(Get $get) => blank($get('facet_type_id'))) // Disable if facet_type_id is not selected
                                                         ->afterStateUpdated(function (Set $set, Get $get, $component, $livewire, ?string $state) use ($store) {
                                                             $type = self::toFacetType($get('facet_type_id'));
-                                                            $set('facet_group_id', filled($state) && $type ? self::groupIdFor($type, (int) $state) : 0);
+                                                            $set('facet_group_id', filled($state) && $type ? self::groupIdFor($type, $store->id, (int) $state) : 0);
         
                                                             $facets    = self::currentFacetSet($get, $get('../') ?? []);
                                                             $excludeId = method_exists($livewire, 'getRecord') ? $livewire->getRecord()?->id : null;
@@ -350,16 +350,16 @@ class FacetPageForm
     /**
      *  Get facet_group_id which is parent entity for facet_value_id
      */
-    private static function groupIdFor(FacetType $type, int $valueId): int
+    private static function groupIdFor(FacetType $type, int $storeId, int $valueId): int
     {
         $modelClass = $type->modelClass();
-        $column = $type->groupIdColumn();
+        $column     = $type->groupIdColumn();
 
         if (!$modelClass || !$column) {
             return 0;
         }
 
-        return $modelClass::find($valueId)?->{$column} ?? 0;
+        return $modelClass::where('store_id', $storeId)->find($valueId)?->{$column} ?? 0;
     }
 
     /**
