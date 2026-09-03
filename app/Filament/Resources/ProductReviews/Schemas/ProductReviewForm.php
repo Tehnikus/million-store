@@ -34,7 +34,7 @@ class ProductReviewForm
                     ->preload()
                     ->required(),
                 Select::make('locale')
-                    ->label(__('admin.blog.comments.fields.locale'))
+                    ->label(__('admin.catalog.product_reviews.fields.locale'))
                     ->options(
                         Filament::getTenant()
                             ->languages()
@@ -45,18 +45,18 @@ class ProductReviewForm
                     ->required(),
                 TextInput::make('author')
                     ->required()
-                    ->label(__('admin.blog.comments.fields.author')),
+                    ->label(__('admin.catalog.product_reviews.fields.author')),
                 TextInput::make('author_email')
                     ->email()
-                    ->label(__('admin.blog.comments.fields.email')),
+                    ->label(__('admin.catalog.product_reviews.fields.email')),
                 Textarea::make('review_body')
                     ->columnSpanFull()
                     ->rows(6)
-                    ->label(__('admin.blog.comments.fields.body')),
+                    ->label(__('admin.catalog.product_reviews.fields.body')),
                     
                 Repeater::make('positive_notes')
                     ->simple(
-                        Textarea::make('name')->rows(2)
+                        Textarea::make('name')->required()->rows(2)
                     )
                     ->maxItems(3)
                     ->default([])
@@ -66,7 +66,7 @@ class ProductReviewForm
 
                 Repeater::make('negative_notes')
                     ->simple(
-                        Textarea::make('name')->rows(2)
+                        Textarea::make('name')->required()->rows(2)
                     )
                     ->maxItems(3)
                     ->default([])
@@ -84,11 +84,11 @@ class ProductReviewForm
                         '5' => '5',
                     ])
                     ->default('5')
-                    ->label(__('admin.blog.comments.fields.rating'))
+                    ->label(__('admin.catalog.product_reviews.fields.rating'))
                     ->grouped()
                     ->columnSpanFull(),
                 Toggle::make('is_approved')
-                    ->label(__('admin.blog.comments.fields.is_approved'))
+                    ->label(__('admin.catalog.product_reviews.fields.is_approved'))
                     ->columnSpanFull(),
             ]);
     }
