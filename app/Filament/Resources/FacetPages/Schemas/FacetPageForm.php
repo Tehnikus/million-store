@@ -4,9 +4,8 @@ namespace App\Filament\Resources\FacetPages\Schemas;
 
 use App\Domain\Catalog\FacetType;
 use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, FooterTab, HowToTab, ImagesTab};
-use App\Models\Catalog\{AttributeValue, Category, FacetPage, FacetPageIndex, Manufacturer, OptionValue, Tag};
+use App\Models\Catalog\{FacetPage, FacetPageIndex};
 use App\Models\Global\Store;
-use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
