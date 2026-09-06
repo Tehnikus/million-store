@@ -22,7 +22,6 @@ return new class extends Migration
             $table->jsonb('name')->nullable()->default('{}');
             $table->jsonb('description')->nullable()->default('{}');
             $table->jsonb('images')->nullable()->default('{}');
-            $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
 
             $table->unique(['id', 'store_id']); // To match foreign constrain on product_attribute_values

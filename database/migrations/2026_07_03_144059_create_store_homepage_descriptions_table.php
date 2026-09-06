@@ -23,7 +23,6 @@ return new class extends Migration {
             $table->jsonb('faq')->nullable()->default('{}');
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
-            $table->tinyText('robots')->nullable()->default('noindex, nofollow');
             $table->timestamps();
 
         });
