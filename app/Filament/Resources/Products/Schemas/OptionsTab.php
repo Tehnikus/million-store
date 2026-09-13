@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Products\Schemas;
 use App\Models\Catalog\Option;
 use App\Models\Catalog\OptionValue;
 use App\Models\Catalog\ProductOptionValue;
-use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
@@ -27,9 +26,9 @@ class OptionsTab
         
         return [
             Repeater::make('productOptions')
-                ->relationship('productOptions')
                 ->relationship('productOptions', modifyQueryUsing: fn ($query) => $query
                     ->with(['productOptionValues.prices', 'productOptionValues.optionValue'])
+                    ->where('store_id', $storeId)
                 )
                 ->schema([
                     // Hidden::make('store_id')->default($storeId),

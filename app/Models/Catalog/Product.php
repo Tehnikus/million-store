@@ -57,19 +57,22 @@ class Product extends Model
 
     // Collect form data
     // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
-    // Category facets
+    // Category facets 
+    // TODO check if this is neccessary since we have categories() relation
     public function categoryFacets(): HasMany
     {
         return $this->hasMany(FacetIndex::class)
             ->where('facet_type_id', FacetType::Category->value);
     }
     // Manufacturer facets
+    // TODO check if this is neccessary since we have manufacturers() relation
     public function manufacturerFacets(): HasMany
     {
         return $this->hasMany(FacetIndex::class)
             ->where('facet_type_id', FacetType::Manufacturer->value);
     }
     // Tag facets
+    // TODO check if this is neccessary since we have tags() relation
     public function tagFacets(): HasMany
     {
         return $this->hasMany(FacetIndex::class)
@@ -84,11 +87,19 @@ class Product extends Model
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
-    // Reverse category relation for ManageManufacturerProducts
+    // Reverse manufacturer relation for ManageManufacturerProducts
     public function manufacturers(): BelongsToMany
     {
         return $this->belongsToMany(Manufacturer::class, 'facet_index', 'product_id', 'facet_value_id')
             ->withPivotValue('facet_type_id', FacetType::Manufacturer->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    }
+
+    // Reverse tag relation for ManageTagProducts
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'facet_index', 'product_id', 'facet_value_id')
+            ->withPivotValue('facet_type_id', FacetType::Tag->value)
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 }
