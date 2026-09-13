@@ -111,7 +111,6 @@ return [
         'delete_from_all_stores' => 'This action will delete this product all stores. All product data in all stores will be deleted. This action is irreversible. Continue?',
       ],
       'errors' => [
-        'last_price_title'  => '',
         'last_price_text'   => 'Product must have at least one price',
       ]
     ],

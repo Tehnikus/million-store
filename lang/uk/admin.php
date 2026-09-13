@@ -111,7 +111,6 @@ return [
         'delete_from_all_stores'  => 'Ця дія видалить товар з усіх магазинів. Усі дані товару будуть видалені з усіх магазинів. Ця дія необоротна. Продовжити?', 
       ],
       'errors' => [
-        'last_price_title'  => '',
         'last_price_text'   => 'Товар повинен мати щонайменше одну ціну',
       ]
     ],
@@ -121,7 +120,7 @@ return [
       'fields' => [
         'is_active'       => 'Активна',
         'is_root'         => 'Коренева',
-        'show_in_facets'  => 'Показувати у фільтрі',
+        'show_in_facets'  => 'Відображати у фільтрі',
         'parent_id'       => 'Батьківська категорія',
       ],
       'helpers' => [
@@ -134,7 +133,7 @@ return [
       'fields'  => [
         'is_active'       => 'Активний',
         'is_root'         => 'Кореневий',
-        'show_in_facets'  => 'Показувати у фільтрах (фасетах)',
+        'show_in_facets'  => 'Відображати у фільтрі',
         'parent_id'       => 'Батьківський виробник',
       ],
       'helpers' => [
@@ -181,7 +180,7 @@ return [
         'description'           => 'Опис',
         'option_name'           => 'Назва опції',
         'slug'                  => 'URL',
-        'show_in_facets'        => 'Показувати у фільтрі',
+        'show_in_facets'        => 'Відображати у фільтрі',
         'is_active'             => 'Активна',
         'is_default'            => 'Вибрана за замовчуванням',
         'type'                  => 'Тип опції',
@@ -206,7 +205,7 @@ return [
       'navigation_label'      => 'Теги',
       'model_label_singular'  => 'Тег',
       'fields' => [
-        'show_in_facets'  => 'Показувати у фільтрі',
+        'show_in_facets'  => 'Відображати у фільтрі',
         'is_active'       => 'Активний',
         'inline_style'    => 'Вбудований CSS стиль',
       ],
