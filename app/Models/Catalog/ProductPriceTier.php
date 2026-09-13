@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Support\Concerns\InheritsColumnFromParent;
 use App\Models\Customer\CustomerGroup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,8 +23,8 @@ class ProductPriceTier extends Model
         'name'           => 'array',
         'is_discount'    => 'boolean',
         'priority'       => 'integer',
-        'valid_from'     => 'datetime',
-        'valid_until'    => 'datetime',
+        'valid_from'     => 'datetime:Y-m-d H:i:s',
+        'valid_until'    => 'datetime:Y-m-d H:i:s',
         'valid_quantity' => 'integer',
     ];
 
@@ -71,5 +72,14 @@ class ProductPriceTier extends Model
         return $this->hasActiveSpecialPrice($quantity)
             ? $this->special_price
             : $this->price;
+    }
+
+    use InheritsColumnFromParent;
+
+    protected static function inheritedColumns(): array
+    {
+        return [
+            'store_id'   => ['productDescription', 'store_id'],
+        ];
     }
 }
