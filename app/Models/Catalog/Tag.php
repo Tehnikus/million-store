@@ -9,6 +9,7 @@ use App\Domain\Seo\HasSlugs;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Translatable\HasTranslations;
 
 class Tag extends Model
@@ -67,6 +68,14 @@ class Tag extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    // Reverse tag relation for ManageTagProducts
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'facet_index', 'facet_value_id', 'product_id')
+            ->withPivotValue('facet_type_id', FacetType::Tag->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
     // Cleanup facet index on delete
