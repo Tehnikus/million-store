@@ -86,6 +86,9 @@ class EditProduct extends EditRecord
             $description,
         );
 
+        // TODO Remove sort_order from DB write
+        // TODO Remove created_at and updated_at from DB write
+
         // Update product category facets
         app(SyncProductFacets::class)->handle(
             $record,
@@ -135,7 +138,7 @@ class EditProduct extends EditRecord
         app(SyncProductFacets::class)->handle(
             $record,
             $storeId,
-            FacetType::Option,
+            FacetType::OptionValue,
             $this->buildOptionFacetRows($record),
         );
     }

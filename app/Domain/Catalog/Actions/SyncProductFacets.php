@@ -39,8 +39,9 @@ class SyncProductFacets
                     'facet_group_id'  => $row['facet_group_id'] ?? 0,
                     'facet_value_id'  => $row['facet_value_id'],
                     'sort_order'      => $row['sort_order'] ?? 1,
-                    'created_at'      => $now,
-                    'updated_at'      => $now,
+                    // TODO test then remove this completely
+                    // 'created_at'      => $now,
+                    // 'updated_at'      => $now,
                 ],
                 $rows
             ));
