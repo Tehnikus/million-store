@@ -44,12 +44,12 @@ class CategoriesTable
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.categories.fields.is_active')),
 
-                ToggleColumn::make('show_in_facets')
-                    ->sortable()
-                    ->width('100px')
-                    ->wrapHeader()
-                    ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.categories.fields.show_in_facets')),
+                // ToggleColumn::make('show_in_facets')
+                //     ->sortable()
+                //     ->width('180px')
+                //     ->wrapHeader()
+                //     ->alignment(Alignment::Center)
+                //     ->label(__('admin.catalog.categories.fields.show_in_facets')),
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')

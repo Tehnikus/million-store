@@ -43,12 +43,12 @@ class ManufacturersTable
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.manufacturers.fields.is_active')),
 
-                ToggleColumn::make('show_in_facets')
-                    ->sortable()
-                    ->width('100px')
-                    ->wrapHeader()
-                    ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.manufacturers.fields.show_in_facets')),
+                // ToggleColumn::make('show_in_facets')
+                //     ->sortable()
+                //     ->width('100px')
+                //     ->wrapHeader()
+                //     ->alignment(Alignment::Center)
+                //     ->label(__('admin.catalog.manufacturers.fields.show_in_facets')),
                 
             ])
             ->defaultSort('sort_order')
