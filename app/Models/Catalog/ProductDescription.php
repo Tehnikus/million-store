@@ -67,10 +67,4 @@ class ProductDescription extends Model
         'how_to',
         'footer',
     ];
-
-    // TODO Check if this needed
-    public function parentId(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
 }
