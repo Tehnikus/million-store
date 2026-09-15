@@ -68,8 +68,7 @@ class SlugInput
                     ->label(__('admin.common.fields.slug'))
                     ->placeholder(__('admin.common.fields.slug'))
                     ->helperText(__('admin.common.helpers.slug'))
-                    ->columnSpan(2)
-                    ->columnSpanFull()
+                    ->columnSpan(3)
                     ->live(onBlur: false, debounce: 500)
                     ->maxLength(255)
                     ->rules(array_filter([
@@ -177,10 +176,11 @@ class SlugInput
                     ->default('index, follow')
                     ->dehydrated(false)
                     ->dehydrateStateUsing(fn() => null)
+                    ->native(false)
             ])
-                ->label(__('admin.common.fields.slug'))
-                ->columns(3)
-                ->columnSpanFull(),
+            ->label(__('admin.common.fields.slug'))
+            ->columns(4)
+            ->columnSpanFull(),
         ];
     }
 
