@@ -91,7 +91,7 @@ class EditProduct extends EditRecord
 
         // Update product category facets
         app(SyncProductFacets::class)->handle(
-            $record,
+            $record->id,
             $storeId,
             FacetType::Category,
             collect($data['facet_categories'] ?? [])
@@ -102,7 +102,7 @@ class EditProduct extends EditRecord
 
         // Update manufacturer facets
         app(SyncProductFacets::class)->handle(
-            $record,
+            $record->id,
             $storeId,
             FacetType::Manufacturer,
             collect($data['facet_manufacturers'] ?? [])
@@ -113,7 +113,7 @@ class EditProduct extends EditRecord
 
         // Update tag facets
         app(SyncProductFacets::class)->handle(
-            $record,
+            $record->id,
             $storeId,
             FacetType::Tag,
             collect($data['facet_tags'] ?? [])
@@ -136,7 +136,7 @@ class EditProduct extends EditRecord
         $storeId = Filament::getTenant()->id;
 
         app(SyncProductFacets::class)->handle(
-            $record,
+            $record->id,
             $storeId,
             FacetType::OptionValue,
             $this->buildOptionFacetRows($record),

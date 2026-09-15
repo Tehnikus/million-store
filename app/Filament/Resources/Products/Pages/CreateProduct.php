@@ -55,13 +55,13 @@ class CreateProduct extends CreateRecord
 
         // Save facet data very last because it requires $product->id
         app(SyncProductFacets::class)->handle(
-            $product,
+            $product->id,
             $storeId,
             FacetType::Category,
             $categoryRows,
         );
         app(SyncProductFacets::class)->handle(
-            $product,
+            $product->id,
             $storeId,
             FacetType::Manufacturer,
             $manufacturerRows,

@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\DB;
  */
 class SyncProductFacets
 {
-    public function handle(Product $product, int $storeId, FacetType $type, array $rows): void
+    public function handle(int $productId, int $storeId, FacetType $type, array $rows): void
     {
-        DB::transaction(function () use ($product, $storeId, $type, $rows) {
-            FacetIndex::where('product_id', $product->id)
+        DB::transaction(function () use ($productId, $storeId, $type, $rows) {
+            FacetIndex::where('product_id', $productId)
                 ->where('store_id', $storeId)
                 ->where('facet_type_id', $type->value)
                 ->delete();
@@ -29,19 +29,17 @@ class SyncProductFacets
                 return;
             }
 
-            $now = now();
-
             FacetIndex::insert(array_map(
                 fn (array $row) => [
-                    'product_id'      => $product->id,
+                    'product_id'      => $productId,
                     'store_id'        => $storeId,
                     'facet_type_id'   => $type->value,
                     'facet_group_id'  => $row['facet_group_id'] ?? 0,
                     'facet_value_id'  => $row['facet_value_id'],
-                    'sort_order'      => $row['sort_order'] ?? 1,
+                    'sort_order'      => $row['sort_order'] ?? 1, // TODO Make column nullable, remove expicit 1
                     // TODO test then remove this completely
-                    // 'created_at'      => $now,
-                    // 'updated_at'      => $now,
+                    // 'created_at'      => now(),
+                    // 'updated_at'      => now(),
                 ],
                 $rows
             ));
