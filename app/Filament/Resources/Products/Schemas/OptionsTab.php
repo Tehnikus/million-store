@@ -4,15 +4,18 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Option;
 use App\Models\Catalog\OptionValue;
-use App\Models\Catalog\ProductOptionValue;
+use App\Models\Catalog\ProductDescription;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Support\Collection;
@@ -21,174 +24,153 @@ use Illuminate\Support\Facades\Context;
 
 class OptionsTab
 {
-    public static function schema($storeId, $languages, $currencies): array    
+    public static function make($store, $languages): Tab
     {
-        
-        return [
-            Repeater::make('productOptions')
-                ->relationship('productOptions', modifyQueryUsing: fn ($query) => $query
-                    ->with(['productOptionValues.prices', 'productOptionValues.optionValue'])
-                    ->where('store_id', $storeId)
-                )
+        return Tab::make('productOptions')
+            ->label(__('admin.catalog.products.tabs.options'))
+            ->schema([
+                Repeater::make('optionSignatures')
                 ->schema([
-                    // Hidden::make('store_id')->default($storeId),
-
-                    Select::make('option_id')
-                        ->options(fn () => static::optionChoices($storeId))
-                        ->afterStateUpdated(fn (Set $set) => $set('productOptionValues', [])) // Also an array can be passed to create empty option value form TODO
-                        ->searchable()
-                        ->preload()
-                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                        ->required()
+                    Repeater::make('selectedOptions')
+                        ->label(__('admin.catalog.options.fields.combinations'))
+                        ->table([
+                            TableColumn::make(__('admin.catalog.options.fields.combinations'))
+                        ])
                         ->live()
-                        ->label(__('admin.catalog.options.fields.group')),
+                        ->afterStateUpdated(function (Get $get, Set $set, $livewire) use ($store) {
+                            static::syncDescriptionRepeaters($get, $set, $livewire, $store->id);
+                        })
+                        ->schema([
+                            FusedGroup::make([
+                                Select::make('option_select')
+                                    ->options(fn () => static::optionChoices($store->id))
+                                    ->afterStateUpdated(fn (Set $set) => $set('option_value_select', null))
+                                    ->live()
+                                    ->preload()
+                                    ->native(false)
+                                    ->columnSpan(1),
+                                Select::make('option_value_select')
+                                    ->options(fn (Get $get) => static::optionValueChoices($get('option_select')))
+                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                    ->live()
+                                    ->preload()
+                                    ->native(false)
+                                    ->columnSpan(1),
+                            ])->columns(2)->columnSpanFull(),
+                        ])
+                        ->columnSpanFull(),
+                ])
+                ->columnSpanFull(),
+
+            Repeater::make('options')
+                ->schema([
+                    FusedGroup::make(
+                        collect($languages)->map(fn ($language) =>
+                            TextInput::make("name.{$language->locale}")
+                                ->prefix($language->locale)
+                                ->required(fn(Get $get) => $get('option_id') !== null)
+                                ->visible(fn(Get $get) => $get('option_id') !== null)
+                                ->hiddenLabel()
+                                ->label(__('admin.catalog.options.fields.group_name'))
+                                
+                        )->all()
+                    )
+                    ->columnSpanFull()
+                    ->helperText(__('admin.catalog.options.helpers.group_name')),
 
                     Repeater::make('productOptionValues')
-                        ->relationship('productOptionValues')
                         ->schema([
-
-                                // Product related data
-                                Group::make([
-                                     // Required
-                                    Hidden::make('store_id')->default($storeId),
-        
-                                    // The form itself
-                                    Select::make('option_value_id')
-                                        ->options(fn (Get $get) => static::optionValueChoices($get('../../option_id')))
-                                        ->required()
-                                        ->live()
-                                        ->searchable()
-                                        ->preload()
-                                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                        ->afterStateUpdated(function ($state, Set $set, $livewire) {
-                                            // Safely return if select is empty
-                                            if (blank($state)) return;
-
-                                            $defaultOptionData = OptionValue::find($state)?->toArray();
-                                            if (!$defaultOptionData) return;
-
-                                            $productId = $livewire->getRecord()?->id;
-
-                                            $overrideOptionData = $productId
-                                                ? ProductOptionValue::query()
-                                                    ->where('product_id', $productId)
-                                                    ->where('option_value_id', $state)
-                                                    ->first()
-                                                    ?->toArray()
-                                                : null;
-
-                                            foreach ($defaultOptionData['name'] as $locale => $name) {
-                                                $set("name.{$locale}", $overrideOptionData['name'][$locale] ?? $name);
-                                            }
-                                            foreach ($defaultOptionData['description'] as $locale => $description) {
-                                                $set("description.{$locale}", $overrideOptionData['description'][$locale] ?? $description);
-                                            }
-                                        })
-                                        ->label(__('admin.catalog.options.fields.option_name')),
-    
-                                    Toggle::make('is_default')
-                                        ->distinct()
-                                        ->fixIndistinctState()
-                                        ->label(__('admin.catalog.options.fields.is_default')),
-
-                                    TextInput::make('sku')
-                                        ->nullable()
-                                        ->label(__('admin.catalog.products.fields.sku')),
-    
-                                    Toggle::make('stock_subtract')
-                                        ->label(__('admin.catalog.products.fields.stock_subtract')),
-                                    
-                                ])->columnSpan(1),
-    
-                                Group::make([
-                                   self::priceTable($currencies)
-                                ])->columnSpan(1),
-    
-                                // Option value related data
-                                Group::make([
-                                    ...self::optionValueDescriptionsForm($languages)
-                                ])->columnSpan(3),
+                            Hidden::make('option_value_id'),
+                            Text::make('label')
+                                ->content(fn (Get $get) => static::optionValueChoices($get('../../option_id'))->get($get('option_value_id')))
+                                ->columnSpanFull(),
+                            ...self::optionValueDescriptionsForm($languages),
                         ])
-                        ->minItems(1)
-                        ->default([])
-                        ->maxItems(fn (Get $get) => static::optionValueChoices($get('option_id'))->count())
-                        ->collapsible()
-                        ->collapsed(fn($operation) => $operation !== 'create')
-                        ->itemLabel(function (array $state, Get $get): ?string {
-                            $optionId = $get('option_id');
-                            return static::optionValueChoices($optionId)->get($state['option_value_id'] ?? null);
-                        })
-                        ->reorderable()
-                        ->orderColumn('sort_order')
-                        ->columns(5)
-                        ->addActionAlignment('end')
-                        ->addActionLabel(__('admin.catalog.products.buttons.add_option_value'))
-                        ->label(__('admin.catalog.options.fields.values'))
+                        ->addable(false)
+                        ->deletable(false)
+                        ->reorderable(false)
+                        ->columnSpanFull(),
                 ])
-                ->maxItems(fn () => static::optionChoices($storeId)->count())
-                ->collapsible()
-                ->collapsed(fn($operation) => $operation !== 'create')
-                ->itemLabel(function (array $state) use ($storeId): ?string {
-                    $optionName = static::optionChoices($storeId)->get($state['option_id'] ?? null);
-
-                    if (blank($optionName)) {
-                        return null;
-                    }
-
-                    $valueChoices = static::optionValueChoices($state['option_id'] ?? null);
-
-                    $valueIds = filled($state['id'] ?? null)
-                        ? ProductOptionValue::where('product_option_id', $state['id'])->pluck('option_value_id')
-                        : collect($state['productOptionValues'] ?? [])->pluck('option_value_id');
-
-                    $valueNames = $valueIds
-                        ->filter()
-                        ->map(fn ($id) => $valueChoices->get($id))
-                        ->filter()
-                        ->implode(', ');
-
-                    return $valueNames !== '' ? "{$optionName}: {$valueNames}" : $optionName;
-                })
-                ->reorderable()
-                ->orderColumn('sort_order')
-                ->addActionLabel(__('admin.catalog.products.buttons.add_option'))
-                ->label(__('admin.catalog.options.navigation_label'))
-                ->hiddenLabel()
-        ];
+                ->addable(false)
+                ->deletable(false)
+                ->reorderable(false)
+                ->columnSpanFull(),
+            ]);
     }
 
-    protected static function priceTable($currencies): Repeater
+    protected static function syncDescriptionRepeaters(Get $get, Set $set, $livewire, int $storeId): void
     {
-
-        return Repeater::make('prices')
-            ->relationship('prices')
-            // ->table([
-            //     TableColumn::make(__('admin.catalog.products.fields.prices')),
-            // ])
-            ->schema([
-                Hidden::make('currency_id'),
-                TextInput::make('price_modifier')
-                    ->numeric()
-                    ->step(0.01)
-                    ->default(0)
-                    ->prefix(fn(Get $get) => $currencies->firstWhere('id', $get('currency_id'))?->sign)
-                    ->placeholder(fn(Get $get) => $currencies->firstWhere('id', $get('currency_id'))?->name)
-                    ->live()
-                    ->hiddenLabel(),
+        $selected = collect($get('../../optionSignatures'))
+            ->flatMap(fn ($signature) => collect($signature['selectedOptions'] ?? []))
+            ->filter(fn ($row) => filled($row['option_select'] ?? null) && filled($row['option_value_select'] ?? null))
+            ->map(fn ($row) => [
+                'option_id'       => (int) $row['option_select'],
+                'option_value_id' => (int) $row['option_value_select'],
             ])
-            // Display all available currencies
-            ->default(
-                collect($currencies)->map(fn($currency) => [
-                    'currency_id' => $currency->id,
-                    'price' => null,
-                ])->all()
-            )
-            ->columnSpanFull()
-            ->addable(false)
-            ->deletable(false)
-            ->compact()
-            // ->disableLabel()
-            ->label(__('admin.catalog.products.fields.prices'));
+            ->unique(fn ($row) => "{$row['option_id']}-{$row['option_value_id']}")
+            ->groupBy('option_id');
+
+        $current   = collect($get('options'));
+        $productId = $livewire->getRecord()?->id;
+
+        $override = $productId
+            ? ProductDescription::where('product_id', $productId)
+                ->where('store_id', $storeId)
+                ->value('options_description')
+            : null;
+
+        $rebuilt = $selected->map(function ($rows, $optionId) use ($current, $override) {
+            $existingOption = $current->first(fn ($o) => (int) ($o['option_id'] ?? null) === (int) $optionId);
+            $existingValues = collect($existingOption['productOptionValues'] ?? []);
+
+            $values = $rows->map(function ($row) use ($existingValues, $override, $optionId) {
+                return $existingValues->first(fn ($v) => (int) ($v['option_value_id'] ?? null) === $row['option_value_id'])
+                    ?? static::defaultOptionValueData($row['option_value_id'], $optionId, $override);
+            })->values()->all();
+
+            return [
+                'option_id'           => $optionId,
+                'name'                => $existingOption['name'] ?? static::defaultOptionName($optionId, $override),
+                'productOptionValues' => $values,
+            ];
+        })->values()->all();
+
+        $set('../../options', $rebuilt);
+    }
+
+    protected static function defaultOptionName(int $optionId, ?array $override): array
+    {
+        $default = Option::find($optionId);
+        if (!$default) return [];
+
+        $nameOverride = $override[$optionId]['name'] ?? [];
+        $result = [];
+
+        foreach ($default->getTranslations('name') as $locale => $name) {
+            $result[$locale] = $nameOverride[$locale] ?? $name;
+        }
+
+        return $result;
+    }
+
+    protected static function defaultOptionValueData(int $valueId, int $optionId, ?array $override): array
+    {
+        $default = OptionValue::find($valueId)?->toArray();
+        if (!$default) {
+            return ['option_value_id' => $valueId, 'name' => [], 'description' => []];
+        }
+
+        $valueOverride = $override[$optionId]['values'][$valueId] ?? [];
+        $name = $description = [];
+
+        foreach ((array) $default['name'] as $locale => $n) {
+            $name[$locale] = $valueOverride['name'][$locale] ?? $n;
+        }
+        foreach ((array) ($default['description'] ?? []) as $locale => $d) {
+            $description[$locale] = $valueOverride['description'][$locale] ?? $d;
+        }
+
+        return ['option_value_id' => $valueId, 'name' => $name, 'description' => $description];
     }
 
     protected static function optionValueDescriptionsForm($languages)
@@ -211,8 +193,7 @@ class OptionsTab
                             RichEditor::make("description.{$language->locale}")
                                 ->columnSpanFull()
                                 ->placeholder(__('admin.catalog.options.fields.description'))
-                                ->toolbarButtons([])
-                                ->floatingToolbars([
+                                ->toolbarButtons([
                                     'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo'],
                                 ])
                                 ->extraInputAttributes([
@@ -225,7 +206,6 @@ class OptionsTab
             )
         ];
     }
-
 
     protected static function optionValueChoices(?int $optionId): Collection
     {
@@ -265,10 +245,5 @@ class OptionsTab
         Context::add($key, $choices->all());
 
         return $choices;
-    }
-
-    public static function label(): string
-    {
-        return __('admin.catalog.products.tabs.options');
     }
 }
