@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Pages;
 
 use App\Domain\Catalog\Actions\SyncProductFacets;
+use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Concerns\StripsFacetsFormState;
 use App\Filament\Resources\Products\ProductResource;
@@ -18,56 +19,8 @@ class CreateProduct extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $storeId = Filament::getTenant()->id;
-
-        // Collect facet data before any save 
-        $categoryRows = collect($data['facet_categories'] ?? [])
-            ->values()
-            ->map(fn (array $row, int $index) => [
-                'facet_value_id' => $row['facet_value_id'],
-                'facet_group_id' => $row['facet_group_id'] ?? 0,
-                'sort_order'     => $index + 1,
-            ])
-            ->all();
-
-        $manufacturerRows = collect($data['facet_manufacturers'] ?? [])
-            ->values()
-            ->map(fn (array $row, int $index) => [
-                'facet_value_id' => $row['facet_value_id'],
-                'facet_group_id' => $row['facet_group_id'] ?? 0,
-                'sort_order'     => $index + 1,
-            ])
-            ->all();
-
-        // Remove facet data from form state before any other save process
-        $data = $this->stripFacetsFormState($data);
-        
-        // Pull product description data from form state before product save
-        $descriptionData = Arr::pull($data, 'description', []);
-
-        // Create product in products table
-        $product = static::getModel()::create($data);
-        // Save product descriptions in product_descriptions table
-        $product->descriptions()->create([
-            ...$descriptionData,
-            'store_id' => $storeId,
-        ]);
-
-        // Save facet data very last because it requires $product->id
-        app(SyncProductFacets::class)->handle(
-            $product->id,
-            $storeId,
-            FacetType::Category,
-            $categoryRows,
-        );
-        app(SyncProductFacets::class)->handle(
-            $product->id,
-            $storeId,
-            FacetType::Manufacturer,
-            $manufacturerRows,
-        );
-
-        return $product;
+        $store = Filament::getTenant();
+        return app(UpsertProduct::class)->handle($data, $store->id);
     }
 
 }
