@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Option;
 use App\Models\Catalog\OptionValue;
-use App\Models\Catalog\ProductDescription;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -18,6 +17,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 
@@ -27,42 +27,41 @@ class OptionsTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('productOptions')
-            ->label(__('admin.catalog.products.tabs.options'))
             ->schema([
                 Repeater::make('optionSignatures')
-                ->schema([
-                    Repeater::make('selectedOptions')
-                        ->label(__('admin.catalog.options.fields.combinations'))
-                        ->table([
-                            TableColumn::make(__('admin.catalog.options.fields.combinations'))
-                        ])
-                        ->live()
-                        ->afterStateUpdated(function (Get $get, Set $set, $livewire) use ($store) {
-                            static::syncDescriptionRepeaters($get, $set, $livewire, $store->id);
-                        })
-                        ->schema([
-                            FusedGroup::make([
-                                Select::make('option_select')
-                                    ->options(fn () => static::optionChoices($store->id))
-                                    ->afterStateUpdated(fn (Set $set) => $set('option_value_select', null))
-                                    ->live()
-                                    ->preload()
-                                    ->native(false)
-                                    ->columnSpan(1),
-                                Select::make('option_value_select')
-                                    ->options(fn (Get $get) => static::optionValueChoices($get('option_select')))
-                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                    ->live()
-                                    ->preload()
-                                    ->native(false)
-                                    ->columnSpan(1),
-                            ])->columns(2)->columnSpanFull(),
-                        ])
-                        ->columnSpanFull(),
-                ])
-                ->columnSpanFull(),
+                    ->schema([
+                        Repeater::make('selectedOptions')
+                            ->label(__('admin.catalog.options.fields.combinations'))
+                            ->table([
+                                TableColumn::make(__('admin.catalog.options.fields.combinations'))
+                            ])
+                            ->live()
+                            ->afterStateUpdated(function (Get $get, Set $set, ?Model $record) use ($store) {
+                                static::syncDescriptionRepeaters($get, $set, $record, $store->id);
+                            })
+                            ->schema([
+                                FusedGroup::make([
+                                    Select::make('option_select')
+                                        ->options(fn () => static::optionChoices($store->id))
+                                        ->afterStateUpdated(fn (Set $set) => $set('option_value_select', null))
+                                        ->live()
+                                        ->preload()
+                                        ->native(false)
+                                        ->columnSpan(1),
+                                    Select::make('option_value_select')
+                                        ->options(fn (Get $get) => static::optionValueChoices($get('option_select')))
+                                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                        ->live()
+                                        ->preload()
+                                        ->native(false)
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                            ])
+                    ])
+                    ->defaultItems(0),
 
-            Repeater::make('options')
+            Repeater::make('options_description')
                 ->schema([
                     FusedGroup::make(
                         collect($languages)->map(fn ($language) =>
@@ -75,10 +74,9 @@ class OptionsTab
                                 
                         )->all()
                     )
-                    ->columnSpanFull()
                     ->helperText(__('admin.catalog.options.helpers.group_name')),
 
-                    Repeater::make('productOptionValues')
+                    Repeater::make('option_values_description')
                         ->schema([
                             Hidden::make('option_value_id'),
                             Text::make('label')
@@ -89,16 +87,17 @@ class OptionsTab
                         ->addable(false)
                         ->deletable(false)
                         ->reorderable(false)
-                        ->columnSpanFull(),
+                        ->default([]),
                 ])
                 ->addable(false)
                 ->deletable(false)
                 ->reorderable(false)
-                ->columnSpanFull(),
+                ->default([])
+                ->statePath('description.options_description')
             ]);
     }
 
-    protected static function syncDescriptionRepeaters(Get $get, Set $set, $livewire, int $storeId): void
+    protected static function syncDescriptionRepeaters(Get $get, Set $set, ?Model $record, int $storeId): void
     {
         $selected = collect($get('../../optionSignatures'))
             ->flatMap(fn ($signature) => collect($signature['selectedOptions'] ?? []))
@@ -110,18 +109,20 @@ class OptionsTab
             ->unique(fn ($row) => "{$row['option_id']}-{$row['option_value_id']}")
             ->groupBy('option_id');
 
-        $current   = collect($get('options'));
-        $productId = $livewire->getRecord()?->id;
+        $current   = collect($get('description.options_description'));
+        $productId = $record?->id;
 
         $override = $productId
-            ? ProductDescription::where('product_id', $productId)
+            ? $record->descriptions()
+                ->where('product_id', $productId)
                 ->where('store_id', $storeId)
-                ->value('options_description')
+                ->first()
+                ?->options_description
             : null;
 
         $rebuilt = $selected->map(function ($rows, $optionId) use ($current, $override) {
             $existingOption = $current->first(fn ($o) => (int) ($o['option_id'] ?? null) === (int) $optionId);
-            $existingValues = collect($existingOption['productOptionValues'] ?? []);
+            $existingValues = collect($existingOption['options_description'] ?? []);
 
             $values = $rows->map(function ($row) use ($existingValues, $override, $optionId) {
                 return $existingValues->first(fn ($v) => (int) ($v['option_value_id'] ?? null) === $row['option_value_id'])
@@ -129,21 +130,25 @@ class OptionsTab
             })->values()->all();
 
             return [
-                'option_id'           => $optionId,
-                'name'                => $existingOption['name'] ?? static::defaultOptionName($optionId, $override),
-                'productOptionValues' => $values,
+                'option_id'                 => $optionId,
+                'name'                      => $existingOption['name'] ?? static::defaultOptionName($optionId, $override),
+                'option_values_description' => $values,
             ];
         })->values()->all();
 
-        $set('../../options', $rebuilt);
+        $set('../../description.options_description', $rebuilt);
     }
 
     protected static function defaultOptionName(int $optionId, ?array $override): array
     {
         $default = Option::find($optionId);
-        if (!$default) return [];
+        if (!$default)
+            return [];
 
-        $nameOverride = $override[$optionId]['name'] ?? [];
+        $overrideGroup = collect($override)
+            ->first(fn($group) => (int) ($group['option_id'] ?? null) === $optionId);
+
+        $nameOverride = $overrideGroup['name'] ?? [];
         $result = [];
 
         foreach ($default->getTranslations('name') as $locale => $name) {
@@ -160,7 +165,12 @@ class OptionsTab
             return ['option_value_id' => $valueId, 'name' => [], 'description' => []];
         }
 
-        $valueOverride = $override[$optionId]['values'][$valueId] ?? [];
+        $overrideGroup = collect($override)
+            ->first(fn($group) => (int) ($group['option_id'] ?? null) === $optionId);
+
+        $valueOverride = collect($overrideGroup['option_values_description'] ?? [])
+            ->first(fn($v) => (int) ($v['option_value_id'] ?? null) === $valueId) ?? [];
+
         $name = $description = [];
 
         foreach ((array) $default['name'] as $locale => $n) {
@@ -187,8 +197,7 @@ class OptionsTab
                                 ->prefix($language->locale)
                                 ->label(__('admin.catalog.options.fields.option_name'))
                                 ->placeholder(__('admin.catalog.options.fields.option_name'))
-                                ->hiddenLabel()
-                                ->columnSpanFull(),
+                                ->hiddenLabel(),
 
                             RichEditor::make("description.{$language->locale}")
                                 ->columnSpanFull()
@@ -197,7 +206,7 @@ class OptionsTab
                                     'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo'],
                                 ])
                                 ->extraInputAttributes([
-                                    'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
+                                    'style' => 'min-height: 7rem; max-height: 18vh; overflow-y: auto;'
                                 ])
                                 ->hiddenLabel(),
                         ])
