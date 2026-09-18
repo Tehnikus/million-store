@@ -101,6 +101,18 @@ class Category extends Model
         return FacetType::Category;
     }
 
+    // Update facet_group_id if category->parent_id was changed
+    protected static function booted(): void
+    {
+        static::updated(function (Category $category) {
+            FacetIndex::where('facet_type_id', FacetType::Category)
+                ->where('facet_value_id', $category->id)
+                ->where('store_id', $category->store_id)
+                ->whereNot('facet_group_id', '=', $category->parent_id)
+                ->update(['facet_group_id' => $category->parent_id ?? 0]);
+        });
+    }
+
     public function imageColumns(): array
     {
         return [
