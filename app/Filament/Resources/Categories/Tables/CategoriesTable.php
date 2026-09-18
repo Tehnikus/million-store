@@ -9,6 +9,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -21,6 +23,7 @@ class CategoriesTable
 {
     public static function configure(Table $table): Table
     {
+        $store = Filament::getTenant();
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
@@ -34,9 +37,20 @@ class CategoriesTable
 
                 SelectColumn::make('parent_id')
                     ->optionsRelationship(name: 'parent', titleAttribute: 'name')
+                    ->native(false)
                     ->width('220px')
                     ->wrapHeader()
-                    ->label(__('admin.catalog.categories.fields.parent_id')),
+                    ->label(__('admin.catalog.categories.fields.parent_id'))
+                    ->native(false),
+
+                TextColumn::make('products')
+                    ->getStateUsing(fn(Category $record) => $record->products()->where('store_id', $store->id)->count())
+                    ->color(fn($record) => $record->products()->where('store_id', $store->id)->count() > 0 ? 'success' : 'danger')
+                    ->sortable()
+                    ->badge()
+                    ->width('1%')
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.products.navigation_label')),
 
                 ToggleColumn::make('is_active')
                     ->sortable()
