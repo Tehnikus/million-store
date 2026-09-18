@@ -6,6 +6,7 @@ use App\Domain\Catalog\FacetType;
 use App\Models\Catalog\Category;
 use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\Manufacturer;
+use App\Models\Catalog\Product;
 use App\Models\Catalog\Tag;
 use Closure;
 use Filament\Forms\Components\Hidden;
@@ -25,7 +26,7 @@ class PlacementTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('placement')
-            ->badge(fn($record) => FacetIndex::where('product_id', $record->id)->where('store_id', $store->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count())
+            ->badge(fn(?Product $record) => $record ? FacetIndex::where('product_id', $record->id)->where('store_id', $store->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count() : null)
             ->schema([
 
                 // Category part 
