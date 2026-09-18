@@ -37,7 +37,7 @@ class PlacementTab
                         Repeater::make('facet_categories')
                             ->table([
                                 TableColumn::make(__('admin.catalog.products.fields.category'))->markAsRequired(),
-                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
                                 TableColumn::make(__('admin.catalog.products.fields.is_primary_category'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
@@ -141,7 +141,7 @@ class PlacementTab
                         Repeater::make('facet_tags')
                             ->table([
                                 TableColumn::make(__('admin.catalog.products.fields.product_tags')),
-                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
                                 Select::make('facet_value_id')

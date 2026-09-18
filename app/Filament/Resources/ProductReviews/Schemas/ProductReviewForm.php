@@ -60,7 +60,6 @@ class ProductReviewForm
                     )
                     ->maxItems(3)
                     ->default([])
-                    ->columnSpanFull()
                     ->label(__('admin.catalog.product_reviews.fields.positive_notes'))
                     ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_positive')),
 
@@ -70,7 +69,6 @@ class ProductReviewForm
                     )
                     ->maxItems(3)
                     ->default([])
-                    ->columnSpanFull()
                     ->label(__('admin.catalog.product_reviews.fields.negative_notes'))
                     ->addActionLabel(__('admin.catalog.product_reviews.buttons.add_negative')),
 

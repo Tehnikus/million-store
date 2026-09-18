@@ -92,8 +92,7 @@ class StoreContactForm
                         ])
                         ->label(__('admin.store_contacts.fields.latitude'). ' / ' . __('admin.store_contacts.fields.longitude'))
                         ->helperText(__('admin.store_contacts.helpers.latitude'))
-                    ])
-                    ->columnSpanFull(),
+                    ]),
                 TextInput::make("email.{$locale}")
                     ->prefix($locale)
                     ->label(__('admin.store_contacts.fields.email'))
@@ -113,8 +112,7 @@ class StoreContactForm
                                 TextInput::make('number')->label(__('admin.store_contacts.fields.phone_number'))->required(),
                             ])
                             ->addActionLabel(__('admin.store_contacts.buttons.add_phone'))
-                            ->compact()
-                            ->columnSpanFull(),
+                            ->compact(),
                     ]),
 
                 // Open hours
