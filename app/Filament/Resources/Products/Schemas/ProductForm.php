@@ -72,9 +72,16 @@ class ProductForm
                         PlacementTab::make($store, $languages)
                             ->label(__('admin.catalog.products.tabs.placement'))
                             ->icon(NavigationItem::Categories->icon()),
+                        PricesTab::make($store, $languages)
+                            ->label(__('admin.catalog.products.tabs.prices'))
+                            ->icon(NavigationItem::Currencies->icon()),
                         OptionsTab::make($store, $languages)
                             ->label(__('admin.catalog.products.tabs.options'))
-                            ->icon(NavigationItem::Options->icon())
+                            ->icon(NavigationItem::Options->icon()),
+                        AttributesTab::make($store, $languages)
+                            ->label(__('admin.catalog.products.tabs.attributes'))
+                            ->icon(NavigationItem::Attributes->icon())
+
                     ])
                     ->contained(false),
                     
