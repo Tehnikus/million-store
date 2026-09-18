@@ -13,6 +13,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Section;
@@ -36,7 +37,7 @@ class PlacementTab
                         Repeater::make('facet_categories')
                             ->table([
                                 TableColumn::make(__('admin.catalog.products.fields.category'))->markAsRequired(),
-                                TableColumn::make(__('admin.catalog.products.fields.category'))->markAsRequired(),
+                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
                                 TableColumn::make(__('admin.catalog.products.fields.is_primary_category'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
@@ -49,9 +50,14 @@ class PlacementTab
                                     ->distinct()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                     ->afterStateUpdated(function(Set $set, ?string $state) use ($store) {
-                                        $set('facet_group_id', Category::where('store_id', $store->id)->where('id', $state)->first()?->parent_id ?? 0);
+                                        $category = Category::where('store_id', $store->id)->where('id', $state)->first();
+                                        $set('facet_group_id', $category?->parent_id ?? 0);
+                                        $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $category?->parent_id)->where('facet_type_id', FacetType::Category)->where('store_id', $store->id)->count() + 1);
                                     })
                                     ->live(),
+                                TextInput::make('sort_order')
+                                    ->label(__('admin.catalog.products.fields.sort_order'))
+                                    ->numeric(),
                                 Hidden::make('facet_group_id')
                                     ->default(0),
                                 Toggle::make('is_primary')
@@ -89,6 +95,7 @@ class PlacementTab
                         Repeater::make('facet_manufacturers')
                             ->table([
                                 TableColumn::make(__('admin.catalog.products.fields.manufacturer')),
+                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
                                 TableColumn::make(__('admin.catalog.products.fields.is_primary_manufacturer'))->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
@@ -101,9 +108,15 @@ class PlacementTab
                                     ->distinct()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                     ->afterStateUpdated(function(Set $set, ?string $state) use ($store) {
-                                        $set('facet_group_id', Manufacturer::where('store_id', $store->id)->where('id', $state)->first()?->parent_id ?? 0);
+                                        $manufacturer = Manufacturer::where('store_id', $store->id)->where('id', $state)->first();
+                                        $set('facet_group_id', $manufacturer?->parent_id ?? 0);
+                                        $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $manufacturer?->parent_id)->where('facet_type_id', FacetType::Manufacturer)->where('store_id', $store->id)->count() + 1);
+                                        // $set('facet_group_id', Manufacturer::where('store_id', $store->id)->where('id', $state)->first()?->parent_id ?? 0);
                                     })
                                     ->live(),
+                                TextInput::make('sort_order')
+                                    ->label(__('admin.catalog.products.fields.sort_order'))
+                                    ->numeric(),
                                 Hidden::make('facet_group_id')
                                     ->default(0),
                                 Toggle::make('is_primary')
@@ -128,6 +141,7 @@ class PlacementTab
                         Repeater::make('facet_tags')
                             ->table([
                                 TableColumn::make(__('admin.catalog.products.fields.product_tags')),
+                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
                                 Select::make('facet_value_id')
@@ -137,7 +151,16 @@ class PlacementTab
                                     ->preload()
                                     ->required()
                                     ->distinct()
-                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
+                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                    ->afterStateUpdated(function(Set $set, ?string $state) use ($store) {
+                                        $tag = Tag::where('store_id', $store->id)->where('id', $state)->first();
+                                        $set('facet_group_id', $tag?->parent_id ?? 0);
+                                        $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', 0)->where('facet_type_id', FacetType::Tag)->where('store_id', $store->id)->count() + 1);
+                                    })
+                                    ->live(),
+                                TextInput::make('sort_order')
+                                    ->label(__('admin.catalog.products.fields.sort_order'))
+                                    ->numeric(),
                                 Hidden::make('facet_group_id')->default(0),
                             ])
                             ->reorderable(false)

@@ -37,6 +37,7 @@ class EditProduct extends EditRecord
             ->map(fn ($facet) => [
                 'facet_value_id' => $facet->facet_value_id,
                 'facet_group_id' => $facet->facet_group_id,
+                'sort_order'     => $facet->sort_order,
                 'is_primary'     => $facet->facet_value_id == $description?->primary_category_id
             ])->all();
 
@@ -46,6 +47,7 @@ class EditProduct extends EditRecord
             ->map(fn ($facet) => [
                 'facet_value_id' => $facet->facet_value_id,
                 'facet_group_id' => $facet->facet_group_id,
+                'sort_order'     => $facet->sort_order,
                 'is_primary'     => $facet->facet_value_id == $description?->primary_manufacturer_id
             ])->all();
 
@@ -55,6 +57,7 @@ class EditProduct extends EditRecord
             ->map(fn ($facet) => [
                 'facet_value_id' => $facet->facet_value_id,
                 'facet_group_id' => $facet->facet_group_id,
+                'sort_order'     => $facet->sort_order,
             ])->all();
 
         return $data;

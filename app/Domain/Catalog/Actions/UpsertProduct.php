@@ -82,6 +82,7 @@ class UpsertProduct
                 collect($categories)->map(fn($row) => [
                     'facet_group_id' => (int) $row['facet_group_id'],
                     'facet_value_id' => (int) $row['facet_value_id'],
+                    'sort_order'     => (int) $row['sort_order'],
                 ])->all()
             );
 
@@ -93,6 +94,7 @@ class UpsertProduct
                 collect($manufacturers)->map(fn($row) => [
                     'facet_group_id' => (int) $row['facet_group_id'],
                     'facet_value_id' => (int) $row['facet_value_id'],
+                    'sort_order'     => (int) $row['sort_order'],
                 ])->all()
             );
 
@@ -104,6 +106,7 @@ class UpsertProduct
                 collect($tags)->map(fn($row) => [
                     'facet_group_id' => (int) $row['facet_group_id'],
                     'facet_value_id' => (int) $row['facet_value_id'],
+                    'sort_order'     => (int) $row['sort_order'],
                 ])->all()
             );
 
