@@ -22,7 +22,7 @@ class AttributesTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('attributes')
-            ->badge(fn($record) => self::countProductAttributes($record))
+            ->badge(fn($record) => self::countProductAttributes($record, $store))
             ->schema([
                 Repeater::make('attributes_description')
                     ->statePath('description.attributes_description')
@@ -49,30 +49,30 @@ class AttributesTab
                                         ->searchable()
                                         ->preload()
                                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                        ->afterStateUpdated(function ($state, Set $set, $livewire) {
-                                            // Safely return if select is empty
+                                        ->afterStateUpdated(function ($state, Set $set, Get $get, $livewire) use ($store) {
                                             if (blank($state))
                                                 return;
 
-                                            $defaultAttributeData = AttributeValue::find($state)?->toArray();
-                                            if (!$defaultAttributeData)
+                                            $default = AttributeValue::find($state)?->toArray();
+                                            if (!$default)
                                                 return;
 
-                                            $productId = $livewire->getRecord()?->id;
+                                            $attributeId = $get('../../attribute_id');
+                                            $record = $livewire->getRecord();
 
-                                            $overrideAttributeData = $productId
-                                                ? ProductAttributeValue::query()
-                                                    ->where('product_id', $productId)
-                                                    ->where('attribute_value_id', $state)
-                                                    ->first()
-                                                        ?->toArray()
+                                            $override = $record
+                                                ? $record->descriptions()->where('store_id', $store->id)->first()?->attributes_description
                                                 : null;
 
-                                            foreach ($defaultAttributeData['name'] as $locale => $name) {
-                                                $set("name.{$locale}", $overrideAttributeData['name'][$locale] ?? $name);
+                                            $overrideGroup = collect($override)->first(fn($g) => (int) ($g['attribute_id'] ?? null) === (int) $attributeId);
+                                            $valueOverride = collect($overrideGroup['attribute_values_description'] ?? [])
+                                                ->first(fn($v) => (int) ($v['attribute_value_id'] ?? null) === (int) $state) ?? [];
+
+                                            foreach ($default['name'] as $locale => $name) {
+                                                $set("name.{$locale}", $valueOverride['name'][$locale] ?? $name);
                                             }
-                                            foreach ($defaultAttributeData['description'] as $locale => $description) {
-                                                $set("description.{$locale}", $overrideAttributeData['description'][$locale] ?? $description);
+                                            foreach ($default['description'] as $locale => $description) {
+                                                $set("description.{$locale}", $valueOverride['description'][$locale] ?? $description);
                                             }
                                         }),
                                 ])->columnSpan(1),
@@ -110,13 +110,10 @@ class AttributesTab
 
                         $valueChoices = static::attributeValueChoices($state['attribute_id'] ?? null);
 
-                        $valueIds = filled($state['id'] ?? null)
-                            ? ProductAttributeValue::where('product_attribute_id', $state['id'])->pluck('attribute_value_id')
-                            : collect($state['attribute_values_description'] ?? [])->pluck('attribute_value_id');
-
-                        $valueNames = $valueIds
+                        $valueNames = collect($state['attribute_values_description'] ?? [])
+                            ->pluck('attribute_value_id')
                             ->filter()
-                            ->map(fn($id) => $valueChoices->get($id))
+                            ->map(fn ($id) => $valueChoices->get($id))
                             ->filter()
                             ->implode(', ');
 
@@ -204,9 +201,19 @@ class AttributesTab
         return $choices;
     }
 
-    private static function countProductAttributes($record)
+    private static function countProductAttributes($record, $store): mixed
     {
-        return \count(array_column($record->descriptions()->first()->attributes_description, 'attribute_value_id'), COUNT_RECURSIVE);
+        if (!$record) return null;
+        $badge = 0;
+
+        $description = $record->descriptions()
+            ->where('store_id', $store->id)
+            ->first();
+
+        $badge = collect($description?->attributes_description ?? [])
+            ->sum(fn ($group) => count($group['attribute_values_description'] ?? []));
+
+        return $badge !== 0 ? $badge : null;
     }
 
 }
