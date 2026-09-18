@@ -38,8 +38,6 @@ class DescriptionTab
             TextInput::make("name.{$language->locale}")
                 ->label(__('admin.common.fields.name'))
                 ->placeholder(__('admin.common.fields.name'))
-                // ->helperText(__('admin.common.helpers.name'))
-                ->columnSpanFull()
                 ->live(onBlur: false, debounce: 500, condition: $withSlug === true)
                 ->required()
                 ->afterStateUpdated(function (Set $set, Get $get, $component, $livewire, ?string $state, ?Model $record) use ($language, $withSlug) {
@@ -113,7 +111,6 @@ class DescriptionTab
                 ->label(__('admin.common.fields.h1'))
                 ->placeholder(__('admin.common.fields.h1'))
                 ->helperText(__('admin.common.helpers.h1'))
-                ->columnSpanFull()
                 ->suffixActions([
                     Action::make(__('admin.common.buttons.paste_title'))
                         ->icon('heroicon-o-clipboard-document-check')
@@ -128,7 +125,6 @@ class DescriptionTab
                 ->label(__('admin.common.fields.meta_title'))
                 ->placeholder(__('admin.common.fields.meta_title'))
                 ->helperText(__('admin.common.helpers.meta_title'))
-                ->columnSpanFull()
                 ->suffixActions([
                     Action::make(__('admin.common.buttons.paste_title'))
                         ->icon('heroicon-o-clipboard-document-check')

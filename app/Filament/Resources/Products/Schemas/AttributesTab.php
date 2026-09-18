@@ -141,8 +141,7 @@ class AttributesTab
                                 ->prefix($language->locale)
                                 ->label(__('admin.catalog.attributes.fields.attribute_name'))
                                 ->placeholder(__('admin.catalog.attributes.fields.attribute_name'))
-                                ->hiddenLabel()
-                                ->columnSpanFull(),
+                                ->hiddenLabel(),
 
                             RichEditor::make("description.{$language->locale}")
                                 ->columnSpanFull()

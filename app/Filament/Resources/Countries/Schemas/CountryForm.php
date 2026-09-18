@@ -32,17 +32,13 @@ class CountryForm
                                 ->map(fn($language) =>
                                     TextInput::make("name.{$language->locale}")
                                         ->required()
-                                        ->columnSpanFull()
-                                        ->required()
                                         ->prefix($language->locale)
                                         ->label(__('admin.global.countries.fields.name') . " ({$language->name})")
                                         ->placeholder(__('admin.global.countries.fields.name') . " ({$language->name})")
                                 )
                                 ->all(),
                         ])
-                    ])
-                    ->columns(1)
-                    ->columnSpanFull(),
+                    ]),
                 Fieldset::make(__('admin.global.countries.fields.localization_settings'))
                     ->schema([
                         Select::make('default_currency_id')
@@ -50,8 +46,7 @@ class CountryForm
                             ->searchable(['name', 'iso_code'])
                             ->required()
                             ->preload()
-                            ->label(__('admin.global.countries.fields.default_currency_id'))
-                            ->columnSpanFull(),
+                            ->label(__('admin.global.countries.fields.default_currency_id')),
         
                         TextInput::make('iso_code')
                             ->required()
@@ -65,8 +60,7 @@ class CountryForm
                             ->maxLength(10)
                             ->label(__('admin.global.countries.fields.phone_code'))
                             ->helperText(__('admin.global.countries.helpers.phone_code')),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
 
 
                 Fieldset::make(__('admin.global.countries.fields.regions'))
@@ -92,10 +86,8 @@ class CountryForm
                             ])
                             ->addActionLabel(__('admin.global.countries.fields.add_region'))
                             ->reorderable(false)
-                            ->columnSpanFull()
                             ->defaultItems(0),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
 
                 Toggle::make('is_eu_member')
                     ->default(false)

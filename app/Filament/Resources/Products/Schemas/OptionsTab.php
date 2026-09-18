@@ -86,12 +86,16 @@ class OptionsTab
                         ])
                         ->addable(false)
                         ->deletable(false)
-                        ->reorderable(false)
+                        ->reorderable(true)
+                        ->collapsible(true)
+                        ->collapsed(fn($operation) => $operation !== 'create')
                         ->default([]),
                 ])
                 ->addable(false)
                 ->deletable(false)
-                ->reorderable(false)
+                ->reorderable(true)
+                ->collapsible(true)
+                // ->collapsed(fn($operation) => $operation !== 'create')
                 ->default([])
                 ->statePath('description.options_description')
             ]);

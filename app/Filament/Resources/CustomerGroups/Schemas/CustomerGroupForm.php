@@ -22,23 +22,20 @@ class CustomerGroupForm
                         collect($languages)->map(
                             fn($language) =>
                             TextInput::make("name.{$language->locale}")
-                                ->columnSpanFull()
                                 ->prefix($language->locale)
+                                ->label(__('admin.common.fields.name'))
                                 ->placeholder(__('admin.common.fields.name'))
                                 ->hiddenLabel()
                                 ->required()
                         )->all()
-                    )
-                    ->columnSpanFull(),
+                    ),
                 Fieldset::make(__('admin.customers.customer_groups.fields.code'))
                     ->schema([
                         TextInput::make('code')
                             ->required()
-                            ->columnSpanFull()
                             ->hiddenLabel()
                             ->helperText(__('admin.customers.customer_groups.helpers.code')),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
                 Fieldset::make(__('admin.customers.customer_groups.fields.price_modifier_percent'))
                     ->schema([
                         TextInput::make('price_modifier_percent')
@@ -47,13 +44,11 @@ class CustomerGroupForm
                             ->default(0)
                             ->minValue(-100)
                             ->prefix('%')
-                            ->columnSpanFull()
                             ->hiddenLabel()
                             ->label(__('admin.customers.customer_groups.fields.price_modifier_percent'))
                             ->placeholder(__('admin.customers.customer_groups.fields.price_modifier_percent'))
                             ->helperText(__('admin.customers.customer_groups.helpers.price_modifier_percent')),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
                 Fieldset::make(__('admin.customers.customer_groups.fields.group_settings'))
                     ->schema([
                         Toggle::make('free_shipping')
@@ -66,8 +61,7 @@ class CustomerGroupForm
                             ->label(__('admin.customers.customer_groups.fields.tax_exempt')),
                         Toggle::make('is_default')
                             ->label(__('admin.customers.customer_groups.fields.is_default')),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
 
                 Toggle::make('is_active')
                     ->columnSpanFull()

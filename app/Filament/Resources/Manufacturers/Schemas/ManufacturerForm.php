@@ -42,7 +42,6 @@ class ManufacturerForm
                                     ->searchable()
                                     ->preload()
                                     ->default(null)
-                                    ->columnSpanFull()
                                     ->placeholder(__('admin.catalog.manufacturers.fields.is_root'))
                                     ->helperText(__('admin.catalog.manufacturers.helpers.parent_id')),
 
@@ -72,8 +71,7 @@ class ManufacturerForm
                                     ])
                             ]),
                         ImagesTab::make($store, $languages, ['type' => 'manufacturer'])
-                    ])
-                    ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

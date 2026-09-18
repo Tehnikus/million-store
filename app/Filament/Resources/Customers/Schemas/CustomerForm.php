@@ -12,6 +12,7 @@ use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Checkbox;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Utilities\Get;
@@ -46,20 +47,22 @@ class CustomerForm
                     ->label(__('admin.customers.customer.fields.is_approved')),
                 Fieldset::make(__('admin.customers.customer.fields.presonal_data'))
                     ->schema([
-                        TextInput::make('first_name')
-                            ->required()
-                            ->columnSpanFull()
-                            ->placeholder(__('admin.customers.customer.fields.first_name'))
-                            ->label(__('admin.customers.customer.fields.first_name')),
-                        TextInput::make('last_name')
-                            ->required()
-                            ->columnSpanFull()
-                            ->placeholder(__('admin.customers.customer.fields.last_name'))
-                            ->label(__('admin.customers.customer.fields.last_name')),
+                        FusedGroup::make([
+                            TextInput::make('first_name')
+                                ->required()
+                                ->placeholder(__('admin.customers.customer.fields.first_name'))
+                                ->label(__('admin.customers.customer.fields.first_name'))
+                                ->columnSpan(1),
+                            TextInput::make('last_name')
+                                ->required()
+                                ->placeholder(__('admin.customers.customer.fields.last_name'))
+                                ->label(__('admin.customers.customer.fields.last_name'))
+                                ->columnSpan(1),
+                        ])
+                        ->columns(2),
                         TextInput::make('phone')
                             ->required()
                             ->tel()
-                            ->columnSpanFull()
                             ->placeholder(__('admin.customers.customer.fields.phone'))
                             ->label(__('admin.customers.customer.fields.phone')),
                         DateTimePicker::make('created_at')
@@ -70,8 +73,7 @@ class CustomerForm
                             ->dehydrated(false)
                             ->disabled()
                             ->label(__('admin.customers.customer.fields.updated_at')),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
                 Fieldset::make(__('admin.customers.customer.fields.addresses'))
                     ->schema([
                         // User addresses editor
@@ -109,8 +111,7 @@ class CustomerForm
                             ->columnSpanFull()
                             ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
                             ->collapsed(),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
                 Fieldset::make(__('admin.customers.customer.fields.store_data'))
                     ->schema([
 
@@ -130,8 +131,7 @@ class CustomerForm
                                 ->where('is_default', true)
                                 ->value('id')
                             )
-                            ->label(__('admin.customers.customer.fields.customer_group_id'))
-                            ->columnSpanFull(),
+                            ->label(__('admin.customers.customer.fields.customer_group_id')),
 
                         // Customer language
                         Select::make('locale')
@@ -143,7 +143,6 @@ class CustomerForm
                                     ->pluck('name', 'locale')
                             )
                             ->required()
-                            ->columnSpanFull()
                             ->label(__('admin.customers.customer.fields.locale')),
 
                         // Password
@@ -154,10 +153,8 @@ class CustomerForm
                             ->dehydrated(fn(?string $state) => filled($state))
                             ->dehydrateStateUsing(fn(?string $state) => filled($state) ? Hash::make($state) : null)
                             ->placeholder(__('admin.customers.customer.fields.password'))
-                            ->label(__('admin.customers.customer.fields.password'))
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull(),
+                            ->label(__('admin.customers.customer.fields.password')),
+                    ]),
 
                 Fieldset::make(__('admin.customers.customer.fields.email_data'))
                     ->schema([
@@ -172,8 +169,7 @@ class CustomerForm
                         Toggle::make('marketing_opt_in')
                             ->default(false)
                             ->label(__('admin.customers.customer.fields.marketing_opt_in')),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
                 Fieldset::make(__('admin.customers.customer.fields.company_data'))
                     ->schema([
                         TextInput::make('company_name')
@@ -183,7 +179,6 @@ class CustomerForm
                             ->placeholder(__('admin.customers.customer.fields.vat_number'))
                             ->label(__('admin.customers.customer.fields.vat_number')),
                     ])
-                    ->columnSpanFull()
                     ->label(__('admin.customers.customer.fields.company_data')),
                 Fieldset::make(__('admin.customers.customer.fields.privacy_data'))
                     ->schema([
@@ -195,8 +190,7 @@ class CustomerForm
                             ->dehydrated(false)
                             ->disabled()
                             ->label(__('admin.customers.customer.fields.anonymized_at')),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
 
             ])
             ->statePath('data');

@@ -64,22 +64,27 @@ class StoreSettings extends Page
                                     TextInput::make('delivery_settings.transit_min')
                                         ->numeric()
                                         ->label(__('admin.store_settings.delivery_settings.fields.transit_min'))
+                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.transit_min'))
                                         ->helperText(__('admin.store_settings.delivery_settings.helpers.transit')),
                                     TextInput::make('delivery_settings.transit_max')
                                         ->numeric()
                                         ->label(__('admin.store_settings.delivery_settings.fields.transit_max'))
+                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.transit_max'))
                                         ->helperText(__('admin.store_settings.delivery_settings.helpers.transit')),
                                     TextInput::make('delivery_settings.handling_min')
                                         ->numeric()
                                         ->label(__('admin.store_settings.delivery_settings.fields.handling_min'))
+                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.handling_min'))
                                         ->helperText(__('admin.store_settings.delivery_settings.helpers.handling')),
                                     TextInput::make('delivery_settings.handling_max')
                                         ->numeric()
                                         ->label(__('admin.store_settings.delivery_settings.fields.handling_max'))
+                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.handling_max'))
                                         ->helperText(__('admin.store_settings.delivery_settings.helpers.handling')),
                                     TextInput::make('delivery_settings.return_cost')
                                         ->numeric()
                                         ->label(__('admin.store_settings.delivery_settings.fields.return_cost'))
+                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.return_cost'))
                                         ->helperText(__('admin.store_settings.delivery_settings.helpers.return_cost')),
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.checkout_settings'))
@@ -90,8 +95,8 @@ class StoreSettings extends Page
                                             collect($currencies)->map(
                                                 fn($currency) =>
                                                 TextInput::make("checkout_settings.minimal_order_total.{$currency->iso_code}")
+                                                    ->placeholder(__('admin.store_settings.checkout_settings.fields.minimal_order_total'))
                                                     ->required()
-                                                    ->columnSpanFull()
                                                     ->prefix($currency->sign)
                                                     ->hiddenLabel()
                                                     ->numeric()
@@ -99,12 +104,10 @@ class StoreSettings extends Page
                                                     ->default(0)
                                                     ->inputMode('decimal')
                                                     ->required()
-                                                    ->label(__('admin.store_settings.checkout_settings.fields.minimal_order_total'))
                                                     ->hiddenLabel()
                                             )->all()
                                         )
-                                        ->label(__('admin.store_settings.checkout_settings.fields.minimal_order_total'))
-                                        ->columnSpanFull(),
+                                        ->label(__('admin.store_settings.checkout_settings.fields.minimal_order_total')),
 
                                     Fieldset::make(__('admin.store_settings.checkout_settings.fields.agreement_pages'))
                                         ->schema([
@@ -116,7 +119,6 @@ class StoreSettings extends Page
                                                 )
                                                 ->searchable()
                                                 ->preload()
-                                                ->columnSpanFull()
                                                 ->label(__('admin.store_settings.checkout_settings.fields.service_agreement_page'))
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.service_agreement_page')),
 
@@ -128,7 +130,6 @@ class StoreSettings extends Page
                                                 )
                                                 ->searchable()
                                                 ->preload()
-                                                ->columnSpanFull()
                                                 ->label(__('admin.store_settings.checkout_settings.fields.return_rules_page'))
                                                 ->helperText(__('admin.store_settings.checkout_settings.helpers.return_rules_page'))
                                         ]),
@@ -163,9 +164,9 @@ class StoreSettings extends Page
                                                                 fn($language) =>
                                                                 TextInput::make("label.{$language->locale}")
                                                                     ->required()
-                                                                    ->columnSpanFull()
                                                                     ->prefix($language->locale)
                                                                     ->label(__('admin.store_settings.checkout_settings.fields.field_name'))
+                                                                    ->placeholder(__('admin.store_settings.checkout_settings.fields.field_name'))
                                                                     ->hiddenLabel()
                                                             )->all()
                                                         ),
@@ -175,8 +176,7 @@ class StoreSettings extends Page
                                                 ->reorderable()
                                                 ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
                                                 ->label(__('admin.store_settings.checkout_settings.fields.checkout_address_fields'))
-                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.checkout_fields'))
-                                                ->columnSpanFull(),
+                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.checkout_fields')),
                                             
                                             // Additional custom fields
                                             Repeater::make('checkout_settings.custom_fields')
@@ -202,9 +202,9 @@ class StoreSettings extends Page
                                                                 fn($language) =>
                                                                 TextInput::make("label.{$language->locale}")
                                                                     ->required()
-                                                                    ->columnSpanFull()
                                                                     ->prefix($language->locale)
                                                                     ->label(__('admin.store_settings.checkout_settings.fields.field_name'))
+                                                                    ->placeholder(__('admin.store_settings.checkout_settings.fields.field_name'))
                                                                     ->hiddenLabel()
                                                             )->all()
                                                         ),
@@ -214,8 +214,7 @@ class StoreSettings extends Page
                                                 ->reorderable()
                                                 ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
                                                 ->label(__('admin.store_settings.checkout_settings.fields.checkout_custom_fields'))
-                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.custom_fields'))
-                                                ->columnSpanFull(),
+                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.custom_fields')),
                                         ]),
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.legal_settings'))
@@ -243,7 +242,8 @@ class StoreSettings extends Page
                                 ->schema([
 
                                 ]),
-                        ]),
+                        ])
+                        ->contained(false),
                 ])
                 ->livewireSubmitHandler('save')
                 ->footer([
