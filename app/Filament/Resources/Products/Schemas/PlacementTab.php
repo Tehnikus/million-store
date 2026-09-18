@@ -12,6 +12,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Section;
@@ -25,7 +26,7 @@ class PlacementTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('placement')
-            ->badge(fn($record) => FacetIndex::where('product_id', $record->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count())
+            ->badge(fn($record) => FacetIndex::where('product_id', $record->id)->where('store_id', $store->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count())
             ->schema([
 
                 // Category part 
@@ -34,6 +35,7 @@ class PlacementTab
                     ->schema([
                         Repeater::make('facet_categories')
                             ->table([
+                                TableColumn::make(__('admin.catalog.products.fields.category'))->markAsRequired(),
                                 TableColumn::make(__('admin.catalog.products.fields.category'))->markAsRequired(),
                                 TableColumn::make(__('admin.catalog.products.fields.is_primary_category'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
                             ])
@@ -46,10 +48,9 @@ class PlacementTab
                                     ->required()
                                     ->distinct()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                    ->afterStateUpdated(
-                                        fn(Set $set, ?string $state) =>
-                                        $set('facet_group_id', Category::find($state)?->parent_id ?? 0)
-                                    )
+                                    ->afterStateUpdated(function(Set $set, ?string $state) use ($store) {
+                                        $set('facet_group_id', Category::where('store_id', $store->id)->where('id', $state)->first()?->parent_id ?? 0);
+                                    })
                                     ->live(),
                                 Hidden::make('facet_group_id')
                                     ->default(0),
@@ -99,10 +100,9 @@ class PlacementTab
                                     ->required()
                                     ->distinct()
                                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                    ->afterStateUpdated(
-                                        fn(Set $set, ?string $state) =>
-                                        $set('facet_group_id', Manufacturer::find($state)?->parent_id ?? 0)
-                                    )
+                                    ->afterStateUpdated(function(Set $set, ?string $state) use ($store) {
+                                        $set('facet_group_id', Manufacturer::where('store_id', $store->id)->where('id', $state)->first()?->parent_id ?? 0);
+                                    })
                                     ->live(),
                                 Hidden::make('facet_group_id')
                                     ->default(0),
