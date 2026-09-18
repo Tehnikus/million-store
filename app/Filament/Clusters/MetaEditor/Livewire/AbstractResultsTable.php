@@ -265,7 +265,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
             'minPrice'      => null,
             'maxPrice'      => null,
             'ratingAvg'     => null,
-            'productCount'  => null,
+            'productCount'  => $row['product_count'] ?? null,
         ];
     }
 

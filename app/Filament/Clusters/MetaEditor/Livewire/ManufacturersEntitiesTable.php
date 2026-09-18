@@ -2,7 +2,9 @@
 
 namespace App\Filament\Clusters\MetaEditor\Livewire;
 
+use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\Manufacturers\ManufacturerResource;
+use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\Manufacturer;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
@@ -41,7 +43,7 @@ class ManufacturersEntitiesTable extends AbstractEntitiesTable
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
             'parent'            => Manufacturer::find($record->parent_id)?->getTranslations('name'),
-            'product_count'     => null, // TODO
+            'product_count'     => FacetIndex::where('facet_value_id', $record->id)->where('facet_group_id', $record->parent_id ?? 0)->where('facet_type_id', FacetType::Manufacturer)->where('store_id', $record->store_id)->count()
         ];
     }
 }

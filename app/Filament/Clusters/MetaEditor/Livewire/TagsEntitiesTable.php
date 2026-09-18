@@ -2,7 +2,9 @@
 
 namespace App\Filament\Clusters\MetaEditor\Livewire;
 
+use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\Tags\TagResource;
+use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\Tag;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
@@ -49,7 +51,7 @@ class TagsEntitiesTable extends AbstractEntitiesTable
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
             'parent'            => null, // TODO Add parent facet page here
-            'product_count'     => null, // TODO
+            'product_count'     => FacetIndex::where('facet_value_id', $record->id)->where('facet_group_id', $record->parent_id ?? 0)->where('facet_type_id', FacetType::Tag)->where('store_id', $record->store_id)->count()
         ];
     }
 }
