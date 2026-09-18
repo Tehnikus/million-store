@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Attribute;
 use App\Models\Catalog\AttributeValue;
-use App\Models\Catalog\ProductAttributeValue;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -101,7 +100,7 @@ class AttributesTab
                     ])
                     ->maxItems(fn() => static::attributeChoices($store->id)->count())
                     ->collapsible()
-                    ->collapsed(fn($operation) => $operation !== 'create')
+                    // ->collapsed(fn($operation) => $operation !== 'create')
                     ->itemLabel(function (array $state) use ($store): ?string {
                         $attributeName = static::attributeChoices($store->id)->get($state['attribute_id'] ?? null);
 
@@ -151,12 +150,11 @@ class AttributesTab
                             RichEditor::make("description.{$language->locale}")
                                 ->columnSpanFull()
                                 ->placeholder(__('admin.catalog.attributes.fields.description'))
-                                ->toolbarButtons([])
-                                ->floatingToolbars([
+                                ->toolbarButtons([
                                     'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo'],
                                 ])
                                 ->extraInputAttributes([
-                                    'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
+                                    'style' => 'min-height: 7rem; max-height: 18vh; overflow-y: auto;'
                                 ])
                                 ->hiddenLabel(),
                         ])

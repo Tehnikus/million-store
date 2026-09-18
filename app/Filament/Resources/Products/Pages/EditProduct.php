@@ -60,42 +60,6 @@ class EditProduct extends EditRecord
         return $data;
     }
 
-
-    // Fill form data before render
-    // protected function mutateFormDataBeforeFill(array $data): array
-    // {
-    //     $storeId = Filament::getTenant()->id;
-    //     // Fill facet data
-    //     // Fill category facet data
-    //     $data['facet_categories'] = $this->record->categoryFacets()
-    //         ->where('store_id', $storeId)
-    //         ->orderBy('sort_order')
-    //         ->get()
-    //         ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id, 'facet_group_id' => $facet->facet_group_id])
-    //         ->values()
-    //         ->all();
-
-    //     // Fill manufacturer facet data
-    //     $data['facet_manufacturers'] = $this->record->manufacturerFacets()
-    //         ->where('store_id', $storeId)
-    //         ->orderBy('sort_order')
-    //         ->get()
-    //         ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id, 'facet_group_id' => $facet->facet_group_id])
-    //         ->values()
-    //         ->all();
-
-    //     // Fill tag facet data
-    //     $data['facet_tags'] = $this->record->tagFacets()
-    //         ->where('store_id', $storeId)
-    //         ->orderBy('sort_order')
-    //         ->get()
-    //         ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id])
-    //         ->values()
-    //         ->all();
-
-    //     return $data;
-    // }
-
     // Save product
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
@@ -111,5 +75,9 @@ class EditProduct extends EditRecord
             DeleteAction::make(),
         ];
     }
-    
+
+    // public function hasCombinedRelationManagerTabsWithContent(): bool
+    // {
+    //     return true;
+    // }
 }

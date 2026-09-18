@@ -4,14 +4,10 @@ namespace App\Domain\Catalog\Actions;
 
 use App\Domain\Catalog\FacetType;
 use App\Models\Catalog\FacetIndex;
-use App\Models\Catalog\Product;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Rebuilds facet_index rows for a single (product, store, facet type) scope.
- * Delete + insert pattern (see architecture plan section 6.3) safe because
- * facet_index for navigation types (category/manufacturer/attribute/tag)
- * has no other consumer of its own state besides this rebuild.
  *
  * @param array<int, array{facet_group_id?: int|null, facet_value_id: int, sort_order?: int}> $rows
  */
