@@ -29,7 +29,6 @@ return new class extends Migration
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
             $table->jsonb('images')->nullable()->default('{}');
-            $table->tinyText('robots')->default('noindex, nofollow');
             $table->timestamps();
 
             $table->index(['store_id', 'is_active']);

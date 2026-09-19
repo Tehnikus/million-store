@@ -23,7 +23,6 @@ return new class extends Migration {
             $table->jsonb('seo_keywords')->nullable()->default('{}');
             $table->jsonb('avatar')->nullable()->default('{}');            
             $table->jsonb('social_links')->nullable()->default('[]'); // [{"platform": "facebook", "url": "..."}, {"platform": "instagram", "url": "..."}]
-            $table->tinyText('robots')->default('noindex, nofollow');
             $table->boolean('is_active')->default(true);
             $table->unsignedBigInteger('sort_order')->default(1);
             $table->timestamps();
