@@ -2,25 +2,23 @@
 
 namespace App\Filament\Schemas\Tabs;
 
-// use App\Filament\Support\AdminMenu\NavigationItem;
-// use App\Models\Seo\MetaTagFormula;
 use App\Filament\Schemas\Fields\SlugInput;
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Models\Seo\MetaTagFormula;
 use Filament\Actions\Action;
-// use Filament\Forms\Components\Hidden;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\RichEditor;
-// use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-// use Filament\Facades\Filament;
-use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Support\Enums\IconSize;
 use Illuminate\Support\Str;
 use Illuminate\Support\HtmlString;
 use Illuminate\Database\Eloquent\Model;
 
-use Filament\Schemas\Components\Component;
 
 class DescriptionTab
 {
@@ -35,27 +33,11 @@ class DescriptionTab
     {
 
         $withSlug = $config['withSlug'] ?? false;
-        // $sluggableType  = $config['sluggableType']  ?? null;
-
-        // $excludeSelf = function (?Model $owner) use ($sluggableType) {
-        //     if (!$owner) {
-        //         return null;
-        //     }
-
-        //     $type = $sluggableType ?? $owner::class;
-
-        //     return fn($query) => $query->where(function ($q) use ($type, $owner) {
-        //         $q->where('sluggable_type', '!=', $type)
-        //             ->orWhere('sluggable_id', '!=', $owner->getKey());
-        //     });
-        // };
 
         return [
             TextInput::make("name.{$language->locale}")
                 ->label(__('admin.common.fields.name'))
                 ->placeholder(__('admin.common.fields.name'))
-                ->helperText(__('admin.common.helpers.name'))
-                ->columnSpanFull()
                 ->live(onBlur: false, debounce: 500, condition: $withSlug === true)
                 ->required()
                 ->afterStateUpdated(function (Set $set, Get $get, $component, $livewire, ?string $state, ?Model $record) use ($language, $withSlug) {
@@ -74,68 +56,7 @@ class DescriptionTab
                     SlugInput::validateSlugLive($livewire, $slugPath, $newSlug, $language->id, SlugInput::excludeSelfQuery($record));
                 }),
 
-                ...($withSlug === true ? SlugInput::makeSlug($language, []) : []),
-
-            Fieldset::make('SEO')
-                ->schema([
-                    TextInput::make("h1.{$language->locale}")
-                        ->label(__('admin.common.fields.h1'))
-                        ->placeholder(__('admin.common.fields.h1'))
-                        ->helperText(__('admin.common.helpers.h1'))
-                        ->columnSpanFull()
-                        ->suffixActions([
-                            Action::make(__('admin.common.buttons.paste_title'))
-                                ->icon('heroicon-o-clipboard-document-check')
-                                ->actionJs(<<<JS
-                                    \$set('h1.{$language->locale}',  \$get('name.{$language->locale}'))
-                                    JS)
-                                ->tooltip(__('admin.common.buttons.paste_h1')),
-                            // Action::make('Generate')
-                            //     ->icon(NavigationItem::MetaEditor->icon())
-                            //     ->visible(fn (string $operation): bool => $operation === 'edit')
-                            //     ->schema([
-                            //         Select::make('formula_id')
-                            //             ->label(__('admin.seo.meta_editor.fields.formula'))
-                            //             ->options(fn () => MetaTagFormula::where('store_id', Filament::getTenant()->id)->pluck('formula'))
-                            //             ->required()
-                            //     ])
-                            //     ->action(function(?Model $record) {
-                            //         dd($record);
-                            //     })
-                        ]),
-        
-                    TextInput::make("meta_title.{$language->locale}")
-                        ->label(__('admin.common.fields.meta_title'))
-                        ->placeholder(__('admin.common.fields.meta_title'))
-                        ->helperText(__('admin.common.helpers.meta_title'))
-                        ->columnSpanFull()
-                        ->suffixAction(
-                            Action::make(__('admin.common.buttons.paste_title'))
-                                ->icon('heroicon-o-clipboard-document-check')
-                                ->actionJs(<<<JS
-                                    \$set('meta_title.{$language->locale}', \$get('h1.{$language->locale}') || \$get('name.{$language->locale}'))
-                                    JS)
-                                ->tooltip(__('admin.common.buttons.paste_title'))
-                        )
-                        ->hint(self::characterCountHint(max: 160, recommended: 60, min: 10))
-                        ->columnSpanFull(),
-        
-                    Textarea::make("meta_description.{$language->locale}")
-                        ->label(__('admin.common.fields.meta_description'))
-                        ->placeholder(__('admin.common.fields.meta_description'))
-                        ->helperText(__('admin.common.helpers.meta_description'))
-                        ->hintAction(
-                            Action::make(__('admin.common.buttons.paste_description'))
-                                ->icon('heroicon-o-clipboard-document-check')
-                                ->actionJs(<<<JS
-                                    \$set('meta_description.{$language->locale}', ((\$get('meta_title.{$language->locale}') ?? '') + ' ' + (\$state ?? '')).trim())
-                                    JS)
-                                ->hiddenLabel()
-                                ->tooltip(__('admin.common.buttons.paste_description'))
-                        )
-                        ->hint(self::characterCountHint(max: 250, recommended: 160, min: 20))
-                        ->columnSpanFull(),
-                ]),
+            ...($withSlug === true ? SlugInput::makeSlug($language, []) : []),
 
             RichEditor::make("description_short.{$language->locale}")
                 ->label(__('admin.common.fields.description_short'))
@@ -184,6 +105,57 @@ class DescriptionTab
                 ->extraInputAttributes([
                     'style' => 'min-height: 20rem; max-height: 70vh; overflow-y: auto;'
                 ]),
+
+
+            TextInput::make("h1.{$language->locale}")
+                ->label(__('admin.common.fields.h1'))
+                ->placeholder(__('admin.common.fields.h1'))
+                ->helperText(__('admin.common.helpers.h1'))
+                ->suffixActions([
+                    Action::make(__('admin.common.buttons.paste_title'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->actionJs(<<<JS
+                            \$set('h1.{$language->locale}',  \$get('name.{$language->locale}'))
+                            JS)
+                        ->tooltip(__('admin.common.buttons.paste_h1')),
+                    self::metaEditorGenerate()
+                ]),
+
+            TextInput::make("meta_title.{$language->locale}")
+                ->label(__('admin.common.fields.meta_title'))
+                ->placeholder(__('admin.common.fields.meta_title'))
+                ->helperText(__('admin.common.helpers.meta_title'))
+                ->suffixActions([
+                    Action::make(__('admin.common.buttons.paste_title'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->actionJs(<<<JS
+                            \$set('meta_title.{$language->locale}', \$get('h1.{$language->locale}') || \$get('name.{$language->locale}'))
+                            JS)
+                        ->tooltip(__('admin.common.buttons.paste_title')),
+                    self::metaEditorGenerate()
+                ])
+                ->hint(self::characterCountHint(max: 160, recommended: 60, min: 10))
+                ->columnSpanFull(),
+
+            Textarea::make("meta_description.{$language->locale}")
+                ->label(__('admin.common.fields.meta_description'))
+                ->placeholder(__('admin.common.fields.meta_description'))
+                ->helperText(__('admin.common.helpers.meta_description'))
+                ->hintActions([
+                    Action::make(__('admin.common.buttons.paste_description'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->actionJs(<<<JS
+                            \$set('meta_description.{$language->locale}', ((\$get('meta_title.{$language->locale}') ?? '') + ' ' + (\$state ?? '')).trim())
+                            JS)
+                        ->hiddenLabel()
+                        ->tooltip(__('admin.common.buttons.paste_description'))
+                        ->iconSize(IconSize::Medium),
+                    self::metaEditorGenerate()
+                        ->hiddenLabel()
+                        ->iconSize(IconSize::Medium)
+                ])
+                ->hint(self::characterCountHint(max: 250, recommended: 160, min: 20))
+                ->columnSpanFull(),
         ];
     }
 
@@ -204,6 +176,27 @@ class DescriptionTab
                 :style="{ color: color }"
             ></span>
             HTML);
+    }
+
+    private static function metaEditorGenerate(): Action
+    {
+        return Action::make('Generate')
+            ->icon(NavigationItem::MetaEditor->icon())
+            ->color('info')
+            ->tooltip(__('admin.common.buttons.generate'))
+            // ->visible(fn (string $operation): bool => $operation === 'edit')
+            ->schema([
+                Select::make('formula_id')
+                    ->label(__('admin.seo.meta_editor.fields.formula'))
+                    ->options(fn() => MetaTagFormula::where('store_id', Filament::getTenant()->id)->pluck('formula'))
+                    ->required()
+                    ->native(false)
+                    ->searchable()
+                    ->preload()
+            ])
+            ->action(function (?Model $record) {
+                dd($record);
+            });
     }
 
     private static function label(): string

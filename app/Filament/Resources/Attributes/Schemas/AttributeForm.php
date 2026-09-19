@@ -114,8 +114,7 @@ class AttributeForm
                                                         $slugPath = $component->getContainer()->getStatePath() . ".slugs_{$language->id}";
                                                         SlugInput::validateSlugLive($livewire, $slugPath, $groupSlug . $valueSlug, $language->id, SlugInput::excludeSelfQuery($record));
                                                     })
-                                                    ->hiddenLabel()
-                                                    ->columnSpanFull(),
+                                                    ->hiddenLabel(),
 
                                                 RichEditor::make("description.{$language->locale}")
                                                     ->columnSpanFull()

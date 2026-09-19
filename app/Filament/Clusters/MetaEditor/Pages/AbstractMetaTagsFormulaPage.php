@@ -9,6 +9,7 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -56,24 +57,30 @@ abstract class AbstractMetaTagsFormulaPage extends Page
                         ->hiddenLabel()
                         ->table([
                             TableColumn::make(__('admin.seo.meta_editor.fields.formula'))->markAsRequired(),
-                            TableColumn::make(__('admin.seo.meta_editor.fields.target_field'))->width('180px')->markAsRequired(),
-                            TableColumn::make(__('admin.seo.meta_editor.fields.locale'))->width('100px')->markAsRequired(),
+                            TableColumn::make(__('admin.seo.meta_editor.fields.target_field'))->width('140px')->markAsRequired(),
+                            TableColumn::make(__('admin.seo.meta_editor.fields.locale'))->width('140px')->markAsRequired(),
                             TableColumn::make(__('admin.seo.meta_editor.fields.currency_id'))->width('140px')->markAsRequired(),
                         ])
                         ->schema([
-                            TextInput::make('formula')
+                            Textarea::make('formula')
                                 ->required()
                                 ->placeholder(__('admin.seo.meta_editor.helpers.formula_placeholder')),
 
                             Select::make('target_field')
+                                ->native()
+                                ->placeholder(__('admin.seo.meta_editor.fields.target_field'))
                                 ->options(self::metaFields())
                                 ->required(),
     
                             Select::make('locale')
-                                ->options($languages->mapWithKeys(fn ($lang) => [$lang->locale => $lang->locale]))
+                                ->native()
+                                ->placeholder(__('admin.seo.meta_editor.fields.locale'))
+                                ->options($languages->mapWithKeys(fn ($lang) => [$lang->locale => $lang->name]))
                                 ->required(),
     
                             Select::make('currency_id')
+                                ->native()
+                                ->placeholder(__('admin.seo.meta_editor.fields.currency_id'))
                                 ->options($currencies->mapWithKeys(fn ($c) => [$c->id => $c->iso_code]))
                                 ->required(),
 

@@ -71,7 +71,6 @@ class OptionForm
                                         'checkbox'  => __('admin.catalog.options.fields.checkbox'),
                                     ])
                                     ->required()
-                                    ->columnSpanFull()
                                     ->label(__('admin.catalog.options.fields.type'))
                                     ->helperText(__('admin.catalog.options.helpers.type')),
 

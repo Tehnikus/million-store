@@ -103,17 +103,17 @@ class ProductsTable
                     ->width('100px')
                     ->alignment(Alignment::Center), // or ->suffix($sign) TODO
 
-                TextColumn::make('discount_price')
-                    ->label(__('admin.catalog.products.fields.discount'))
-                    ->getStateUsing(function (Product $record) use ($defaultCurrencyId) {
-                        $tier = $record->priceTiers->firstWhere('is_discount', true);
-                        $price = $tier?->prices->firstWhere('currency_id', $defaultCurrencyId);
+                // TextColumn::make('discount_price')
+                //     ->label(__('admin.catalog.products.fields.discount'))
+                //     ->getStateUsing(function (Product $record) use ($defaultCurrencyId) {
+                //         $tier = $record->priceTiers->firstWhere('is_discount', true);
+                //         $price = $tier?->prices->firstWhere('currency_id', $defaultCurrencyId);
 
-                        return $price?->price;
-                    })
-                    ->placeholder('--')
-                    ->width('100px')
-                    ->alignment(Alignment::Center),
+                //         return $price?->price;
+                //     })
+                //     ->placeholder('--')
+                //     ->width('100px')
+                //     ->alignment(Alignment::Center),
 
                 // Product status: if it is active and if exists in current store
                 // IconColumn::make('is_active')

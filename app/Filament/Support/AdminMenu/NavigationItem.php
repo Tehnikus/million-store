@@ -146,7 +146,7 @@ enum NavigationItem: string
             self::Notifications     => 'heroicon-o-paper-airplane',
 
             // Blog
-            self::BlogPosts         => 'heroicon-o-pencil-square',
+            self::BlogPosts         => 'heroicon-o-pencil',
             self::BlogAuthors       => 'heroicon-o-user-circle',
             self::BlogTags          => 'heroicon-o-hashtag',
             self::BlogComments      => 'heroicon-o-chat-bubble-left',

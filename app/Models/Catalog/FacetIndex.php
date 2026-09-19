@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FacetIndex extends Model
 {
     protected $table = 'facet_index';
+    public $timestamps = false;
     
     protected $fillable = [
         'product_id', 

@@ -48,7 +48,6 @@ class BlogAuthorForm
                             ->reorderable()
                             ->addActionLabel(__('admin.blog.authors.buttons.add_social_link'))
                             ->compact()
-                            ->columnSpanFull()
                             ->hiddenLabel()
                             ->table([
                                 TableColumn::make(__('admin.blog.authors.fields.social_platform'))->width('200px'),
@@ -92,8 +91,7 @@ class BlogAuthorForm
 
                                 ])
                         )
-                    ])
-                    ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

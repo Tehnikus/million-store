@@ -2,8 +2,10 @@
 
 namespace App\Filament\Clusters\MetaEditor\Livewire;
 
+use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Models\Catalog\Category;
+use App\Models\Catalog\FacetIndex;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,8 +50,8 @@ class CategoriesEntitiesTable extends AbstractEntitiesTable
             'meta_title'        => $record->getTranslations('meta_title'),
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
-            'parent'            => Category::find($record->parent_id)?->getTranslations('name'),
-            'product_count'     => null, // TODO
+            'parent'            => $record?->parent_id ? Category::find($record?->parent_id)?->getTranslations('name') : null,
+            'product_count'     => FacetIndex::where('facet_value_id', $record->id)->where('facet_group_id', $record->parent_id ?? 0)->where('facet_type_id', FacetType::Category)->where('store_id', $record->store_id)->count()
         ];
     }
 }

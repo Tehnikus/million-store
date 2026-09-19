@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
 use App\Domain\Catalog\FacetType;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
@@ -91,6 +92,25 @@ class Manufacturer extends Model
         return $this->belongsToMany(Product::class, 'facet_index', 'facet_value_id', 'product_id')
             ->withPivotValue('facet_type_id', FacetType::Manufacturer->value)
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    }
+
+    // Cleanup facet index on delete
+    use HasFacetIndexCleanup;
+    public function facetType(): FacetType
+    {
+        return FacetType::Manufacturer;
+    }
+
+    // Update facet_group_id if manufacturer->parent_id was changed
+    protected static function booted(): void
+    {
+        static::updated(function (Manufacturer $manufacturer) {
+            FacetIndex::where('facet_type_id', FacetType::Manufacturer)
+                ->where('facet_value_id', $manufacturer->id)
+                ->where('store_id', $manufacturer->store_id)
+                ->whereNot('facet_group_id', '=', $manufacturer->parent_id)
+                ->update(['facet_group_id' => $manufacturer->parent_id ?? 0]);
+        });
     }
 
     public function imageColumns(): array

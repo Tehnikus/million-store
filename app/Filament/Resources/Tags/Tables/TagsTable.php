@@ -4,10 +4,13 @@ namespace App\Filament\Resources\Tags\Tables;
 
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
+use App\Models\Catalog\Tag;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Support\Enums\Alignment;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
@@ -15,6 +18,7 @@ class TagsTable
 {
     public static function configure(Table $table): Table
     {
+        $store = Filament::getTenant();
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
@@ -24,6 +28,15 @@ class TagsTable
                     ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
                     ->wrapHeader()
                     ->label(__('admin.catalog.tags.model_label_singular')),
+
+                TextColumn::make('products')
+                    ->getStateUsing(fn(Tag $record) => $record->products()->where('store_id', $store->id)->count())
+                    ->color(fn($record) => $record->products()->where('store_id', $store->id)->count() > 0 ? 'success' : 'danger')
+                    ->sortable()
+                    ->badge()
+                    ->width('1%')
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.products.navigation_label')),
 
                 ToggleColumn::make('is_active')
                     ->sortable()

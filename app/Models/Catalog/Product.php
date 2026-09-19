@@ -34,15 +34,20 @@ class Product extends Model
         return $this->hasMany(ProductDescription::class);
     }
 
-    public function productOptions(): HasMany
+    public function reviews(): HasMany
     {
-        return $this->hasMany(ProductOption::class);
+        return $this->hasMany(ProductReview::class, 'product_id', 'id');
     }
+
+    // public function productOptions(): HasMany
+    // {
+    //     return $this->hasMany(ProductOption::class);
+    // }
     
-    public function productAttributes(): HasMany
-    {
-        return $this->hasMany(ProductAttribute::class);
-    }
+    // public function productAttributes(): HasMany
+    // {
+    //     return $this->hasMany(ProductAttribute::class);
+    // }
 
     public function currentDescription(): ?ProductDescription
     {
@@ -79,27 +84,27 @@ class Product extends Model
             ->where('facet_type_id', FacetType::Tag->value);
     }
 
-    // Reverse category relation for ManageCategoryProducts
-    public function categories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class, 'facet_index', 'product_id', 'facet_value_id')
-            ->withPivotValue('facet_type_id', FacetType::Category->value)
-            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
-    }
+    // // Reverse category relation for ManageCategoryProducts
+    // public function categories(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Category::class, 'facet_index', 'product_id', 'facet_value_id')
+    //         ->withPivotValue('facet_type_id', FacetType::Category->value)
+    //         ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    // }
 
-    // Reverse manufacturer relation for ManageManufacturerProducts
-    public function manufacturers(): BelongsToMany
-    {
-        return $this->belongsToMany(Manufacturer::class, 'facet_index', 'product_id', 'facet_value_id')
-            ->withPivotValue('facet_type_id', FacetType::Manufacturer->value)
-            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
-    }
+    // // Reverse manufacturer relation for ManageManufacturerProducts
+    // public function manufacturers(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Manufacturer::class, 'facet_index', 'product_id', 'facet_value_id')
+    //         ->withPivotValue('facet_type_id', FacetType::Manufacturer->value)
+    //         ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    // }
 
-    // Reverse tag relation for ManageTagProducts
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(Tag::class, 'facet_index', 'product_id', 'facet_value_id')
-            ->withPivotValue('facet_type_id', FacetType::Tag->value)
-            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
-    }
+    // // Reverse tag relation for ManageTagProducts
+    // public function tags(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Tag::class, 'facet_index', 'product_id', 'facet_value_id')
+    //         ->withPivotValue('facet_type_id', FacetType::Tag->value)
+    //         ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    // }
 }

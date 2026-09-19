@@ -47,7 +47,6 @@ class BlogPostForm
                                     ->multiple()
                                     ->searchable()
                                     ->preload()
-                                    ->columnSpanFull()
                                     ->helperText(__('admin.blog.posts.helpers.tags')),
                                 Select::make('author_id')
                                     ->label(__('admin.blog.authors.model_label_singular'))
@@ -58,8 +57,7 @@ class BlogPostForm
                                     )
                                     ->getOptionLabelFromRecordUsing(fn(BlogAuthor $record) => $record->name)
                                     ->searchable()
-                                    ->preload()
-                                    ->columnSpanFull(),
+                                    ->preload(),
 
                                         Tabs::make('languages')
                                             ->schema([
@@ -81,8 +79,7 @@ class BlogPostForm
 
                             ]),
                         ImagesTab::make($store, $languages, ['type' => 'blog_post'])
-                    ])
-                    ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

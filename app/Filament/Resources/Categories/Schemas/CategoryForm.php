@@ -41,7 +41,6 @@ class CategoryForm
                                     ->getOptionLabelFromRecordUsing(fn(Category $record) => $record->name)
                                     ->searchable()
                                     ->preload()
-                                    ->columnSpanFull()
                                     ->helperText(__('admin.catalog.categories.helpers.parent_id')),
 
                                 Toggle::make('is_active')
@@ -71,8 +70,7 @@ class CategoryForm
 
                             ]),
                         ImagesTab::make($store, $languages, ['type' => 'category'])
-                    ])
-                    ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

@@ -51,8 +51,7 @@ class BlogTagForm
                                     ])
                             ]),
                         ImagesTab::make($store, $languages, ['type' => 'blog_tag'])
-                    ])
-                    ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

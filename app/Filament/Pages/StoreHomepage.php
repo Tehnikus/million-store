@@ -49,7 +49,7 @@ class StoreHomepage extends Page
                                     ->schema([
                                         Tabs::make("content.{$language->locale}")
                                             ->schema([
-                                                DescriptionTab::make($language, ['withSlug' => true]),
+                                                DescriptionTab::make($language, ['withSlug' => false]),
                                                 FaqTab::make($language),
                                                 HowToTab::make($language),
                                                 FooterTab::make($language),

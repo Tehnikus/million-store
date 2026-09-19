@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Tenancy\StoreWizard;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -13,6 +14,9 @@ use Filament\Pages\Dashboard;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\FusedGroup;
+use Filament\Schemas\Components\Tabs;
 use Filament\Support\Colors\Color;
 // use Filament\Widgets\AccountWidget;
 // use Filament\Widgets\FilamentInfoWidget;
@@ -102,15 +106,40 @@ class SupermasterPanelProvider extends PanelProvider
                     }
                 });
 
+                Tabs::configureUsing(function($tabs) {
+                    $tabs
+                        ->columnSpanFull()
+                        ->columns(1);
+                });
+
+                Fieldset::configureUsing(function($fieldset) {
+                    $fieldset
+                        ->columnSpanFull()
+                        ->columns(1);
+                });
+
+                FusedGroup::configureUsing(function($fusedGroup) {
+                    $fusedGroup
+                        ->columnSpanFull();
+                });
+
                 TextInput::configureUsing(function(TextInput $textInput) {
                     $textInput
-                        ->placeholder($textInput->getLabel() ?? '');
+                        ->placeholder($textInput->getLabel() ?? '')
+                        ->columnSpanFull();
+                });
+
+                Select::configureUsing(function($select) {
+                    $select
+                        ->native(false)
+                        ->columnSpanFull();
                 });
 
                 Repeater::configureUsing(function (Repeater $repeater): void {
                     $repeater
                         ->addActionAlignment('start')
-                        ->addAction(fn (Action $action) => $action->color('primary')->icon('heroicon-o-plus'));
+                        ->addAction(fn (Action $action) => $action->color('primary')->icon('heroicon-o-plus'))
+                        ->columnSpanFull();
                 });
             })
             ->sidebarCollapsibleOnDesktop() // Set admin main menu to collapsible

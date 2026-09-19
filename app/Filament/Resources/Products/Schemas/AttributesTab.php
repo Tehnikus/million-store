@@ -5,143 +5,129 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Attribute;
 use App\Models\Catalog\AttributeValue;
-use App\Models\Catalog\ProductAttributeValue;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 
-
 class AttributesTab
 {
-    public static function schema($storeId, $languages): array    
+    public static function make($store, $languages): Tab
     {
-        
-        return [
-            Repeater::make('productAttributes')
-                ->relationship('productAttributes', modifyQueryUsing: fn ($query) => $query
-                    ->where('store_id', $storeId)
-                )
-                ->schema([
-                    // Hidden::make('store_id')->default($storeId),
+        return Tab::make('attributes')
+            ->badge(fn($record) => self::countProductAttributes($record, $store))
+            ->schema([
+                Repeater::make('attributes_description')
+                    ->statePath('description.attributes_description')
+                    ->schema([
 
-                    Select::make('attribute_id')
-                        ->options(fn () => static::attributeChoices($storeId))
-                        ->afterStateUpdated(fn (Set $set) => $set('productAttributeValues', [])) // Also an array can be passed to create empty attribute value form TODO
-                        ->searchable()
-                        ->preload()
-                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                        ->required()
-                        ->live()
-                        ->label(__('admin.catalog.attributes.fields.group')),
+                        Select::make('attribute_id')
+                            ->options(fn() => static::attributeChoices($store->id))
+                            ->afterStateUpdated(fn(Set $set) => $set('attribute_values_description', [])) // Also an array can be passed to create empty attribute value form TODO
+                            ->searchable()
+                            ->preload()
+                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                            ->required()
+                            ->live()
+                            ->label(__('admin.catalog.attributes.fields.group')),
 
-                    Repeater::make('productAttributeValues')
-                        ->relationship('productAttributeValues')
-                        ->schema([
-
-                                // Product related data
+                        Repeater::make('attribute_values_description')
+                            ->schema([
                                 Group::make([
-                                     // Required
-                                    Hidden::make('store_id')->default($storeId),
-        
                                     // The form itself
                                     Select::make('attribute_value_id')
-                                        ->options(fn (Get $get) => static::attributeValueChoices($get('../../attribute_id')))
+                                        ->options(fn(Get $get) => static::attributeValueChoices($get('../../attribute_id')))
                                         ->required()
                                         ->live()
                                         ->searchable()
                                         ->preload()
                                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                        ->afterStateUpdated(function ($state, Set $set, $livewire) {
-                                            // Safely return if select is empty
-                                            if (blank($state)) return;
+                                        ->afterStateUpdated(function ($state, Set $set, Get $get, $livewire) use ($store) {
+                                            if (blank($state))
+                                                return;
 
-                                            $defaultAttributeData = AttributeValue::find($state)?->toArray();
-                                            if (!$defaultAttributeData) return;
+                                            $default = AttributeValue::find($state)?->toArray();
+                                            if (!$default)
+                                                return;
 
-                                            $productId = $livewire->getRecord()?->id;
+                                            $attributeId = $get('../../attribute_id');
+                                            $record = $livewire->getRecord();
 
-                                            $overrideAttributeData = $productId
-                                                ? ProductAttributeValue::query()
-                                                    ->where('product_id', $productId)
-                                                    ->where('attribute_value_id', $state)
-                                                    ->first()
-                                                    ?->toArray()
+                                            $override = $record
+                                                ? $record->descriptions()->where('store_id', $store->id)->first()?->attributes_description
                                                 : null;
 
-                                            foreach ($defaultAttributeData['name'] as $locale => $name) {
-                                                $set("name.{$locale}", $overrideAttributeData['name'][$locale] ?? $name);
+                                            $overrideGroup = collect($override)->first(fn($g) => (int) ($g['attribute_id'] ?? null) === (int) $attributeId);
+                                            $valueOverride = collect($overrideGroup['attribute_values_description'] ?? [])
+                                                ->first(fn($v) => (int) ($v['attribute_value_id'] ?? null) === (int) $state) ?? [];
+
+                                            foreach ($default['name'] as $locale => $name) {
+                                                $set("name.{$locale}", $valueOverride['name'][$locale] ?? $name);
                                             }
-                                            foreach ($defaultAttributeData['description'] as $locale => $description) {
-                                                $set("description.{$locale}", $overrideAttributeData['description'][$locale] ?? $description);
+                                            foreach ($default['description'] as $locale => $description) {
+                                                $set("description.{$locale}", $valueOverride['description'][$locale] ?? $description);
                                             }
                                         }),
-    
-                                   
-                                    
                                 ])->columnSpan(1),
-    
+
                                 // Attribute value related data
                                 Group::make([
                                     ...self::attributeValueDescriptionsForm($languages)
                                 ])->columnSpan(4),
-                        ])
-                        ->minItems(1)
-                        ->default([])
-                        ->maxItems(fn (Get $get) => static::attributeValueChoices($get('attribute_id'))->count())
-                        ->collapsible()
-                        ->collapsed(fn($operation) => $operation !== 'create')
-                        ->itemLabel(function (array $state, Get $get): ?string {
-                            $attributeId = $get('attribute_id');
-                            return static::attributeValueChoices($attributeId)->get($state['attribute_value_id'] ?? null);
-                        })
-                        ->reorderable()
-                        ->orderColumn('sort_order')
-                        ->columns(5)
-                        ->addActionLabel(__('admin.catalog.products.buttons.add_attribute_value'))
-                        ->addActionAlignment('end')
-                        ->label(__('admin.catalog.attributes.fields.values'))
-                ])
-                ->maxItems(fn () => static::attributeChoices($storeId)->count())
-                ->collapsible()
-                ->collapsed(fn($operation) => $operation !== 'create')
-                ->itemLabel(function (array $state) use ($storeId): ?string {
-                    $attributeName = static::attributeChoices($storeId)->get($state['attribute_id'] ?? null);
+                            ])
+                            ->minItems(1)
+                            ->default([])
+                            ->maxItems(fn(Get $get) => static::attributeValueChoices($get('attribute_id'))->count())
+                            ->collapsible()
+                            ->collapsed(fn($operation) => $operation !== 'create')
+                            ->itemLabel(function (array $state, Get $get): ?string {
+                                $attributeId = $get('attribute_id');
+                                return static::attributeValueChoices($attributeId)->get($state['attribute_value_id'] ?? null);
+                            })
+                            ->reorderable()
+                            ->orderColumn('sort_order')
+                            ->columns(5)
+                            ->addActionLabel(__('admin.catalog.products.buttons.add_attribute_value'))
+                            ->addActionAlignment('end')
+                            ->label(__('admin.catalog.attributes.fields.values'))
+                    ])
+                    ->maxItems(fn() => static::attributeChoices($store->id)->count())
+                    ->collapsible()
+                    // ->collapsed(fn($operation) => $operation !== 'create')
+                    ->itemLabel(function (array $state) use ($store): ?string {
+                        $attributeName = static::attributeChoices($store->id)->get($state['attribute_id'] ?? null);
 
-                    if (blank($attributeName)) {
-                        return null;
-                    }
+                        if (blank($attributeName)) {
+                            return null;
+                        }
 
-                    $valueChoices = static::attributeValueChoices($state['attribute_id'] ?? null);
+                        $valueChoices = static::attributeValueChoices($state['attribute_id'] ?? null);
 
-                    $valueIds = filled($state['id'] ?? null)
-                        ? ProductAttributeValue::where('product_attribute_id', $state['id'])->pluck('attribute_value_id')
-                        : collect($state['productAttributeValues'] ?? [])->pluck('attribute_value_id');
+                        $valueNames = collect($state['attribute_values_description'] ?? [])
+                            ->pluck('attribute_value_id')
+                            ->filter()
+                            ->map(fn ($id) => $valueChoices->get($id))
+                            ->filter()
+                            ->implode(', ');
 
-                    $valueNames = $valueIds
-                        ->filter()
-                        ->map(fn ($id) => $valueChoices->get($id))
-                        ->filter()
-                        ->implode(', ');
-
-                    return $valueNames !== '' ? "{$attributeName}: {$valueNames}" : $attributeName;
-                })
-                ->reorderable()
-                ->orderColumn('sort_order')
-                ->addActionLabel(__('admin.catalog.products.buttons.add_attribute'))
-                ->label(__('admin.catalog.attributes.navigation_label'))
-                ->hiddenLabel()
-        ];
+                        return $valueNames !== '' ? "{$attributeName}: {$valueNames}" : $attributeName;
+                    })
+                    ->reorderable()
+                    ->orderColumn('sort_order')
+                    ->addActionLabel(__('admin.catalog.products.buttons.add_attribute'))
+                    ->label(__('admin.catalog.attributes.navigation_label'))
+                    ->hiddenLabel()
+            ]);
     }
 
-    protected static function attributeValueDescriptionsForm($languages)
+    private static function attributeValueDescriptionsForm($languages)
     {
         return [
             Group::make(
@@ -155,18 +141,16 @@ class AttributesTab
                                 ->prefix($language->locale)
                                 ->label(__('admin.catalog.attributes.fields.attribute_name'))
                                 ->placeholder(__('admin.catalog.attributes.fields.attribute_name'))
-                                ->hiddenLabel()
-                                ->columnSpanFull(),
+                                ->hiddenLabel(),
 
                             RichEditor::make("description.{$language->locale}")
                                 ->columnSpanFull()
                                 ->placeholder(__('admin.catalog.attributes.fields.description'))
-                                ->toolbarButtons([])
-                                ->floatingToolbars([
+                                ->toolbarButtons([
                                     'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo'],
                                 ])
                                 ->extraInputAttributes([
-                                    'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
+                                    'style' => 'min-height: 7rem; max-height: 18vh; overflow-y: auto;'
                                 ])
                                 ->hiddenLabel(),
                         ])
@@ -176,8 +160,7 @@ class AttributesTab
         ];
     }
 
-
-    protected static function attributeValueChoices(?int $attributeId): Collection
+    private static function attributeValueChoices(?int $attributeId): Collection
     {
         if (blank($attributeId)) {
             return collect();
@@ -199,7 +182,7 @@ class AttributesTab
         return $choices;
     }
 
-    protected static function attributeChoices(int $storeId): Collection
+    private static function attributeChoices(int $storeId): Collection
     {
         $key = "attribute_choices.{$storeId}";
 
@@ -217,8 +200,19 @@ class AttributesTab
         return $choices;
     }
 
-    public static function label(): string
+    private static function countProductAttributes($record, $store): mixed
     {
-        return __('admin.catalog.products.tabs.attributes');
+        if (!$record) return null;
+        $badge = 0;
+
+        $description = $record->descriptions()
+            ->where('store_id', $store->id)
+            ->first();
+
+        $badge = collect($description?->attributes_description ?? [])
+            ->sum(fn ($group) => count($group['attribute_values_description'] ?? []));
+
+        return $badge !== 0 ? $badge : null;
     }
+
 }

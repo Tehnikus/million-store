@@ -41,8 +41,8 @@ class ProductsEntitiesTable extends AbstractEntitiesTable
             'meta_title'        => $record->getTranslations('meta_title'),
             'h1'                => $record->getTranslations('h1'),
             'meta_description'  => $record->getTranslations('meta_description'),
-            'parent'            => Category::find($record->parent_id)?->getTranslations('name'),
-            'manufacturer'      => Manufacturer::find($record->manufacturer_id)?->getTranslations('name'),
+            'parent'            => $record?->primary_category_id ? Category::find($record?->primary_category_id)?->getTranslations('name') : null,
+            'manufacturer'      => $record?->primary_manufacturer_id ? Manufacturer::find($record?->primary_manufacturer_id)?->getTranslations('name') : null,
             'product_count'     => null, // TODO Option variant count
             'attributes_list'   => null, // TODO
             'options_list'      => null, // TODO

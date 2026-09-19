@@ -9,8 +9,10 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
@@ -20,6 +22,7 @@ class ManufacturersTable
 {
     public static function configure(Table $table): Table
     {
+        $store = Filament::getTenant();
         return $table
             ->columns([
                 ConversionImageColumn::make('images')
@@ -33,9 +36,19 @@ class ManufacturersTable
 
                 SelectColumn::make('parent_id')
                     ->optionsRelationship(name: 'parent', titleAttribute: 'name')
+                    ->native(false)
                     ->wrapHeader()
                     ->width('220px')
                     ->label(__('admin.catalog.manufacturers.fields.parent_id')),
+
+                TextColumn::make('products')
+                    ->getStateUsing(fn(Manufacturer $record) => $record->products()->where('store_id', $store->id)->count())
+                    ->color(fn($record) => $record->products()->where('store_id', $store->id)->count() > 0 ? 'success' : 'danger')
+                    ->sortable()
+                    ->badge()
+                    ->width('1%')
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.products.navigation_label')),
 
                 ToggleColumn::make('is_active')
                     ->sortable()
@@ -43,12 +56,12 @@ class ManufacturersTable
                     ->alignment(Alignment::Center)
                     ->label(__('admin.catalog.manufacturers.fields.is_active')),
 
-                ToggleColumn::make('show_in_facets')
-                    ->sortable()
-                    ->width('100px')
-                    ->wrapHeader()
-                    ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.manufacturers.fields.show_in_facets')),
+                // ToggleColumn::make('show_in_facets')
+                //     ->sortable()
+                //     ->width('100px')
+                //     ->wrapHeader()
+                //     ->alignment(Alignment::Center)
+                //     ->label(__('admin.catalog.manufacturers.fields.show_in_facets')),
                 
             ])
             ->defaultSort('sort_order')

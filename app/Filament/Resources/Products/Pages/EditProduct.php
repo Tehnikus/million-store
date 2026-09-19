@@ -2,72 +2,63 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
-use App\Domain\Catalog\Actions\SyncProductFacets;
-use App\Domain\Catalog\FacetType;
-use App\Filament\Concerns\StripsFacetsFormState;
+use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Filament\Resources\Products\ProductResource;
-use App\Models\Catalog\FacetIndex;
-use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductDescription;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 
 
 class EditProduct extends EditRecord
 {
-    use StripsFacetsFormState;
+
     protected static string $resource = ProductResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            DeleteAction::make(),
-        ];
-    }
-
-    // Fill form data before render
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $storeId = Filament::getTenant()->id;
+        $store  = Filament::getTenant();
+        $record = $this->getRecord();
+
+        $data['product_id'] = $record->id;
 
         // Fill description fields
         $description = ProductDescription::query()
             ->where('product_id', $this->record->id)
-            ->where('store_id', $storeId)
+            ->where('store_id', $store->id)
             ->first();
 
         $data['description'] = $description?->toArray() ?? [];
 
-        // Fill facet data
-        // Fill category facet data
-        $data['facet_categories'] = $this->record->categoryFacets()
-            ->where('store_id', $storeId)
-            ->orderBy('sort_order')
+        $data['facet_categories'] = $record->categoryFacets()
+            ->where('store_id', $store->id)
             ->get()
-            ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id, 'facet_group_id' => $facet->facet_group_id])
-            ->values()
-            ->all();
+            ->map(fn ($facet) => [
+                'facet_value_id' => $facet->facet_value_id,
+                'facet_group_id' => $facet->facet_group_id,
+                'sort_order'     => $facet->sort_order,
+                'is_primary'     => $facet->facet_value_id == $description?->primary_category_id
+            ])->all();
 
-        // Fill manufacturer facet data
-        $data['facet_manufacturers'] = $this->record->manufacturerFacets()
-            ->where('store_id', $storeId)
-            ->orderBy('sort_order')
+        $data['facet_manufacturers'] = $record->manufacturerFacets()
+            ->where('store_id', $store->id)
             ->get()
-            ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id, 'facet_group_id' => $facet->facet_group_id])
-            ->values()
-            ->all();
+            ->map(fn ($facet) => [
+                'facet_value_id' => $facet->facet_value_id,
+                'facet_group_id' => $facet->facet_group_id,
+                'sort_order'     => $facet->sort_order,
+                'is_primary'     => $facet->facet_value_id == $description?->primary_manufacturer_id
+            ])->all();
 
-        // Fill tag facet data
-        $data['facet_tags'] = $this->record->tagFacets()
-            ->where('store_id', $storeId)
-            ->orderBy('sort_order')
+        $data['facet_tags'] = $record->tagFacets()
+            ->where('store_id', $store->id)
             ->get()
-            ->map(fn (FacetIndex $facet) => ['facet_value_id' => $facet->facet_value_id])
-            ->values()
-            ->all();
+            ->map(fn ($facet) => [
+                'facet_value_id' => $facet->facet_value_id,
+                'facet_group_id' => $facet->facet_group_id,
+                'sort_order'     => $facet->sort_order,
+            ])->all();
 
         return $data;
     }
@@ -76,91 +67,20 @@ class EditProduct extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         // Store id is used only here to save data. Otherwise model does not know about store id
-        $storeId = Filament::getTenant()->id;
-        
-        // Remove descriptions from data to save them separately
-        $description  = Arr::pull($data, 'description', []);
-        // Save descriptions
-        ProductDescription::updateOrCreate(
-            ['product_id' => $record->id, 'store_id' => Filament::getTenant()->id],
-            $description,
-        );
-
-        // Update product category facets
-        app(SyncProductFacets::class)->handle(
-            $record,
-            $storeId,
-            FacetType::Category,
-            collect($data['facet_categories'] ?? [])
-                ->map(fn ($row, $i) => ['facet_value_id' => $row['facet_value_id'], 'facet_group_id' => $row['facet_group_id'],  'sort_order' => $i + 1])
-                ->values()
-                ->all(),
-        );
-
-        // Update manufacturer facets
-        app(SyncProductFacets::class)->handle(
-            $record,
-            $storeId,
-            FacetType::Manufacturer,
-            collect($data['facet_manufacturers'] ?? [])
-                ->map(fn ($row, $i) => ['facet_value_id' => $row['facet_value_id'], 'facet_group_id' => $row['facet_group_id'],  'sort_order' => $i + 1])
-                ->values()
-                ->all(),
-        );
-
-        // Update tag facets
-        app(SyncProductFacets::class)->handle(
-            $record,
-            $storeId,
-            FacetType::Tag,
-            collect($data['facet_tags'] ?? [])
-                ->map(fn ($row, $i) => ['facet_value_id' => $row['facet_value_id'],  'sort_order' => $i + 1])
-                ->values()
-                ->all(),
-        );
-
-        // Remove facets from data after save
-        $data = $this->stripFacetsFormState($data);
-
-        $record->update($data);
-
-        return $record;
+        $store = Filament::getTenant();
+        $data['product_id'] = $record->id ?? null;
+        return app(UpsertProduct::class)->handle($data, $store->id);
     }
 
-    protected function afterSave(): void
+    protected function getHeaderActions(): array
     {
-        $record  = $this->getRecord();
-        $storeId = Filament::getTenant()->id;
-
-        app(SyncProductFacets::class)->handle(
-            $record,
-            $storeId,
-            FacetType::Option,
-            $this->buildOptionFacetRows($record),
-        );
+        return [
+            DeleteAction::make(),
+        ];
     }
 
-    private function buildOptionFacetRows(Product $record): array
-    {
-        $productOptions = $record->productOptions()
-            ->with(['productOptionValues' => fn ($query) => $query
-                ->whereHas('optionValue', fn ($q) => $q
-                    ->where('is_active', true)
-                    ->where('show_in_facets', true))
-            ])
-            ->whereHas('option', fn ($query) => $query
-                ->where('is_active', true)
-                ->where('show_in_facets', true))
-            ->get();
-
-        return $productOptions
-            ->flatMap(fn ($option) => $option->productOptionValues->map(fn ($value) => [
-                'facet_group_id' => $option->option_id,
-                'facet_value_id' => $value->option_value_id,
-            ]))
-            ->values()
-            ->map(fn ($row, $i) => [...$row, 'sort_order' => $i + 1])
-            ->all();
-    }
-
+    // public function hasCombinedRelationManagerTabsWithContent(): bool
+    // {
+    //     return true;
+    // }
 }
