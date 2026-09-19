@@ -39,16 +39,6 @@ class Product extends Model
         return $this->hasMany(ProductReview::class, 'product_id', 'id');
     }
 
-    // public function productOptions(): HasMany
-    // {
-    //     return $this->hasMany(ProductOption::class);
-    // }
-    
-    // public function productAttributes(): HasMany
-    // {
-    //     return $this->hasMany(ProductAttribute::class);
-    // }
-
     public function currentDescription(): ?ProductDescription
     {
         if (! $this->relationLoaded('descriptions')) {
@@ -60,24 +50,22 @@ class Product extends Model
         return $this->descriptions->first();
     }
 
-    // Collect form data
+    // Category form data
     // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
-    // Category facets 
-    // TODO check if this is neccessary since we have categories() relation
     public function categoryFacets(): HasMany
     {
         return $this->hasMany(FacetIndex::class)
             ->where('facet_type_id', FacetType::Category->value);
     }
-    // Manufacturer facets
-    // TODO check if this is neccessary since we have manufacturers() relation
+    // Manufacturer form data
+    // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
     public function manufacturerFacets(): HasMany
     {
         return $this->hasMany(FacetIndex::class)
             ->where('facet_type_id', FacetType::Manufacturer->value);
     }
-    // Tag facets
-    // TODO check if this is neccessary since we have tags() relation
+    // Tag form data
+    // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
     public function tagFacets(): HasMany
     {
         return $this->hasMany(FacetIndex::class)
