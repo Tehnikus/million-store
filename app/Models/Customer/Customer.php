@@ -37,13 +37,13 @@ class Customer extends Model
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
-        'password'          => 'hashed',
-        'email_verified_at' => 'datetime',
-        'gdpr_consent_at'   => 'datetime',
-        'anonymized_at'     => 'datetime',
-        'addresses'         => 'array',
-        'contacts'          => 'array',
-        'wishlist'          => 'array',
+        'password'               => 'hashed',
+        'date_email_verified_at' => 'datetime:Y-m-d H:i:s',
+        'date_gdpr_consent_at'   => 'datetime:Y-m-d H:i:s',
+        'date_anonymized_at'     => 'datetime:Y-m-d H:i:s',
+        'addresses'              => 'array',
+        'contacts'               => 'array',
+        'wishlist'               => 'array',
     ];
 
     public function store(): BelongsTo

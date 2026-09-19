@@ -21,8 +21,8 @@ return new class extends Migration
             // Flags
             $table->boolean('is_active')->default(false);
             $table->boolean('is_available')->default(false);
-            $table->dateTime('is_available_from')->nullable();
-            $table->dateTime('is_available_to')->nullable();
+            $table->dateTime('date_available_from')->nullable();
+            $table->dateTime('date_available_to')->nullable();
             $table->unsignedBigInteger('sort_order')->default(1);
             // Descriptions
             $table->jsonb('name')->nullable()->default('{}');
