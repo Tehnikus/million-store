@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('customer_group_id')->nullable()->constrained('customer_groups')->cascadeOnDelete();
             $table->jsonb('name')->default('{}');
             $table->boolean('is_discount')->default(false);
+            $table->boolean('is_base')->default(false);
             $table->integer('priority')->default(1);
             $table->dateTime('valid_from')->nullable();
             $table->dateTime('valid_until')->nullable();
@@ -27,6 +28,7 @@ return new class extends Migration
             // Indexes
             $table->index(['product_id', 'store_id', 'customer_group_id', 'priority']);
             $table->foreign(['product_id', 'store_id'])->references(['product_id', 'store_id'])->on('product_descriptions')->cascadeOnDelete();
+            $table->uniqueIndex(['product_id', 'store_id', 'customer_group_id'])->where('is_base = true')->nullsNotDistinct();
         });
     }
 
