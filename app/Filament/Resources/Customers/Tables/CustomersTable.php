@@ -35,13 +35,7 @@ class CustomersTable
             ->splitSearchTerms(false)
             ->searchDebounce('250ms')
             ->columns([
-
-            // Stack::make([
-            //     TextColumn::make('first_name')
-            //         ->weight(FontWeight::Bold),
-            //     TextColumn::make('email')
-            //         ->icon('heroicon-m-envelope'),
-            // ]),
+                
                 TextColumn::make('first_name')
                     ->formatStateUsing(function (Customer $customer) {
                         return new HtmlString(
