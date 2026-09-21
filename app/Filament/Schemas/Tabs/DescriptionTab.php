@@ -62,22 +62,6 @@ class DescriptionTab
                 ->label(__('admin.common.fields.description_short'))
                 ->placeholder(__('admin.common.fields.description_short'))
                 ->helperText(__('admin.common.helpers.description_short'))
-                ->columnSpanFull()
-                ->resizableImages()
-                ->toolbarButtons([
-                    ['bold', 'italic', 'underline', 'link', 'textColor'],
-                    ['h2', 'h3', 'h4'],
-                    ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
-                    ['blockquote', 'bulletList', 'orderedList'],
-                    ['table', 'attachFiles'],
-                    ['details', 'clearFormatting'],
-                    ['undo', 'redo'],
-                ])
-                ->floatingToolbars([
-                    'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor'],
-                    'heading' => ['h1', 'h2', 'h3', 'h4'],
-                    'table' => ['tableAddColumnBefore', 'tableAddColumnAfter', 'tableDeleteColumn', 'tableAddRowBefore', 'tableAddRowAfter', 'tableDeleteRow', 'tableMergeCells', 'tableSplitCell', 'tableToggleHeaderRow', 'tableToggleHeaderCell', 'tableDelete',],
-                ])
                 ->extraInputAttributes([
                     'style' => 'min-height: 10rem; max-height: 30vh; overflow-y: auto;'
                 ]),
@@ -86,22 +70,6 @@ class DescriptionTab
                 ->label(__('admin.common.fields.description_full'))
                 ->placeholder(__('admin.common.fields.description_full'))
                 ->helperText(__('admin.common.helpers.description_full'))
-                ->columnSpanFull()
-                ->resizableImages()
-                ->toolbarButtons([
-                    ['bold', 'italic', 'underline', 'link', 'textColor'],
-                    ['h1', 'h2', 'h3', 'h4'],
-                    ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
-                    ['blockquote', 'bulletList', 'orderedList'],
-                    ['table', 'attachFiles'],
-                    ['details', 'clearFormatting'],
-                    ['undo', 'redo'],
-                ])
-                ->floatingToolbars([
-                    'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor'],
-                    'heading' => ['h1', 'h2', 'h3', 'h4'],
-                    'table' => ['tableAddColumnBefore', 'tableAddColumnAfter', 'tableDeleteColumn', 'tableAddRowBefore', 'tableAddRowAfter', 'tableDeleteRow', 'tableMergeCells', 'tableSplitCell', 'tableToggleHeaderRow', 'tableToggleHeaderCell', 'tableDelete',],
-                ])
                 ->extraInputAttributes([
                     'style' => 'min-height: 20rem; max-height: 70vh; overflow-y: auto;'
                 ]),
