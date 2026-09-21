@@ -6,7 +6,7 @@ use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Pages\Tenancy\StoreWizard;
 use App\Models\Catalog\{Category, FacetPage, Manufacturer, Product, ProductDescription};
 use Filament\Facades\Filament;
-use Filament\Forms\Components\{Repeater, RichEditor, RichEditor\MentionProvider, Select, TextInput};
+use Filament\Forms\Components\{Repeater, RichEditor, RichEditor\MentionProvider, Select, Textarea, TextInput};
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -123,6 +123,10 @@ class SupermasterPanelProvider extends PanelProvider
                 FusedGroup::configureUsing(function($fusedGroup) {
                     $fusedGroup
                         ->columnSpanFull();
+                });
+
+                Textarea::configureUsing(function (Textarea $textarea): void {
+                    $textarea->trim();
                 });
 
                 TextInput::configureUsing(function(TextInput $textInput) {
