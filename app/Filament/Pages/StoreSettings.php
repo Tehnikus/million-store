@@ -2,27 +2,20 @@
 
 namespace App\Filament\Pages;
 
+use App\Domain\Ai\AiProvider;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Models\Store\StoreInfoPage;
 use App\Models\Store\StoreSettings as StoreSettingsModel;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 use Filament\Notifications\Notification;
-use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Hidden;
-use Filament\Schemas\Components\Actions;
-use Filament\Schemas\Components\Form;
-use Filament\Schemas\Components\FusedGroup;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Forms\Components\{Hidden, Repeater, Repeater\TableColumn, Select, Textarea, TextInput, Toggle};
+use Filament\Pages\Page;
+use Filament\Schemas\Components\{Actions, Form, FusedGroup, Fieldset, Section, Tabs, Tabs\Tab};
+use Filament\Schemas\Components\Utilities\{Get, Set};
 use Filament\Schemas\Schema;
 
 class StoreSettings extends Page
@@ -218,7 +211,7 @@ class StoreSettings extends Page
                                         ]),
                                 ]),
                             Tab::make(__('admin.store_settings.tabs.legal_settings'))
-                                ->icon('heroicon-o-shield-check')
+                                ->icon(Heroicon::OutlinedShieldCheck)
                                 ->schema([
 
                                 ]),
@@ -237,8 +230,96 @@ class StoreSettings extends Page
                                 ->schema([
 
                                 ]),
+
+                            Tab::make(__('admin.stores.store_settings.tabs.ai_settings.tab_label'))
+                                ->icon(Heroicon::OutlinedSparkles)
+                                ->schema([
+                                    Section::make(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_settings'))
+                                        ->description(__('admin.stores.store_settings.tabs.ai_settings.helpers.prompt_settings'))
+                                        ->collapsible()
+                                        ->schema([
+
+                                            Repeater::make('ai_settings.prompts')
+                                                ->table([
+                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.prompt_text'))->markAsRequired(),
+                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.is_default'))->width('140px'),
+                                                ])
+                                                ->schema([
+                                                    FusedGroup::make([
+                                                        TextInput::make('name')
+                                                            ->required()
+                                                            ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.name'))
+                                                            ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.labels.name')),
+                                                        Textarea::make('prompt')
+                                                            ->required()
+                                                            ->rows(6)
+                                                            ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt'))
+                                                            ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.helpers.prompt')),
+                                                    ]),
+                                                    Toggle::make('is_default')
+                                                        ->fixIndistinctState()
+
+                                                ])
+                                                ->hiddenLabel()
+                                                ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_settings'))
+                                                ->addActionLabel(__('admin.stores.store_settings.tabs.ai_settings.buttons.add_prompt')),
+
+                                        ]),
+
+                                    Section::make(__('admin.stores.store_settings.tabs.ai_settings.labels.providers'))
+                                        ->description(__('admin.stores.store_settings.tabs.ai_settings.helpers.providers'))
+                                        ->collapsible()
+                                        ->schema([
+
+                                            Repeater::make('ai_settings.providers')
+                                                ->table([
+                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.provider_select'))->markAsRequired()->width('240px'),
+                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.provider_settings'))->markAsRequired(),
+                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.is_default'))->width('140px'),
+                                                ])
+                                                ->schema([
+                                                    FusedGroup::make([
+                                                        Select::make('provider')
+                                                            ->options(AiProvider::class)
+                                                            ->live()
+                                                            ->afterStateUpdated(function (mixed $state, Get $get, Set $set): void {
+                                                                $provider = AiProvider::fromState($state);
+                                                                if (!$provider) {
+                                                                    return;
+                                                                }
+
+                                                                $current = trim((string) $get('endpoint'));
+
+                                                                if ($current === '' || AiProvider::isDefaultEndpoint($current)) {
+                                                                    $set('endpoint', $provider->defaultEndpoint());
+                                                                }
+                                                            })
+                                                            ->required()
+                                                            ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.provider')),
+                                                        TextInput::make('model')
+                                                            ->required()
+                                                            ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.model')),
+                                                    ]),
+                                                    FusedGroup::make([
+                                                        TextInput::make('api_key')
+                                                            ->required()
+                                                            ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.api_key')),
+                                                        TextInput::make('endpoint')
+                                                            ->url()
+                                                            ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.endpoint'))
+                                                    ]),
+                                                    Toggle::make('is_default')
+                                                        ->fixIndistinctState()
+
+                                                ])
+                                                ->hiddenLabel()
+                                                ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.providers'))
+                                                ->addActionLabel(__('admin.stores.store_settings.tabs.ai_settings.buttons.add_provider')),
+                                        ]),
+                                ]),
+
                             Tab::make(__('admin.store_settings.tabs.maintenance_settings'))
-                                ->icon('heroicon-o-wrench-screwdriver')
+                                ->icon(Heroicon::OutlinedWrenchScrewdriver)
                                 ->schema([
 
                                 ]),
