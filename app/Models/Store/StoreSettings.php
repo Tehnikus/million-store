@@ -19,6 +19,7 @@ class StoreSettings extends Model
         'analytics_settings',
         'seo_defaults',
         'notification_settings',
+        'ai_settings',
         'maintenance_settings',
     ];
 
@@ -31,6 +32,7 @@ class StoreSettings extends Model
         'analytics_settings'    => 'array',
         'seo_defaults'          => 'array',
         'notification_settings' => 'array',
+        'ai_settings'           => 'array',
         'maintenance_settings'  => 'array',
     ];
 
