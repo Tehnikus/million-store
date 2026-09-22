@@ -241,7 +241,7 @@ class StoreSettings extends Page
 
                                             Repeater::make('ai_settings.prompts')
                                                 ->table([
-                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.prompt_text'))->markAsRequired(),
+                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.prompts'))->markAsRequired(),
                                                     TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.is_default'))->width('140px'),
                                                 ])
                                                 ->schema([
@@ -273,7 +273,7 @@ class StoreSettings extends Page
 
                                             Repeater::make('ai_settings.providers')
                                                 ->table([
-                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.provider_select'))->markAsRequired()->width('240px'),
+                                                    TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.providers'))->markAsRequired()->width('240px'),
                                                     TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.provider_settings'))->markAsRequired(),
                                                     TableColumn::make(__('admin.stores.store_settings.tabs.ai_settings.columns.is_default'))->width('140px'),
                                                 ])

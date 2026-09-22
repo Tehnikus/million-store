@@ -193,6 +193,7 @@ class DescriptionTab
             ->iconSize(IconSize::Medium)
             ->color(Color::Lime)
             ->hiddenLabel()
+            ->modalHeading(__('admin.common.buttons.ai_action'))
             ->tooltip(__('admin.common.buttons.ai_action'))
             ->fillForm(function ($schemaComponentState) use ($defaultProviderKey, $defaultPromptKey, $settings) {
                 return [
@@ -304,9 +305,9 @@ class DescriptionTab
     private static function metaEditorGenerate(): Action
     {
         return Action::make('Generate')
-            ->icon(NavigationItem::MetaEditor->icon())
+            ->icon(NavigationItem::MetaEditor->icon())->hiddenLabel()->iconSize(IconSize::Medium)
             ->color('info')
-            ->tooltip(__('admin.common.buttons.generate'))
+            ->tooltip(__('admin.common.buttons.meta_editor'))
             // ->visible(fn (string $operation): bool => $operation === 'edit')
             ->schema([
                 Select::make('formula_id')
