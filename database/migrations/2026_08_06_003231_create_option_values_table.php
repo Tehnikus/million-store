@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('option_id');
             $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
-
             $table->boolean('is_active')->default(false);
             $table->boolean('show_in_facets')->default(false);
             $table->boolean('is_default')->default(false);
