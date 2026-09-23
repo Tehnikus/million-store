@@ -18,19 +18,19 @@ class ProductPriceTier extends Model
         'is_discount',
         'is_base',
         'priority',
-        'valid_from',
-        'valid_until',
+        'date_valid_from',
+        'date_valid_until',
         'valid_quantity',
     ];
 
     protected $casts = [
-        'name'           => 'array',
-        'is_discount'    => 'boolean',
-        'is_base'        => 'boolean',
-        'priority'       => 'integer',
-        'valid_from'     => 'datetime:Y-m-d H:i:s',
-        'valid_until'    => 'datetime:Y-m-d H:i:s',
-        'valid_quantity' => 'integer',
+        'name'              => 'array',
+        'is_discount'       => 'boolean',
+        'is_base'           => 'boolean',
+        'priority'          => 'integer',
+        'date_valid_from'   => 'datetime:Y-m-d H:i:s',
+        'date_valid_until'  => 'datetime:Y-m-d H:i:s',
+        'valid_quantity'    => 'integer',
     ];
 
     public function product(): BelongsTo

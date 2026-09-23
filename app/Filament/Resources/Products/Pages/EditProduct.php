@@ -31,6 +31,7 @@ class EditProduct extends EditRecord
 
         $data['description'] = $description?->toArray() ?? [];
 
+        // Product model relation Product->categoryFacets()
         $data['facet_categories'] = $record->categoryFacets()
             ->where('store_id', $store->id)
             ->get()
@@ -41,6 +42,7 @@ class EditProduct extends EditRecord
                 'is_primary'     => $facet->facet_value_id == $description?->primary_category_id
             ])->all();
 
+        // Product model relation Product->manufacturerFacets()
         $data['facet_manufacturers'] = $record->manufacturerFacets()
             ->where('store_id', $store->id)
             ->get()
@@ -51,6 +53,7 @@ class EditProduct extends EditRecord
                 'is_primary'     => $facet->facet_value_id == $description?->primary_manufacturer_id
             ])->all();
 
+        // Product model relation Product->tagFacets()
         $data['facet_tags'] = $record->tagFacets()
             ->where('store_id', $store->id)
             ->get()

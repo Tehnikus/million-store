@@ -20,8 +20,8 @@ return new class extends Migration
             $table->boolean('is_discount')->default(false);
             $table->boolean('is_base')->default(false);
             $table->integer('priority')->default(1);
-            $table->dateTime('valid_from')->nullable();
-            $table->dateTime('valid_until')->nullable();
+            $table->dateTime('date_valid_from')->nullable();
+            $table->dateTime('date_valid_until')->nullable();
             $table->integer('valid_quantity')->nullable();
             $table->timestamps();
 

@@ -22,17 +22,17 @@ return new class extends Migration {
             $table->jsonb('wishlist')->default('[]'); // Whishlisted products
             $table->string('password');
             $table->rememberToken();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('date_email_verified_at')->nullable();
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('phone')->nullable();
             $table->string('company_name')->nullable();
             $table->string('vat_number')->nullable();
-            $table->timestamp('gdpr_consent_at')->nullable();
+            $table->timestamp('date_gdpr_consent_at')->nullable();
             $table->boolean('marketing_opt_in')->default(false);
             $table->boolean('is_approved')->default(true);
             $table->boolean('is_anonymized')->default(false);
-            $table->timestamp('anonymized_at')->nullable(); // Flag of executed user's deleteon request
+            $table->timestamp('date_anonymized_at')->nullable(); // Flag of executed user's deletion request
             $table->softDeletes();
             $table->timestamps();
 
