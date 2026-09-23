@@ -22,6 +22,7 @@ return new class extends Migration
             $table->jsonb('analytics_settings')->nullable()->default('{}');     // Google analytics ID, Tag manager ID, Meta Pixel ID etc.
             $table->jsonb('seo_defaults')->nullable()->default('{}');           // SEO defaults
             $table->jsonb('notification_settings')->nullable()->default('{}');  // E-Mail and other notifications
+            $table->jsonb('ai_settings')->nullable()->default('{}');            // AI settings
             $table->jsonb('maintenance_settings')->nullable()->default('{}');   // Put current store in maintenance mode
             $table->timestamps();
 

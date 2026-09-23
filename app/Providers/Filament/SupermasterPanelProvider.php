@@ -2,10 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Pages\Tenancy\StoreWizard;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use App\Models\Catalog\{Category, FacetPage, Manufacturer, Product, ProductDescription};
+use Filament\Facades\Filament;
+use Filament\Forms\Components\{Repeater, RichEditor, RichEditor\MentionProvider, Select, Textarea, TextInput};
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -25,6 +26,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Str;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Http\Middleware\SetAdminLocale;
 use App\Models\Global\Store;
@@ -123,6 +125,10 @@ class SupermasterPanelProvider extends PanelProvider
                         ->columnSpanFull();
                 });
 
+                Textarea::configureUsing(function (Textarea $textarea): void {
+                    $textarea->trim();
+                });
+
                 TextInput::configureUsing(function(TextInput $textInput) {
                     $textInput
                         ->placeholder($textInput->getLabel() ?? '')
@@ -139,6 +145,73 @@ class SupermasterPanelProvider extends PanelProvider
                     $repeater
                         ->addActionAlignment('start')
                         ->addAction(fn (Action $action) => $action->color('primary')->icon('heroicon-o-plus'))
+                        ->columnSpanFull();
+                });
+
+                RichEditor::configureUsing(function(RichEditor $richEditor): void {
+                    $richEditor
+                        ->mentions([
+                            MentionProvider::make('#')
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    $storeId = Filament::getTenant()->id;
+                                    $like = "%{$search}%";
+                                    $limit = 5;
+
+                                    return [
+                                        ...Category::where('store_id', $storeId)->where('name', 'ilike', $like)->limit($limit)->pluck('name', 'id')
+                                            ->mapWithKeys(fn($n, $id) => ["category:{$id}" => $n])->all(),
+                                        ...Manufacturer::where('store_id', $storeId)->where('name', 'ilike', $like)->limit($limit)->pluck('name', 'id')
+                                            ->mapWithKeys(fn($n, $id) => ["manufacturer:{$id}" => $n])->all(),
+                                        ...FacetPage::where('store_id', $storeId)->where('name', 'ilike', $like)->limit($limit)->pluck('name', 'id')
+                                            ->mapWithKeys(fn($n, $id) => ["facetPage:{$id}" => $n])->all(),
+                                        ...ProductSearch::query($search, $storeId)
+                                            ->with(['descriptions' => fn ($q) => $q->where('store_id', $storeId)])
+                                            ->limit($limit)
+                                            ->get()
+                                            ->mapWithKeys(fn(Product $p) => [
+                                                "product:{$p->id}" => $p->currentDescription()?->name ?: $p->global_name,
+                                            ])
+                                            ->all(),
+                                    ];
+                                })
+                                ->getLabelsUsing(function (array $ids): array {
+                                    $storeId = Filament::getTenant()->id;
+
+                                    return collect($ids)
+                                        ->groupBy(fn($id) => Str::before($id, ':'))
+                                        ->map(fn($group) => $group->map(fn($id) => Str::after($id, ':'))->all())
+                                        ->flatMap(fn(array $localIds, string $type) => collect(match ($type) {
+                                            'category'      => Category::whereIn('id', $localIds)->pluck('name', 'id'),
+                                            'manufacturer'  => Manufacturer::whereIn('id', $localIds)->pluck('name', 'id'),
+                                            'facetPage'     => FacetPage::whereIn('id', $localIds)->pluck('name', 'id'),
+                                            'product'       => ProductDescription::where('store_id', $storeId)->whereIn('product_id', $localIds)->pluck('name', 'product_id'),
+                                            default => [],
+                                        })->mapWithKeys(fn($name, $id) => ["{$type}:{$id}" => $name]))
+                                        ->all();
+                                })
+                                ->url(fn (string $id): string => match (Str::before($id, ':')) {
+                                    'category'      => '',
+                                    'manufacturer'  => '',
+                                    'facetPage'     => '',
+                                    'product'       => '',
+                                })
+                        ])
+                        ->toolbarButtons([
+                            ['bold', 'italic', 'underline', 'link', 'textColor'],
+                            ['h2', 'h3', 'h4'],
+                            ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
+                            ['blockquote', 'bulletList', 'orderedList'],
+                            ['table', 'attachFiles'],
+                            ['details', 'clearFormatting'],
+                            ['undo', 'redo'],
+                        ])
+                        ->floatingToolbars([
+                            'link'      => ['bold', 'italic', 'underline', 'link', 'textColor'],
+                            'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor'],
+                            'heading'   => ['h1', 'h2', 'h3', 'h4'],
+                            'table'     => ['tableAddColumnBefore', 'tableAddColumnAfter', 'tableDeleteColumn', 'tableAddRowBefore', 'tableAddRowAfter', 'tableDeleteRow', 'tableMergeCells', 'tableSplitCell', 'tableToggleHeaderRow', 'tableToggleHeaderCell', 'tableDelete',],
+                        ])
+                        ->resizableImages()
                         ->columnSpanFull();
                 });
             })
