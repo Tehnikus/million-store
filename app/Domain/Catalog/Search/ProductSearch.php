@@ -26,7 +26,7 @@ class ProductSearch
      * WHERE search_vector @@ to_tsquery('english', 'database & performance');
      * 
      * @param string $search
-     * @param int $search
+     * @param int $storeId
      * @return \Illuminate\Support\Collection<int, \stdClass>
      */
     public static function query(string $search = '', ?int $storeId = null): Builder
