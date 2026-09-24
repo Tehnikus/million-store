@@ -61,11 +61,11 @@ class ProductReviewsTable
                         }
 
                         foreach ($record->positive_notes ?? [] as $str) {
-                            $positives[] = "<span>+ " . mb_strimwidth($str, 0, 255, "...") . "</span>";
+                            $positives[] = "<span>+ " . mb_strimwidth($str, 0, 100, "...") . "</span>";
                         }
 
                         foreach ($record->negative_notes ?? [] as $str) {
-                            $negatives[] = "<span>- " . mb_strimwidth($str, 0, 255, "...") . "</span>";
+                            $negatives[] = "<span>- " . mb_strimwidth($str, 0, 100, "...") . "</span>";
                         }
 
                         return new HtmlString(
