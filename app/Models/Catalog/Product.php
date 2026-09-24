@@ -17,7 +17,8 @@ class Product extends Model
 {
     use HasTranslations;
     use HasSlugs;
-    protected $fillable = ['sku', 'global_name'];
+    protected $fillable = ['global_name'];
+
     protected $casts = [
         'global_name' => 'array',
     ];
@@ -27,6 +28,11 @@ class Product extends Model
     public function priceTiers(): HasMany
     {
         return $this->hasMany(ProductPriceTier::class);
+    }
+
+    public function options(): HasMany
+    {
+        return $this->hasMany(ProductOption::class);
     }
 
     public function descriptions(): HasMany
