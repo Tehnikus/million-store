@@ -98,6 +98,7 @@ class AttributesTab
                             ->addActionAlignment('end')
                             ->label(__('admin.catalog.attributes.fields.values'))
                     ])
+                    ->defaultItems(0)
                     ->maxItems(fn() => static::attributeChoices($store->id)->count())
                     ->collapsible()
                     // ->collapsed(fn($operation) => $operation !== 'create')
