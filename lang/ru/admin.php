@@ -9,6 +9,8 @@ return [
     'error_saving_file'         => 'Ошибка при сохранении файла',
     'delete_restricted_title'   => 'Внимание! Вы не можете это удалить из-за других зависимых данных!',
     'delete_cascade_warning'    => 'Внимание! Если вы удалите это, другие зависимые данные тоже будут удалены!',
+    'ai_provider_error'         => 'Ошибка сервиса AI!',
+    'ai_fill_required_fields'   => 'Заполните обязательные поля перед тем как отправлять промпт',
   ],
   'orders' => [
     'statuses' => [
@@ -604,6 +606,7 @@ return [
       'created_at'        => 'Дата создания',
       'updated_at'        => 'Дата изменения',
       'is_active'         => 'Включен',
+      'ai_result'         => 'Результат'
     ],
     'helpers' => [
       'name'                      => 'Имя',
@@ -648,7 +651,11 @@ return [
       'paste_title'       => 'Вставить H1 или название в Title',
       'paste_description' => 'Вставить Title в начало Description',
       'attach_record'     => 'Связать',
-      'generate'          => 'Сгенерировать',
+      'meta_editor'       => 'Редактор метаданных',
+      'ai_action'         => 'AI генератор',
+      'ai_generate'       => 'Сгенерировать',
+      'ai_action_replace' => 'Заменить',
+      'ai_action_append'  => 'Добавить в конец',
     ],
   ],
   'design' => [
@@ -860,6 +867,40 @@ return [
       'name'              => 'Имя магазина, отображаемое в админке',
       'host'              => 'Доменное имя магазина без http:// или https://. <br> Например: <u><b>store.com</b></u>',
       'host_placeholder'  => 'store.com'
+    ],
+    'store_settings' => [
+      'tabs' => [
+        'ai_settings' => [
+          'tab_label' => 'Настройки AI',
+          'labels' => [
+            'prompt_settings'   => 'Настройки промптов',
+            'providers'         => 'Провайдеры услуг',
+            'name'              => 'Название промпта',
+            'prompt'            => 'Промпт',
+            'prompt_text'       => 'Текст промпта',
+            'prompt_extra'      => 'Дополнительный промпт',
+            'api_key'           => 'API ключ',
+            'provider'          => 'Провайдер',
+            'endpoint'          => 'URL-адрес эндпоинта',
+            'model'             => 'Модель'
+          ],
+          'helpers' => [
+            'prompt_settings'   => 'Создайте здесь готовые промпты. Вы сможете выбрать один из них или отредактировать его перед отправкой запроса в AI',
+            'providers'         => 'Добавьте сюда провайдера услуг AI. Вы можете добавить несколько провайдеров и позже выбрать подходящий в модальном окне на любой странице редактирования',
+            'prompt'            => 'Промпт для модели AI',
+          ],
+          'buttons' => [
+            'add_prompt'        => 'Добавить новый промпт',
+            'add_provider'      => 'Добавить провайдера',
+          ],
+          'columns' => [
+            'prompts'           => 'Промпты',
+            'providers'         => 'Провайдеры',
+            'provider_settings' => 'Настройки',
+            'is_default'        => 'По умолчанию',
+          ],
+        ],
+      ],
     ],
   ],
 

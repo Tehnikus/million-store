@@ -9,6 +9,8 @@ return [
     'error_saving_file'         => 'Error saving file',
     'delete_restricted_title'   => 'Warning! You cannot delete this because of dependent resources!',
     'delete_cascade_warning'    => 'Warning! If you delete this other resources bill be affected!',
+    'ai_provider_error'         => 'AI Provider error!',
+    'ai_fill_required_fields'   => 'Fill required fields before sending the prompt',
   ],
   'orders' => [
     'statuses' => [
@@ -604,6 +606,7 @@ return [
       'created_at'        => 'Created at',
       'updated_at'        => 'Updated at',
       'is_active'         => 'Active',
+      'ai_result'         => 'Result'
     ],
     'helpers' => [
       'name'                      => 'Name',
@@ -648,7 +651,11 @@ return [
       'paste_title'       => 'Paste H1 or name to Title',
       'paste_description' => 'Paste Title to the beginning of Description',
       'attach_record'     => 'Attach',
-      'generate'          => 'Generate',
+      'meta_editor'       => 'Meta Editor',
+      'ai_action'         => 'AI generation',
+      'ai_generate'       => 'Generate',
+      'ai_action_replace' => 'Replace',
+      'ai_action_append'  => 'Append to the end',
     ],
   ],
   'design' => [
@@ -860,6 +867,40 @@ return [
       'name'              => 'Name to display in admin panel',
       'host'              => 'Store domain name name without http:// or https://. <br> Example <u><b>store.com</b></u>',
       'host_placeholder'  => 'store.com'
+    ],
+    'store_settings' => [
+      'tabs' => [
+        'ai_settings' => [
+          'tab_label' => 'AI Settings',
+          'labels' => [
+            'prompt_settings'   => 'Prompt settings',
+            'providers'         => 'Service providers',
+            'name'              => 'Prompt name',
+            'prompt'            => 'Prompt',
+            'prompt_text'       => 'Prompt text',
+            'prompt_extra'      => 'Prompt extra',
+            'api_key'           => 'API Key',
+            'provider'          => 'Provider',
+            'endpoint'          => 'Endpoint URL',
+            'model'             => 'Model'
+          ],
+          'helpers' => [
+            'prompt_settings'   => 'Create predefined prompts here. You will be able to select one of the prompts or edit it before sending the request to the AI.',
+            'providers'         => 'Add an AI service provider of your choice here. You can add multiple providers and select the one that fits your needs later on all edit pages in the modal dialog.',
+            'prompt'            => 'Write the prompt for the AI model here.',
+          ],
+          'buttons' => [
+            'add_prompt'        => 'Add new prompt',
+            'add_provider'      => 'Add provider',
+          ],
+          'columns' => [
+            'prompts'           => 'Prompts',
+            'providers'         => 'Providers',
+            'provider_settings' => 'Settings',
+            'is_default'        => 'Default',
+          ],
+        ],
+      ],
     ],
   ],
 
