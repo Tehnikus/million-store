@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FacetPages\Tables;
 
 use App\Domain\Catalog\FacetType;
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\FacetPage;
@@ -25,6 +26,9 @@ class FacetPagesTable
     {
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->with('facetIndex'))
+            ->emptyStateIcon(NavigationItem::FacetPages->icon())
+            ->emptyStateHeading(__('admin.catalog.facet_pages.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.facet_pages.helpers.group_title'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')

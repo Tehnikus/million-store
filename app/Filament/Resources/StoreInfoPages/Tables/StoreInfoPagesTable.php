@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\StoreInfoPages\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -11,13 +12,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Filament\Support\Enums\Alignment;
-use Illuminate\Database\Eloquent\Model;
 
 class StoreInfoPagesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->emptyStateIcon(NavigationItem::InfoPages->icon())
+            ->emptyStateHeading(__('admin.stores.info_pages.navigation_label'))
+            ->emptyStateDescription(__('admin.stores.info_pages.helpers.group_title'))
             ->columns([
 
                 MultilangTextColumn::make('name')

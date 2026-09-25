@@ -67,7 +67,9 @@ class ProductsTable
                 return $query;
             })
             ->searchDebounce('250ms')
-
+            ->emptyStateIcon(NavigationItem::Products->icon())
+            ->emptyStateHeading(__('admin.catalog.products.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.products.helpers.group_title'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature'),

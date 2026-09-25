@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Options\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\OptionValue;
@@ -20,6 +21,9 @@ class OptionsTable
     {
         return $table
             ->modifyQueryUsing(fn ($query) => $query->with('values')) // Eager loading of option values
+            ->emptyStateIcon(NavigationItem::Options->icon())
+            ->emptyStateHeading(__('admin.catalog.options.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.options.helpers.group_title'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')

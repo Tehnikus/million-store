@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Attributes\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\AttributeValue;
@@ -63,6 +64,9 @@ class AttributesTable
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
+            ->emptyStateIcon(NavigationItem::Attributes->icon())
+            ->emptyStateHeading(__('admin.catalog.attributes.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.attributes.helpers.group_title'))
             ->filters([
                 //
             ])

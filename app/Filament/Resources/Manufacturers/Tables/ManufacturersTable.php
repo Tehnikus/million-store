@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Manufacturers\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Manufacturer;
@@ -24,6 +25,9 @@ class ManufacturersTable
     {
         $store = Filament::getTenant();
         return $table
+            ->emptyStateIcon(NavigationItem::Manufacturers->icon())
+            ->emptyStateHeading(__('admin.catalog.manufacturers.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.manufacturers.helpers.group_title'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')

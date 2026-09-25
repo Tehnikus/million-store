@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Category;
@@ -25,6 +26,9 @@ class CategoriesTable
     {
         $store = Filament::getTenant();
         return $table
+            ->emptyStateIcon(NavigationItem::Categories->icon())
+            ->emptyStateHeading(__('admin.catalog.categories.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.categories.helpers.group_title'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')

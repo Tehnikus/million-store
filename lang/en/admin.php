@@ -51,8 +51,8 @@ return [
         'is_not_associated'       => 'Not associated to this store',
         // 'prices_customer_group' => 'Customer group',
         // 'customer_group_id_short' => 'Customers',
-        // 'valid_from'            => 'Price valid from date',
-        // 'valid_until'           => 'Price valid until date',
+        'valid_from'            => 'Price valid from date',
+        'valid_until'           => 'Price valid until date',
         // 'valid_from_short'      => 'date from',
         // 'valid_until_short'     => 'date until',
         // 'valid_quantity'        => 'Price valid quantity',
@@ -93,6 +93,7 @@ return [
         'facet_manufacturers'     => 'Select manufacturers where product will be displayed. Primary manufacturer is used to display the manufacturer\'s logo and link on the product page',
         'status'                  => 'Product status applied only in current store',
         'facet_tags'              => 'Product tag is an additional way to group products together to show them on SEO filter page. They can be also displayed as badges on product miniature and product main image',
+        'group_title'             => 'Products can be linked to multiple stores simultaneously while having different prices, descriptions, and sets of options and attributes, and can be displayed in different categories within each store',
       ],
       'buttons' => [
         'add_price_tier'          => 'Add price tier',
@@ -127,7 +128,8 @@ return [
         'parent_id'       => 'Parent category',
       ],
       'helpers' => [
-        'parent_id'       => 'Select parent category or leave blank to set this category as Root'
+        'parent_id'       => 'Select parent category or leave blank to set this category as Root',
+        'group_title'     => 'Categories are the primary way of grouping products. Each product can be associated to multiple categories',
       ],
     ],
     'manufacturers' => [
@@ -140,7 +142,8 @@ return [
         'parent_id'       => 'Parent manufacturer',
       ],
       'helpers' => [
-        'parent_id'       => 'Select parent manufacturer or leave blank to set this manufacturer as Root'
+        'parent_id'       => 'Select parent manufacturer or leave blank to set this manufacturer as Root',
+        'group_title'     => 'Product manufacturers are displayed on the product page as a logo and a link, as well as in the product filter. A product may have multiple associated manufacturers, but only the primary one is displayed on the product page.',
       ],
     ],
     'attributes' => [
@@ -159,7 +162,7 @@ return [
         'is_active'             => 'Active',
       ],
       'helpers' => [
-        'group_title'           => 'Attributes are unchangable properties of a product. They are displayed on the product page as a table',
+        'group_title'           => 'Attributes are unchangable properties of a product. They are displayed on the product page as a table and in product filter',
         'group_name'            => 'Group name will be displayed in facet filter as a parent of attribute values',
         'is_active'             => 'Show this group on product page and filter block',
         'show_in_facets'        => 'Show this group in filter block',
@@ -191,7 +194,7 @@ return [
         'checkbox'              => 'Checkbox',
       ],
       'helpers' => [
-        'group_title'           => 'Options are changable properties of a product. They affect product price, SKU, availability and weight. Here you can add available option list. To bind them to product go to product settings page',
+        'group_title'           => 'Options are changable properties of a product. They affect product price, SKU, availability and weight. Options are displayed on product pages and in the product filter',
         'group_name'            => 'Group name will be displayed in facet filter as a parent of option values',
         'is_active'             => 'Show this group on product page and filter block',
         'show_in_facets'        => 'Show this group in filter block',
@@ -216,6 +219,7 @@ return [
         'is_active'       => 'Show this tag on product page in tag cloud and in filter block',
         'show_in_facets'  => 'Show this tag in filter block',
         'inline_style'    => 'Inline style to be applied to your tag on product miniature and product page',
+        'group_title'     => 'Tags are used to group products when you need to combine items into a group and create a landing page for them. Tags are also displayed in products filter',
       ],
     ],
     'facet_pages' => [
@@ -240,6 +244,7 @@ return [
       'helpers' => [
         'root_facet'        => 'The root filter determines which filter will be the main and mandatory filter for this filter page',
         'additional_facets' => 'Additional filters define the combination of other filters together with the root filter for this filter page',
+        'group_title'       => 'Filter pages are landing pages designed to more precisely target SEO queries. A filter page allows you to select a combination of a primary filter (such as category or manufacturer) and one or more additional filters (options, attributes, or tags) and create a page for that combination that possesses all the characteristics of a static page, such as a Title, H1 and a detailed description'
       ]
     ],
     'facets' => [
@@ -707,12 +712,6 @@ return [
 
   'store_homepage'  => ['navigation_label' => 'Homepage',],
 
-  // Info pages
-  'info_pages' => [
-    'navigation_label'     => 'Info pages',
-    'model_label_singular' => 'Info page',
-  ],
-
   // Store contacts form
   'store_contacts' => [
     'navigation_label' => 'Contacts',
@@ -905,6 +904,14 @@ return [
           ],
         ],
       ],
+    ],
+    // Info pages
+    'info_pages' => [
+      'navigation_label'     => 'Info pages',
+      'model_label_singular' => 'Info page',
+      'helpers' => [
+        'group_title' => 'Info pages are pages containing key information about the store, such as contact details, delivery and payment policies, and legal terms'
+      ]
     ],
   ],
 

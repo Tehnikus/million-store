@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tags\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Tag;
@@ -20,6 +21,9 @@ class TagsTable
     {
         $store = Filament::getTenant();
         return $table
+            ->emptyStateIcon(NavigationItem::Tags->icon())
+            ->emptyStateHeading(__('admin.catalog.tags.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.tags.helpers.group_title'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature'),

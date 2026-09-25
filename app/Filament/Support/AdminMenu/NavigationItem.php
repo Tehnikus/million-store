@@ -50,12 +50,12 @@ enum NavigationItem: string
     
     // Design
     case LayoutEditor   = 'design.layout_editor';
-    case MenuEditor     = 'menu_editor';
+    case MenuEditor     = 'design.menu_editor';
     case ImageSettings  = 'design.image_settings';
     case CssEditor      = 'design.css_editor';
 
     // Store settings
-    case InfoPages      = 'info_pages';
+    case InfoPages      = 'stores.info_pages';
     case StoreHomepage  = 'store_homepage';
     case StoreContacts  = 'store_contacts';
     case StoreSettings  = 'store_settings';
