@@ -52,7 +52,7 @@ class PlacementTab
                                     ->afterStateUpdated(function(Set $set, ?string $state) use ($store) {
                                         $category = Category::where('store_id', $store->id)->where('id', $state)->first();
                                         $set('facet_group_id', $category?->parent_id ?? 0);
-                                        $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $category?->parent_id)->where('facet_type_id', FacetType::Category)->where('store_id', $store->id)->count() + 1);
+                                        $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $category?->parent_id ?? 0)->where('facet_type_id', FacetType::Category)->where('store_id', $store->id)->count() + 1);
                                     })
                                     ->live(),
                                 TextInput::make('sort_order')
@@ -110,7 +110,7 @@ class PlacementTab
                                     ->afterStateUpdated(function(Set $set, ?string $state) use ($store) {
                                         $manufacturer = Manufacturer::where('store_id', $store->id)->where('id', $state)->first();
                                         $set('facet_group_id', $manufacturer?->parent_id ?? 0);
-                                        $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $manufacturer?->parent_id)->where('facet_type_id', FacetType::Manufacturer)->where('store_id', $store->id)->count() + 1);
+                                        $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $manufacturer?->parent_id ?? 0)->where('facet_type_id', FacetType::Manufacturer)->where('store_id', $store->id)->count() + 1);
                                         // $set('facet_group_id', Manufacturer::where('store_id', $store->id)->where('id', $state)->first()?->parent_id ?? 0);
                                     })
                                     ->live(),
