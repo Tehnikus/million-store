@@ -72,6 +72,9 @@ class DescriptionTab
                 ->label(__('admin.common.fields.description_short'))
                 ->placeholder(__('admin.common.fields.description_short'))
                 ->helperText(__('admin.common.helpers.description_short'))
+                ->hintActions([
+                    self::aiModalAction("description_short.{$language->locale}", $language)
+                ])
                 ->extraInputAttributes([
                     'style' => 'min-height: 10rem; max-height: 30vh; overflow-y: auto;'
                 ]),
@@ -80,6 +83,9 @@ class DescriptionTab
                 ->label(__('admin.common.fields.description_full'))
                 ->placeholder(__('admin.common.fields.description_full'))
                 ->helperText(__('admin.common.helpers.description_full'))
+                ->hintActions([
+                    self::aiModalAction("description_full.{$language->locale}", $language)
+                ])
                 ->extraInputAttributes([
                     'style' => 'min-height: 20rem; max-height: 70vh; overflow-y: auto;'
                 ]),
