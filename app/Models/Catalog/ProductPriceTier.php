@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ProductPriceTier extends Model
 {
     protected $fillable = [
-        'id',
         'product_id',
         'store_id',
         'customer_group_id',
