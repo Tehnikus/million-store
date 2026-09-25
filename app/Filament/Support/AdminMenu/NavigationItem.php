@@ -1,6 +1,7 @@
 <?php
 namespace App\Filament\Support\AdminMenu;
 use App\Filament\Support\AdminMenu\NavigationGroup;
+use Filament\Support\Icons\Heroicon;
 
 enum NavigationItem: string
 {
@@ -48,7 +49,7 @@ enum NavigationItem: string
     case Slugs          = 'seo.slugs';
     
     // Design
-    case LayoutEditor   = 'layout_editor';
+    case LayoutEditor   = 'design.layout_editor';
     case MenuEditor     = 'menu_editor';
     case ImageSettings  = 'design.image_settings';
     case CssEditor      = 'design.css_editor';
@@ -162,7 +163,7 @@ enum NavigationItem: string
 
             // Design
             self::MenuEditor        => 'heroicon-s-queue-list',
-            self::LayoutEditor      => 'heroicon-o-paint-brush',
+            self::LayoutEditor      => 'heroicon-o-rectangle-group',
             self::CssEditor         => 'heroicon-o-code-bracket',
             self::ImageSettings     => 'heroicon-o-photo',
 

@@ -81,7 +81,7 @@ return [
         'global_data'             => 'Shared across every store this product is in - editing it here changes it everywhere',
         'global_name'             => 'Shown only in Admin panel. Used for product quick search',
         'sku'                     => 'Shown in Admin panel and Frontend (if the corresponding store setting is enabled). Used for product quick search',
-        'is_active'               => 'Product status in current store',
+        'is_active'               => 'Product status is set separately for every store',
         'prices_customer_group'   => 'Select the customer group to which this price will apply',
         'priority'                => 'If multiple prices have similar applience conditions, the higher priority price will be used',
         'discount'                => 'Discount has priority over regular price',
@@ -659,6 +659,10 @@ return [
     ],
   ],
   'design' => [
+    'layout_editor' => [
+      'navigation_label'    => 'Layout editor',
+      'subheading'          => 'Change pages layout here',
+    ],
     'image_settings' => [
       'navigation_label'    => 'Images settings',
       'subheading'          => 'Here you can set your store logo and global image dimensions',

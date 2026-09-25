@@ -247,7 +247,7 @@ class DescriptionTab
                         ->color(Color::Lime)
                         ->disabled(fn(Get $schemaGet): bool => blank($schemaGet('provider')) || blank($schemaGet('prompt')))
                         ->tooltip(fn(Get $schemaGet): ?string => (blank($schemaGet('provider')) || blank($schemaGet('prompt')))
-                            ? __('admin.common.messages.fill_required_fields')
+                            ? __('admin.messages.ai_fill_required_fields')
                             : null)
                         ->action(function (Get $schemaGet, Set $schemaSet) use ($settings) {
                             $prompt = trim((string) $schemaGet('prompt'));
