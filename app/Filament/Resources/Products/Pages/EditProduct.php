@@ -63,6 +63,18 @@ class EditProduct extends EditRecord
                 'sort_order'     => $facet->sort_order,
             ])->all();
 
+        // Product model relation Product->options()
+        $data['optionSignatures'] = $record->options()
+            ->where('store_id', $store->id)
+            ->get()
+            ->map(fn ($option) => [
+                'selectedOptions' => collect($option->option_signature)
+                    ->map(fn ($valueId, $groupId) => [
+                        'option_select'       => (string) $groupId,
+                        'option_value_select' => (string) $valueId,
+                    ])->values()->all(),
+            ])->values()->all();
+
         return $data;
     }
 
