@@ -20,6 +20,8 @@ class StoreSettings extends Model
         'seo_defaults',
         'notification_settings',
         'ai_settings',
+        'layout_settings',
+        'menu_settings',
         'maintenance_settings',
     ];
 
@@ -33,6 +35,8 @@ class StoreSettings extends Model
         'seo_defaults'          => 'array',
         'notification_settings' => 'array',
         'ai_settings'           => 'array',
+        'layout_settings'       => 'array',
+        'menu_settings'         => 'array',
         'maintenance_settings'  => 'array',
     ];
 
