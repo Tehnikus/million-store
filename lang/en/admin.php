@@ -664,6 +664,21 @@ return [
     ],
   ],
   'design' => [
+    'menu_editor' => [
+      'navigation_label'  => 'Main menu',
+      'subheading'        => 'Change main menu items here',
+      'blocks' => [
+        'category'        => 'Category',
+        'manufacturer'    => 'Manufacturer',
+        'title'           => 'Title',
+        'rich_text'       => 'Rich text',
+        'product_card'    => 'Product card',
+      ],
+      'buttons' => [
+        'add_parent'      => 'Add top level item',
+        'add_child'       => 'Add nested item',
+      ],
+    ],
     'layout_editor' => [
       'navigation_label'    => 'Layout editor',
       'subheading'          => 'Change pages layout here',

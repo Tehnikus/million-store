@@ -656,7 +656,7 @@ return [
       'paste_title'       => 'Вставити H1 або назву в Title',
       'paste_description' => 'Вставити Title в початок Description',
       'attach_record'     => 'Прив\'язати',
-      'meta_editor'       => 'Редактор метаданных',
+      'meta_editor'       => 'Редактор метаданих',
       'ai_action'         => 'AI генератор',
       'ai_generate'       => 'Сгенерувати',
       'ai_action_replace' => 'Замінити',
@@ -664,6 +664,21 @@ return [
     ],
   ],
   'design' => [
+    'menu_editor' => [
+      'navigation_label'  => 'Головне меню',
+      'subheading'        => 'Тут можна змінити наповення головного меню',
+    ],
+    'blocks' => [
+      'category'          => 'Категорія',
+      'manufacturer'      => 'Виробник',
+      'title'             => 'Заголовок',
+      'rich_text'         => 'Форматований текст',
+      'product_card'      => 'Карточка товара',
+    ],
+    'buttons' => [
+      'add_parent'        => 'Додати елемент верхнього рівня',
+      'add_child'         => 'Додати вкладений елемент',
+    ],
     'layout_editor' => [
       'navigation_label'    => 'Редактор макетов',
       'subheading'          => 'Тут можна змінити розташування блоків на основних сторінках',
