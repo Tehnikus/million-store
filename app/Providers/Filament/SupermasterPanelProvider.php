@@ -150,6 +150,14 @@ class SupermasterPanelProvider extends PanelProvider
 
                 RichEditor::configureUsing(function(RichEditor $richEditor): void {
                     $richEditor
+                        // Cleanup empty tags
+                        ->dehydrateStateUsing(function ($state) {
+                            // Strip out whitespace, empty tags variations, and <br> tags inside HTML tags
+                            $pattern = "/<[^\/>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/[^>]*>/i";
+                            $cleaned = trim(preg_replace($pattern, '', $state));
+                            // Return null if the result is completely empty
+                            return blank($cleaned) ? null : $cleaned;
+                        })
                         ->mentions([
                             MentionProvider::make('#')
                                 ->getSearchResultsUsing(function (string $search): array {
