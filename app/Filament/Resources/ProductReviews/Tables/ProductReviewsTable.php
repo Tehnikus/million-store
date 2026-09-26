@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductReviews\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\ProductReview;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -29,6 +30,9 @@ class ProductReviewsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->emptyStateIcon(NavigationItem::ProductReviews->icon())
+            ->emptyStateHeading(__('admin.catalog.product_reviews.navigation_label'))
+            ->emptyStateDescription(__('admin.catalog.product_reviews.helpers.group_title'))
             ->columns([
                 TextColumn::make('product.global_name')
                     ->limit(30)

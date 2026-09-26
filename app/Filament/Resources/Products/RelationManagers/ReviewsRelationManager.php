@@ -39,4 +39,9 @@ class ReviewsRelationManager extends RelationManager
                 ]),
             ]);
     }
+
+    protected function getTableHeading(): string
+    {
+        return __('admin.catalog.products.tabs.reviews');
+    }
 }
