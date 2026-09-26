@@ -76,7 +76,7 @@ class OptionsTab
                     )
                     ->helperText(__('admin.catalog.options.helpers.group_name')),
 
-                    Repeater::make('option_values_description')
+                    Repeater::make('description')
                         ->schema([
                             Hidden::make('option_value_id'),
                             Text::make('label')
@@ -126,7 +126,7 @@ class OptionsTab
 
         $rebuilt = $selected->map(function ($rows, $optionId) use ($current, $override) {
             $existingOption = $current->first(fn ($o) => (int) ($o['option_id'] ?? null) === (int) $optionId);
-            $existingValues = collect($existingOption['options_description'] ?? []);
+            $existingValues = collect($existingOption['description'] ?? []);
 
             $values = $rows->map(function ($row) use ($existingValues, $override, $optionId) {
                 return $existingValues->first(fn ($v) => (int) ($v['option_value_id'] ?? null) === $row['option_value_id'])
@@ -134,9 +134,9 @@ class OptionsTab
             })->values()->all();
 
             return [
-                'option_id'                 => $optionId,
-                'name'                      => $existingOption['name'] ?? static::defaultOptionName($optionId, $override),
-                'option_values_description' => $values,
+                'option_id'   => $optionId,
+                'name'        => $existingOption['name'] ?? static::defaultOptionName($optionId, $override),
+                'description' => $values,
             ];
         })->values()->all();
 
@@ -172,7 +172,7 @@ class OptionsTab
         $overrideGroup = collect($override)
             ->first(fn($group) => (int) ($group['option_id'] ?? null) === $optionId);
 
-        $valueOverride = collect($overrideGroup['option_values_description'] ?? [])
+        $valueOverride = collect($overrideGroup['description'] ?? [])
             ->first(fn($v) => (int) ($v['option_value_id'] ?? null) === $valueId) ?? [];
 
         $name = $description = [];
@@ -258,5 +258,13 @@ class OptionsTab
         Context::add($key, $choices->all());
 
         return $choices;
+    }
+
+    private static function countProductOptions($record, $store): mixed
+    {
+        if (!$record) return null;
+        $badge = $record->options()->where('store_id', $store->id)->count();
+
+        return $badge !== 0 ? $badge : null;
     }
 }

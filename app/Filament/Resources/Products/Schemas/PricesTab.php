@@ -141,7 +141,7 @@ class PricesTab
     {
         return collect($signature)->map(function ($valueId, $groupId) use ($optionsDescription) {
             $group = $optionsDescription->first(fn ($g) => (int) ($g['option_id'] ?? null) === (int) $groupId);
-            $value = collect($group['option_values_description'] ?? [])
+            $value = collect($group['description'] ?? [])
                 ->first(fn ($v) => (int) ($v['option_value_id'] ?? null) === (int) $valueId);
 
             return $value['name'][app()->getLocale()]

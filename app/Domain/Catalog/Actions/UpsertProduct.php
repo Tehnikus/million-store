@@ -36,7 +36,7 @@ class UpsertProduct
         ])->all();
 
         $attributeFacets = collect($data['description']['attributes_description'] ?? [])->flatMap(fn ($group) =>
-            collect($group['attribute_values_description'] ?? [])
+            collect($group['description'] ?? [])
                 ->map(fn ($value) => [
                     'facet_type_id'  => FacetType::AttributeValue,
                     'facet_group_id' => (int) $group['attribute_id'],

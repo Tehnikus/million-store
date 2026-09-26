@@ -30,7 +30,28 @@ class AttributesTab
 
                         Select::make('attribute_id')
                             ->options(fn() => static::attributeChoices($store->id))
-                            ->afterStateUpdated(fn(Set $set) => $set('attribute_values_description', [])) // Also an array can be passed to create empty attribute value form TODO
+                            ->afterStateUpdated(function (Set $set, Get $get, $state, $livewire) use ($store) {
+                                $set('values_description', []);
+
+                                if (blank($state))
+                                    return;
+
+                                $default = Attribute::find($state);
+                                if (!$default)
+                                    return;
+
+                                $record = $livewire->getRecord();
+                                $override = $record
+                                    ? $record->descriptions()->where('store_id', $store->id)->first()?->attributes_description
+                                    : null;
+
+                                $overrideGroup = collect($override)->first(fn($g) => (int) ($g['attribute_id'] ?? null) === (int) $state);
+                                $nameOverride = $overrideGroup['name'] ?? [];
+
+                                foreach ($default->getTranslations('name') as $locale => $name) {
+                                    $set("name.{$locale}", $nameOverride[$locale] ?? $name);
+                                }
+                            })
                             ->searchable()
                             ->preload()
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
@@ -38,7 +59,7 @@ class AttributesTab
                             ->live()
                             ->label(__('admin.catalog.attributes.fields.group')),
 
-                        Repeater::make('attribute_values_description')
+                        Repeater::make('description')
                             ->schema([
                                 Group::make([
                                     // The form itself
@@ -65,7 +86,7 @@ class AttributesTab
                                                 : null;
 
                                             $overrideGroup = collect($override)->first(fn($g) => (int) ($g['attribute_id'] ?? null) === (int) $attributeId);
-                                            $valueOverride = collect($overrideGroup['attribute_values_description'] ?? [])
+                                            $valueOverride = collect($overrideGroup['description'] ?? [])
                                                 ->first(fn($v) => (int) ($v['attribute_value_id'] ?? null) === (int) $state) ?? [];
 
                                             foreach ($default['name'] as $locale => $name) {
@@ -102,24 +123,7 @@ class AttributesTab
                     ->maxItems(fn() => static::attributeChoices($store->id)->count())
                     ->collapsible()
                     // ->collapsed(fn($operation) => $operation !== 'create')
-                    ->itemLabel(function (array $state) use ($store): ?string {
-                        $attributeName = static::attributeChoices($store->id)->get($state['attribute_id'] ?? null);
-
-                        if (blank($attributeName)) {
-                            return null;
-                        }
-
-                        $valueChoices = static::attributeValueChoices($state['attribute_id'] ?? null);
-
-                        $valueNames = collect($state['attribute_values_description'] ?? [])
-                            ->pluck('attribute_value_id')
-                            ->filter()
-                            ->map(fn ($id) => $valueChoices->get($id))
-                            ->filter()
-                            ->implode(', ');
-
-                        return $valueNames !== '' ? "{$attributeName}: {$valueNames}" : $attributeName;
-                    })
+                    ->itemLabel(fn(array $state): ?string => static::groupItemLabel($state))
                     ->reorderable()
                     ->orderColumn('sort_order')
                     ->addActionLabel(__('admin.catalog.products.buttons.add_attribute'))
@@ -211,7 +215,7 @@ class AttributesTab
             ->first();
 
         $badge = collect($description?->attributes_description ?? [])
-            ->sum(fn ($group) => count($group['attribute_values_description'] ?? []));
+            ->sum(fn ($group) => count($group['description'] ?? []));
 
         return $badge !== 0 ? $badge : null;
     }
