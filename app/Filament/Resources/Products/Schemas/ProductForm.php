@@ -70,7 +70,21 @@ class ProductForm
                                                 ->schema([
                                                     Tabs::make("content.{$language->locale}")
                                                         ->schema([
-                                                            DescriptionTab::make($language, ['withSlug' => true]),
+                                                            DescriptionTab::make(
+                                                                $language, 
+                                                                [
+                                                                    'withSlug' => true, 
+                                                                    'mergeTags' => [
+                                                                        'product.name', 
+                                                                        'product.sku',
+                                                                        'product.price',
+                                                                        'product.minPrice',
+                                                                        'product.maxPrice',
+                                                                        'product.category',
+                                                                        'product.manufacturer',
+                                                                    ]
+                                                                ]
+                                                            ),
                                                             FaqTab::make($language),
                                                             HowToTab::make($language),
                                                             FooterTab::make($language),

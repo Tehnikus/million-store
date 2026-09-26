@@ -69,27 +69,30 @@ class DescriptionTab
             ...($withSlug === true ? SlugInput::makeSlug($language, []) : []),
 
             RichEditor::make("description_short.{$language->locale}")
-                ->label(__('admin.common.fields.description_short'))
-                ->placeholder(__('admin.common.fields.description_short'))
-                ->helperText(__('admin.common.helpers.description_short'))
                 ->hintActions([
                     self::aiModalAction("description_short.{$language->locale}", $language)
                 ])
-                ->extraInputAttributes([
-                    'style' => 'min-height: 10rem; max-height: 30vh; overflow-y: auto;'
-                ]),
+                ->when(
+                    filled($config['mergeTags'] ?? null),
+                    fn(RichEditor $richEditor) => $richEditor->mergeTags($config['mergeTags'])
+                )
+                ->label(__('admin.common.fields.description_short'))
+                ->placeholder(__('admin.common.fields.description_short'))
+                ->helperText(__('admin.common.helpers.description_short'))
+                ->extraInputAttributes(['style' => 'min-height: 10rem; max-height: 30vh; overflow-y: auto;']),
 
             RichEditor::make("description_full.{$language->locale}")
-                ->label(__('admin.common.fields.description_full'))
-                ->placeholder(__('admin.common.fields.description_full'))
-                ->helperText(__('admin.common.helpers.description_full'))
                 ->hintActions([
                     self::aiModalAction("description_full.{$language->locale}", $language)
                 ])
-                ->extraInputAttributes([
-                    'style' => 'min-height: 20rem; max-height: 70vh; overflow-y: auto;'
-                ]),
-
+                ->when(
+                    filled($config['mergeTags'] ?? null),
+                    fn(RichEditor $richEditor) => $richEditor->mergeTags($config['mergeTags'])
+                )
+                ->label(__('admin.common.fields.description_full'))
+                ->placeholder(__('admin.common.fields.description_full'))
+                ->helperText(__('admin.common.helpers.description_full'))
+                ->extraInputAttributes(['style' => 'min-height: 20rem; max-height: 70vh; overflow-y: auto;']),
 
             TextInput::make("h1.{$language->locale}")
                 ->label(__('admin.common.fields.h1'))
