@@ -13,6 +13,7 @@ use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductReview;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Section;
@@ -25,8 +26,10 @@ class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $store = Filament::getTenant();
-        $languages = $store->activeLanguages();
+        $store      = Filament::getTenant();
+        $languages  = $store->activeLanguages();
+        $currencies = $store->activeCurrencies();
+        $countries  = $store->activeCountries();
 
         return $schema
             ->components([
@@ -52,6 +55,12 @@ class ProductForm
                                             ->columnSpanFull()
                                             ->label(__('admin.catalog.products.fields.global_name'))
                                             ->helperText(__('admin.catalog.products.helpers.global_name')),
+                                        
+                                        // Product status toggle
+                                        Toggle::make('is_active')
+                                            ->label(__('admin.catalog.products.fields.is_active'))
+                                            ->helperText(__('admin.catalog.products.helpers.is_active'))
+                                            ->statePath('description.is_active')
                                     ]),
                                 Tabs::make('languages')
                                     ->schema([
@@ -77,7 +86,7 @@ class ProductForm
                         PlacementTab::make($store, $languages)
                             ->label(__('admin.catalog.products.tabs.placement'))
                             ->icon(NavigationItem::Categories->icon()),
-                        PricesTab::make($store, $languages)
+                        PricesTab::make($store, $currencies, $languages)
                             ->label(__('admin.catalog.products.tabs.prices'))
                             ->icon(NavigationItem::Currencies->icon()),
                         OptionsTab::make($store, $languages)
@@ -89,14 +98,26 @@ class ProductForm
                         Tab::make('reviews')
                             ->label(__('admin.catalog.products.tabs.reviews'))
                             ->icon(NavigationItem::ProductReviews->icon())
-                            ->visible(fn(?Product $record) => $record !== null)
-                            ->badge(fn(?Product $record) => $record !== null ? ProductReview::where('product_id', $record->id)->where('store_id', $store->id)->count() : null)
+                            ->visible(fn(?Product $record) => $record !== null && $record->descriptions()->where('store_id', $store->id)->first() !== null)
+                            ->badge(fn(?Product $record) => $record !== null ? (($count = ProductReview::where('product_id', $record->id)->where('store_id', $store->id)->count()) ? $count : null) : null)
                             ->schema([
                                 Livewire::make(ReviewsRelationManager::class, fn(?Product $record, ?EditProduct $livewire) => [
                                     'ownerRecord' => $record,
                                     'pageClass'   => $livewire::class,
                                 ])
                             ]),
+                        Tab::make('inventory')
+                            ->label(__('admin.catalog.products.tabs.inventory'))
+                            ->icon(NavigationItem::StockStatus->icon())
+                            ->schema([]),
+                        Tab::make('statistics')
+                            ->label(__('admin.catalog.products.tabs.statistics'))
+                            ->icon(Heroicon::ArrowTrendingUp)
+                            ->schema([]),
+                        Tab::make('orders')
+                            ->label(__('admin.catalog.products.tabs.orders'))
+                            ->icon(NavigationItem::Orders->icon())
+                            ->schema([]),
 
                     ])
                     ->contained(false),
