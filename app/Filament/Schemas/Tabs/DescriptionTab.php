@@ -24,6 +24,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\IconSize;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 use Illuminate\Support\HtmlString;
@@ -201,6 +202,7 @@ class DescriptionTab
             ->icon(Heroicon::OutlinedSparkles)
             ->iconSize(IconSize::Medium)
             ->color(Color::Lime)
+            ->modalWidth(Width::ScreenLarge)
             ->hiddenLabel()
             ->modalHeading(__('admin.common.buttons.ai_action'))
             ->tooltip(__('admin.common.buttons.ai_action'))
@@ -216,23 +218,29 @@ class DescriptionTab
             ->schema([
                 Hidden::make('source'),
                 Hidden::make('has_result'),
-                Select::make('provider')
-                    ->live(onBlur: true)
-                    ->options($providerOptions)
-                    ->default($defaultProviderKey)
-                    ->required()
-                    ->label(__('admin.stores.store_settings.tabs.ai_settings.columns.providers'))
-                    ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.columns.providers')),
-                Select::make('prompt_id')
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, ?string $state) use ($settings) {
-                        $set('prompt', $settings['prompts'][$state]['prompt'] ?? null);
-                    })
-                    ->required()
-                    ->options($promptOptions)
-                    ->default($defaultPromptKey)
-                    ->label(__('admin.stores.store_settings.tabs.ai_settings.columns.prompts'))
-                    ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.columns.prompts')),
+                FusedGroup::make([
+                    Select::make('provider')
+                        ->live(onBlur: true)
+                        ->options($providerOptions)
+                        ->default($defaultProviderKey)
+                        ->required()
+                        ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.provider'))
+                        ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.labels.provider'))
+                        ->columnSpan(1),
+                    Select::make('prompt_id')
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function (Set $set, ?string $state) use ($settings) {
+                            $set('prompt', $settings['prompts'][$state]['prompt'] ?? null);
+                        })
+                        ->required()
+                        ->options($promptOptions)
+                        ->default($defaultPromptKey)
+                        ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt'))
+                        ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt'))
+                        ->columnSpan(1),
+                ])
+                ->helperText(__('admin.stores.store_settings.tabs.ai_settings.helpers.select_prompt'))
+                ->columns(2),
                 FusedGroup::make([
                     // Extra prompt directions
                     Textarea::make('prompt')
@@ -247,7 +255,7 @@ class DescriptionTab
                         ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_extra'))
                         ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_extra')),
                 ])
-                    ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt')),
+                ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt')),
 
                 Actions::make([
                     Action::make('generate')
@@ -284,8 +292,9 @@ class DescriptionTab
                 ]),
 
                 RichEditor::make('result')
-                    ->label(__('admin.common.fields.ai_result'))
                     ->required()
+                    ->extraInputAttributes(['style' => 'min-height: 10lh; max-height: 25lh; overflow-y: auto;'])
+                    ->label(__('admin.common.fields.ai_result'))
             ])
 
             ->modalSubmitAction(fn (Action $action, Get $schemaGet) => $action
