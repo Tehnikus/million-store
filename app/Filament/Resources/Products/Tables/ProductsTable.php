@@ -3,18 +3,20 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Domain\Catalog\Search\ProductSearch;
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductDescription;
 use App\Models\Global\Currency;
+use Arr;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
-use Filament\Support\Enums\Alignment;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -40,20 +42,20 @@ class ProductsTable
                         $subQuery->where('store_id', $storeId);
 
                     }])
-                    ->with(['priceTiers' => function ($subQuery) use ($storeId) {
-                        // Get prices of current store only
-                        $subQuery
-                            ->where('store_id', $storeId)
-                            ->whereNull('customer_group_id') // Customer group TODO
-                            ->where(function ($q) {
-                                $q->whereNull('valid_from')->orWhere('valid_from', '<=', now());
-                            })
-                            ->where(function ($q) {
-                                $q->whereNull('valid_until')->orWhere('valid_until', '>=', now());
-                            })
-                            ->orderByDesc('priority')
-                            ->with('prices'); // Join all tier prices
-                    }])
+                    // ->with(['priceTiers' => function ($subQuery) use ($storeId) {
+                    //     // Get prices of current store only
+                    //     $subQuery
+                    //         ->where('store_id', $storeId)
+                    //         ->whereNull('customer_group_id') // Customer group TODO
+                    //         ->where(function ($q) {
+                    //             $q->whereNull('valid_from')->orWhere('valid_from', '<=', now());
+                    //         })
+                    //         ->where(function ($q) {
+                    //             $q->whereNull('valid_until')->orWhere('valid_until', '>=', now());
+                    //         })
+                    //         ->orderByDesc('priority')
+                    //         ->with('prices'); // Join all tier prices
+                    // }])
                 ;
             })
             ->searchUsing(function (Builder $query, $search): Builder {
@@ -72,10 +74,11 @@ class ProductsTable
             ->emptyStateDescription(__('admin.catalog.products.helpers.group_title'))
             ->columns([
                 ConversionImageColumn::make('images')
-                    ->conversion('miniature'),
+                    ->conversion('miniature')
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 // Global SKU and name
-                TextColumn::make('sku')
+                TextColumn::make('global_name')
                     ->label(__('admin.catalog.products.fields.global_name') .'/'. __('admin.catalog.products.fields.sku'))
                     ->formatStateUsing(function ($record) {
                         return new HtmlString(
@@ -84,100 +87,36 @@ class ProductsTable
                         );
                     })
                     ->wrapHeader()
-                    ->searchable(isIndividual: true),
+                    ->searchable(isIndividual: true)
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 MultilangTextColumn::make('descriptions.name')
                     ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name'))
                     ->placeholder(__('admin.catalog.products.fields.is_not_associated'))
                     ->label(__('admin.catalog.products.fields.store_name'))
                     ->wrapHeader()
-                    ->searchable(isIndividual: true),
+                    ->searchable(isIndividual: true)
+                    ->toggleable(isToggledHiddenByDefault: false),
 
-                TextColumn::make('regular_price')
-                    ->label(__('admin.catalog.products.fields.price'))
-                    ->getStateUsing(function (Product $record) use ($defaultCurrencyId) {
-                        $tier = $record->priceTiers->firstWhere('is_discount', false);
-                        $price = $tier?->prices->firstWhere('currency_id', $defaultCurrencyId);
+                TextColumn::make('descriptions.options_description')
+                    ->formatStateUsing(fn ($record) => static::renderFacetGroups(
+                        $record->currentDescription()?->options_description ?? [],
+                        'description',
+                    ))
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label(__('admin.catalog.products.tabs.options')),
 
-                        return $price?->price;
-                    })
-                    ->money(fn () => Currency::find($defaultCurrencyId)?->iso_code ?? 'USD')
-                    ->width('100px')
-                    ->alignment(Alignment::Center), // or ->suffix($sign) TODO
-
-                // TextColumn::make('discount_price')
-                //     ->label(__('admin.catalog.products.fields.discount'))
-                //     ->getStateUsing(function (Product $record) use ($defaultCurrencyId) {
-                //         $tier = $record->priceTiers->firstWhere('is_discount', true);
-                //         $price = $tier?->prices->firstWhere('currency_id', $defaultCurrencyId);
-
-                //         return $price?->price;
-                //     })
-                //     ->placeholder('--')
-                //     ->width('100px')
-                //     ->alignment(Alignment::Center),
-
-                // Product status: if it is active and if exists in current store
-                // IconColumn::make('is_active')
-                //     ->label(__('admin.catalog.products.fields.is_active'))
-                //     ->getStateUsing(fn(Product $record) => $record->descriptions?->first()?->is_active ?? 'not_associated')
-                //     ->icon(fn($state): string => match ($state) {
-                //         true                => 'heroicon-s-play',
-                //         false               => 'heroicon-s-stop',
-                //         'not_associated'    => 'heroicon-s-x-circle',
-                //         default             => 'heroicon-s-x-circle',
-                //     })
-                //     ->color(fn($state): string => match ($state) {
-                //         true                => 'success',
-                //         false               => 'danger',
-                //         'not_associated'    => 'gray',
-                //         default             => 'gray',
-                //     })
-                //     ->tooltip(fn($state): string => match ($state) {
-                //         true                => __('admin.catalog.products.fields.is_active'),
-                //         false               => __('admin.catalog.products.fields.is_not_active'),
-                //         'not_associated'    => __('admin.catalog.products.fields.is_not_associated'),
-                //         default             => __('admin.catalog.products.fields.is_not_associated'),
-                //     })
-                //     ->alignment('center')
-                //     ->width('1%')
-                //     ->action(
-                //         Action::make('toggleActive')
-                //             ->requiresConfirmation(false)
-                //             ->action(function (Product $record) {
-                //                 $record->currentDescription()?->update([
-                //                     'is_active' => ! $record->currentDescription()?->is_active,
-                //                 ]);
-                //             })
-                //     ),
-
-                // // Toggle product state. Has three states, actually: true, fasle and null (when not associated to store)
-                // // Thus a little bit of logic used here
-                // ToggleColumn::make('descriptions.is_active')
-                //     ->updateStateUsing(function (Product $record, bool $state) {$record->descriptions->first()?->update(['is_active' => $state]);})
-                //     ->getStateUsing(fn(Product $record) => $record->descriptions?->first()?->is_active)
-                //     ->onColor('success')
-                //     ->onIcon('heroicon-s-play')
-                //     ->offColor(fn(Product $record) => $record->descriptions?->first()?->is_active === null ? 'black' : 'danger')
-                //     ->offIcon(fn(Product $record) => $record->descriptions?->first()?->is_active === null ? 'heroicon-s-x-mark' : 'heroicon-s-stop')
-                //     ->disabled(fn(Product $record) => $record->descriptions?->first()?->is_active === null)
-                //     // // Due some kind of bug the tooltip is not updated with toggle state I have to comment this out and use single tooltip 
-                //     // // TODO Report this bug
-                //     // ->tooltip(fn(Product $record) => match ($record->descriptions?->first()?->is_active) {
-                //     //     true   => __('admin.catalog.products.fields.is_active'),
-                //     //     false  => __('admin.catalog.products.fields.is_not_active'),
-                //     //     null   => __('admin.catalog.products.fields.is_not_associated'),
-                //     // })
-                //     ->tooltip(fn (Product $record) => $record->descriptions?->first()?->is_active === null ? __('admin.catalog.products.fields.is_not_associated') : null)
-                //     ->label(__('admin.catalog.products.fields.is_active'))
-                //     ->tooltip(__('admin.catalog.products.helpers.status'))
-                //     ->wrapHeader()
-                //     ->width('1%'),
-
+                TextColumn::make('descriptions.attributes_description')
+                    ->formatStateUsing(fn ($record) => static::renderFacetGroups(
+                        $record->currentDescription()?->attributes_description ?? [],
+                        'description',
+                    ))
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label(__('admin.catalog.products.tabs.attributes')),
 
                 // Dates
-                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')->dateTime()->wrap()->alignEnd()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->dateTime()->wrap()->alignEnd()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -187,7 +126,7 @@ class ProductsTable
                     ->requiresConfirmation(false)
                     ->action(fn (Product $record) => $record->currentDescription()?->update(['is_active' => !$record->currentDescription()?->is_active]))
                     ->visible(fn($record) => $record->currentDescription() !== null)
-                    ->icon(fn($record) => $record->currentDescription()?->is_active == true ? 'heroicon-s-play' : 'heroicon-s-stop')
+                    ->icon(fn($record) => $record->currentDescription()?->is_active == true ? Heroicon::Play : Heroicon::Stop)
                     ->color(fn($record) => $record->currentDescription()?->is_active == true ? 'success' : 'danger')
                     ->tooltip(fn($record) => $record->currentDescription()?->is_active == true ? __('admin.catalog.products.fields.is_active') : __('admin.catalog.products.fields.is_not_active')),
 
@@ -196,7 +135,7 @@ class ProductsTable
                 Action::make('deleteFromStore')
                     ->action(fn(Product $product) => ProductDescription::where('product_id', $product->id)->where('store_id', Filament::getTenant()->id)->delete())
                     ->visible(fn($record) => $record->currentDescription() !== null)
-                    ->icon('heroicon-s-no-symbol')
+                    ->icon(Heroicon::OutlinedNoSymbol)
                     ->color('danger')
                     ->requiresConfirmation()
                     ->modalHeading(__('admin.catalog.products.buttons.delete_from_store'))
@@ -214,5 +153,40 @@ class ProductsTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected static function renderFacetGroups(array $groups, string $valuesKey): ?HtmlString
+    {
+        if (empty($groups)) {
+            return null;
+        }
+
+        $html = collect($groups)->map(function ($group) use ($valuesKey) {
+            $groupName = e(static::localizedText($group['name'] ?? null));
+
+            $values = collect($group[$valuesKey] ?? [])
+                ->map(fn ($v) => "
+                    <span class=\"inline-flex fi-color fi-color-success fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm\">"
+                      .  e(static::localizedText($v['name'] ?? null)) . 
+                    "</span>"
+                )
+                ->filter()
+                ->implode(' ');
+
+            return "<div x-tooltip=\"{content: '" . $groupName . "', theme: \$store.theme, allowHTML: false}\" >{$values}</div>";
+        })->implode('');
+
+        return new HtmlString($html);
+    }
+
+    protected static function localizedText(?array $translations): string
+    {
+        if (empty($translations)) {
+            return '';
+        }
+
+        $locale = app()->getLocale();
+
+        return $translations[$locale] ?? Arr::first($translations) ?? '';
     }
 }
