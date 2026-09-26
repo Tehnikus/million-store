@@ -122,7 +122,7 @@ class PricesTab
                 ->mapWithKeys(fn ($row) => [(int) $row['option_select'] => (int) $row['option_value_select']])
                 ->all())
             ->filter()
-            ->unique(fn ($signature) => static::signatureKey($signature))
+            ->unique(fn ($signature) => UpsertProduct::signatureKey($signature))
             ->values();
 
         if ($rows->isEmpty()) {
@@ -130,7 +130,7 @@ class PricesTab
         }
 
         return $rows->mapWithKeys(fn ($signature) => [
-            static::signatureKey($signature) => [
+            UpsertProduct::signatureKey($signature) => [
                 'label'     => static::signatureLabel($signature, $optionsDescription),
                 'signature' => $signature,
             ],
@@ -148,12 +148,6 @@ class PricesTab
                 ?? OptionValue::find($valueId)?->name
                 ?? "#{$valueId}";
         })->implode(', ');
-    }
-
-    protected static function signatureKey(array $signature): string
-    {
-        ksort($signature);
-        return collect($signature)->map(fn ($v, $k) => "{$k}-{$v}")->implode('_');
     }
 
     protected static function customerGroupChoices(int $storeId): Collection

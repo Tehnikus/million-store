@@ -136,8 +136,9 @@ class UpsertProduct
         });
     }
 
-    protected static function signatureKey(array $signature): string
+    public static function signatureKey(?array $signature): string
     {
+        if (blank($signature)) return 'base';
         ksort($signature);
         return collect($signature)->map(fn ($v, $k) => "{$k}-{$v}")->implode('_');
     }
