@@ -7,6 +7,8 @@ use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductDescription;
 use App\Models\Catalog\ProductOption;
+use App\Models\Catalog\ProductPrice;
+use App\Models\Catalog\ProductPriceTier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -69,6 +71,13 @@ class UpsertProduct
             ->unique(fn ($signature) => static::signatureKey($signature))
             ->values();
 
+        // Get options signatures to save prices
+        $comboSignatures = $optionSignatures->isEmpty()
+            ? ['base' => null]
+            : $optionSignatures->mapWithKeys(fn ($signature) => [static::signatureKey($signature) => $signature])->all();
+
+        $priceTiers = $data['priceTiers'] ?? [];
+
         // Set primary category and manufacturer taking in account import routine
         if (!array_key_exists('primary_category_id', $data) && array_key_exists('facet_categories', $data)) {
             $data['description']['primary_category_id'] = collect($data['facet_categories'])->firstWhere('is_primary', true)['facet_value_id'] ?? null;
@@ -79,7 +88,7 @@ class UpsertProduct
 
 
         // Update produt data in single transaction
-        return DB::transaction(function () use ($data, $storeId, $categoryFacets, $manufacturerFacets, $tagFacets, $optionFacets, $attributeFacets, $optionSignatures) {
+        return DB::transaction(function () use ($data, $storeId, $categoryFacets, $manufacturerFacets, $tagFacets, $optionFacets, $attributeFacets, $optionSignatures, $priceTiers, $comboSignatures) {
 
             // Create/Edit product
             if (empty($data['product_id'])) {
@@ -130,6 +139,37 @@ class UpsertProduct
                 'store_id'         => $storeId,
                 'option_signature' => $signature,
             ]));
+
+            // Save price tiers
+            ProductPriceTier::where('product_id', $product->id)
+                ->where('store_id', $storeId)
+                ->delete();
+
+            foreach ($priceTiers as $tierRow) {
+                $priceGrid = $tierRow['price'] ?? [];
+                unset($tierRow['price'], $tierRow['id']);
+
+                $tier = ProductPriceTier::create([
+                    ...$tierRow,
+                    'product_id' => $product->id,
+                    'store_id'   => $storeId,
+                ]);
+
+                foreach ($priceGrid as $comboKey => $amounts) {
+                    $signature = $comboSignatures[$comboKey] ?? null;
+
+                    foreach ($amounts as $currencyId => $amount) {
+                        if (blank($amount)) continue;
+
+                        ProductPrice::create([
+                            'product_price_tier_id' => $tier->id,
+                            'currency_id'           => (int) $currencyId,
+                            'option_signature'      => $signature,
+                            'price'                 => $amount,
+                        ]);
+                    }
+                }
+            }
 
             // Return model as expected
             return $product;
