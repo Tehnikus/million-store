@@ -75,6 +75,42 @@ class EditProduct extends EditRecord
                     ])->values()->all(),
             ])->values()->all();
 
+        $priceTiers = $record->priceTiers()
+            ->where('store_id', $store->id)
+            ->with('prices')
+            ->get();
+
+        $data['priceTiers'] = $priceTiers->isNotEmpty()
+            ? $priceTiers->map(function ($tier) {
+                $priceGrid = [];
+                foreach ($tier->prices as $price) {
+                    $comboKey = $price->option_signature ? UpsertProduct::signatureKey($price->option_signature) : 'base';
+                    $priceGrid[$comboKey][$price->currency_id] = (string) $price->price;
+                }
+
+                return [
+                    'customer_group_id' => $tier->customer_group_id,
+                    'is_base'           => $tier->is_base,
+                    'is_discount'       => $tier->is_discount,
+                    'priority'          => $tier->priority,
+                    'date_valid_from'   => $tier->date_valid_from,
+                    'date_valid_until'  => $tier->date_valid_until,
+                    'valid_quantity'    => $tier->valid_quantity,
+                    'price'             => $priceGrid,
+                ];
+            })->all()
+            : [[
+                // Set empty base price tier on product edit in the neighboring store, when product is not linked yet
+                'customer_group_id' => null,
+                'is_base'            => true,
+                'is_discount'        => false,
+                'priority'           => 1,
+                'date_valid_from'    => null,
+                'date_valid_until'   => null,
+                'valid_quantity'     => null,
+                'price'              => [],
+            ]];
+
         return $data;
     }
 
