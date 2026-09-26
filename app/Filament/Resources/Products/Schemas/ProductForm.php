@@ -109,6 +109,14 @@ class ProductForm
                         AttributesTab::make($store, $languages)
                             ->label(__('admin.catalog.products.tabs.attributes'))
                             ->icon(NavigationItem::Attributes->icon()),
+                        Tab::make('delivery')
+                            ->label(__('admin.catalog.products.tabs.delivery'))
+                            ->icon(NavigationItem::Delivery->icon())
+                            ->schema([]),
+                        Tab::make('inventory')
+                            ->label(__('admin.catalog.products.tabs.inventory'))
+                            ->icon(NavigationItem::StockStatus->icon())
+                            ->schema([]),
                         Tab::make('reviews')
                             ->label(__('admin.catalog.products.tabs.reviews'))
                             ->icon(NavigationItem::ProductReviews->icon())
@@ -120,18 +128,15 @@ class ProductForm
                                     'pageClass'   => $livewire::class,
                                 ])
                             ]),
-                        Tab::make('inventory')
-                            ->label(__('admin.catalog.products.tabs.inventory'))
-                            ->icon(NavigationItem::StockStatus->icon())
-                            ->schema([]),
                         Tab::make('statistics')
                             ->label(__('admin.catalog.products.tabs.statistics'))
                             ->icon(Heroicon::ArrowTrendingUp)
                             ->schema([]),
-                        Tab::make('orders')
-                            ->label(__('admin.catalog.products.tabs.orders'))
-                            ->icon(NavigationItem::Orders->icon())
-                            ->schema([]),
+                        // Tab::make('orders')
+                        //     ->label(__('admin.catalog.products.tabs.orders'))
+                        //     ->icon(NavigationItem::Orders->icon())
+                        //     ->schema([]),
+
 
                     ])
                     ->contained(false),
