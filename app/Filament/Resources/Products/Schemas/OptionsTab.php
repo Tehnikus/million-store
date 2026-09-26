@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Option;
 use App\Models\Catalog\OptionValue;
+use Arr;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
@@ -27,6 +28,7 @@ class OptionsTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('productOptions')
+            ->badge(fn($record) => self::countProductOptions($record, $store))
             ->schema([
                 Repeater::make('optionSignatures')
                     ->schema([
@@ -59,13 +61,15 @@ class OptionsTab
                                 ->columns(2)
                             ])
                     ])
-                    ->defaultItems(0),
+                    ->defaultItems(0)
+                    ->compact(),
 
             Repeater::make('options_description')
                 ->schema([
                     FusedGroup::make(
                         collect($languages)->map(fn ($language) =>
                             TextInput::make("name.{$language->locale}")
+                                ->live(onBlur: true)
                                 ->prefix($language->locale)
                                 ->required(fn(Get $get) => $get('option_id') !== null)
                                 ->visible(fn(Get $get) => $get('option_id') !== null)
@@ -79,11 +83,12 @@ class OptionsTab
                     Repeater::make('description')
                         ->schema([
                             Hidden::make('option_value_id'),
-                            Text::make('label')
-                                ->content(fn (Get $get) => static::optionValueChoices($get('../../option_id'))->get($get('option_value_id')))
-                                ->columnSpanFull(),
+                            // Text::make('label')
+                            //     ->content(fn (Get $get) => static::optionValueChoices($get('../../option_id'))->get($get('option_value_id')))
+                            //     ->columnSpanFull(),
                             ...self::optionValueDescriptionsForm($languages),
                         ])
+                        ->itemLabel(fn (array $state): ?string => static::itemLabelText($state))
                         ->addable(false)
                         ->deletable(false)
                         ->reorderable(true)
@@ -95,9 +100,10 @@ class OptionsTab
                 ->deletable(false)
                 ->reorderable(true)
                 ->collapsible(true)
-                // ->collapsed(fn($operation) => $operation !== 'create')
+                ->collapsed(fn($operation) => $operation !== 'create')
                 ->default([])
                 ->statePath('description.options_description')
+                ->itemLabel(fn (array $state): ?string => static::groupItemLabel($state))
             ]);
     }
 
@@ -196,6 +202,7 @@ class OptionsTab
                     Fieldset::make($language->name)
                         ->schema([
                             TextInput::make("name.{$language->locale}")
+                                ->live(onBlur: true)
                                 ->required()
                                 ->maxLength(255)
                                 ->prefix($language->locale)
@@ -266,5 +273,27 @@ class OptionsTab
         $badge = $record->options()->where('store_id', $store->id)->count();
 
         return $badge !== 0 ? $badge : null;
+    }
+
+    protected static function itemLabelText(array $state): ?string
+    {
+        $name = array_filter($state['name'] ?? []);
+        if (blank($name)) return null;
+
+        return $name[app()->getLocale()] ?? Arr::first($name);
+    }
+
+    protected static function groupItemLabel(array $state): ?string
+    {
+        $groupName = static::itemLabelText($state);
+        if (blank($groupName)) return null;
+
+        $locale = app()->getLocale();
+        $valueNames = collect($state['description'] ?? [])
+            ->map(fn ($v) => static::itemLabelText($v))
+            ->filter()
+            ->implode(', ');
+
+        return $valueNames !== '' ? "{$groupName}: {$valueNames}" : $groupName;
     }
 }

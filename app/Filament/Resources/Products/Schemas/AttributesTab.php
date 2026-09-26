@@ -5,12 +5,15 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Catalog\Attribute;
 use App\Models\Catalog\AttributeValue;
+use Arr;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -58,6 +61,20 @@ class AttributesTab
                             ->required()
                             ->live()
                             ->label(__('admin.catalog.attributes.fields.group')),
+
+                        FusedGroup::make(
+                            collect($languages)->map(
+                                fn($language) =>
+                                TextInput::make("name.{$language->locale}")
+                                    ->live(onBlur: true)
+                                    ->prefix($language->locale)
+                                    ->required(fn(Get $get) => $get('attribute_id') !== null)
+                                    ->visible(fn(Get $get) => $get('attribute_id') !== null)
+                                    ->hiddenLabel()
+                                    ->label(__('admin.catalog.attributes.fields.group_name'))
+                            )->all()
+                        )
+                            ->helperText(__('admin.catalog.attributes.helpers.group_name')),
 
                         Repeater::make('description')
                             ->schema([
@@ -108,10 +125,7 @@ class AttributesTab
                             ->maxItems(fn(Get $get) => static::attributeValueChoices($get('attribute_id'))->count())
                             ->collapsible()
                             ->collapsed(fn($operation) => $operation !== 'create')
-                            ->itemLabel(function (array $state, Get $get): ?string {
-                                $attributeId = $get('attribute_id');
-                                return static::attributeValueChoices($attributeId)->get($state['attribute_value_id'] ?? null);
-                            })
+                            ->itemLabel(fn(array $state): ?string => static::itemLabelText($state))
                             ->reorderable()
                             ->orderColumn('sort_order')
                             ->columns(5)
@@ -141,6 +155,7 @@ class AttributesTab
                     Fieldset::make($language->name)
                         ->schema([
                             TextInput::make("name.{$language->locale}")
+                                ->live(onBlur: true)
                                 ->required()
                                 ->maxLength(255)
                                 ->prefix($language->locale)
@@ -220,4 +235,25 @@ class AttributesTab
         return $badge !== 0 ? $badge : null;
     }
 
+    protected static function itemLabelText(array $state): ?string
+    {
+        $name = array_filter($state['name'] ?? []);
+        if (blank($name)) return null;
+
+        return $name[app()->getLocale()] ?? Arr::first($name);
+    }
+
+    protected static function groupItemLabel(array $state): ?string
+    {
+        $groupName = static::itemLabelText($state);
+        if (blank($groupName)) return null;
+
+        $locale = app()->getLocale();
+        $valueNames = collect($state['description'] ?? [])
+            ->map(fn ($v) => static::itemLabelText($v))
+            ->filter()
+            ->implode(', ');
+
+        return $valueNames !== '' ? "{$groupName}: {$valueNames}" : $groupName;
+    }
 }
