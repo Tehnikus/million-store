@@ -38,7 +38,7 @@ class PlacementTab
                             ->table([
                                 TableColumn::make(__('admin.catalog.products.tabs.placement.labels.category'))->markAsRequired(),
                                 TableColumn::make(__('admin.catalog.products.tabs.placement.labels.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
-                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.is_primary_category'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.is_primary_category'))->markAsRequired()->width('200px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
                                 Select::make('facet_value_id')
@@ -64,6 +64,7 @@ class PlacementTab
                                     ->distinct()
                                     ->required()
                                     ->fixIndistinctState()
+                                    ->extraFieldWrapperAttributes(['style' => 'justify-self: center'])
                                     ->label(__('admin.catalog.products.tabs.placement.labels.is_primary_category')),
                             ])
                             ->rule(fn() => function (string $attribute, $value, Closure $fail) {
@@ -78,7 +79,8 @@ class PlacementTab
                             ->reorderable(false)
                             ->maxItems(static::categoryChoices($store->id)->count())
                             ->label(__('admin.catalog.products.tabs.placement.labels.categories'))
-                            ->hiddenLabel(),
+                            ->hiddenLabel()
+                            ->compact(),
                         Callout::make()
                             ->visible(function () use ($store) {
                                 return static::categoryChoices($store->id)->count() == 0;
@@ -96,7 +98,7 @@ class PlacementTab
                             ->table([
                                 TableColumn::make(__('admin.catalog.products.tabs.placement.labels.manufacturer')),
                                 TableColumn::make(__('admin.catalog.products.tabs.placement.labels.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
-                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.is_primary_manufacturer'))->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.is_primary_manufacturer'))->width('200px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
                                 Select::make('facet_value_id')
@@ -122,6 +124,7 @@ class PlacementTab
                                 Toggle::make('is_primary')
                                     ->distinct()
                                     ->fixIndistinctState()
+                                    ->extraFieldWrapperAttributes(['style' => 'justify-self: center'])
                                     ->label(__('admin.catalog.products.tabs.placement.labels.is_primary_manufacturer')),
                             ])
                             ->defaultItems(0)
@@ -130,6 +133,7 @@ class PlacementTab
                             ->addActionLabel(__('admin.catalog.products.tabs.placement.buttons.add_manufacturer'))
                             ->label(__('admin.catalog.products.tabs.placement.labels.manufacturers'))
                             ->hiddenLabel()
+                            ->compact()
                             ->visible(function () use ($store) {
                                 return static::manufacturerChoices($store->id)->count() > 0;
                             }),
@@ -169,6 +173,7 @@ class PlacementTab
                             ->maxItems(static::tagChoices($store->id)->count())
                             ->label(__('admin.catalog.products.tabs.placement.labels.product_tags'))
                             ->hiddenLabel()
+                            ->compact()
                             ->visible(function () use ($store) {
                                 return static::tagChoices($store->id)->count() > 0;
                             }),
