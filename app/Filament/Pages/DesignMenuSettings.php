@@ -56,8 +56,8 @@ class DesignMenuSettings extends Page
             ->cloneable()
             ->blockNumbers(false)
             ->addActionAlignment(Alignment::End)
-            ->addAction(fn (Action $action)         => $action->color('primary')->icon(Heroicon::Plus)->label(__('admin.design.menu_editor.buttons.add_parent')))
-            ->addBetweenAction(fn (Action $action)  => $action->color('primary')->icon(Heroicon::OutlinedPlusCircle)->label(__('admin.design.menu_editor.buttons.add_child')))
+            ->addAction(fn (Action $action)         => $action->color('primary')->icon(Heroicon::Plus)->label(__('admin.design.menu_editor.buttons.add_element')))
+            ->addBetweenAction(fn (Action $action)  => $action->color('primary')->icon(Heroicon::ChevronUpDown)->label(__('admin.design.menu_editor.buttons.add_between')))
             ->expandAllAction(fn (Action $action)   => $action->color('primary')->icon(Heroicon::ArrowsPointingOut)->size(Size::ExtraLarge))
             ->collapseAllAction(fn (Action $action) => $action->color('primary')->icon(Heroicon::ArrowsPointingIn)->size(Size::ExtraLarge));
     }
