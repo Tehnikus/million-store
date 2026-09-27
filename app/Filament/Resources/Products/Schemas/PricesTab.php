@@ -97,18 +97,52 @@ class PricesTab
 
     protected static function priceFields(Get $get, $currencies): array
     {
+        $defaultCurrencyId  = $currencies->firstWhere('rate_default', true)?->id;
+        $combinations       = collect(static::liveCombinations($get));
+        $comboKeys          = $combinations->keys();
         return collect(static::liveCombinations($get))
             ->map(fn ($combo, $comboKey) =>
                 FusedGroup::make(
                     collect($currencies)->map(fn ($currency) =>
                         TextInput::make("price.{$comboKey}.{$currency->id}")
                             ->numeric()
+                            ->required()
                             ->prefix($currency->sign)
                             ->hiddenLabel()
                             ->placeholder($currency->name)
+                            ->suffixActions([
+                                Action::make(__('admin.catalog.products.tabs.prices.buttons.exchange_rate'))
+                                    ->icon(Heroicon::OutlinedCalculator)
+                                    ->actionJs(<<<JS
+                                        \$set('price.{$comboKey}.{$currency->id}', \$get('price.{$comboKey}.{$defaultCurrencyId}') * {$currency->rate})
+                                    JS)
+                                    ->tooltip(__('admin.catalog.products.tabs.prices.buttons.exchange_rate'))
+                                    ->visible($currency->id !== $defaultCurrencyId && $defaultCurrencyId !== null),
+                                Action::make(__('admin.catalog.products.tabs.prices.buttons.fill_all_combinations'))
+                                    ->icon(Heroicon::ChevronUpDown)
+                                    ->actionJs(static::fillAllCombinationsJs($comboKeys, $comboKey, $currency->id))
+                                    ->visible($comboKeys->count() > 1)
+                                    ->requiresConfirmation()
+                                    ->tooltip(__('admin.catalog.products.tabs.prices.buttons.fill_all_combinations')),
+                            ])
+                            // ->suffixIcon(fn() => ($currency->id == $defaultCurrencyId) ? Heroicon::CheckCircle : null)
+                            // ->suffixIconColor('success')
                     )->toArray()
                 )->label($combo['label'])
             )->toArray();
+    }
+
+    protected static function fillAllCombinationsJs(Collection $comboKeys, string $currentComboKey, $currencyId): string
+    {
+        $assignments = $comboKeys
+            ->reject(fn ($key) => $key === $currentComboKey)
+            ->map(fn ($key) => "\$set('price.{$key}.{$currencyId}', value);")
+            ->implode("\n");
+
+        return <<<JS
+            const value = \$get('price.{$currentComboKey}.{$currencyId}');
+            {$assignments}
+            JS;
     }
 
     protected static function liveCombinations(Get $get): Collection
