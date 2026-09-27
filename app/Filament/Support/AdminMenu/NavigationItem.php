@@ -162,7 +162,7 @@ enum NavigationItem: string
             self::GoogleAds         => 'heroicon-o-rss',
 
             // Design
-            self::MenuEditor        => 'heroicon-s-queue-list',
+            self::MenuEditor        => 'heroicon-o-bars-3',
             self::LayoutEditor      => 'heroicon-o-rectangle-group',
             self::CssEditor         => 'heroicon-o-code-bracket',
             self::ImageSettings     => 'heroicon-o-photo',
