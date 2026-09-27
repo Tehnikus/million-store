@@ -28,6 +28,7 @@ class ManufacturersTable
             ->emptyStateIcon(NavigationItem::Manufacturers->icon())
             ->emptyStateHeading(__('admin.catalog.manufacturers.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.manufacturers.helpers.group_title'))
+            ->modifyQueryUsing(fn($query) => $query->with('products')->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -46,8 +47,8 @@ class ManufacturersTable
                     ->label(__('admin.catalog.manufacturers.fields.parent_id')),
 
                 TextColumn::make('products')
-                    ->getStateUsing(fn(Manufacturer $record) => $record->products()->where('store_id', $store->id)->count())
-                    ->color(fn($record) => $record->products()->where('store_id', $store->id)->count() > 0 ? 'success' : 'danger')
+                    ->getStateUsing(fn(Manufacturer $record) => $record->products->count())
+                    ->color(fn($record) => $record->products->count() > 0 ? 'success' : 'danger')
                     ->sortable()
                     ->badge()
                     ->width('1%')

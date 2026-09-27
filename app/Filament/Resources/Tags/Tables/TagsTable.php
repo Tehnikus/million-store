@@ -24,6 +24,7 @@ class TagsTable
             ->emptyStateIcon(NavigationItem::Tags->icon())
             ->emptyStateHeading(__('admin.catalog.tags.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.tags.helpers.group_title'))
+            ->modifyQueryUsing(fn($query) => $query->with('products')->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature'),
@@ -34,8 +35,8 @@ class TagsTable
                     ->label(__('admin.catalog.tags.model_label_singular')),
 
                 TextColumn::make('products')
-                    ->getStateUsing(fn(Tag $record) => $record->products()->where('store_id', $store->id)->count())
-                    ->color(fn($record) => $record->products()->where('store_id', $store->id)->count() > 0 ? 'success' : 'danger')
+                    ->getStateUsing(fn(Tag $record) => $record->products->count())
+                    ->color(fn($record) => $record->products->count() > 0 ? 'success' : 'danger')
                     ->sortable()
                     ->badge()
                     ->width('1%')

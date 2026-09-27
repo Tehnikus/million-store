@@ -29,6 +29,7 @@ class CategoriesTable
             ->emptyStateIcon(NavigationItem::Categories->icon())
             ->emptyStateHeading(__('admin.catalog.categories.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.categories.helpers.group_title'))
+            ->modifyQueryUsing(fn($query) => $query->with('products')->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -48,8 +49,8 @@ class CategoriesTable
                     ->native(false),
 
                 TextColumn::make('products')
-                    ->getStateUsing(fn(Category $record) => $record->products()->where('store_id', $store->id)->count())
-                    ->color(fn($record) => $record->products()->where('store_id', $store->id)->count() > 0 ? 'success' : 'danger')
+                    ->getStateUsing(fn(Category $record) => $record->products->count())
+                    ->color(fn($record) => $record->products->count() > 0 ? 'success' : 'danger')
                     ->sortable()
                     ->badge()
                     ->width('1%')
