@@ -90,8 +90,41 @@ class PricesTab
                     ->defaultItems(1)
                     ->minItems(1)
                     ->live()
-                    ->deletable(fn (Get $get): bool => count($get('priceTiers')) > 1 )
-                   
+                    ->collapsible()
+                    ->reorderable()
+                    ->cloneable()
+                    ->orderColumn('priority')
+                    ->deletable(fn (Get $get): bool => \count($get('priceTiers')) > 1)
+                    ->itemLabel(function (array $state) use ($store, $currencies, $defaultCurrency): ?HtmlString {
+                        $name            = $state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []);
+                        $priceText       = static::priceSummary($state['price'] ?? [], $defaultCurrency);
+                        $customerGroupId = $state['customer_group_id'] ?? null;
+                        $customerGroup   = $customerGroupId ? static::customerGroupChoices($store->id)->get($customerGroupId) : '';
+                        $isDiscount      = ($state['is_discount'] ?? false) ? '<span style="color: var(--primary-500); font-weight: 600;">' . e(__('admin.catalog.products.tabs.prices.item_label.is_discount')) . '</span>' : '';
+                        $isBase          = ($state['is_base'] ?? false) ? '<span style="color: var(--success-500); font-weight: 600;">' . e(__('admin.catalog.products.tabs.prices.item_label.is_base')) . '</span>' : '';
+                        $quantity        = ($state['valid_quantity'] ?? false) ? __('admin.catalog.products.tabs.prices.item_label.from_qty', ['qty' => $state['valid_quantity']]) : '';
+                        $validFrom       = static::formatDate($state['date_valid_from'] ?? null);
+                        $validUntil      = static::formatDate($state['date_valid_until'] ?? null);
+
+                        $validity = match (true) {
+                            $validFrom && $validUntil => __('admin.catalog.products.tabs.prices.item_label.dates_valid') . " {$validFrom} - {$validUntil}",
+                            (bool) $validFrom         => __('admin.catalog.products.tabs.prices.item_label.valid_from') . " {$validFrom}",
+                            (bool) $validUntil        => __('admin.catalog.products.tabs.prices.item_label.valid_until') . " {$validUntil}",
+                            default                   => null,
+                        };
+
+                        $parts = array_filter([
+                            $isBase,
+                            $isDiscount,
+                            e($name),
+                            $priceText,
+                            e($customerGroup),
+                            e($quantity),
+                            e($validity),
+                        ]);
+
+                        return filled($parts) ? new HtmlString(implode(', ', $parts)) : null;
+                    })
             ]);
     }
 
@@ -196,5 +229,54 @@ class PricesTab
         Context::add($key, $choices->all());
 
         return $choices;
+    }
+
+    protected static function priceSummary(array $priceGrid, $defaultCurrency): ?string
+    {
+        if (!$defaultCurrency) {
+            return null;
+        }
+
+        $currencyId = $defaultCurrency->id;
+
+        if (array_key_exists('base', $priceGrid)) {
+            $amount = $priceGrid['base'][$currencyId] ?? null;
+            return filled($amount) ? static::formatPrice((float) $amount, $defaultCurrency) : null;
+        }
+
+        $amounts = collect($priceGrid)
+            ->map(fn ($amounts) => $amounts[$currencyId] ?? null)
+            ->filter(fn ($v) => filled($v))
+            ->map(fn ($v) => (float) $v);
+
+        if ($amounts->isEmpty()) {
+            return null;
+        }
+
+        $min = $amounts->min();
+        $max = $amounts->max();
+
+        return $min === $max
+            ? static::formatPrice($min, $defaultCurrency)
+            : static::formatPrice($min, $defaultCurrency) . ' - ' . static::formatPrice($max, $defaultCurrency);
+    }
+
+    protected static function formatPrice(float $amount, $currency): string
+    {
+        // return $currency->sign . number_format($amount, 2);
+        return Number::currency($amount, in: $currency->iso_code);
+    }
+
+    protected static function formatDate(?string $date): ?string
+    {
+        if (blank($date)) {
+            return null;
+        }
+
+        try {
+            return \Illuminate\Support\Carbon::parse($date)->translatedFormat('d.m.Y');
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }
