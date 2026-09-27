@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Products\Schemas;
 use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Models\Customer\CustomerGroup;
 use App\Models\Catalog\OptionValue;
+use Arr;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -15,13 +17,19 @@ use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Number;
 
 class PricesTab
 {
+    
     public static function make($store, $currencies, $languages): Tab
     {
+        $defaultCurrency = $currencies->firstWhere('rate_default', true);
         return Tab::make('prices')
             ->badge(fn($record) => ($count = $record?->priceTiers()->where('store_id', $store->id)->count()) ? $count : null)
             ->schema([
@@ -29,62 +37,89 @@ class PricesTab
                 Repeater::make('priceTiers')
                     ->schema([
 
-                        Group::make([
+                        Fieldset::make(__('admin.catalog.products.tabs.prices.labels.price_terms'))
+                            ->schema([
+                                // Price badge
+                                FusedGroup::make([
+                                    ...collect($languages)->map(
+                                        fn($language) =>
+                                        TextInput::make("name.$language->locale")
+                                            ->prefix($language->locale)
+                                            ->label(__('admin.catalog.products.tabs.prices.labels.price_name'))
+                                            ->placeholder(__('admin.catalog.products.tabs.prices.labels.price_name'))
+                                            ->hiddenLabel(),
+                                    )
 
-                            // Price badge
-                            FusedGroup::make([
-                                ...collect($languages)->map(fn($language) => 
-                                    TextInput::make("name.$language->locale")
-                                        ->prefix($language->locale)
-                                        ->label(__('admin.catalog.products.fields.price_name'))
-                                        ->placeholder(__('admin.catalog.products.fields.price_name'))
-                                        ->hiddenLabel(),
-                                )
-    
-                            ])
-                            ->label(__('admin.catalog.products.fields.price_name'))
-                            ->helperText(__('admin.catalog.products.helpers.price_name')),
-    
-    
-                            Select::make('customer_group_id')
-                                ->options(fn() => static::customerGroupChoices($store->id))
-                                ->placeholder(__('admin.catalog.products.fields.everyone'))
-                                ->label(__('admin.catalog.products.fields.prices_customer_group')),
-                            Toggle::make('is_base')
-                                ->distinct()
-                                ->fixIndistinctState()
-                                ->live()
-                                ->label(__('admin.catalog.products.fields.is_base')),
-                            Toggle::make('is_discount')
-                                ->visible(fn(Get $get) => !$get('is_base'))
-                                ->label(__('admin.catalog.products.fields.is_discount')),
-                            TextInput::make('priority')->numeric()->default(1),
-                            FusedGroup::make([
-                                DateTimePicker::make('date_valid_from')
-                                    ->native(false)
-                                    ->placeholder(__('admin.catalog.products.fields.valid_from'))
-                                    ->columnSpan(1),
-                                DateTimePicker::make('date_valid_until')
-                                    ->native(false)
-                                    ->placeholder(__('admin.catalog.products.fields.valid_until'))
-                                    ->columnSpan(1),
-                            ])
-                            ->columns(2),
-                            TextInput::make('valid_quantity')->numeric()->nullable(),
-                        ])
-                        ->columns(1)
-                        ->columnSpan(1),
+                                ])
+                                ->label(__('admin.catalog.products.tabs.prices.labels.price_name'))
+                                ->helperText(__('admin.catalog.products.tabs.prices.helpers.price_name')),
 
+
+                                Select::make('customer_group_id')
+                                    ->options(fn() => static::customerGroupChoices($store->id))
+                                    ->placeholder(__('admin.catalog.products.tabs.prices.labels.no_group'))
+                                    ->label(__('admin.catalog.products.tabs.prices.labels.customer_group'))
+                                    ->helperText(__('admin.catalog.products.tabs.prices.helpers.customer_group')),
+
+                                Group::make([
+                                    Toggle::make('is_base')
+                                        ->distinct()
+                                        ->fixIndistinctState()
+                                        ->live()
+                                        ->columnSpan(1)
+                                        ->label(__('admin.catalog.products.tabs.prices.labels.is_base')),
+                                    Toggle::make('is_discount')
+                                        ->visible(fn(Get $get) => !$get('is_base'))
+                                        ->columnSpan(1)
+                                        ->label(__('admin.catalog.products.tabs.prices.labels.is_discount')),
+                                ])
+                                ->columns(2),
+
+                                Group::make([
+                                    TextInput::make('priority')
+                                        ->numeric()
+                                        ->live()
+                                        ->default(fn (Get $get): int => \count($get('../../priceTiers')))
+                                        ->columnSpan(1)
+                                        ->label(__('admin.catalog.products.tabs.prices.labels.priority'))
+                                        ->helperText(__('admin.catalog.products.tabs.prices.helpers.priority')),
+                                    TextInput::make('valid_quantity')
+                                        ->numeric()
+                                        ->nullable()
+                                        ->columnSpan(1)
+                                        ->label(__('admin.catalog.products.tabs.prices.labels.valid_quantity'))
+                                        ->helperText(__('admin.catalog.products.tabs.prices.helpers.valid_quantity')),
+                                ])
+                                ->columns(2),
+
+                                FusedGroup::make([
+                                    DateTimePicker::make('date_valid_from')
+                                        ->native(false)
+                                        ->placeholder(__('admin.catalog.products.fields.valid_from'))
+                                        ->columnSpan(1),
+                                    DateTimePicker::make('date_valid_until')
+                                        ->native(false)
+                                        ->placeholder(__('admin.catalog.products.fields.valid_until'))
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(2)
+                                ->label(__('admin.catalog.products.tabs.prices.labels.valid_dates'))
+                                ->helperText(__('admin.catalog.products.tabs.prices.helpers.valid_dates')),
+
+                            ])
+                            ->columns(1)
+                            ->columnSpan(1),
 
                         Fieldset::make('price')
-                            ->label(__('admin.catalog.products.fields.prices'))
+                            ->label(__('admin.catalog.products.tabs.prices.labels.price_values'))
                             ->schema(fn(Get $get) => [
                                 // Text::make('debug')->content(fn() => 'DEBUG = ' . json_encode($get('../../optionSignatures'))),
                                 ...static::priceFields($get, $currencies),
                             ])
-                            ->columnSpan(1),
+                            ->columnSpan(1)
+                            ->dense(),
                     ])
-                    ->addActionLabel(__('admin.catalog.products.buttons.add_price_tier'))
+                    ->addActionLabel(__('admin.catalog.products.tabs.prices.buttons.add_price_tier'))
                     ->columns(2)
                     ->columnSpanFull()
                     ->defaultItems(1)
