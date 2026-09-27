@@ -31,18 +31,18 @@ class PlacementTab
             ->schema([
 
                 // Category part 
-                Section::make(__('admin.catalog.products.fields.categories'))
-                    ->description(__('admin.catalog.products.helpers.facet_categories'))
+                Section::make(__('admin.catalog.products.tabs.placement.labels.categories'))
+                    ->description(__('admin.catalog.products.tabs.placement.helpers.categories'))
                     ->schema([
                         Repeater::make('facet_categories')
                             ->table([
-                                TableColumn::make(__('admin.catalog.products.fields.category'))->markAsRequired(),
-                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
-                                TableColumn::make(__('admin.catalog.products.fields.is_primary_category'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.category'))->markAsRequired(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.is_primary_category'))->markAsRequired()->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
                                 Select::make('facet_value_id')
-                                    ->label(__('admin.catalog.products.fields.category'))
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.category'))
                                     ->options(fn() => static::categoryChoices($store->id))
                                     ->searchable()
                                     ->preload()
@@ -56,7 +56,7 @@ class PlacementTab
                                     })
                                     ->live(),
                                 TextInput::make('sort_order')
-                                    ->label(__('admin.catalog.products.fields.sort_order'))
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.sort_order'))
                                     ->numeric(),
                                 Hidden::make('facet_group_id')
                                     ->default(0),
@@ -64,43 +64,43 @@ class PlacementTab
                                     ->distinct()
                                     ->required()
                                     ->fixIndistinctState()
-                                    ->label(__('admin.catalog.products.fields.is_primary_category')),
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.is_primary_category')),
                             ])
                             ->rule(fn() => function (string $attribute, $value, Closure $fail) {
                                 $hasPrimary = collect($value)->contains(fn($item) => !empty($item['is_primary']));
                                 if (!$hasPrimary) {
-                                    $fail(__('admin.catalog.products.errors.no_primary_category'));
+                                    $fail(__('admin.catalog.products.tabs.placement.errors.no_primary_category'));
                                 }
                             })
-                            ->addActionLabel(__('admin.catalog.products.buttons.add_category'))
+                            ->addActionLabel(__('admin.catalog.products.tabs.placement.buttons.add_category'))
                             ->minItems(1)
                             ->defaultItems(1)
                             ->reorderable(false)
                             ->maxItems(static::categoryChoices($store->id)->count())
-                            ->label(__('admin.catalog.products.fields.categories'))
+                            ->label(__('admin.catalog.products.tabs.placement.labels.categories'))
                             ->hiddenLabel(),
                         Callout::make()
                             ->visible(function () use ($store) {
                                 return static::categoryChoices($store->id)->count() == 0;
                             })
-                            ->description(__('admin.catalog.products.errors.no_categories'))
+                            ->description(__('admin.catalog.products.tabs.placement.errors.no_categories'))
                             ->danger()
                             ->columnSpanFull(),
                     ]),
 
                 // Manufacturer part
-                Section::make(__('admin.catalog.products.fields.manufacturers'))
-                    ->description(__('admin.catalog.products.helpers.facet_manufacturers'))
+                Section::make(__('admin.catalog.products.tabs.placement.labels.manufacturers'))
+                    ->description(__('admin.catalog.products.tabs.placement.helpers.manufacturers'))
                     ->schema([
                         Repeater::make('facet_manufacturers')
                             ->table([
-                                TableColumn::make(__('admin.catalog.products.fields.manufacturer')),
-                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
-                                TableColumn::make(__('admin.catalog.products.fields.is_primary_manufacturer'))->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.manufacturer')),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.is_primary_manufacturer'))->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
                                 Select::make('facet_value_id')
-                                    ->label(__('admin.catalog.products.fields.manufacturers'))
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.manufacturers'))
                                     ->options(fn() => static::manufacturerChoices($store->id))
                                     ->searchable()
                                     ->preload()
@@ -115,37 +115,37 @@ class PlacementTab
                                     })
                                     ->live(),
                                 TextInput::make('sort_order')
-                                    ->label(__('admin.catalog.products.fields.sort_order'))
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.sort_order'))
                                     ->numeric(),
                                 Hidden::make('facet_group_id')
                                     ->default(0),
                                 Toggle::make('is_primary')
                                     ->distinct()
                                     ->fixIndistinctState()
-                                    ->label(__('admin.catalog.products.fields.is_primary_manufacturer')),
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.is_primary_manufacturer')),
                             ])
                             ->defaultItems(0)
                             ->reorderable(false)
                             ->maxItems(static::manufacturerChoices($store->id)->count())
-                            ->addActionLabel(__('admin.catalog.products.buttons.add_manufacturer'))
-                            ->label(__('admin.catalog.products.fields.manufacturers'))
+                            ->addActionLabel(__('admin.catalog.products.tabs.placement.buttons.add_manufacturer'))
+                            ->label(__('admin.catalog.products.tabs.placement.labels.manufacturers'))
                             ->hiddenLabel()
                             ->visible(function () use ($store) {
                                 return static::manufacturerChoices($store->id)->count() > 0;
                             }),
                     ]),
 
-                Section::make(__('admin.catalog.products.fields.product_tags'))
-                    ->description(__('admin.catalog.products.helpers.facet_tags'))
+                Section::make(__('admin.catalog.products.tabs.placement.labels.product_tags'))
+                    ->description(__('admin.catalog.products.tabs.placement.helpers.tags'))
                     ->schema([
                         Repeater::make('facet_tags')
                             ->table([
-                                TableColumn::make(__('admin.catalog.products.fields.product_tags')),
-                                TableColumn::make(__('admin.catalog.products.fields.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.product_tags')),
+                                TableColumn::make(__('admin.catalog.products.tabs.placement.labels.sort_order'))->width('120px')->wrapHeader()->alignCenter(),
                             ])
                             ->schema([
                                 Select::make('facet_value_id')
-                                    ->label(__('admin.catalog.products.fields.tag'))
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.tag'))
                                     ->options(fn() => static::tagChoices($store->id))
                                     ->searchable()
                                     ->preload()
@@ -159,15 +159,15 @@ class PlacementTab
                                     })
                                     ->live(),
                                 TextInput::make('sort_order')
-                                    ->label(__('admin.catalog.products.fields.sort_order'))
+                                    ->label(__('admin.catalog.products.tabs.placement.labels.sort_order'))
                                     ->numeric(),
                                 Hidden::make('facet_group_id')->default(0),
                             ])
                             ->reorderable(false)
-                            ->addActionLabel(__('admin.catalog.products.buttons.add_tag'))
+                            ->addActionLabel(__('admin.catalog.products.tabs.placement.buttons.add_tag'))
                             ->defaultItems(0)
                             ->maxItems(static::tagChoices($store->id)->count())
-                            ->label(__('admin.catalog.products.fields.product_tags'))
+                            ->label(__('admin.catalog.products.tabs.placement.labels.product_tags'))
                             ->hiddenLabel()
                             ->visible(function () use ($store) {
                                 return static::tagChoices($store->id)->count() > 0;
