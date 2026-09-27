@@ -92,20 +92,15 @@ class SupermasterPanelProvider extends PanelProvider
 
                 Action::configureUsing(function (Action $action): void {
                     if ($action->getName() === 'save') {
-                        $action
-                            ->color('success')
-                            ->icon('heroicon-o-check');
+                        $action->color('success')->icon('heroicon-o-check');
                     }
                     if ($action->getName() === 'create') {
-                        $action
-                            ->color('success')
-                            ->icon('heroicon-o-plus');
+                        $action->color('success')->icon('heroicon-o-plus');
                     }
                     if ($action->getName() === 'attach') {
-                        $action
-                            ->color('primary')
-                            ->icon('heroicon-o-plus');
+                        $action->color('primary')->icon('heroicon-o-plus');
                     }
+                    $action->modalWidth(Width::ScreenLarge);
                 });
 
                 Tabs::configureUsing(function($tabs) {
@@ -208,10 +203,9 @@ class SupermasterPanelProvider extends PanelProvider
                             ['bold', 'italic', 'underline', 'link', 'textColor'],
                             ['h2', 'h3', 'h4'],
                             ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
-                            ['blockquote', 'bulletList', 'orderedList'],
-                            ['table', 'attachFiles'],
-                            ['details', 'clearFormatting'],
-                            ['undo', 'redo'],
+                            ['blockquote', 'bulletList', 'orderedList', 'table'],
+                            ['attachFiles', 'mergeTags', 'customBlocks', 'details'],
+                            ['clearFormatting', 'undo', 'redo'],
                         ])
                         ->floatingToolbars([
                             'link'      => ['bold', 'italic', 'underline', 'link', 'textColor'],
