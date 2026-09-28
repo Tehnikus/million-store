@@ -18,6 +18,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
@@ -31,11 +32,13 @@ class OptionsTab
             ->badge(fn($record) => self::countProductOptions($record, $store))
             ->schema([
                 Repeater::make('optionSignatures')
+                    ->table([
+                        TableColumn::make(__('admin.catalog.products.tabs.options.labels.combinations'))
+                    ])
                     ->schema([
                         Repeater::make('selectedOptions')
-                            ->label(__('admin.catalog.options.fields.combinations'))
                             ->table([
-                                TableColumn::make(__('admin.catalog.options.fields.combinations'))
+                                TableColumn::make(__('admin.catalog.products.tabs.options.labels.options'))->hiddenHeaderLabel()
                             ])
                             ->live()
                             ->afterStateUpdated(function (Get $get, Set $set, ?Model $record) use ($store) {
@@ -60,9 +63,20 @@ class OptionsTab
                                 ])
                                 ->columns(2)
                             ])
+                            ->reorderable(false)
+                            ->compact()
+                            // ->hiddenLabel()
+                            ->addActionAlignment(Alignment::End)
+                            
+                            ->label(__('admin.catalog.products.tabs.options.labels.options'))
+                            ->addActionLabel(__('admin.catalog.products.tabs.options.buttons.add_option'))
                     ])
+                    ->label(__('admin.catalog.products.tabs.options.labels.combinations'))
+                    ->belowLabel(__('admin.catalog.products.tabs.options.helpers.combinations'))
+                    ->addActionLabel(__('admin.catalog.products.tabs.options.buttons.add_combination'))
                     ->defaultItems(0)
-                    ->compact(),
+                    ->compact()
+                    ->collapsible(),
 
             Repeater::make('options_description')
                 ->schema([
@@ -104,6 +118,8 @@ class OptionsTab
                 ->default([])
                 ->statePath('description.options_description')
                 ->itemLabel(fn (array $state): ?string => static::groupItemLabel($state))
+                ->label(__('admin.catalog.products.tabs.options.labels.descriptions'))
+                ->belowLabel(__('admin.catalog.products.tabs.options.helpers.descriptions'))
             ]);
     }
 
