@@ -25,7 +25,12 @@ class AttributesTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('attributes')
-            ->badge(fn($record) => self::countProductAttributes($record, $store))
+            ->badge(function (Get $get): ?int {
+                // Count attributes by form state insead of quering the DB
+                $groups = $get('description.attributes_description') ?? [];
+                $count  = collect($groups)->sum(fn ($group) => count($group['description'] ?? []));
+                return $count ?: null;
+            })
             ->schema([
                 Repeater::make('attributes_description')
                     ->statePath('description.attributes_description')
@@ -143,6 +148,11 @@ class AttributesTab
                     ->addActionLabel(__('admin.catalog.products.buttons.add_attribute'))
                     ->label(__('admin.catalog.attributes.navigation_label'))
                     ->hiddenLabel()
+                    ->afterStateUpdatedJs(static::badgeUpdateJs(
+                        "Object.values(\$get('description.attributes_description') ?? {}).reduce((n, g) => n + Object.keys(g.description ?? {}).length, 0)"
+                    ))
+                    ->live()
+                    ->partiallyRenderComponentsAfterStateUpdated(['description.attributes_description'])
             ]);
     }
 
@@ -220,21 +230,6 @@ class AttributesTab
         return $choices;
     }
 
-    private static function countProductAttributes($record, $store): mixed
-    {
-        if (!$record) return null;
-        $badge = 0;
-
-        $description = $record->descriptions()
-            ->where('store_id', $store->id)
-            ->first();
-
-        $badge = collect($description?->attributes_description ?? [])
-            ->sum(fn ($group) => \count($group['description'] ?? []));
-
-        return $badge !== 0 ? $badge : null;
-    }
-
     protected static function itemLabelText(array $state): ?string
     {
         $name = array_filter($state['name'] ?? []);
@@ -255,5 +250,28 @@ class AttributesTab
             ->implode(', ');
 
         return $valueNames !== '' ? "{$groupName}: {$valueNames}" : $groupName;
+    }
+    protected static function badgeUpdateJs(string $countExpression, string $color = 'primary'): string
+    {
+        return <<<JS
+            const tabRoot = \$el.closest('.fi-sc-tabs-tab');
+            const dataKey = tabRoot.id.replace('form.', '');
+            const button  = document.querySelector(`[data-tab-key="\${dataKey}"]`);
+            const count   = {$countExpression};
+
+            let badge = button?.querySelector('.fi-badge');
+
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'fi-color fi-color-{$color} fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm';
+                    badge.innerHTML = '<span class="fi-badge-label-ctn"><span class="fi-badge-label"></span></span>';
+                    button?.querySelector('.fi-tabs-item-label')?.after(badge);
+                }
+                badge.querySelector('.fi-badge-label').textContent = count;
+            } else {
+                badge?.remove();
+            }
+            JS;
     }
 }
