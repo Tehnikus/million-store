@@ -4,20 +4,21 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Models\Customer\CustomerGroup;
-use App\Models\Catalog\OptionValue;
+// use App\Models\Catalog\OptionValue;
 use Arr;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+// use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Support\Colors\Color;
+// use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
@@ -61,24 +62,88 @@ class PricesTab
                                     ->label(__('admin.catalog.products.tabs.prices.labels.customer_group'))
                                     ->helperText(__('admin.catalog.products.tabs.prices.helpers.customer_group')),
 
-                                Group::make([
-                                    Toggle::make('is_base')
-                                        ->distinct()
-                                        ->fixIndistinctState()
-                                        ->live()
-                                        ->columnSpan(1)
-                                        ->label(__('admin.catalog.products.tabs.prices.labels.is_base')),
-                                    Toggle::make('is_discount')
-                                        ->visible(fn(Get $get) => !$get('is_base'))
-                                        ->columnSpan(1)
-                                        ->label(__('admin.catalog.products.tabs.prices.labels.is_discount')),
-                                ])
-                                ->columns(2),
+                                // Group::make([
+                                //     Toggle::make('is_base')
+                                //         ->distinct()
+                                //         ->fixIndistinctState()
+                                //         ->live()
+                                //         ->columnSpan(1)
+                                //         ->label(__('admin.catalog.products.tabs.prices.labels.is_base')),
+                                //     Toggle::make('is_discount')
+                                //         ->visible(fn(Get $get) => !$get('is_base'))
+                                //         ->columnSpan(1)
+                                //         ->label(__('admin.catalog.products.tabs.prices.labels.is_discount')),
+                                // ])
+                                // ->columns(2),
+                                ToggleButtons::make('status')
+                                    ->options([
+                                        'is_base'           => __('admin.catalog.products.tabs.prices.labels.is_base'),
+                                        'discount_amount'   => __('admin.catalog.products.tabs.prices.labels.discount_amount'),
+                                        'discount_percent'  => __('admin.catalog.products.tabs.prices.labels.discount_percent'),
+                                    ])
+                                    ->colors([
+                                        'is_base'           => 'success',
+                                        'discount_amount'   => 'primary',
+                                        'discount_percent'  => 'primary',
+                                    ])
+                                    ->default('is_base')
+                                    ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
+                                    // ->fullWidth()
+                                    ->required()
+                                    ->grouped()
+                                    ->live()
+                                    ->partiallyRenderComponentsAfterStateUpdated(['discount'])
+                                    ->inline(),
+                                
+                                TextInput::make('discount')
+                                    ->label(function(Get $get) {
+                                        return match ($get('status')) {
+                                            'discount_percent' => __('admin.catalog.products.tabs.prices.labels.discount_percent'),
+                                            'discount_amount'  => __('admin.catalog.products.tabs.prices.labels.discount_amount'),
+                                            default            => null,
+                                        };
+                                    })
+                                    ->numeric()
+                                    ->visible(fn(Get $get) => $get('status') !== 'is_base')
+                                    ->live(onBlur:true, debounce: 500)
+                                    ->skipRenderAfterStateUpdated(true)
+                                    ->prefixIcon(function(Get $get) {
+                                        return match ($get('status')) {
+                                            'discount_percent' => Heroicon::PercentBadge,
+                                            'discount_amount'  => Heroicon::OutlinedMinus,
+                                            default            => null,
+                                        };
+                                    })
+                                    ->afterStateUpdatedJs(<<<JS
+                                       (() => {
+                                            const tiers = \$get('../../priceTiers');
+                                            const baseKey = Object.keys(tiers).find(k => tiers[k].status === 'is_base');
+                                            if (baseKey === undefined) return;
+
+                                            const basePrices   = tiers[baseKey].price ?? {};
+                                            const myPrices     = \$get('price') ?? {};
+                                            const discountType = \$get('status');
+                                            const discountValue = parseFloat(\$state) || 0;
+
+                                            Object.keys(myPrices).forEach(comboKey => {
+                                                Object.keys(myPrices[comboKey]).forEach(currencyId => {
+                                                    const base = basePrices[comboKey]?.[currencyId];
+                                                    if (base === null || base === undefined || base === '') return;
+
+                                                    const newPrice = discountType === 'discount_percent'
+                                                        ? base * (1 - discountValue / 100)
+                                                        : base - discountValue;
+
+                                                    \$set(`price.\${comboKey}.\${currencyId}`, Math.max(newPrice, 0).toFixed(2));
+                                                });
+                                            });
+                                        })();
+                                    JS),
 
                                 Group::make([
                                     TextInput::make('priority')
                                         ->numeric()
-                                        ->live()
+                                        // ->live()
                                         ->default(fn (Get $get): int => \count($get('../../priceTiers')))
                                         ->columnSpan(1)
                                         ->label(__('admin.catalog.products.tabs.prices.labels.priority'))
@@ -124,7 +189,7 @@ class PricesTab
                     ->columnSpanFull()
                     ->defaultItems(1)
                     ->minItems(1)
-                    ->live()
+                    ->live(onBlur: true)
                     ->collapsible()
                     ->reorderable()
                     ->cloneable()
@@ -136,8 +201,8 @@ class PricesTab
                         $priceText       = static::priceSummary($state['price'] ?? [], $defaultCurrency);
                         $customerGroupId = $state['customer_group_id'] ?? null;
                         $customerGroup   = $customerGroupId ? static::customerGroupChoices($store->id)->get($customerGroupId) : '';
-                        $isDiscount      = ($state['is_discount'] ?? false) ? '<span style="color: var(--primary-500); font-weight: 600;">' . e(__('admin.catalog.products.tabs.prices.item_label.is_discount')) . '</span>' : '';
-                        $isBase          = ($state['is_base'] ?? false) ? '<span style="color: var(--success-500); font-weight: 600;">' . e(__('admin.catalog.products.tabs.prices.item_label.is_base')) . '</span>' : '';
+                        // $isDiscount      = ($state['is_discount'] ?? false) ? '<span style="color: var(--primary-500); font-weight: 600;">' . e(__('admin.catalog.products.tabs.prices.item_label.is_discount')) . '</span>' : '';
+                        // $isBase          = ($state['is_base'] ?? false) ? '<span style="color: var(--success-500); font-weight: 600;">' . e(__('admin.catalog.products.tabs.prices.item_label.is_base')) . '</span>' : '';
                         $quantity        = ($state['valid_quantity'] ?? false) ? __('admin.catalog.products.tabs.prices.item_label.from_qty', ['qty' => $state['valid_quantity']]) : '';
                         $validFrom       = static::formatDate($state['date_valid_from'] ?? null);
                         $validUntil      = static::formatDate($state['date_valid_until'] ?? null);
@@ -150,8 +215,8 @@ class PricesTab
                         };
 
                         $parts = array_filter([
-                            $isBase,
-                            $isDiscount,
+                            // $isBase,
+                            // $isDiscount,
                             e($name),
                             $priceText,
                             e($customerGroup),
@@ -169,16 +234,17 @@ class PricesTab
         $defaultCurrencyId  = $currencies->firstWhere('rate_default', true)?->id;
         $combinations       = collect(static::liveCombinations($get));
         $comboKeys          = $combinations->keys();
-        return collect(static::liveCombinations($get))
-            ->map(fn ($combo, $comboKey) =>
+        return $combinations->map(fn ($combo, $comboKey) =>
                 FusedGroup::make(
                     collect($currencies)->map(fn ($currency) =>
                         TextInput::make("price.{$comboKey}.{$currency->id}")
                             ->numeric()
                             ->required()
                             ->prefix($currency->sign)
+                            ->label(__('admin.catalog.products.tabs.prices.labels.price_input', ['currency' => $currency->name]))
                             ->hiddenLabel()
                             ->placeholder($currency->name)
+                            ->skipRenderAfterStateUpdated(true)
                             ->suffixActions([
                                 Action::make(__('admin.catalog.products.tabs.prices.buttons.exchange_rate'))
                                     ->icon(Heroicon::OutlinedCalculator)
@@ -194,8 +260,8 @@ class PricesTab
                                     ->requiresConfirmation()
                                     ->tooltip(__('admin.catalog.products.tabs.prices.buttons.fill_all_combinations')),
                             ])
-                            // ->suffixIcon(fn() => ($currency->id == $defaultCurrencyId) ? Heroicon::CheckCircle : null)
-                            // ->suffixIconColor('success')
+                            ->suffixIcon(fn() => ($currency->id == $defaultCurrencyId) ? Heroicon::CheckCircle : null)
+                            ->suffixIconColor('gray')
                     )->toArray()
                 )->label($combo['label'])
             )->toArray();
@@ -225,7 +291,7 @@ class PricesTab
             ->values();
 
         if ($rows->isEmpty()) {
-            return collect(['base' => ['label' => __('admin.catalog.products.fields.base_price'), 'signature' => null]]);
+            return collect(['base' => ['label' => __('admin.catalog.products.tabs.prices.labels.base_price'), 'signature' => null]]);
         }
 
         return $rows->mapWithKeys(fn ($signature) => [
@@ -243,9 +309,7 @@ class PricesTab
             $value = collect($group['description'] ?? [])
                 ->first(fn ($v) => (int) ($v['option_value_id'] ?? null) === (int) $valueId);
 
-            return $value['name'][app()->getLocale()]
-                // ?? OptionValue::find($valueId)?->name
-                ?? "#{$valueId}";
+            return Arr::first(array_filter($value['name'] ?? [])) ?? "#{$valueId}";
         })->implode(', ');
     }
 
