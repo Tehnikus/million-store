@@ -2,23 +2,23 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Models\Catalog\Option;
 use App\Models\Catalog\OptionValue;
 use Arr;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
@@ -31,107 +31,167 @@ class OptionsTab
         return Tab::make('productOptions')
             ->badge(fn (Get $get) => \count($get('combinations') ?? []) ?: null)
             ->schema([
-                Repeater::make('optionSignatures')
-                    ->table([
-                        TableColumn::make(__('admin.catalog.products.tabs.options.labels.combinations'))
-                    ])
+
+                Section::make(__('admin.catalog.products.tabs.options.labels.options'))
                     ->schema([
-                        Repeater::make('selectedOptions')
-                            ->table([
-                                TableColumn::make(__('admin.catalog.products.tabs.options.labels.options'))->hiddenHeaderLabel()
-                            ])
-                            ->live()
-                            ->afterStateUpdated(function (Get $get, Set $set, ?Model $record) use ($store) {
-                                static::syncDescriptionRepeaters($get, $set, $record, $store->id);
-                            })
-                            ->schema([
-                                FusedGroup::make([
-                                    Select::make('option_select')
-                                        ->options(fn () => static::optionChoices($store->id))
-                                        ->afterStateUpdated(fn (Set $set) => $set('option_value_select', null))
-                                        ->live()
-                                        ->preload()
-                                        ->native(false)
-                                        ->columnSpan(1),
-                                    Select::make('option_value_select')
-                                        ->options(fn (Get $get) => static::optionValueChoices($get('option_select')))
-                                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                        ->live()
-                                        ->preload()
-                                        ->native(false)
-                                        ->columnSpan(1),
-                                ])
-                                ->columns(2)
-                            ])
-                            ->reorderable(false)
-                            ->compact()
-                            // ->hiddenLabel()
-                            ->addActionAlignment(Alignment::End)
-                            
-                            ->label(__('admin.catalog.products.tabs.options.labels.options'))
-                            ->addActionLabel(__('admin.catalog.products.tabs.options.buttons.add_option'))
-                    ])
-                    ->label(__('admin.catalog.products.tabs.options.labels.combinations'))
-                    ->belowLabel(__('admin.catalog.products.tabs.options.helpers.combinations'))
-                    ->addActionLabel(__('admin.catalog.products.tabs.options.buttons.add_combination'))
-                    ->defaultItems(0)
-                    ->compact()
-                    ->collapsible(),
+                    Select::make('axes')
+                        ->label(__('admin.catalog.products.tabs.options.labels.options'))
+                        ->noOptionsMessage(__('admin.catalog.products.tabs.options.placeholders.no_options'))
+                        ->searchPrompt(__('admin.catalog.products.tabs.options.placeholders.search_options'))
+                        ->placeholder(__('admin.catalog.products.tabs.options.placeholders.search_options'))
+                        ->searchingMessage(__('admin.catalog.products.tabs.options.placeholders.searching_options'))
+                        ->multiple()
+                        ->options(fn() => static::optionChoices($store->id))
+                        ->preload()
+                        ->live(debounce:0)
+                        ->searchDebounce(200)
+                        ->partiallyRenderComponentsAfterStateUpdated(['values', 'priceTiers', 'description.options_description'])
+                        ->afterStateUpdated(function (Get $get, Set $set) use ($store) {
+                            $validValueIds = array_keys(static::valuesForAxes((array) $get('axes'), $store->id));
+                            $set('values', array_values(array_intersect((array) $get('values'), $validValueIds)));
+                        })
+                        ->columnSpan(1),
+                    Select::make('values')
+                        ->label(__('admin.catalog.products.tabs.options.labels.option_vals'))
+                        ->multiple()
+                        ->options(fn(Get $get) => static::valuesForAxes((array) $get('axes'), $store->id))
+                        ->preload()
+                        ->live(debounce:0)
+                        ->searchDebounce(200)
+                        ->partiallyRenderComponentsAfterStateUpdated(['combinations', 'priceTiers', 'description.options_description'])
+                        ->afterStateUpdated(fn(Get $get, Set $set, ?Model $record) => static::refresh($get, $set, $record, $store->id))
+                        ->columnSpan(2),
 
-            Repeater::make('options_description')
-                ->schema([
-                    FusedGroup::make(
-                        collect($languages)->map(fn ($language) =>
-                            TextInput::make("name.{$language->locale}")
-                                ->live(onBlur: true)
-                                ->prefix($language->locale)
-                                ->required(fn(Get $get) => $get('option_id') !== null)
-                                ->visible(fn(Get $get) => $get('option_id') !== null)
-                                ->hiddenLabel()
-                                ->label(__('admin.catalog.options.fields.group_name'))
-                                
-                        )->all()
-                    )
-                    ->helperText(__('admin.catalog.options.helpers.group_name')),
-
-                    Repeater::make('description')
-                        ->schema([
-                            Hidden::make('option_value_id'),
-                            // Text::make('label')
-                            //     ->content(fn (Get $get) => static::optionValueChoices($get('../../option_id'))->get($get('option_value_id')))
-                            //     ->columnSpanFull(),
-                            ...self::optionValueDescriptionsForm($languages),
-                        ])
-                        ->itemLabel(fn (array $state): ?string => static::itemLabelText($state))
-                        ->addable(false)
-                        ->deletable(false)
-                        ->reorderable(true)
-                        ->collapsible(true)
-                        ->collapsed(fn($operation) => $operation !== 'create')
-                        ->default([]),
+                    CheckboxList::make('combinations')
+                        ->label(__('admin.catalog.products.tabs.options.labels.variants_selector'))
+                        ->belowLabel(__('admin.catalog.products.tabs.options.helpers.variants_selector'))
+                        ->noSearchResultsMessage(__('admin.catalog.products.tabs.options.placeholders.no_variants'))
+                        ->searchPrompt(__('admin.catalog.products.tabs.options.placeholders.variants_search'))
+                        ->searchDebounce(0)
+                        ->options(fn(Get $get) => static::generateCombinations(
+                            static::axisValuesFromFlat((array) $get('axes'), (array) $get('values'), $store->id)
+                        ))
+                        ->searchable()
+                        ->bulkToggleable()
+                        ->columns(4)
+                        ->columnSpanFull()
+                        ->live(debounce: 0)
+                        ->partiallyRenderComponentsAfterStateUpdated(['description.options_description', 'priceTiers'])
+                        ->afterStateUpdated(fn(Get $get, Set $set, ?Model $record) => static::syncDescriptions((array) $get('combinations'), $get, $set, $record, $store->id))
+                        ->afterStateUpdatedJs(static::badgeUpdateJs('$state.length'))
                 ])
-                ->addable(false)
-                ->deletable(false)
-                ->reorderable(true)
-                ->collapsible(true)
-                ->collapsed(fn($operation) => $operation !== 'create')
-                ->default([])
-                ->statePath('description.options_description')
-                ->itemLabel(fn (array $state): ?string => static::groupItemLabel($state))
-                ->label(__('admin.catalog.products.tabs.options.labels.descriptions'))
-                ->belowLabel(__('admin.catalog.products.tabs.options.helpers.descriptions'))
+                ->columns(3),
+
+
+                Repeater::make('options_description')
+                    ->schema([
+                        FusedGroup::make(
+                            collect($languages)->map(fn ($language) =>
+                                TextInput::make("name.{$language->locale}")
+                                    ->live(onBlur: true)
+                                    ->prefix($language->locale)
+                                    ->required(fn(Get $get) => $get('option_id') !== null)
+                                    ->visible(fn(Get $get) => $get('option_id') !== null)
+                                    ->hiddenLabel()
+                                    ->label(__('admin.catalog.options.fields.group_name'))
+                                    
+                            )->all()
+                        )
+                        ->helperText(__('admin.catalog.options.helpers.group_name')),
+
+                        Repeater::make('description')
+                            ->schema([
+                                Hidden::make('option_value_id'),
+                                // Text::make('label')
+                                //     ->content(fn (Get $get) => static::optionValueChoices($get('../../option_id'))->get($get('option_value_id')))
+                                //     ->columnSpanFull(),
+                                ...self::optionValueDescriptionsForm($languages),
+                            ])
+                            ->itemLabel(fn (array $state): ?string => static::itemLabelText($state))
+                            ->addable(false)
+                            ->deletable(false)
+                            ->reorderable(true)
+                            ->collapsible(true)
+                            ->collapsed(fn($operation) => $operation !== 'create')
+                            ->default([]),
+                    ])
+                    ->addable(false)
+                    ->deletable(false)
+                    ->reorderable(true)
+                    ->collapsible(true)
+                    ->collapsed(fn($operation) => $operation !== 'create')
+                    ->default([])
+                    ->statePath('description.options_description')
+                    ->itemLabel(fn (array $state): ?string => static::groupItemLabel($state))
+                    ->label(__('admin.catalog.products.tabs.options.labels.descriptions'))
+                    ->belowLabel(__('admin.catalog.products.tabs.options.helpers.descriptions'))
             ]);
     }
 
-    protected static function syncDescriptionRepeaters(Get $get, Set $set, ?Model $record, int $storeId): void
+    protected static function valuesForAxes(array $axisIds, int $storeId): array
     {
-        $selected = collect($get('../../optionSignatures'))
-            ->flatMap(fn ($signature) => collect($signature['selectedOptions'] ?? []))
-            ->filter(fn ($row) => filled($row['option_select'] ?? null) && filled($row['option_value_select'] ?? null))
-            ->map(fn ($row) => [
-                'option_id'       => (int) $row['option_select'],
-                'option_value_id' => (int) $row['option_value_select'],
+        $axisNames = static::optionChoices($storeId);
+
+        return collect($axisIds)
+            ->map(fn ($id) => (int) $id)
+            ->mapWithKeys(fn ($axisId) => [
+                $axisNames->get($axisId, "#{$axisId}") => static::optionValueChoices($axisId)->all(),
             ])
+            ->all();
+    }
+
+    protected static function axisValuesFromFlat(array $axisIds, array $valueIds, int $storeId): array
+    {
+        $valueIds = array_map('intval', $valueIds);
+
+        return collect($axisIds)
+            ->map(fn ($id) => (int) $id)
+            ->mapWithKeys(fn ($axisId) => [
+                $axisId => array_values(array_intersect($valueIds, array_keys(static::optionValueChoices($axisId)->all()))),
+            ])
+            ->filter()
+            ->all();
+    }
+
+    protected static function generateCombinations(array $axisValues): array
+    {
+        $axes = collect($axisValues)
+            ->map(fn ($ids) => array_map('intval', (array) $ids))
+            ->filter();
+
+        if ($axes->isEmpty()) {
+            return [];
+        }
+
+        return $axes
+            ->reduce(fn (Collection $carry, array $valueIds, $axisId) =>
+                $carry->flatMap(fn ($combo) =>
+                    collect($valueIds)->map(fn ($id) => $combo + [(int) $axisId => $id])
+                ), collect([[]]))
+            ->mapWithKeys(fn ($signature) => [
+                UpsertProduct::signatureKey($signature) => collect($signature)
+                    ->map(fn ($valueId, $axisId) => static::optionValueChoices((int) $axisId)->get($valueId, "#{$valueId}"))
+                    ->implode(' + '),
+            ])
+            ->all();
+    }
+
+    protected static function refresh(Get $get, Set $set, ?Model $record, int $storeId): void
+    {
+        $axisValues   = static::axisValuesFromFlat((array) $get('axes'), (array) $get('values'), $storeId);
+        $valid        = array_keys(static::generateCombinations($axisValues));
+        $combinations = array_values(array_intersect((array) $get('combinations'), $valid));
+        $set('combinations', $combinations);
+
+        static::syncDescriptions($combinations, $get, $set, $record, $storeId);
+    }
+
+    protected static function syncDescriptions(array $combinations, Get $get, Set $set, ?Model $record, int $storeId): void
+    {
+        $selected = collect($combinations)
+            ->flatMap(fn ($key) => collect(UpsertProduct::signatureFromKey($key))
+                ->map(fn ($valueId, $groupId) => ['option_id' => (int) $groupId, 'option_value_id' => (int) $valueId])
+                ->values())
             ->unique(fn ($row) => "{$row['option_id']}-{$row['option_value_id']}")
             ->groupBy('option_id');
 
@@ -161,8 +221,8 @@ class OptionsTab
                 'description' => $values,
             ];
         })->values()->all();
-
-        $set('../../description.options_description', $rebuilt);
+        
+        $set('description.options_description', $rebuilt);
     }
 
     protected static function defaultOptionName(int $optionId, ?array $override): array
@@ -291,6 +351,7 @@ class OptionsTab
         return $badge !== 0 ? $badge : null;
     }
 
+    // Single option item label for option descriptions repeater
     protected static function itemLabelText(array $state): ?string
     {
         $name = array_filter($state['name'] ?? []);
@@ -299,17 +360,43 @@ class OptionsTab
         return $name[app()->getLocale()] ?? Arr::first($name);
     }
 
+    // Item label for option descriptions repeater
     protected static function groupItemLabel(array $state): ?string
     {
         $groupName = static::itemLabelText($state);
         if (blank($groupName)) return null;
 
-        $locale = app()->getLocale();
+        // $locale = app()->getLocale();
         $valueNames = collect($state['description'] ?? [])
             ->map(fn ($v) => static::itemLabelText($v))
             ->filter()
             ->implode(', ');
 
         return $valueNames !== '' ? "{$groupName}: {$valueNames}" : $groupName;
+    }
+
+    // Render badge by JS
+    protected static function badgeUpdateJs(string $countExpression, string $color = 'primary'): string
+    {
+        return <<<JS
+            const tabRoot = \$el.closest('.fi-sc-tabs-tab');
+            const dataKey = tabRoot.id.replace('form.', '');
+            const button  = document.querySelector(`[data-tab-key="\${dataKey}"]`);
+            const count   = {$countExpression};
+
+            let badge = button?.querySelector('.fi-badge');
+
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'fi-color fi-color-{$color} fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm';
+                    badge.innerHTML = '<span class="fi-badge-label-ctn"><span class="fi-badge-label"></span></span>';
+                    button?.querySelector('.fi-tabs-item-label')?.after(badge);
+                }
+                badge.querySelector('.fi-badge-label').textContent = count;
+            } else {
+                badge?.remove();
+            }
+            JS;
     }
 }
