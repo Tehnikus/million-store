@@ -230,7 +230,7 @@ class AttributesTab
             ->first();
 
         $badge = collect($description?->attributes_description ?? [])
-            ->sum(fn ($group) => count($group['description'] ?? []));
+            ->sum(fn ($group) => \count($group['description'] ?? []));
 
         return $badge !== 0 ? $badge : null;
     }

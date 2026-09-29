@@ -81,7 +81,7 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
 
                 return new LengthAwarePaginator(
                     $records,
-                    total: count($this->resultsTable),
+                    total: \count($this->resultsTable),
                     perPage: $recordsPerPage,
                     currentPage: $page,
                 );
@@ -369,8 +369,8 @@ abstract class AbstractResultsTable extends Component implements HasActions, Has
         $this->resultsTable = $skipped;
         $this->resetTable();
 
-        count($skipped) > 0
-            ? Notification::make()->warning()->title(__('admin.seo.meta_editor.messages.saved_with_errors', ['count' => count($skipped)]))->send()
+        \count($skipped) > 0
+            ? Notification::make()->warning()->title(__('admin.seo.meta_editor.messages.saved_with_errors', ['count' => \count($skipped)]))->send()
             : Notification::make()->success()->title(__('admin.seo.meta_editor.messages.staging_saved'))->send();
     }
 

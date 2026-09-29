@@ -29,7 +29,7 @@ class OptionsTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('productOptions')
-            ->badge(fn($record) => self::countProductOptions($record, $store))
+            ->badge(fn (Get $get) => \count($get('combinations') ?? []) ?: null)
             ->schema([
                 Repeater::make('optionSignatures')
                     ->table([

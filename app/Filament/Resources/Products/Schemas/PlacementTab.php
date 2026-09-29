@@ -18,6 +18,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Collection;
@@ -27,7 +28,8 @@ class PlacementTab
     public static function make($store, $languages): Tab
     {
         return Tab::make('placement')
-            ->badge(fn(?Product $record) => $record ? FacetIndex::where('product_id', $record->id)->where('store_id', $store->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count() : null)
+            // ->badge(fn(?Product $record) => $record ? FacetIndex::where('product_id', $record->id)->where('store_id', $store->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count() : null)
+            ->badge(fn (Get $get) => \count($get('facet_categories') ?? []) + \count($get('facet_manufacturers') ?? []) + \count($get('facet_tags') ?? []) ?: null)
             ->schema([
 
                 // Category part 
