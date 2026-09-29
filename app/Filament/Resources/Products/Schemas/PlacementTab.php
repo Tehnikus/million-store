@@ -27,6 +27,14 @@ class PlacementTab
 {
     public static function make($store, $languages): Tab
     {
+
+        // Count badge without server querying
+        $placementBadgeJs = static::badgeUpdateJs(
+            "Object.keys(\$get('facet_categories') ?? {}).length"
+            . " + Object.keys(\$get('facet_manufacturers') ?? {}).length"
+            . " + Object.keys(\$get('facet_tags') ?? {}).length"
+        );
+
         return Tab::make('placement')
             // ->badge(fn(?Product $record) => $record ? FacetIndex::where('product_id', $record->id)->where('store_id', $store->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count() : null)
             ->badge(fn (Get $get) => \count($get('facet_categories') ?? []) + \count($get('facet_manufacturers') ?? []) + \count($get('facet_tags') ?? []) ?: null)
@@ -56,7 +64,9 @@ class PlacementTab
                                         $set('facet_group_id', $category?->parent_id ?? 0);
                                         $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $category?->parent_id ?? 0)->where('facet_type_id', FacetType::Category)->where('store_id', $store->id)->count() + 1);
                                     })
-                                    ->live(),
+                                    
+                                    ->live()
+                                    ->partiallyRenderComponentsAfterStateUpdated(['sort_order', 'facet_group_id', 'is_primary']),
                                 TextInput::make('sort_order')
                                     ->label(__('admin.catalog.products.tabs.placement.labels.sort_order'))
                                     ->numeric(),
@@ -82,7 +92,10 @@ class PlacementTab
                             ->maxItems(static::categoryChoices($store->id)->count())
                             ->label(__('admin.catalog.products.tabs.placement.labels.categories'))
                             ->hiddenLabel()
-                            ->compact(),
+                            ->compact()
+                            ->live()
+                            ->afterStateUpdatedJs($placementBadgeJs)
+                            ->partiallyRenderComponentsAfterStateUpdated(['facet_categories']),
                         Callout::make()
                             ->visible(function () use ($store) {
                                 return static::categoryChoices($store->id)->count() == 0;
@@ -117,7 +130,8 @@ class PlacementTab
                                         $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', $manufacturer?->parent_id ?? 0)->where('facet_type_id', FacetType::Manufacturer)->where('store_id', $store->id)->count() + 1);
                                         // $set('facet_group_id', Manufacturer::where('store_id', $store->id)->where('id', $state)->first()?->parent_id ?? 0);
                                     })
-                                    ->live(),
+                                    ->live()
+                                    ->partiallyRenderComponentsAfterStateUpdated(['sort_order', 'facet_group_id', 'is_primary']),
                                 TextInput::make('sort_order')
                                     ->label(__('admin.catalog.products.tabs.placement.labels.sort_order'))
                                     ->numeric(),
@@ -138,7 +152,10 @@ class PlacementTab
                             ->compact()
                             ->visible(function () use ($store) {
                                 return static::manufacturerChoices($store->id)->count() > 0;
-                            }),
+                            })
+                            ->live()
+                            ->afterStateUpdatedJs($placementBadgeJs)
+                            ->partiallyRenderComponentsAfterStateUpdated(['facet_manufacturers']),
                     ]),
 
                 Section::make(__('admin.catalog.products.tabs.placement.labels.product_tags'))
@@ -163,7 +180,8 @@ class PlacementTab
                                         $set('facet_group_id', $tag?->parent_id ?? 0);
                                         $set('sort_order', FacetIndex::where('facet_value_id', $state)->where('facet_group_id', 0)->where('facet_type_id', FacetType::Tag)->where('store_id', $store->id)->count() + 1);
                                     })
-                                    ->live(),
+                                    ->live()
+                                    ->partiallyRenderComponentsAfterStateUpdated(['sort_order', 'facet_group_id']),
                                 TextInput::make('sort_order')
                                     ->label(__('admin.catalog.products.tabs.placement.labels.sort_order'))
                                     ->numeric(),
@@ -238,5 +256,30 @@ class PlacementTab
         Context::add($key, $choices->all());
 
         return $choices;
+    }
+    
+    // Render badge by JS
+    protected static function badgeUpdateJs(string $countExpression, string $color = 'primary'): string
+    {
+        return <<<JS
+            const tabRoot = \$el.closest('.fi-sc-tabs-tab');
+            const dataKey = tabRoot.id.replace('form.', '');
+            const button  = document.querySelector(`[data-tab-key="\${dataKey}"]`);
+            const count   = {$countExpression};
+
+            let badge = button?.querySelector('.fi-badge');
+
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'fi-color fi-color-{$color} fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm';
+                    badge.innerHTML = '<span class="fi-badge-label-ctn"><span class="fi-badge-label"></span></span>';
+                    button?.querySelector('.fi-tabs-item-label')?.after(badge);
+                }
+                badge.querySelector('.fi-badge-label').textContent = count;
+            } else {
+                badge?.remove();
+            }
+            JS;
     }
 }
