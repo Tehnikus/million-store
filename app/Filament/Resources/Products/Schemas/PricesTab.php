@@ -216,14 +216,10 @@ class PricesTab
 
     protected static function liveCombinations(Get $get): Collection
     {
-        $optionSignatures = collect($get('../../optionSignatures'));
         $optionsDescription = collect($get('../../description.options_description'));
 
-        $rows = $optionSignatures
-            ->map(fn ($signature) => collect($signature['selectedOptions'] ?? [])
-                ->filter(fn ($row) => filled($row['option_select'] ?? null) && filled($row['option_value_select'] ?? null))
-                ->mapWithKeys(fn ($row) => [(int) $row['option_select'] => (int) $row['option_value_select']])
-                ->all())
+        $rows = collect($get('../../combinations') ?? [])
+            ->map(fn ($key) => UpsertProduct::signatureFromKey($key))
             ->filter()
             ->unique(fn ($signature) => UpsertProduct::signatureKey($signature))
             ->values();
@@ -248,7 +244,7 @@ class PricesTab
                 ->first(fn ($v) => (int) ($v['option_value_id'] ?? null) === (int) $valueId);
 
             return $value['name'][app()->getLocale()]
-                ?? OptionValue::find($valueId)?->name
+                // ?? OptionValue::find($valueId)?->name
                 ?? "#{$valueId}";
         })->implode(', ');
     }
