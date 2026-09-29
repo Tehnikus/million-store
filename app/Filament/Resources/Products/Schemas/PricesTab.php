@@ -130,6 +130,7 @@ class PricesTab
                     ->cloneable()
                     ->orderColumn('priority')
                     ->deletable(fn (Get $get): bool => \count($get('priceTiers')) > 1)
+                    ->afterStateUpdatedJs(static::badgeUpdateJs('Object.keys($state ?? {}).length'))
                     ->itemLabel(function (array $state) use ($store, $currencies, $defaultCurrency): ?HtmlString {
                         $name            = $state['name'][app()->getLocale()] ?? Arr::first($state['name'] ?? []);
                         $priceText       = static::priceSummary($state['price'] ?? [], $defaultCurrency);
@@ -313,5 +314,29 @@ class PricesTab
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    protected static function badgeUpdateJs(string $countExpression, string $color = 'primary'): string
+    {
+        return <<<JS
+            const tabRoot = \$el.closest('.fi-sc-tabs-tab');
+            const dataKey = tabRoot.id.replace('form.', '');
+            const button  = document.querySelector(`[data-tab-key="\${dataKey}"]`);
+            const count   = {$countExpression};
+
+            let badge = button?.querySelector('.fi-badge');
+
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'fi-color fi-color-{$color} fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm';
+                    badge.innerHTML = '<span class="fi-badge-label-ctn"><span class="fi-badge-label"></span></span>';
+                    button?.querySelector('.fi-tabs-item-label')?.after(badge);
+                }
+                badge.querySelector('.fi-badge-label').textContent = count;
+            } else {
+                badge?.remove();
+            }
+            JS;
     }
 }
