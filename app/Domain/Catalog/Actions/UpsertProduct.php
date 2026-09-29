@@ -47,29 +47,23 @@ class UpsertProduct
         )
         ->all();
 
-        // Get options
-        $options = $data['optionSignatures'] ?? [];
+
         // Collect option facet values
-        $optionFacets = collect($options)
-            ->flatMap(fn ($signature) => collect($signature['selectedOptions'] ?? []))
-            ->filter(fn ($row) => filled($row['option_select'] ?? null) && filled($row['option_value_select'] ?? null))
-            ->map(fn ($row) => [
-                'facet_type_id'  => FacetType::OptionValue,
-                'facet_group_id' => (int) $row['option_select'],
-                'facet_value_id' => (int) $row['option_value_select'],
-            ])
-            ->unique(fn ($row) => "{$row['facet_group_id']}-{$row['facet_value_id']}")
-            ->values()
-            ->all();
-        // Collect option signatures
-        $optionSignatures = collect($options)
-            ->map(fn ($signature) => collect($signature['selectedOptions'] ?? [])
-                ->filter(fn ($row) => filled($row['option_select'] ?? null) && filled($row['option_value_select'] ?? null))
-                ->mapWithKeys(fn ($row) => [(int) $row['option_select'] => (int) $row['option_value_select']])
-                ->all())
+        $optionSignatures = collect($data['combinations'] ?? [])
+            ->map(fn ($key) => static::signatureFromKey($key))
             ->filter()
             ->unique(fn ($signature) => static::signatureKey($signature))
             ->values();
+
+        $optionFacets = $optionSignatures
+            ->flatMap(fn ($signature) => collect($signature)->map(fn ($valueId, $groupId) => [
+                'facet_type_id'  => FacetType::OptionValue,
+                'facet_group_id' => (int) $groupId,
+                'facet_value_id' => (int) $valueId,
+            ])->values())
+            ->unique(fn ($row) => "{$row['facet_group_id']}-{$row['facet_value_id']}")
+            ->values()
+            ->all();
 
         // Get options signatures to save prices
         $comboSignatures = $optionSignatures->isEmpty()
@@ -181,5 +175,18 @@ class UpsertProduct
         if (blank($signature)) return 'base';
         ksort($signature);
         return collect($signature)->map(fn ($v, $k) => "{$k}-{$v}")->implode('_');
+    }
+
+    public static function signatureFromKey(string $key): array
+    {
+        if ($key === '' || $key === 'base') {
+            return [];
+        }
+
+        return collect(explode('_', $key))
+            ->mapWithKeys(function ($pair) {
+                [$groupId, $valueId] = explode('-', $pair);
+                return [(int) $groupId => (int) $valueId];
+            })->all();
     }
 }
