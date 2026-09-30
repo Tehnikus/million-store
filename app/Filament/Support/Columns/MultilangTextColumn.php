@@ -40,7 +40,7 @@ class MultilangTextColumn extends TextColumn
     public static function allColumns(array $rawState): HtmlString
     {
         $result = '';
-        $languages = once(fn () => Filament::getTenant()->languages()->wherePivot('is_active', true)->pluck('locale'));
+        $languages = once(fn () => Filament::getTenant()->activeLanguages()->pluck('locale'));
 
         foreach ($languages as $locale) {
             if (!empty($rawState[$locale])) {
