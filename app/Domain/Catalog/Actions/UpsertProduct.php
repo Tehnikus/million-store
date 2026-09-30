@@ -143,6 +143,18 @@ class UpsertProduct
                 $priceGrid = $tierRow['price'] ?? [];
                 unset($tierRow['price'], $tierRow['id']);
 
+                $status = $tierRow['status'] ?? 'is_base';
+                unset($tierRow['status']);
+
+                $tierRow['is_base']        = $status === 'is_base';
+                $tierRow['discount_type']  = match ($status) {
+                    'discount_percent' => 'percent',
+                    'discount_amount'  => 'amount',
+                    default             => null,
+                };
+                $tierRow['discount_value'] = $status === 'is_base' ? null : ($tierRow['discount'] ?? null);
+                unset($tierRow['discount']);
+
                 $tier = ProductPriceTier::create([
                     ...$tierRow,
                     'product_id' => $product->id,

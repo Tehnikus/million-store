@@ -90,8 +90,14 @@ class EditProduct extends EditRecord
 
                 return [
                     'customer_group_id' => $tier->customer_group_id,
-                    'is_base'           => $tier->is_base,
-                    'is_discount'       => $tier->is_discount,
+                    'is_base'        => $tier->is_base,
+                    'status'          => match (true) {
+                        $tier->is_base                          => 'is_base',
+                        $tier->discount_type === 'percent'      => 'discount_percent',
+                        $tier->discount_type === 'amount'       => 'discount_amount',
+                        default                                 => 'is_base',
+                    },
+                    'discount'          => $tier->discount_value,
                     'priority'          => $tier->priority,
                     'date_valid_from'   => $tier->date_valid_from,
                     'date_valid_until'  => $tier->date_valid_until,
@@ -103,6 +109,7 @@ class EditProduct extends EditRecord
                 // Set empty base price tier on product edit in the neighboring store, when product is not linked yet
                 'customer_group_id' => null,
                 'is_base'            => true,
+                'status'             => 'is_base',
                 'is_discount'        => false,
                 'priority'           => 1,
                 'date_valid_from'    => null,
