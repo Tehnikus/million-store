@@ -4,21 +4,18 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Models\Customer\CustomerGroup;
-// use App\Models\Catalog\OptionValue;
 use Arr;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-// use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
-// use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
@@ -40,41 +37,6 @@ class PricesTab
 
                         Fieldset::make(__('admin.catalog.products.tabs.prices.labels.price_terms'))
                             ->schema([
-                                // Price badge
-                                FusedGroup::make([
-                                    ...collect($languages)->map(
-                                        fn($language) =>
-                                        TextInput::make("name.$language->locale")
-                                            ->prefix($language->locale)
-                                            ->label(__('admin.catalog.products.tabs.prices.labels.price_name'))
-                                            ->placeholder(__('admin.catalog.products.tabs.prices.labels.price_name'))
-                                            ->hiddenLabel(),
-                                    )
-
-                                ])
-                                ->label(__('admin.catalog.products.tabs.prices.labels.price_name'))
-                                ->helperText(__('admin.catalog.products.tabs.prices.helpers.price_name')),
-
-
-                                Select::make('customer_group_id')
-                                    ->options(fn() => static::customerGroupChoices($store->id))
-                                    ->placeholder(__('admin.catalog.products.tabs.prices.labels.no_group'))
-                                    ->label(__('admin.catalog.products.tabs.prices.labels.customer_group'))
-                                    ->helperText(__('admin.catalog.products.tabs.prices.helpers.customer_group')),
-
-                                // Group::make([
-                                //     Toggle::make('is_base')
-                                //         ->distinct()
-                                //         ->fixIndistinctState()
-                                //         ->live()
-                                //         ->columnSpan(1)
-                                //         ->label(__('admin.catalog.products.tabs.prices.labels.is_base')),
-                                //     Toggle::make('is_discount')
-                                //         ->visible(fn(Get $get) => !$get('is_base'))
-                                //         ->columnSpan(1)
-                                //         ->label(__('admin.catalog.products.tabs.prices.labels.is_discount')),
-                                // ])
-                                // ->columns(2),
                                 ToggleButtons::make('status')
                                     ->options([
                                         'is_base'           => __('admin.catalog.products.tabs.prices.labels.is_base'),
@@ -139,6 +101,28 @@ class PricesTab
                                             });
                                         })();
                                     JS),
+
+                                // Price badge
+                                FusedGroup::make([
+                                    ...collect($languages)->map(
+                                        fn($language) =>
+                                        TextInput::make("name.$language->locale")
+                                            ->prefix($language->locale)
+                                            ->label(__('admin.catalog.products.tabs.prices.labels.price_name'))
+                                            ->placeholder(__('admin.catalog.products.tabs.prices.labels.price_name'))
+                                            ->hiddenLabel(),
+                                    )
+
+                                ])
+                                ->label(__('admin.catalog.products.tabs.prices.labels.price_name'))
+                                ->helperText(__('admin.catalog.products.tabs.prices.helpers.price_name')),
+
+
+                                Select::make('customer_group_id')
+                                    ->options(fn() => static::customerGroupChoices($store->id))
+                                    ->placeholder(__('admin.catalog.products.tabs.prices.labels.no_group'))
+                                    ->label(__('admin.catalog.products.tabs.prices.labels.customer_group'))
+                                    ->helperText(__('admin.catalog.products.tabs.prices.helpers.customer_group')),
 
                                 Group::make([
                                     TextInput::make('priority')

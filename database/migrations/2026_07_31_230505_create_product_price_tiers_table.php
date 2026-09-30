@@ -17,8 +17,9 @@ return new class extends Migration
             $table->foreignId('store_id');
             $table->foreignId('customer_group_id')->nullable()->constrained('customer_groups')->cascadeOnDelete();
             $table->jsonb('name')->default('{}');
-            $table->boolean('is_discount')->default(false);
             $table->boolean('is_base')->default(false);
+            $table->string('discount_type')->nullable()->after('is_discount'); // 'amount' | 'percent'
+            $table->decimal('discount_value', 10, 2)->nullable()->after('discount_type');
             $table->integer('priority')->default(1);
             $table->dateTime('date_valid_from')->nullable();
             $table->dateTime('date_valid_until')->nullable();
