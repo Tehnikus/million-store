@@ -169,9 +169,9 @@ class DescriptionTab
 
     private static function aiModalAction(string $field, $language): Action
     {
-        $settings = StoreSettings::query()
+        $settings = once(fn() => StoreSettings::query()
             ->where('store_id', Filament::getTenant()->id)
-            ->first()?->ai_settings ?? [];
+            ->first()?->ai_settings ?? []);
 
         $promptOptions = collect($settings['prompts'] ?? [])->pluck('name')->all();
 
