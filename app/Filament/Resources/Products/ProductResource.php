@@ -13,6 +13,7 @@ use App\Models\Catalog\Product;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductResource extends Resource
 {
@@ -57,5 +58,10 @@ class ProductResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::Products;
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['descriptions']);
     }
 }
