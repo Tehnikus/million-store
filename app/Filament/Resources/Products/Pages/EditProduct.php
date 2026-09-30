@@ -64,16 +64,19 @@ class EditProduct extends EditRecord
             ])->all();
 
         // Product model relation Product->options()
-        $data['optionSignatures'] = $record->options()
-            ->where('store_id', $store->id)
-            ->get()
-            ->map(fn ($option) => [
-                'selectedOptions' => collect($option->option_signature)
-                    ->map(fn ($valueId, $groupId) => [
-                        'option_select'       => (string) $groupId,
-                        'option_value_select' => (string) $valueId,
-                    ])->values()->all(),
-            ])->values()->all();
+        // Fill options tab
+        $signatures = $record->options()->where('store_id', $store->id)->get()->pluck('option_signature');
+
+        $optionGroups = [];
+        foreach ($signatures as $signature) {
+            foreach ($signature as $groupId => $valueId) {
+                $optionGroups[$groupId][] = (string) $valueId;
+            }
+        }
+
+        $data['optionGroups']       = array_map('strval', array_keys($optionGroups));
+        $data['optionGroupValues']  = collect($optionGroups)->flatten()->unique()->values()->all();
+        $data['combinations']       = $signatures->map(fn ($s) => UpsertProduct::signatureKey($s))->values()->all();
 
         $priceTiers = $record->priceTiers()
             ->where('store_id', $store->id)
