@@ -47,20 +47,25 @@ class ProductForm
                                                         ->required()
                                                         ->prefix($language->locale)
                                                         ->columnSpanFull()
-                                                        ->label(__('admin.catalog.products.fields.global_name'))
-                                                        ->placeholder(__('admin.catalog.products.fields.global_name'))
+                                                        ->label(__('admin.catalog.products.tabs.content.labels.global_name'))
+                                                        ->placeholder(__('admin.catalog.products.tabs.content.labels.global_name'))
                                                         ->hiddenLabel(),
                                                 )->toArray(),
                                             )
                                             ->columnSpanFull()
-                                            ->label(__('admin.catalog.products.fields.global_name'))
-                                            ->helperText(__('admin.catalog.products.helpers.global_name')),
+                                            ->label(__('admin.catalog.products.tabs.content.labels.global_name'))
+                                            ->helperText(__('admin.catalog.products.tabs.content.helpers.global_name')),
                                         
                                         // Product status toggle
                                         Toggle::make('is_active')
-                                            ->label(__('admin.catalog.products.fields.is_active'))
-                                            ->helperText(__('admin.catalog.products.helpers.is_active'))
-                                            ->statePath('description.is_active')
+                                            ->label(__('admin.catalog.products.tabs.content.labels.is_active'))
+                                            ->helperText(__('admin.catalog.products.tabs.content.helpers.is_active'))
+                                            ->statePath('description.is_active'),
+                                        // Product status toggle
+                                        Toggle::make('is_active')
+                                            ->label(__('admin.catalog.products.tabs.content.labels.is_available'))
+                                            ->helperText(__('admin.catalog.products.tabs.content.helpers.is_available'))
+                                            ->statePath('description.is_available')
                                     ]),
                                 Tabs::make('languages')
                                     ->schema([
@@ -97,30 +102,31 @@ class ProductForm
                             ])
                             ->icon(Heroicon::PencilSquare)
                             ->label(__('admin.common.tabs.content')),
+
                         PlacementTab::make($store, $languages)
-                            ->label(__('admin.catalog.products.tabs.placement'))
+                            ->label(__('admin.catalog.products.tabs.placement.label'))
                             ->icon(NavigationItem::Categories->icon()),
                         PricesTab::make($store, $currencies, $languages)
-                            ->label(__('admin.catalog.products.tabs.prices'))
+                            ->label(__('admin.catalog.products.tabs.prices.label'))
                             ->icon(NavigationItem::Currencies->icon()),
                         OptionsTab::make($store, $languages)
-                            ->label(__('admin.catalog.products.tabs.options'))
+                            ->label(__('admin.catalog.products.tabs.options.label'))
                             ->icon(NavigationItem::Options->icon()),
                         AttributesTab::make($store, $languages)
-                            ->label(__('admin.catalog.products.tabs.attributes'))
+                            ->label(__('admin.catalog.products.tabs.attributes.label'))
                             ->icon(NavigationItem::Attributes->icon()),
                         Tab::make('delivery')
-                            ->label(__('admin.catalog.products.tabs.delivery'))
+                            ->label(__('admin.catalog.products.tabs.delivery.label'))
                             ->icon(NavigationItem::Delivery->icon())
                             ->schema([]),
                         Tab::make('inventory')
-                            ->label(__('admin.catalog.products.tabs.inventory'))
+                            ->label(__('admin.catalog.products.tabs.inventory.label'))
                             ->icon(NavigationItem::StockStatus->icon())
                             ->schema([]),
                         Tab::make('reviews')
-                            ->label(__('admin.catalog.products.tabs.reviews'))
+                            ->label(__('admin.catalog.products.tabs.reviews.label'))
                             ->icon(NavigationItem::ProductReviews->icon())
-                            ->visible(fn(?Product $record) => $record !== null && $record->descriptions()->where('store_id', $store->id)->first() !== null)
+                            ->visible(fn(?Product $record) => $record !== null && $record->descriptions->where('store_id', $store->id)->first() !== null)
                             ->badge(fn(?Product $record) => $record !== null ? (($count = ProductReview::where('product_id', $record->id)->where('store_id', $store->id)->count()) ? $count : null) : null)
                             ->schema([
                                 Livewire::make(ReviewsRelationManager::class, fn(?Product $record, ?EditProduct $livewire) => [
@@ -129,13 +135,9 @@ class ProductForm
                                 ])
                             ]),
                         Tab::make('statistics')
-                            ->label(__('admin.catalog.products.tabs.statistics'))
-                            ->icon(Heroicon::ArrowTrendingUp)
+                            ->label(__('admin.catalog.products.tabs.statistics.label'))
+                            ->icon(NavigationItem::Orders->icon())
                             ->schema([]),
-                        // Tab::make('orders')
-                        //     ->label(__('admin.catalog.products.tabs.orders'))
-                        //     ->icon(NavigationItem::Orders->icon())
-                        //     ->schema([]),
 
 
                     ])

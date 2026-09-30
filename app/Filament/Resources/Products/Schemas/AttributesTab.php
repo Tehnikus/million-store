@@ -37,6 +37,11 @@ class AttributesTab
                     ->schema([
 
                         Select::make('attribute_id')
+                            ->label(__('admin.catalog.products.tabs.attributes.labels.attribute'))
+                            ->noOptionsMessage(__('admin.catalog.products.tabs.attributes.placeholders.no_attributes'))
+                            ->searchPrompt(__('admin.catalog.products.tabs.attributes.placeholders.search_attributes'))
+                            ->placeholder(__('admin.catalog.products.tabs.attributes.placeholders.search_attributes'))
+                            ->searchingMessage(__('admin.catalog.products.tabs.attributes.placeholders.searching_attributes'))
                             ->options(fn() => static::attributeChoices($store->id))
                             ->afterStateUpdated(function (Set $set, Get $get, $state, $livewire) use ($store) {
                                 $set('values_description', []);
@@ -79,13 +84,18 @@ class AttributesTab
                                     ->label(__('admin.catalog.attributes.fields.group_name'))
                             )->all()
                         )
-                            ->helperText(__('admin.catalog.attributes.helpers.group_name')),
+                        ->helperText(__('admin.catalog.attributes.helpers.group_name')),
 
                         Repeater::make('description')
                             ->schema([
                                 Group::make([
                                     // The form itself
                                     Select::make('attribute_value_id')
+                                        ->label(__('admin.catalog.products.tabs.attributes.labels.attribute_value'))
+                                        ->noOptionsMessage(__('admin.catalog.products.tabs.attributes.placeholders.no_attribute_values'))
+                                        ->searchPrompt(__('admin.catalog.products.tabs.attributes.placeholders.search_attribute_values'))
+                                        ->placeholder(__('admin.catalog.products.tabs.attributes.placeholders.search_attribute_values'))
+                                        ->searchingMessage(__('admin.catalog.products.tabs.attributes.placeholders.searching_attribute_values'))
                                         ->options(fn(Get $get) => static::attributeValueChoices($get('../../attribute_id')))
                                         ->required()
                                         ->live()
@@ -129,12 +139,12 @@ class AttributesTab
                             ->default([])
                             ->maxItems(fn(Get $get) => static::attributeValueChoices($get('attribute_id'))->count())
                             ->collapsible()
-                            ->collapsed(fn($operation) => $operation !== 'create')
+                            // ->collapsed(fn($operation) => $operation !== 'create')
                             ->itemLabel(fn(array $state): ?string => static::itemLabelText($state))
                             ->reorderable()
                             ->orderColumn('sort_order')
                             ->columns(5)
-                            ->addActionLabel(__('admin.catalog.products.buttons.add_attribute_value'))
+                            ->addActionLabel(__('admin.catalog.products.tabs.attributes.buttons.add_attribute_value'))
                             ->addActionAlignment('end')
                             ->label(__('admin.catalog.attributes.fields.values'))
                     ])
@@ -145,8 +155,9 @@ class AttributesTab
                     ->itemLabel(fn(array $state): ?string => static::groupItemLabel($state))
                     ->reorderable()
                     ->orderColumn('sort_order')
-                    ->addActionLabel(__('admin.catalog.products.buttons.add_attribute'))
-                    ->label(__('admin.catalog.attributes.navigation_label'))
+                    ->addActionLabel(__('admin.catalog.products.tabs.attributes.buttons.add_attribute'))
+                    ->label(__('admin.catalog.products.tabs.attributes.label'))
+                    ->belowLabel(__('admin.catalog.products.tabs.attributes.helpers.label'))
                     ->hiddenLabel()
                     ->afterStateUpdatedJs(static::badgeUpdateJs(
                         "Object.values(\$get('description.attributes_description') ?? {}).reduce((n, g) => n + Object.keys(g.description ?? {}).length, 0)"

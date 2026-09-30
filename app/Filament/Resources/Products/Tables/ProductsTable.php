@@ -71,7 +71,7 @@ class ProductsTable
             ->searchDebounce('250ms')
             ->emptyStateIcon(NavigationItem::Products->icon())
             ->emptyStateHeading(__('admin.catalog.products.navigation_label'))
-            ->emptyStateDescription(__('admin.catalog.products.helpers.group_title'))
+            ->emptyStateDescription(__('admin.catalog.products.table.messages.empty_state_message'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -79,7 +79,7 @@ class ProductsTable
 
                 // Global SKU and name
                 TextColumn::make('global_name')
-                    ->label(__('admin.catalog.products.fields.global_name') .'/'. __('admin.catalog.products.fields.sku'))
+                    ->label(__('admin.catalog.products.table.columns.global_name') .'/'. __('admin.catalog.products.table.columns.sku'))
                     ->formatStateUsing(function ($record) {
                         return new HtmlString(
                             "<div>{$record->global_name}</div>" . 
@@ -92,8 +92,8 @@ class ProductsTable
 
                 MultilangTextColumn::make('descriptions.name')
                     ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name'))
-                    ->placeholder(__('admin.catalog.products.fields.is_not_associated'))
-                    ->label(__('admin.catalog.products.fields.store_name'))
+                    ->placeholder(__('admin.catalog.products.table.buttons.is_not_associated'))
+                    ->label(__('admin.catalog.products.table.columns.store_name'))
                     ->wrapHeader()
                     ->searchable(isIndividual: true)
                     ->toggleable(isToggledHiddenByDefault: false),
@@ -104,7 +104,7 @@ class ProductsTable
                         'description',
                     ))
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->label(__('admin.catalog.products.tabs.options')),
+                    ->label(__('admin.catalog.products.tabs.options.label')),
 
                 TextColumn::make('descriptions.attributes_description')
                     ->formatStateUsing(fn ($record) => static::renderFacetGroups(
@@ -112,11 +112,23 @@ class ProductsTable
                         'description',
                     ))
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->label(__('admin.catalog.products.tabs.attributes')),
+                    ->label(__('admin.catalog.products.tabs.attributes.label')),
 
                 // Dates
-                TextColumn::make('created_at')->dateTime()->wrap()->alignEnd()->sortable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')->dateTime()->wrap()->alignEnd()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->wrap()
+                    ->alignEnd()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label(__('admin.catalog.products.table.columns.created_at')),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->wrap()
+                    ->alignEnd()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label(__('admin.catalog.products.table.columns.updated_at')),
             ])
             ->filters([
                 //
@@ -128,9 +140,9 @@ class ProductsTable
                     ->visible(fn($record) => $record->currentDescription() !== null)
                     ->icon(fn($record) => $record->currentDescription()?->is_active == true ? Heroicon::Play : Heroicon::Stop)
                     ->color(fn($record) => $record->currentDescription()?->is_active == true ? 'success' : 'danger')
-                    ->tooltip(fn($record) => $record->currentDescription()?->is_active == true ? __('admin.catalog.products.fields.is_active') : __('admin.catalog.products.fields.is_not_active')),
+                    ->tooltip(fn($record) => $record->currentDescription()?->is_active == true ? __('admin.catalog.products.table.columns.is_active') : __('admin.catalog.products.table.columns.is_not_active')),
 
-                EditAction::make()->tooltip(__('admin.catalog.products.buttons.edit_product')),
+                EditAction::make()->tooltip(__('admin.catalog.products.table.buttons.edit_product')),
                 
                 Action::make('deleteFromStore')
                     ->action(fn(Product $product) => ProductDescription::where('product_id', $product->id)->where('store_id', Filament::getTenant()->id)->delete())
@@ -138,15 +150,15 @@ class ProductsTable
                     ->icon(Heroicon::OutlinedNoSymbol)
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalHeading(__('admin.catalog.products.buttons.delete_from_store'))
+                    ->modalHeading(__('admin.catalog.products.table.buttons.delete_from_store'))
                     ->modalDescription(__('admin.catalog.products.messages.delete_from_store'))
-                    ->tooltip(__('admin.catalog.products.buttons.delete_from_store')),
+                    ->tooltip(__('admin.catalog.products.table.buttons.delete_from_store')),
 
                 DeleteAction::make()
                     ->requiresConfirmation()
-                    ->modalHeading(__('admin.catalog.products.buttons.delete_from_all_stores'))
+                    ->modalHeading(__('admin.catalog.products.table.buttons.delete_from_all_stores'))
                     ->modalDescription(__('admin.catalog.products.messages.delete_from_all_stores'))
-                    ->tooltip(__('admin.catalog.products.buttons.delete_from_all_stores')),
+                    ->tooltip(__('admin.catalog.products.table.buttons.delete_from_all_stores')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

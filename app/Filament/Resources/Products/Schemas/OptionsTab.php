@@ -54,6 +54,10 @@ class OptionsTab
                             ->columnSpan(1),
                         Select::make('optionGroupValues')
                             ->label(__('admin.catalog.products.tabs.options.labels.option_vals'))
+                            ->noOptionsMessage(__('admin.catalog.products.tabs.options.placeholders.no_option_vals'))
+                            ->searchPrompt(__('admin.catalog.products.tabs.options.placeholders.search_option_vals'))
+                            ->placeholder(__('admin.catalog.products.tabs.options.placeholders.search_option_vals'))
+                            ->searchingMessage(__('admin.catalog.products.tabs.options.placeholders.searching_option_vals'))
                             ->multiple()
                             ->options(fn(Get $get) => static::valuesForOptionGroups((array) $get('optionGroups'), $store->id))
                             ->preload()

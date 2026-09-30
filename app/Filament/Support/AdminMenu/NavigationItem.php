@@ -128,10 +128,10 @@ enum NavigationItem: string
             self::Options           => 'heroicon-o-adjustments-horizontal',
             self::Tags              => 'heroicon-o-tag',
             self::FacetFilter       => 'heroicon-o-adjustments-vertical',
-            self::ProductReviews   => 'heroicon-o-chat-bubble-left-right',
+            self::ProductReviews    => 'heroicon-o-chat-bubble-left-right',
 
             // Orders
-            self::Orders            => 'heroicon-o-banknotes',
+            self::Orders            => 'heroicon-o-arrow-trending-up',
             self::Returns           => 'heroicon-o-arrow-path-rounded-square',
             self::Statuses          => 'heroicon-o-clock',
             self::Delivery          => 'heroicon-o-truck',

@@ -33,90 +33,175 @@ return [
     'products' => [
       'navigation_label'      => 'Products',
       'model_label_singular'  => 'Product',
-      'fields' => [
-        'global_name'             => 'Global name',
-        'global_data'             => 'Global data',
-        'sku'                     => 'SKU',
-        'store_name'              => 'Store name',
-        // 'attributes'            => 'Attributes',
-        // 'options'               => 'Options',
-        // 'price_tiers'           => 'Price tiers',
-        // 'prices'                => 'Prices',
-        'price'                   => 'Price',
-        // 'price_name'            => 'Price name',
-        // 'price_terms'           => 'Price terms',
-        // 'discount'              => 'Discount',
-        'is_active'               => 'Active in this store',
-        'is_not_active'           => 'Not active in this store',
-        'is_not_associated'       => 'Not associated to this store',
-        // 'prices_customer_group' => 'Customer group',
-        // 'customer_group_id_short' => 'Customers',
-        'valid_from'            => 'Price valid from date',
-        'valid_until'           => 'Price valid until date',
-        // 'valid_from_short'      => 'date from',
-        // 'valid_until_short'     => 'date until',
-        // 'valid_quantity'        => 'Price valid quantity',
-        // 'valid_quantity_short'  => 'q-ty from',
-        // 'priority'              => 'Priority',
-        'category'                => 'Category',
-        'categories'              => 'Categories to display',
-        'is_primary_category'     => 'Primary category',
-        'manufacturer'            => 'Manufacturer',
-        'manufacturers'           => 'Manufacturers',
-        'is_primary_manufacturer' => 'Primary manufacturer',
-        'product_tags'            => 'Product tags',
-        'tag'                     => 'Tag',
-        'sort_order'              => 'Sort order'
+      'table' => [
+        'columns' => [
+          'global_name'             => 'Global name',
+          'sku'                     => 'SKU',
+          'created_at'              => 'Created',
+          'updated_at'              => 'Updated',
+          'store_name'              => 'Store name',
+          'is_active'               => 'Active in this store',
+          'is_not_active'           => 'Not active in this store',
+        ],
+        'buttons' => [
+          'delete_from_store'       => 'Delete from current store',
+          'delete_from_all_stores'  => 'Delete product from all stores',
+          'edit_product'            => 'Edit product',
+        ],
+        'messages' => [
+          'empty_state_message'     => 'Products can be linked to multiple stores simultaneously while having different prices, descriptions, and sets of options and attributes, and can be displayed in different categories within each store',
+          'delete_from_store'       => 'This action will delete this product from the current store, but not from other stores. All product data in current store will be deleted. Continue?',
+          'delete_from_all_stores'  => 'This action will delete this product from all stores. All product data in all stores will be deleted. This action is irreversible. Continue?',
+        ],
       ],
       'tabs' => [
-        'prices'                  => 'Prices',
-        'placement'               => 'Placement',
-        'attributes'              => 'Attributes',
-        'options'                 => 'Options',
-        'reviews'                 => 'Reviews',
-        'orders'                  => 'Orders',
-        'statistics'              => 'Statistics',
+        'content' => [
+          'labels' => [
+            'global_name'   => 'Global name',
+            'is_active'     => 'Active in this store',
+            'is_available'  => 'Available for order in this store',
+          ],
+          'helpers' => [
+            'global_name'   => 'Shown only in Admin panel. Used for product quick search',
+            'is_active'     => 'Product status is set separately for every store',
+            'is_available'  => 'Product availability is set separately for every store',
+          ],
+        ],
+        'placement' => [
+          'label'   => 'Placement',
+          'labels'  => [
+            'categories'              => 'Categories to display',
+            'category'                => 'Category',
+            'is_primary_category'     => 'Primary category',
+            'manufacturer'            => 'Manufacturer',
+            'manufacturers'           => 'Manufacturers',
+            'is_primary_manufacturer' => 'Primary manufacturer',
+            'product_tags'            => 'Product tags',
+            'tag'                     => 'Tag',
+            'sort_order'              => 'Sort order'
+          ],
+          'helpers' => [
+            'categories'    => 'Select categories where product will be displayed. Primary category is used to build product URL',
+            'manufacturers' => 'Select manufacturers where product will be displayed. Primary manufacturer is used to display the manufacturer\'s logo and link on the product page',
+            'tags'          => 'Product tag is an additional way to group products together to show them on SEO filter page. They can be also displayed as badges on product miniature and product main image',
+          ],
+          'buttons' => [
+            'add_tag'                 => 'Add product tag',
+            'add_category'            => 'Add category',
+            'add_manufacturer'        => 'Add manufacturer',
+          ],
+          'errors' => [
+            'no_primary_category' => 'Select at least one category and set primary category',
+            'no_categories'       => 'Create categories to add product to',
+          ]
+        ],
+        'prices' => [
+          'label' => 'Prices',
+          'labels' => [
+            'price_tiers'       => 'Price tiers',
+            'base_price'        => 'Base price',
+            'price_terms'       => 'Price terms',
+            'price_values'      => 'Price values',
+            'price_input'       => 'Price in :currency',
+            'price_name'        => 'Price name',
+            'valid_from'        => 'Price valid from date',
+            'valid_until'       => 'Price valid until date',
+            'customer_group'    => 'Customer group',
+            'no_group'          => 'All customers',
+            'is_base'           => 'Base price',
+            'discount_amount'   => 'Discount amount',
+            'discount_percent'  => 'Discount percent',
+            'priority'          => 'Price priority',
+            'valid_quantity'    => 'Price valid quantity',
+            'valid_dates'       => 'Price valid dates',
+            'primary_currency'  =>'The primary currency of this store',
+          ],
+          'helpers' => [
+            'price_tiers'       => 'Each price tier contains the prices of all product variants in all currencies. A product must always have a base price level - that is, prices without discounts or conditions. To add discounts, create an additional price tier',
+            'price_name'        => 'Displayed as badge near the price. Leave blank if you don\'t need this',
+            'valid_quantity'    => 'Minimal product quantity in cart to apply this price',
+            'priority'          => 'If multiple prices have similar appliance conditions, the higher priority price will be used',
+            'customer_group'    => 'Select the customer group to which this price will apply or leave blank to apply this price tier for all customers',
+            'valid_dates'       => 'Select the dates during which this price will apply',
+          ],
+          'buttons' => [
+            'add_price_tier'    => 'Add price tier',
+            'exchange_rate'     => 'Calculate at the exchange rate',
+            'fill_all_combinations' => 'Fill all combinations with this price',
+          ],
+          'item_label' => [
+            'is_base'           => 'Base price',
+            'is_discount'       => 'Discount',
+            'valid_from'        => 'from',
+            'valid_until'       => 'until',
+            'dates_valid'       => 'dates valid',
+            'from_qty'          => 'from :qty pcs'
+          ],
+        ],
+        'options' => [
+          'label' => 'Options',
+          'labels' => [
+            'options'           => 'Options groups',
+            'option_vals'       => 'Options values',
+            'variants_selector' => 'Available product variants',
+            'descriptions'      => 'Options descriptions',
+            'group_name'        => 'Option name',
+            'option_val_name'   => 'Option value name',
+            'description'       => 'Option description',
+          ],
+          'helpers' => [
+            'options'           => 'Select options linked to this product here. First select option groups and values, then check the checkboxes of variants that exist for this product',
+            'variants_selector' => 'Check option combinations that will be applied to this product. Don\'t forget to fill each variant price on prices tab',
+            'descriptions'      => 'You can assign a unique description to each option value - this is how it will appear on the product page. Names and descriptions are prefilled with default values, so you don\'t have to fill everything if you don\'t need unique names and descriptions',
+            'group_name'        => 'Group name will be displayed on the product page in option selector and in product features table. This affects only how this option is displayed on product page, nothing else',
+            'description'       => 'Option description is displayed in rhe product features table. You can add some unique description here as you need',
+          ],
+          'placeholders' => [
+            'no_options'            => 'No options found',
+            'search_options'        => 'Search option groups',
+            'searching_options'     => 'Searching option groups...',
+            'no_option_vals'        => 'No options variants found',
+            'search_option_vals'    => 'Search option variants',
+            'searching_option_vals' => 'Searching option variants...',
+            'variants_search'       => 'Search combination variants',
+            'no_variants'           => 'No variants found',
+          ],
+        ],
+        'attributes' => [
+          'label' => 'Attributes',
+          'labels' => [
+            'attribute'       => 'Attribute group',
+            'attribute_value' => 'Attribute value',
+          ],
+          'placeholders' => [
+            'no_attributes'               => 'Attributes not found',
+            'search_attributes'           => 'Search attributes',
+            'searching_attributes'        => 'Searching attributes...',
+            'no_attribute_values'         => 'Attribute values not found',
+            'search_attribute_values'     => 'Search attribute values',
+            'searching_attribute_values'  => 'Searching attribute values...',
+          ],
+          'helpers' => [
+            'label' => 'Attributes are unchangeable product features. Products can be filtered by attributes in product filter. Attributes are displayed in product features table on the product page'
+          ],
+          'buttons' => [
+            'add_attribute'       => 'Add attribute',
+            'add_attribute_value' => 'Add attribute value',
+          ],
+        ],
+        'delivery'  => [
+          'label' => 'Delivery'
+        ],
+        'inventory' => [
+          'label' => 'Inventory'
+        ],
+        'reviews' => [
+          'label' => 'Reviews',
+        ],
+        'statistics' => [
+          'label' => 'Statistics'
+        ],
       ],
-      'helpers' => [
-        'global_data'             => 'Shared across every store this product is in - editing it here changes it everywhere',
-        'global_name'             => 'Shown only in Admin panel. Used for product quick search',
-        'sku'                     => 'Shown in Admin panel and Frontend (if the corresponding store setting is enabled). Used for product quick search',
-        'is_active'               => 'Product status is set separately for every store',
-        'prices_customer_group'   => 'Select the customer group to which this price will apply',
-        'priority'                => 'If multiple prices have similar applience conditions, the higher priority price will be used',
-        'discount'                => 'Discount has priority over regular price',
-        'valid_from'              => 'The price is active from this date',
-        'valid_until'             => 'The price is active until this date',
-        'valid_quantity'          => 'Product quantity in cart to apply this price',
-        'price_name'              => 'Displayed as badge near price. Leave blenk if you don\'t need this',
-        'facet_categories'        => 'Select categories where product will be displayed. Primary category is used to build product URL',
-        'facet_manufacturers'     => 'Select manufacturers where product will be displayed. Primary manufacturer is used to display the manufacturer\'s logo and link on the product page',
-        'status'                  => 'Product status applied only in current store',
-        'facet_tags'              => 'Product tag is an additional way to group products together to show them on SEO filter page. They can be also displayed as badges on product miniature and product main image',
-        'group_title'             => 'Products can be linked to multiple stores simultaneously while having different prices, descriptions, and sets of options and attributes, and can be displayed in different categories within each store',
-      ],
-      'buttons' => [
-        'add_price_tier'          => 'Add price tier',
-        'add_attribute'           => 'Add product attribute',
-        'add_option'              => 'Add product options',
-        'add_option_value'        => 'Add option value',
-        'add_attribute_value'     => 'Add attribute value',
-        'add_tag'                 => 'Add product tag',
-        'add_category'            => 'Add category',
-        'add_manufacturer'        => 'Add manufacturer',
-        'delete_from_store'       => 'Delete from current store',
-        'delete_from_all_stores'  => 'Delete product from all stores',
-        'edit_product'            => 'Edit product'
-      ],
-      'messages' => [
-        'delete_from_store'      => 'This action will delete this product from current store, but not from other stores. All product data in current store will be deleted. Continue?',
-        'delete_from_all_stores' => 'This action will delete this product all stores. All product data in all stores will be deleted. This action is irreversible. Continue?',
-      ],
-      'errors' => [
-        'last_price_text'     => 'Product must have at least one price',
-        'no_primary_category' => 'Select at least one category and set primary category',
-        'no_categories'       => 'Create categories to add product to',
-      ]
     ],
     'categories' => [
       'navigation_label'      => 'Categories',
@@ -298,6 +383,9 @@ return [
         'admin_reply'        => 'Admin reply',
         'customer_review'    => 'Customer review',
         'store_reply_author' => 'Store reply author',
+      ],
+      'helpers' => [
+        'group_title' => 'Here you can view product reviews, edit them, or write a response to a review'
       ]
     ]
   ],
@@ -675,8 +763,8 @@ return [
         'product_card'    => 'Product card',
       ],
       'buttons' => [
-        'add_parent'      => 'Add top level item',
-        'add_child'       => 'Add nested item',
+        'add_element'     => 'Add menu item',
+        'add_between'     => 'Add between',
       ],
     ],
     'layout_editor' => [
@@ -905,7 +993,8 @@ return [
           'helpers' => [
             'prompt_settings'   => 'Create predefined prompts here. You will be able to select one of the prompts or edit it before sending the request to the AI.',
             'providers'         => 'Add an AI service provider of your choice here. You can add multiple providers and select the one that fits your needs later on all edit pages in the modal dialog.',
-            'prompt'            => 'Write the prompt for the AI model here.',
+            'prompt'            => 'Write the prompt for the AI model here',
+            'select_prompt'     => 'Select the provider and the prompt',
           ],
           'buttons' => [
             'add_prompt'        => 'Add new prompt',

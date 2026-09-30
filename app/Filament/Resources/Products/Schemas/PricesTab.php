@@ -160,11 +160,11 @@ class PricesTab
                                 FusedGroup::make([
                                     DateTimePicker::make('date_valid_from')
                                         ->native(false)
-                                        ->placeholder(__('admin.catalog.products.fields.valid_from'))
+                                        ->placeholder(__('admin.catalog.products.tabs.prices.labels.valid_from'))
                                         ->columnSpan(1),
                                     DateTimePicker::make('date_valid_until')
                                         ->native(false)
-                                        ->placeholder(__('admin.catalog.products.fields.valid_until'))
+                                        ->placeholder(__('admin.catalog.products.tabs.prices.labels.valid_until'))
                                         ->columnSpan(1),
                                 ])
                                 ->columns(2)
@@ -185,6 +185,8 @@ class PricesTab
                             ->dense(),
                     ])
                     ->addActionLabel(__('admin.catalog.products.tabs.prices.buttons.add_price_tier'))
+                    ->label(__('admin.catalog.products.tabs.prices.labels.price_tiers'))
+                    ->belowLabel(__('admin.catalog.products.tabs.prices.helpers.price_tiers'))
                     ->columns(2)
                     ->columnSpanFull()
                     ->defaultItems(1)
