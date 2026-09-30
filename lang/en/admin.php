@@ -63,8 +63,8 @@ return [
           ],
           'helpers' => [
             'global_name'   => 'Shown only in Admin panel. Used for product quick search',
-            'is_active'     => 'Product status is set separately for every store',
-            'is_available'  => 'Product availability is set separately for every store',
+            'is_active'     => 'Whether the product appears in this store\'s catalog. Product status is set separately for every store',
+            'is_available'  => 'Whether the product is available for order in this store. Product availability is set separately for every store',
           ],
         ],
         'placement' => [

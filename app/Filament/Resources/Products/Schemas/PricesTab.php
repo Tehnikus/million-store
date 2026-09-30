@@ -120,6 +120,7 @@ class PricesTab
 
                                 Select::make('customer_group_id')
                                     ->options(fn() => static::customerGroupChoices($store->id))
+                                    ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
                                     ->placeholder(__('admin.catalog.products.tabs.prices.labels.no_group'))
                                     ->label(__('admin.catalog.products.tabs.prices.labels.customer_group'))
                                     ->helperText(__('admin.catalog.products.tabs.prices.helpers.customer_group')),
@@ -129,6 +130,7 @@ class PricesTab
                                         ->numeric()
                                         // ->live()
                                         ->default(fn (Get $get): int => \count($get('../../priceTiers')))
+                                        ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
                                         ->columnSpan(1)
                                         ->label(__('admin.catalog.products.tabs.prices.labels.priority'))
                                         ->helperText(__('admin.catalog.products.tabs.prices.helpers.priority')),
@@ -136,6 +138,8 @@ class PricesTab
                                         ->numeric()
                                         ->nullable()
                                         ->columnSpan(1)
+                                        ->default(1)
+                                        ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
                                         ->label(__('admin.catalog.products.tabs.prices.labels.valid_quantity'))
                                         ->helperText(__('admin.catalog.products.tabs.prices.helpers.valid_quantity')),
                                 ])

@@ -151,13 +151,13 @@ class ProductsTable
                     ->color('danger')
                     ->requiresConfirmation()
                     ->modalHeading(__('admin.catalog.products.table.buttons.delete_from_store'))
-                    ->modalDescription(__('admin.catalog.products.messages.delete_from_store'))
+                    ->modalDescription(__('admin.catalog.products.table.messages.delete_from_store'))
                     ->tooltip(__('admin.catalog.products.table.buttons.delete_from_store')),
 
                 DeleteAction::make()
                     ->requiresConfirmation()
                     ->modalHeading(__('admin.catalog.products.table.buttons.delete_from_all_stores'))
-                    ->modalDescription(__('admin.catalog.products.messages.delete_from_all_stores'))
+                    ->modalDescription(__('admin.catalog.products.table.messages.delete_from_all_stores'))
                     ->tooltip(__('admin.catalog.products.table.buttons.delete_from_all_stores')),
             ])
             ->toolbarActions([
