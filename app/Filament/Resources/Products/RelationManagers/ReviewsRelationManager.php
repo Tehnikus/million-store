@@ -19,7 +19,7 @@ class ReviewsRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return ProductReviewForm::configure($schema);
+        return ProductReviewForm::configure($schema, $this->getOwnerRecord()->id);
     }
 
     public function table(Table $table): Table

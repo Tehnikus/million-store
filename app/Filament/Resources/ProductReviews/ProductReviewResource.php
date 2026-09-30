@@ -30,7 +30,7 @@ class ProductReviewResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return ProductReviewForm::configure($schema);
+        return ProductReviewForm::configure($schema, null);
     }
 
     public static function table(Table $table): Table

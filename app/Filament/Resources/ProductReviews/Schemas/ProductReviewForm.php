@@ -16,7 +16,7 @@ use Filament\Schemas\Schema;
 
 class ProductReviewForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Schema $schema, $productId = null): Schema
     {
         return $schema
             ->components([
@@ -30,6 +30,8 @@ class ProductReviewForm
                         // modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
                     )
                     ->getOptionLabelFromRecordUsing(fn(Product $record) => $record->global_name)
+                    ->default($productId)
+                    ->disabled(fn() => $productId !== null)
                     ->searchable()
                     ->preload()
                     ->required(),
