@@ -69,10 +69,10 @@ class PricesTab
                                     ->visible(fn(Get $get) => $get('status') !== 'is_base')
                                     ->live(onBlur:true, debounce: 500)
                                     ->skipRenderAfterStateUpdated(true)
-                                    ->prefixIcon(function(Get $get) {
+                                    ->prefix(function(Get $get) {
                                         return match ($get('status')) {
-                                            'discount_percent' => Heroicon::PercentBadge,
-                                            'discount_amount'  => Heroicon::OutlinedMinus,
+                                            'discount_percent' => '%',
+                                            'discount_amount'  => '-',
                                             default            => null,
                                         };
                                     })
@@ -133,6 +133,7 @@ class PricesTab
                                         ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
                                         ->columnSpan(1)
                                         ->label(__('admin.catalog.products.tabs.prices.labels.priority'))
+                                        ->placeholder(__('admin.catalog.products.tabs.prices.labels.priority_placeholder'))
                                         ->helperText(__('admin.catalog.products.tabs.prices.helpers.priority')),
                                     TextInput::make('valid_quantity')
                                         ->numeric()
@@ -141,6 +142,7 @@ class PricesTab
                                         ->default(1)
                                         ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
                                         ->label(__('admin.catalog.products.tabs.prices.labels.valid_quantity'))
+                                        ->placeholder(__('admin.catalog.products.tabs.prices.labels.pcs'))
                                         ->helperText(__('admin.catalog.products.tabs.prices.helpers.valid_quantity')),
                                 ])
                                 ->columns(2),
@@ -161,7 +163,7 @@ class PricesTab
 
                             ])
                             ->columns(1)
-                            ->columnSpan(1),
+                            ->columnSpan(3),
 
                         Fieldset::make('price')
                             ->label(__('admin.catalog.products.tabs.prices.labels.price_values'))
@@ -169,13 +171,13 @@ class PricesTab
                                 // Text::make('debug')->content(fn() => 'DEBUG = ' . json_encode($get('../../optionSignatures'))),
                                 ...static::priceFields($get, $currencies),
                             ])
-                            ->columnSpan(1)
+                            ->columnSpan(2)
                             ->dense(),
                     ])
                     ->addActionLabel(__('admin.catalog.products.tabs.prices.buttons.add_price_tier'))
                     ->label(__('admin.catalog.products.tabs.prices.labels.price_tiers'))
                     ->belowLabel(__('admin.catalog.products.tabs.prices.helpers.price_tiers'))
-                    ->columns(2)
+                    ->columns(5)
                     ->columnSpanFull()
                     ->defaultItems(1)
                     ->minItems(1)
