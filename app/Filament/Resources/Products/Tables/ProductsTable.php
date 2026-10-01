@@ -126,6 +126,40 @@ class ProductsTable
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label(__('admin.catalog.products.tabs.attributes.label')),
 
+                TextColumn::make('priceSummary')
+                    ->getStateUsing(fn($record) => static::renderPriceColumn($record, $defaultCurrency))
+                    ->sortable(query: function (Builder $query, string $direction) use ($defaultCurrency) {
+                        if (!$defaultCurrency) {
+                            return $query;
+                        }
+
+                        $topTierPerProduct = DB::table('product_price_tiers')
+                            ->select('*')
+                            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY priority DESC) as rn')
+                            ->where('store_id', Filament::getTenant()->id)
+                            ->whereNull('customer_group_id') // TODO add customer group filters, when ready
+                            ->where(fn ($q) => $q->whereNull('date_valid_from')->orWhere('date_valid_from', '<=', now()))
+                            ->where(fn ($q) => $q->whereNull('date_valid_until')->orWhere('date_valid_until', '>=', now()));
+
+                        $sortPrices = DB::query()
+                            ->fromSub($topTierPerProduct, 'top_tier')
+                            ->join('product_prices', 'product_prices.product_price_tier_id', '=', 'top_tier.id')
+                            ->where('top_tier.rn', 1)
+                            ->where('product_prices.currency_id', $defaultCurrency->id)
+                            ->groupBy('top_tier.product_id')
+                            ->selectRaw('top_tier.product_id, MIN(product_prices.price) as sort_price');
+
+                        return $query
+                            ->leftJoinSub($sortPrices, 'sort_prices', 'sort_prices.product_id', '=', 'products.id')
+                            ->orderBy('sort_prices.sort_price', $direction);
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->html()
+                    ->label(__('admin.catalog.products.table.columns.price'))
+                    ->placeholder('--')
+                    ->alignEnd()
+                    ->extraCellAttributes([]),
+
                 // Dates
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -177,6 +211,89 @@ class ProductsTable
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Set state of price column: display base price, discount, price name and date valud until
+     * @param mixed $record
+     * @param mixed $currency
+     * @return HtmlString|null
+     */
+    protected static function renderPriceColumn($record, ?Currency $currency): ?HtmlString
+    {
+        if (!$currency) {
+            return null;
+        }
+
+        $tiers         = $record->priceTiers->sortByDesc('priority');
+        $baseTier      = $tiers->firstWhere('is_base', true);
+        $discountTier  = $tiers->first(fn ($tier) => !$tier->is_base);
+
+        $basePrice     = static::formatPrice($baseTier, $currency);
+        $discountPrice = static::formatPrice($discountTier, $currency);
+
+        if (!$basePrice && !$discountPrice) {
+            return null;
+        }
+
+        $priceMeta = static::tierMeta($discountTier ?? $baseTier);
+
+        return new HtmlString(
+            implode('<br>&nbsp;', [
+                $priceMeta,
+                $discountPrice ? '<span style="color: var(--success-500); font-weight: 600;">' . e($discountPrice) . '</span>' : '<span>' . e($basePrice) . '</span>',
+                $discountPrice ? '<span style="text-decoration: line-through; color: var(--gray-400);">' . e($basePrice) . '</span>' : '',
+            ])
+        );
+    }
+
+    protected static function tierMeta(?ProductPriceTier $tier): string
+    {
+        if (!$tier) {
+            return '';
+        }
+
+        $name  = $tier->name[app()->getLocale()] ?? Arr::first($tier->name ?? []);
+        $until = $tier->date_valid_until
+            ? Carbon::parse($tier->date_valid_until)->translatedFormat('d.m.y')
+            : null;
+
+        $parts = array_filter([
+            $name ? e($name) : null,
+            $until ? __('admin.catalog.products.table.columns.valid_until') . ' ' . e($until) : null,
+        ]);
+
+        return $parts ? '<span style="color: var(--primary-500);">' . implode(', ', $parts) . '</span>' : '';
+    }
+
+    /**
+     * Format price to display in currency
+     * @param mixed $tier
+     * @param Currency $currency
+     * @return bool|string|null
+     */
+    protected static function formatPrice(?ProductPriceTier $tier, Currency $currency): ?string
+    {
+        if (!$tier) {
+            return null;
+        }
+
+        $amounts = $tier->prices
+            ->where('currency_id', $currency->id)
+            ->pluck('price')
+            ->filter(fn ($price) => filled($price))
+            ->map(fn ($price) => (float) $price);
+
+        if ($amounts->isEmpty()) {
+            return null;
+        }
+
+        $min = $amounts->min();
+        $max = $amounts->max();
+
+        return $min === $max
+            ? Number::currency($min, in: $currency->iso_code)
+            : Number::currency($min, in: $currency->iso_code) . ' - ' . Number::currency($max, in: $currency->iso_code);
     }
 
     protected static function renderFacetGroups(array $groups, string $valuesKey, string $color = 'success'): ?HtmlString
