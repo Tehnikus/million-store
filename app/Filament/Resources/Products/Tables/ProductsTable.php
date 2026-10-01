@@ -114,17 +114,15 @@ class ProductsTable
 
                 TextColumn::make('descriptions.options_description')
                     ->formatStateUsing(fn ($record) => static::renderFacetGroups(
-                        $record->currentDescription()?->options_description ?? [],
-                        'description',
-                    ))
+                        $record->currentDescription()?->options_description ?? [], 'description', 'success')
+                    )
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label(__('admin.catalog.products.tabs.options.label')),
 
                 TextColumn::make('descriptions.attributes_description')
                     ->formatStateUsing(fn ($record) => static::renderFacetGroups(
-                        $record->currentDescription()?->attributes_description ?? [],
-                        'description',
-                    ))
+                        $record->currentDescription()?->attributes_description ?? [], 'description', 'info')
+                    )
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label(__('admin.catalog.products.tabs.attributes.label')),
 
@@ -181,26 +179,26 @@ class ProductsTable
             ]);
     }
 
-    protected static function renderFacetGroups(array $groups, string $valuesKey): ?HtmlString
+    protected static function renderFacetGroups(array $groups, string $valuesKey, string $color = 'success'): ?HtmlString
     {
         if (empty($groups)) {
             return null;
         }
 
-        $html = collect($groups)->map(function ($group) use ($valuesKey) {
+        $html = collect($groups)->map(function ($group) use ($valuesKey, $color) {
             $groupName = e(static::localizedText($group['name'] ?? null));
 
             $values = collect($group[$valuesKey] ?? [])
                 ->map(fn ($v) => "
-                    <span class=\"inline-flex fi-color fi-color-success fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm\">"
+                    <span class=\"inline-flex fi-color fi-color-{$color} fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm\">"
                       .  e(static::localizedText($v['name'] ?? null)) . 
                     "</span>"
                 )
                 ->filter()
                 ->implode(' ');
 
-            return "<div x-tooltip=\"{content: '" . $groupName . "', theme: \$store.theme, allowHTML: false}\" >{$values}</div>";
-        })->implode('');
+            return "<span x-tooltip=\"{content: '" . $groupName . "', theme: \$store.theme, allowHTML: false}\" >{$values}</span>";
+        })->implode('<br>');
 
         return new HtmlString($html);
     }
