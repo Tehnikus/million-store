@@ -30,7 +30,7 @@ class ProductsTable
        
         $defaultCurrencyId = Currency::where('rate_default', true)->value('id');
         return $table
-            // Filter results bu current store id
+            // Filter results by current store id
             // This separates model from store_id, only filament forms know about it
             // Thus models do not depend of filament tenant context
             ->modifyQueryUsing(function (Builder $query) {
@@ -38,9 +38,7 @@ class ProductsTable
                 
                 $query
                     ->with(['descriptions' => function ($subQuery) use ($storeId) {
-                        // Get descriptions of current store only
-                        $subQuery->where('store_id', $storeId);
-
+                        $subQuery->where('store_id', $storeId); // Get descriptions of current store only
                     }])
                     // ->with(['priceTiers' => function ($subQuery) use ($storeId) {
                     //     // Get prices of current store only
@@ -90,11 +88,27 @@ class ProductsTable
                     ->searchable(isIndividual: true)
                     ->toggleable(isToggledHiddenByDefault: false),
 
-                MultilangTextColumn::make('descriptions.name')
+                MultilangTextColumn::make('productName')
                     ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name'))
-                    ->placeholder(__('admin.catalog.products.table.buttons.is_not_associated'))
+                    ->placeholder(__('admin.catalog.products.table.columns.is_not_associated'))
                     ->label(__('admin.catalog.products.table.columns.store_name'))
                     ->wrapHeader()
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $locale  = app()->getLocale();
+                        $storeId = Filament::getTenant()->id;
+
+                        $sortNames = DB::table('product_descriptions')
+                            ->where('store_id', $storeId)
+                            ->select('product_id')
+                            ->selectRaw(
+                                "COALESCE(name->>?, (SELECT value FROM jsonb_each_text(name) ORDER BY key LIMIT 1)) as sort_name",
+                                [$locale]
+                            );
+
+                        return $query
+                            ->leftJoinSub($sortNames, 'sort_names', 'sort_names.product_id', '=', 'products.id')
+                            ->orderBy('sort_names.sort_name', $direction);
+                    })
                     ->searchable(isIndividual: true)
                     ->toggleable(isToggledHiddenByDefault: false),
 
