@@ -995,6 +995,7 @@ return [
             'providers'         => 'Add an AI service provider of your choice here. You can add multiple providers and select the one that fits your needs later on all edit pages in the modal dialog.',
             'prompt'            => 'Write the prompt for the AI model here',
             'select_prompt'     => 'Select the provider and the prompt',
+            'no_settings'       => 'To use AI features first set AI provider and API key in <a href=":url" style="color: var(--primary-500); font-weight: 600; text-decoration: underline;" target="_blank">Store settings</a>',
           ],
           'buttons' => [
             'add_prompt'        => 'Add new prompt',

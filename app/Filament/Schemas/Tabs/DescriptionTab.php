@@ -198,7 +198,7 @@ class DescriptionTab
         $defaultPromptKey = $defaultOf('prompts');
 
         return Action::make('ai_action')
-            ->visible($providerOptions !== [] && $promptOptions !== [])
+            // ->visible($providerOptions !== [] && $promptOptions !== [])
             ->icon(Heroicon::OutlinedSparkles)
             ->iconSize(IconSize::Medium)
             ->color(Color::Lime)
@@ -239,7 +239,9 @@ class DescriptionTab
                         ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt'))
                         ->columnSpan(1),
                 ])
-                ->helperText(__('admin.stores.store_settings.tabs.ai_settings.helpers.select_prompt'))
+                ->helperText(fn() => empty($providerOptions) 
+                    ? new HtmlString(__('admin.stores.store_settings.tabs.ai_settings.helpers.no_settings', ['url' => \App\Filament\Pages\StoreSettings::getUrl(tenant: filament()->getTenant())])) 
+                    : __('admin.stores.store_settings.tabs.ai_settings.helpers.select_prompt'))
                 ->columns(2),
                 FusedGroup::make([
                     // Extra prompt directions
