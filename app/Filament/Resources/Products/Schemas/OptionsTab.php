@@ -32,6 +32,7 @@ class OptionsTab
                             ->preload()
                             ->live(debounce:0)
                             ->searchDebounce(200)
+                            ->reorderable()
                             ->partiallyRenderComponentsAfterStateUpdated(['combinations', 'optionGroupValues', 'priceTiers', 'description.options_description'])
                             ->afterStateUpdated(function (Get $get, Set $set, ?Model $record) use ($store) {
                                 $validValueIds = static::validOptionValueIds((array) $get('optionGroups'), $store->id);
@@ -67,7 +68,7 @@ class OptionsTab
                             ->visible(fn (Get $get) => filled($get('optionGroupValues')))
                             ->searchable()
                             ->bulkToggleable()
-                            ->columns(4)
+                            ->columns(fn(Get $get) => Option::find(Arr::first($get('optionGroups'), null, 1))->values()->count())
                             ->columnSpan(3)
                             ->live(debounce: 0)
                             ->partiallyRenderComponentsAfterStateUpdated(['description.options_description', 'priceTiers'])

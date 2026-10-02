@@ -61,14 +61,16 @@ class ProductForm
                                             ->label(__('admin.catalog.products.tabs.content.labels.is_active'))
                                             ->helperText(__('admin.catalog.products.tabs.content.helpers.is_active'))
                                             ->statePath('description.is_active')
-                                            ->onIcon(Heroicon::Play)
+                                            ->default(true)
+                                            ->onIcon(Heroicon::Play)->onColor('success')
                                             ->offIcon(Heroicon::Stop),
                                         // Product status toggle
                                         Toggle::make('is_active')
                                             ->label(__('admin.catalog.products.tabs.content.labels.is_available'))
                                             ->helperText(__('admin.catalog.products.tabs.content.helpers.is_available'))
                                             ->statePath('description.is_available')
-                                            ->onIcon(Heroicon::ShoppingCart)
+                                            ->default(true)
+                                            ->onIcon(Heroicon::ShoppingCart)->onColor('success')
                                             ->offIcon(Heroicon::XMark)
                                     ]),
                                 Tabs::make('languages')
