@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Pages;
 
 use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Filament\Resources\Products\ProductResource;
+use App\Models\Catalog\OptionValue;
 use App\Models\Catalog\ProductDescription;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
@@ -70,13 +71,19 @@ class EditProduct extends EditRecord
         $optionGroups = [];
         foreach ($signatures as $signature) {
             foreach ($signature as $groupId => $valueId) {
-                $optionGroups[$groupId][] = (string) $valueId;
+                $optionGroups[$groupId] = true;
             }
         }
 
-        $data['optionGroups']       = array_map('strval', array_keys($optionGroups));
-        $data['optionGroupValues']  = collect($optionGroups)->flatten()->unique()->values()->all();
-        $data['combinations']       = $signatures->map(fn ($s) => UpsertProduct::signatureKey($s))->values()->all();
+        $data['optionGroups'] = array_map('strval', array_keys($optionGroups));
+
+        $data['optionGroupValues'] = collect(array_keys($optionGroups))
+            ->flatMap(fn ($axisId) => array_keys(OptionValue::optionValueChoices((int) $axisId, $store->id)->all()))
+            ->unique()
+            ->values()
+            ->all();
+
+        $data['combinations'] = $signatures->map(fn ($s) => UpsertProduct::signatureKey($s))->values()->all();
 
         $priceTiers = $record->priceTiers()
             ->where('store_id', $store->id)
