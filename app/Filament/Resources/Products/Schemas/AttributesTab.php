@@ -13,12 +13,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Context;
 
 class AttributesTab
 {
@@ -42,7 +39,7 @@ class AttributesTab
                             ->searchPrompt(__('admin.catalog.products.tabs.attributes.placeholders.search_attributes'))
                             ->placeholder(__('admin.catalog.products.tabs.attributes.placeholders.search_attributes'))
                             ->searchingMessage(__('admin.catalog.products.tabs.attributes.placeholders.searching_attributes'))
-                            ->options(fn() => static::attributeChoices($store->id))
+                            ->options(fn() => Attribute::attributeChoices($store->id))
                             ->afterStateUpdated(function (Set $set, Get $get, $state, $livewire) use ($store) {
                                 $set('values_description', []);
 
@@ -96,7 +93,7 @@ class AttributesTab
                                         ->searchPrompt(__('admin.catalog.products.tabs.attributes.placeholders.search_attribute_values'))
                                         ->placeholder(__('admin.catalog.products.tabs.attributes.placeholders.search_attribute_values'))
                                         ->searchingMessage(__('admin.catalog.products.tabs.attributes.placeholders.searching_attribute_values'))
-                                        ->options(fn(Get $get) => static::attributeValueChoices($get('../../attribute_id')))
+                                        ->options(fn(Get $get) => AttributeValue::attributeValueChoices($get('../../attribute_id')))
                                         ->required()
                                         ->live()
                                         ->searchable()
@@ -137,7 +134,7 @@ class AttributesTab
                             ])
                             ->minItems(1)
                             ->default([])
-                            ->maxItems(fn(Get $get) => static::attributeValueChoices($get('attribute_id'))->count())
+                            ->maxItems(fn(Get $get) => AttributeValue::attributeValueChoices($get('attribute_id'))->count())
                             ->collapsible()
                             // ->collapsed(fn($operation) => $operation !== 'create')
                             ->itemLabel(fn(array $state): ?string => static::itemLabelText($state))
@@ -149,7 +146,7 @@ class AttributesTab
                             ->label(__('admin.catalog.attributes.fields.values'))
                     ])
                     ->defaultItems(0)
-                    ->maxItems(fn() => static::attributeChoices($store->id)->count())
+                    ->maxItems(fn() => Attribute::attributeChoices($store->id)->count())
                     ->collapsible()
                     // ->collapsed(fn($operation) => $operation !== 'create')
                     ->itemLabel(fn(array $state): ?string => static::groupItemLabel($state))
@@ -199,46 +196,6 @@ class AttributesTab
                 )->all()
             )
         ];
-    }
-
-    private static function attributeValueChoices(?int $attributeId): Collection
-    {
-        if (blank($attributeId)) {
-            return collect();
-        }
-
-        $key = "attribute_value_choices.{$attributeId}";
-
-        if (Context::has($key)) {
-            return collect(Context::get($key));
-        }
-
-        $choices = AttributeValue::query()
-            ->where('attribute_id', $attributeId)
-            ->where('is_active', true)
-            ->pluck('name', 'id');
-
-        Context::add($key, $choices->all());
-
-        return $choices;
-    }
-
-    private static function attributeChoices(int $storeId): Collection
-    {
-        $key = "attribute_choices.{$storeId}";
-
-        if (Context::has($key)) {
-            return collect(Context::get($key));
-        }
-
-        $choices = Attribute::query()
-            ->where('store_id', $storeId)
-            ->where('is_active', true)
-            ->pluck('name', 'id');
-
-        Context::add($key, $choices->all());
-
-        return $choices;
     }
 
     protected static function itemLabelText(array $state): ?string
