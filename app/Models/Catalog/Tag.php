@@ -10,6 +10,8 @@ use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Context;
 use Spatie\Translatable\HasTranslations;
 
 class Tag extends Model
@@ -93,5 +95,24 @@ class Tag extends Model
                 'slug_source' => 'name',   // Translatable field to take converted image names from. Will be slugged
             ],
         ];
+    }
+
+    // Cache option list for select dropdowns with Octane support
+    protected static function tagChoices(int $storeId): Collection
+    {
+        $key = "tag_choices.{$storeId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = self::query()
+            ->where('store_id', $storeId)
+            ->get()
+            ->mapWithKeys(fn (self $model) => [$model->id => $model->name]);
+
+        Context::add($key, $choices->all());
+
+        return $choices;
     }
 }

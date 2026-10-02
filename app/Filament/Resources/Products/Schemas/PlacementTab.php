@@ -2,24 +2,11 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
-use App\Domain\Catalog\FacetType;
-use App\Models\Catalog\Category;
-use App\Models\Catalog\FacetIndex;
-use App\Models\Catalog\Manufacturer;
-use App\Models\Catalog\Product;
-use App\Models\Catalog\Tag;
 use Closure;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Callout;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
+use App\Domain\Catalog\FacetType;
+use App\Models\Catalog\{Category, FacetIndex, Manufacturer, Tag};
+use Filament\Forms\Components\{Hidden, Repeater, Repeater\TableColumn, Select, TextInput, Toggle};
+use Filament\Schemas\Components\{Callout, Section, Tabs\Tab, Utilities\Get, Utilities\Set};
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Collection;
 
@@ -36,7 +23,6 @@ class PlacementTab
         );
 
         return Tab::make('placement')
-            // ->badge(fn(?Product $record) => $record ? FacetIndex::where('product_id', $record->id)->where('store_id', $store->id)->whereIn('facet_type_id', [FacetType::Category, FacetType::Manufacturer, FacetType::Tag])->count() : null)
             ->badge(fn (Get $get) => \count($get('facet_categories') ?? []) + \count($get('facet_manufacturers') ?? []) + \count($get('facet_tags') ?? []) ?: null)
             ->schema([
 
@@ -53,7 +39,7 @@ class PlacementTab
                             ->schema([
                                 Select::make('facet_value_id')
                                     ->label(__('admin.catalog.products.tabs.placement.labels.category'))
-                                    ->options(fn() => static::categoryChoices($store->id))
+                                    ->options(fn() => Category::categoryChoices($store->id))
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -89,7 +75,7 @@ class PlacementTab
                             ->minItems(1)
                             ->defaultItems(1)
                             ->reorderable(false)
-                            ->maxItems(static::categoryChoices($store->id)->count())
+                            ->maxItems(Category::categoryChoices($store->id)->count())
                             ->label(__('admin.catalog.products.tabs.placement.labels.categories'))
                             ->hiddenLabel()
                             ->compact()
@@ -98,7 +84,7 @@ class PlacementTab
                             ->partiallyRenderComponentsAfterStateUpdated(['facet_categories']),
                         Callout::make()
                             ->visible(function () use ($store) {
-                                return static::categoryChoices($store->id)->count() == 0;
+                                return Category::categoryChoices($store->id)->count() == 0;
                             })
                             ->description(__('admin.catalog.products.tabs.placement.errors.no_categories'))
                             ->danger()
@@ -118,7 +104,7 @@ class PlacementTab
                             ->schema([
                                 Select::make('facet_value_id')
                                     ->label(__('admin.catalog.products.tabs.placement.labels.manufacturers'))
-                                    ->options(fn() => static::manufacturerChoices($store->id))
+                                    ->options(fn() => Manufacturer::manufacturerChoices($store->id))
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -145,19 +131,20 @@ class PlacementTab
                             ])
                             ->defaultItems(0)
                             ->reorderable(false)
-                            ->maxItems(static::manufacturerChoices($store->id)->count())
+                            ->maxItems(Manufacturer::manufacturerChoices($store->id)->count())
                             ->addActionLabel(__('admin.catalog.products.tabs.placement.buttons.add_manufacturer'))
                             ->label(__('admin.catalog.products.tabs.placement.labels.manufacturers'))
                             ->hiddenLabel()
                             ->compact()
                             ->visible(function () use ($store) {
-                                return static::manufacturerChoices($store->id)->count() > 0;
+                                return Manufacturer::manufacturerChoices($store->id)->count() > 0;
                             })
                             ->live()
                             ->afterStateUpdatedJs($placementBadgeJs)
                             ->partiallyRenderComponentsAfterStateUpdated(['facet_manufacturers']),
                     ]),
-
+                
+                // Tags part
                 Section::make(__('admin.catalog.products.tabs.placement.labels.product_tags'))
                     ->description(__('admin.catalog.products.tabs.placement.helpers.tags'))
                     ->schema([
@@ -169,7 +156,7 @@ class PlacementTab
                             ->schema([
                                 Select::make('facet_value_id')
                                     ->label(__('admin.catalog.products.tabs.placement.labels.tag'))
-                                    ->options(fn() => static::tagChoices($store->id))
+                                    ->options(fn() => Tag::tagChoices($store->id))
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -190,74 +177,17 @@ class PlacementTab
                             ->reorderable(false)
                             ->addActionLabel(__('admin.catalog.products.tabs.placement.buttons.add_tag'))
                             ->defaultItems(0)
-                            ->maxItems(static::tagChoices($store->id)->count())
+                            ->maxItems(Tag::tagChoices($store->id)->count())
                             ->label(__('admin.catalog.products.tabs.placement.labels.product_tags'))
                             ->hiddenLabel()
                             ->compact()
                             ->visible(function () use ($store) {
-                                return static::tagChoices($store->id)->count() > 0;
+                                return Tag::tagChoices($store->id)->count() > 0;
                             }),
                     ])
             ]);
     }
 
-    // Cache option list for single request or multiple requests if Octane is used
-    protected static function categoryChoices(int $storeId): Collection
-    {
-        $key = "category_choices.{$storeId}";
-
-        if (Context::has($key)) {
-            return collect(Context::get($key));
-        }
-
-        $choices = Category::query()
-            ->where('store_id', $storeId)
-            ->get()
-            ->mapWithKeys(fn (Category $category) => [$category->id => $category->name]);
-
-        Context::add($key, $choices->all());
-
-        return $choices;
-    }
-
-    // Cache option list for single request or multiple requests if Octane is used
-    protected static function manufacturerChoices(int $storeId): Collection
-    {
-        $key = "manufacturer_choices.{$storeId}";
-
-        if (Context::has($key)) {
-            return collect(Context::get($key));
-        }
-
-        $choices = Manufacturer::query()
-            ->where('store_id', $storeId)
-            ->get()
-            ->mapWithKeys(fn (Manufacturer $manufacturer) => [$manufacturer->id => $manufacturer->name]);
-
-        Context::add($key, $choices->all());
-
-        return $choices;
-    }
-
-    // Cache option list for single request or multiple requests if Octane is used
-    protected static function tagChoices(int $storeId): Collection
-    {
-        $key = "tag_choices.{$storeId}";
-
-        if (Context::has($key)) {
-            return collect(Context::get($key));
-        }
-
-        $choices = Tag::query()
-            ->where('store_id', $storeId)
-            ->get()
-            ->mapWithKeys(fn (Tag $tag) => [$tag->id => $tag->name]);
-
-        Context::add($key, $choices->all());
-
-        return $choices;
-    }
-    
     // Render badge by JS
     protected static function badgeUpdateJs(string $countExpression, string $color = 'primary'): string
     {

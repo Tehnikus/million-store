@@ -56,26 +56,47 @@ class Product extends Model
         return $this->descriptions->first();
     }
 
-    // Category form data
+    // Categories facets
+    // User to fill product form and to filter product table
     // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
+    // See app\Filament\Resources\Products\Tables\ProductsTable.php -> configure()->filters([...])
     public function categoryFacets(): HasMany
     {
-        return $this->hasMany(FacetIndex::class)
-            ->where('facet_type_id', FacetType::Category->value);
+        return $this->hasMany(FacetIndex::class)->where('facet_type_id', FacetType::Category->value);
     }
-    // Manufacturer form data
+    // Manufacturers facets
+    // User to fill product form and to filter product table
     // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
+    // See app\Filament\Resources\Products\Tables\ProductsTable.php -> configure()->filters([...])
     public function manufacturerFacets(): HasMany
     {
-        return $this->hasMany(FacetIndex::class)
-            ->where('facet_type_id', FacetType::Manufacturer->value);
+        return $this->hasMany(FacetIndex::class)->where('facet_type_id', FacetType::Manufacturer->value);
     }
-    // Tag form data
+    // Tags facets
+    // User to fill product form and to filter product table
     // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
+    // See app\Filament\Resources\Products\Tables\ProductsTable.php -> configure()->filters([...])
     public function tagFacets(): HasMany
     {
-        return $this->hasMany(FacetIndex::class)
-            ->where('facet_type_id', FacetType::Tag->value);
+        return $this->hasMany(FacetIndex::class)->where('facet_type_id', FacetType::Tag->value);
+    }
+
+    // Options factes
+    // User to fill product form and to filter product table
+    // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
+    // See app\Filament\Resources\Products\Tables\ProductsTable.php -> configure()->filters([...])
+    public function optionFacets(): HasMany
+    {
+        return $this->hasMany(FacetIndex::class)->where('facet_type_id', FacetType::OptionValue->value);
+    }
+
+    // Attributes facets
+    // User to fill product form and to filter product table
+    // See app\Filament\Resources\Products\Pages\EditProduct.php -> mutateFormDataBeforeFill()
+    // See app\Filament\Resources\Products\Tables\ProductsTable.php -> configure()->filters([...])
+    public function attributeFacets(): HasMany
+    {
+        return $this->hasMany(FacetIndex::class)->where('facet_type_id', FacetType::AttributeValue->value);
     }
 
     // // Reverse category relation for ManageCategoryProducts

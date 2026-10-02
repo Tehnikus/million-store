@@ -46,7 +46,7 @@ class AttributesTable
                             return 'warning';
                         }
 
-                        return 'success';
+                        return 'info';
                     }),
 
                 ToggleColumn::make('is_active')

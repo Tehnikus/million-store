@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Collection;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
 use App\Domain\Media\Concerns\HasProcessedImages;
@@ -121,5 +123,24 @@ class Manufacturer extends Model
                 'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
             ],
         ];
+    }
+
+    // Cache option list for select dropdowns with Octane support
+    protected static function manufacturerChoices(int $storeId): Collection
+    {
+        $key = "manufacturer_choices.{$storeId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = self::query()
+            ->where('store_id', $storeId)
+            ->get()
+            ->mapWithKeys(fn (self $model) => [$model->id => $model->name]);
+
+        Context::add($key, $choices->all());
+
+        return $choices;
     }
 }

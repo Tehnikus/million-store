@@ -8,6 +8,8 @@ use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Context;
 use Spatie\Translatable\HasTranslations;
 
 class OptionValue extends Model
@@ -59,8 +61,33 @@ class OptionValue extends Model
     //     return [
     //         'images' => [
     //             'type'        => 'option',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-    //             'slug_source' => 'name',        // Translatable field to take converted image names from. Will be slugged
+    //             'slug_source' => 'name',      // Translatable field to take converted image names from. Will be slugged
     //         ],
     //     ];
     // }
+
+        // Cache option list for select dropdowns with Octane support
+    protected static function optionValueChoices(?int $optionId, ?int $storeId): Collection
+    {
+        if (blank($optionId) || blank($storeId)) {
+            return collect();
+        }
+
+        $key = "option_value_choices.{$optionId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = self::query()
+            ->where('option_id', $optionId)
+            ->where('store_id', $storeId)
+            ->where('is_active', true)
+            ->get()
+            ->mapWithKeys(fn (self $model) => [$model->id => $model->name]);
+
+        Context::add($key, $choices->all());
+
+        return $choices;
+    }
 }

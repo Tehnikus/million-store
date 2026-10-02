@@ -2,25 +2,14 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use Arr;
 use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Models\Customer\CustomerGroup;
-use Arr;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ToggleButtons;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\FusedGroup;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\{DateTimePicker, Repeater, Select, TextInput, ToggleButtons};
+use Filament\Schemas\Components\{Fieldset, FusedGroup, Group, Tabs\Tab, Utilities\Get};
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Context;
-use Illuminate\Support\HtmlString;
-use Illuminate\Support\Number;
+use Illuminate\Support\{Collection, Facades\Context, HtmlString, Number};
 
 class PricesTab
 {
@@ -50,7 +39,6 @@ class PricesTab
                                     ])
                                     ->default('is_base')
                                     ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
-                                    // ->fullWidth()
                                     ->required()
                                     ->grouped()
                                     ->live()
@@ -263,7 +251,7 @@ class PricesTab
     {
         $assignments = $comboKeys
             ->reject(fn ($key) => $key === $currentComboKey)
-            ->map(fn ($key) => "\$set('price.{$key}.{$currencyId}', value);")
+            ->map(fn (string $key) => "\$set('price.{$key}.{$currencyId}', value);")
             ->implode("\n");
 
         return <<<JS

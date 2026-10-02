@@ -6,6 +6,8 @@ use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Context;
 use Spatie\Translatable\HasTranslations;
 
 class Option extends Model
@@ -38,5 +40,25 @@ class Option extends Model
     public function values(): HasMany
     {
         return $this->hasMany(OptionValue::class);
+    }
+
+    // Cache option list for select dropdowns with Octane support
+    protected static function optionChoices(int $storeId): Collection
+    {
+        $key = "option_choices.{$storeId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = self::query()
+            ->where('store_id', $storeId)
+            ->where('is_active', true)
+            ->get()
+            ->mapWithKeys(fn (self $model) => [$model->id => $model->name]);
+
+        Context::add($key, $choices->all());
+
+        return $choices;
     }
 }

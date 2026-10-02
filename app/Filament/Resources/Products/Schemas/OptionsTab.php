@@ -3,22 +3,10 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Domain\Catalog\Actions\UpsertProduct;
-use App\Models\Catalog\Option;
-use App\Models\Catalog\OptionValue;
+use App\Models\Catalog\{Option, OptionValue};
 use Arr;
-use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\FusedGroup;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
+use Filament\Forms\Components\{CheckboxList, Hidden, Repeater, RichEditor, Select, TextInput};
+use Filament\Schemas\Components\{Fieldset, FusedGroup, Group, Section, Tabs\Tab, Utilities\Get, Utilities\Set};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
@@ -42,11 +30,11 @@ class OptionsTab
                             ->placeholder(__('admin.catalog.products.tabs.options.placeholders.search_options'))
                             ->searchingMessage(__('admin.catalog.products.tabs.options.placeholders.searching_options'))
                             ->multiple()
-                            ->options(fn() => static::optionChoices($store->id))
+                            ->options(fn() => Option::optionChoices($store->id))
                             ->preload()
                             ->live(debounce:0)
                             ->searchDebounce(200)
-                            ->partiallyRenderComponentsAfterStateUpdated(['optionGroupValues', 'priceTiers', 'description.options_description'])
+                            ->partiallyRenderComponentsAfterStateUpdated(['combinations', 'optionGroupValues', 'priceTiers', 'description.options_description'])
                             ->afterStateUpdated(function (Get $get, Set $set) use ($store) {
                                 $validValueIds = static::validOptionValueIds((array) $get('optionGroups'), $store->id);
                                 $set('optionGroupValues', array_values(array_intersect((array) $get('optionGroupValues'), $validValueIds)));
@@ -74,13 +62,14 @@ class OptionsTab
                             ->searchPrompt(__('admin.catalog.products.tabs.options.placeholders.variants_search'))
                             ->searchDebounce(0)
                             ->options(fn(Get $get) => static::generateCombinations(
-                                static::optionValuesFromFlat((array) $get('optionGroups'), (array) $get('optionGroupValues'), $store->id)
+                                static::optionValuesFromFlat((array) $get('optionGroups'), (array) $get('optionGroupValues'), $store->id),
+                                $store->id
                             ))
                             ->visible(fn (Get $get) => filled($get('optionGroupValues')))
                             ->searchable()
                             ->bulkToggleable()
                             ->columns(4)
-                            ->columnSpanFull()
+                            ->columnSpan(3)
                             ->live(debounce: 0)
                             ->partiallyRenderComponentsAfterStateUpdated(['description.options_description', 'priceTiers'])
                             ->afterStateUpdated(fn(Get $get, Set $set, ?Model $record) => static::syncDescriptions((array) $get('combinations'), $get, $set, $record, $store->id))
@@ -135,12 +124,12 @@ class OptionsTab
 
     protected static function valuesForOptionGroups(array $axisIds, int $storeId): array
     {
-        $axisNames = static::optionChoices($storeId);
+        $axisNames = Option::optionChoices($storeId);
 
         return collect($axisIds)
             ->map(fn ($id) => (int) $id)
             ->mapWithKeys(fn ($axisId) => [
-                $axisNames->get($axisId, "#{$axisId}") => static::optionValueChoices($axisId)->all(),
+                $axisNames->get($axisId, "#{$axisId}") => OptionValue::optionValueChoices($axisId, $storeId)->all(),
             ])
             ->all();
     }
@@ -149,7 +138,7 @@ class OptionsTab
     {
         return collect($axisIds)
             ->map(fn ($id) => (int) $id)
-            ->flatMap(fn ($axisId) => array_keys(static::optionValueChoices($axisId)->all()))
+            ->flatMap(fn ($axisId) => array_keys(OptionValue::optionValueChoices($axisId, $storeId)->all()))
             ->all();
     }
 
@@ -167,7 +156,7 @@ class OptionsTab
         return collect($axisIds)
             ->map(fn ($id) => (int) $id)
             ->mapWithKeys(fn ($axisId) => [
-                $axisId => array_values(array_intersect($valueIds, array_keys(static::optionValueChoices($axisId)->all()))),
+                $axisId => array_values(array_intersect($valueIds, array_keys(OptionValue::optionValueChoices($axisId, $storeId)->all()))),
             ])
             ->filter()
             ->all();
@@ -178,7 +167,7 @@ class OptionsTab
      * @param array $axisValues
      * @return string[]
      */
-    protected static function generateCombinations(array $axisValues): array
+    protected static function generateCombinations(array $axisValues, $storeId): array
     {
         $optionGroups = collect($axisValues)
             ->map(fn ($ids) => array_map('intval', (array) $ids))
@@ -195,7 +184,7 @@ class OptionsTab
                 ), collect([[]]))
             ->mapWithKeys(fn ($signature) => [
                 UpsertProduct::signatureKey($signature) => collect($signature)
-                    ->map(fn ($valueId, $axisId) => static::optionValueChoices((int) $axisId)->get($valueId, "#{$valueId}"))
+                    ->map(fn ($valueId, $axisId) => OptionValue::optionValueChoices((int) $axisId, $storeId)->get($valueId, "#{$valueId}"))
                     ->implode(' + '),
             ])
             ->all();
@@ -213,7 +202,7 @@ class OptionsTab
     protected static function refreshCombinationCheckboxes(Get $get, Set $set, ?Model $record, int $storeId): void
     {
         $optionGroups = static::optionValuesFromFlat((array) $get('optionGroups'), (array) $get('optionGroupValues'), $storeId);
-        $valid        = array_keys(static::generateCombinations($optionGroups));
+        $valid        = array_keys(static::generateCombinations($optionGroups, $storeId));
         $combinations = array_values(array_intersect((array) $get('combinations'), $valid));
         $set('combinations', $combinations);
 
@@ -345,56 +334,6 @@ class OptionsTab
                 )->all()
             )
         ];
-    }
-
-    /**
-     * Cached list ov option values names
-     * @param mixed $optionId
-     * @return Collection<int|string, mixed>|Collection<TKey, TValue>|mixed
-     */
-    protected static function optionValueChoices(?int $optionId): Collection
-    {
-        if (blank($optionId)) {
-            return collect();
-        }
-
-        $key = "option_value_choices.{$optionId}";
-
-        if (Context::has($key)) {
-            return collect(Context::get($key));
-        }
-
-        $choices = OptionValue::query()
-            ->where('option_id', $optionId)
-            ->where('is_active', true)
-            ->pluck('name', 'id');
-
-        Context::add($key, $choices->all());
-
-        return $choices;
-    }
-
-    /**
-     * Cached list of option groups names
-     * @param int $storeId
-     * @return Collection<int|string, mixed>|Collection<TKey, TValue>|mixed
-     */
-    protected static function optionChoices(int $storeId): Collection
-    {
-        $key = "option_choices.{$storeId}";
-
-        if (Context::has($key)) {
-            return collect(Context::get($key));
-        }
-
-        $choices = Option::query()
-            ->where('store_id', $storeId)
-            ->where('is_active', true)
-            ->pluck('name', 'id');
-
-        Context::add($key, $choices->all());
-
-        return $choices;
     }
 
     // Single option item label for option descriptions repeater
