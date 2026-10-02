@@ -31,7 +31,7 @@ class Customer extends Model
         'marketing_opt_in',
         'is_approved',
         'is_anonymized',
-        'anonymized_at',
+        'date_anonymized_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -76,7 +76,7 @@ class Customer extends Model
             'phone'             => null,
             'company_name'      => null,
             'vat_number'        => null,
-            'anonymized_at'     => now(),
+            'date_anonymized_at'=> now(),
             'password'          => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(40)),
             'remember_token'    => null,
             'wishlist'          => '{}',

@@ -26,7 +26,7 @@ class EditCustomer extends EditRecord
                 ->modalHeading(__('admin.customers.customer.messages.anonymize_title'))
                 ->modalDescription(__('admin.customers.customer.messages.anonymize_description'))
                 ->modalSubmitActionLabel(__('admin.customers.customer.messages.anonymize_confirm'))
-                ->visible(fn () => is_null($this->record->anonymized_at))
+                ->visible(fn () => is_null($this->record->date_anonymized_at))
                 ->action(function () {
                     // Anonymize data
                     $this->record->anonymize();

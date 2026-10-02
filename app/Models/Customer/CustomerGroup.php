@@ -6,6 +6,7 @@ use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 class CustomerGroup extends Model
@@ -45,8 +46,15 @@ class CustomerGroup extends Model
         return $this->belongsTo(Store::class);
     }
 
-    public function customer(): BelongsToMany
+    // TODO Not needed?
+    // public function customer(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Customer::class);
+    // }
+
+    // Relation for tabs in app\Filament\Resources\Customers\Pages\ListCustomers.php
+    public function customers(): HasMany
     {
-        return $this->belongsToMany(Customer::class);
+        return $this->hasMany(Customer::class);
     }
 }

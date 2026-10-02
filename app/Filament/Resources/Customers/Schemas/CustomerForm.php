@@ -32,10 +32,12 @@ class CustomerForm
     public static function configure(Schema $schema): Schema
     {
         // Get checkout fields store settings
-        $storeId            = Filament::getTenant()->id;
-        $checkoutSettings   = StoreSettings::where('store_id', $storeId)->value('checkout_settings') ?? [];
-        $checkoutFields     = $checkoutSettings['checkout_fields'] ?? [];
-        $customFields       = $checkoutSettings['custom_fields'] ?? [];
+        $store = Filament::getTenant();
+        $store->load(['storeSettings', 'storeLanguages', 'storeCurrencies', 'storeCountries']);
+        $storeId            = $store->id;
+        $storeSettings      = $store->storeSettings->toArray() ?? [];
+        $checkoutFields     = $storeSettings['checkout_fields'] ?? [];
+        $customFields       = $storeSettings['custom_fields'] ?? [];
 
         return $schema
             ->components([
@@ -186,10 +188,10 @@ class CustomerForm
                             ->dehydrated(false)
                             ->disabled()
                             ->label(__('admin.customers.customer.fields.gdpr_consent_at')),
-                        DateTimePicker::make('anonymized_at')
+                        DateTimePicker::make('date_anonymized_at')
                             ->dehydrated(false)
                             ->disabled()
-                            ->label(__('admin.customers.customer.fields.anonymized_at')),
+                            ->label(__('admin.customers.customer.fields.date_anonymized_at')),
                     ]),
 
             ])

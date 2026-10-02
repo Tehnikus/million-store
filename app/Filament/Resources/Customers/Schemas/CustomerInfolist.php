@@ -39,7 +39,7 @@ class CustomerInfolist
                     ->placeholder('-'),
                 IconEntry::make('marketing_opt_in')
                     ->boolean(),
-                TextEntry::make('anonymized_at')
+                TextEntry::make('date_anonymized_at')
                     ->dateTime()
                     ->placeholder('-'),
                 TextEntry::make('deleted_at')

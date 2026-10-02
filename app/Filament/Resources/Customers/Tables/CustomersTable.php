@@ -31,6 +31,7 @@ class CustomersTable
 {
     public static function configure(Table $table): Table
     {
+        $store = Filament::getTenant();
         return $table
             ->splitSearchTerms(false)
             ->searchDebounce('250ms')
@@ -73,12 +74,12 @@ class CustomersTable
                     ->alignment(Alignment::Center)
                     ->label(__('admin.customers.customer.fields.gdpr_consent_at')),
 
-                TextColumn::make('anonymized_at')
+                TextColumn::make('date_anonymized_at')
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->alignment(Alignment::Center)
-                    ->label(__('admin.customers.customer.fields.anonymized_at')),
+                    ->label(__('admin.customers.customer.fields.date_anonymized_at')),
                 TextColumn::make('deleted_at')
                     ->date()
                     ->sortable()
@@ -113,11 +114,7 @@ class CustomersTable
 
                 SelectFilter::make('locale')
                     ->label(__('admin.customers.customer.fields.locale'))
-                    ->options(fn() => Filament::getTenant()
-                        ->languages()
-                        ->wherePivot('is_active', true)
-                        ->get()
-                        ->pluck('name', 'locale')),
+                    ->options(fn() => $store->activeLanguages()->pluck('name', 'locale')),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -132,7 +129,7 @@ class CustomersTable
                     ->modalHeading(__('admin.customers.customer.messages.anonymize_title'))
                     ->modalDescription(__('admin.customers.customer.messages.anonymize_description'))
                     ->modalSubmitActionLabel(__('admin.customers.customer.messages.anonymize_confirm'))
-                    ->visible(fn (Customer $record) => is_null($record->anonymized_at))
+                    ->visible(fn (Customer $record) => is_null($record?->date_anonymized_at))
                     ->action(function (Customer $record) {
                         $record->anonymize();
                     })
