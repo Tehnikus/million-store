@@ -150,6 +150,9 @@ return [
             'dates_valid'       => 'dates valid',
             'from_qty'          => 'from :qty pcs'
           ],
+          'errors' => [
+            'exactly_one_base' => 'The product must have base price'
+          ],
         ],
         'options' => [
           'label' => 'Options',

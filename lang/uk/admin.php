@@ -150,6 +150,9 @@ return [
             'dates_valid'       => 'дати дії',
             'from_qty'          => 'від :qty шт.'
           ],
+          'errors' => [
+            'exactly_one_base' => 'У товара має бути базова ціна'
+          ]
         ],
         'options' => [
           'label' => 'Опції',
