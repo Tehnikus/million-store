@@ -99,6 +99,7 @@ class EditProduct extends EditRecord
                 }
 
                 return [
+                    'id'                => $tier->id,
                     'customer_group_id' => $tier->customer_group_id,
                     'is_base'        => $tier->is_base,
                     'status'          => match (true) {

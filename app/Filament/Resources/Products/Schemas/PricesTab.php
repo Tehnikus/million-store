@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Models\Catalog\ProductPrice;
 use Arr;
 use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Models\Customer\CustomerGroup;
@@ -211,21 +212,24 @@ class PricesTab
 
     protected static function priceFields(Get $get, $currencies): array
     {
-        $defaultCurrencyId  = $currencies->firstWhere('rate_default', true)?->id;
-        $combinations       = collect(static::liveCombinations($get));
-        $comboKeys          = $combinations->keys();
+        $defaultCurrencyId = $currencies->firstWhere('rate_default', true)?->id;
+        $combinations      = collect(static::liveCombinations($get));
+        $comboKeys         = $combinations->keys();
+        $savedPrices       = static::savedTierPrices($get('id'));
+
         return $combinations->map(fn ($combo, $comboKey) =>
-                FusedGroup::make(
-                    collect($currencies)->map(fn ($currency) =>
-                        TextInput::make("price.{$comboKey}.{$currency->id}")
-                            ->numeric()
-                            ->required()
-                            ->prefix($currency->sign)
-                            ->label(__('admin.catalog.products.tabs.prices.labels.price_input', ['currency' => $currency->name]))
-                            ->hiddenLabel()
-                            ->placeholder($currency->name)
-                            ->skipRenderAfterStateUpdated(true)
-                            ->suffixActions([
+            FusedGroup::make(
+                collect($currencies)->map(fn ($currency) =>
+                    TextInput::make("price.{$comboKey}.{$currency->id}")
+                        ->numeric()
+                        ->required()
+                        ->default($savedPrices[$comboKey][$currency->id] ?? null)
+                        ->prefix($currency->sign)
+                        ->label(__('admin.catalog.products.tabs.prices.labels.price_input', ['currency' => $currency->name]))
+                        ->hiddenLabel()
+                        ->placeholder($currency->name)
+                        ->skipRenderAfterStateUpdated(true)
+                        ->suffixActions([
                                 Action::make(__('admin.catalog.products.tabs.prices.buttons.exchange_rate'))
                                     ->icon(Heroicon::OutlinedCalculator)
                                     ->actionJs(<<<JS
@@ -245,6 +249,31 @@ class PricesTab
                     )->toArray()
                 )->label($combo['label'])
             )->toArray();
+    }
+
+    protected static function savedTierPrices(?int $tierId): array
+    {
+        if (!$tierId) {
+            return [];
+        }
+
+        $key = __METHOD__ . ".{$tierId}";
+
+        if (Context::has($key)) {
+            return Context::get($key);
+        }
+
+        $grid = ProductPrice::where('product_price_tier_id', $tierId)
+            ->get()
+            ->reduce(function (array $grid, $price) {
+                $comboKey = $price->option_signature ? UpsertProduct::signatureKey($price->option_signature) : 'base';
+                $grid[$comboKey][$price->currency_id] = (string) $price->price;
+                return $grid;
+            }, []);
+
+        Context::add($key, $grid);
+
+        return $grid;
     }
 
     protected static function fillAllCombinationsJs(Collection $comboKeys, string $currentComboKey, $currencyId): string
