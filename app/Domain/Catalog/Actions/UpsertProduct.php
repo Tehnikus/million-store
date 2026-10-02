@@ -80,6 +80,14 @@ class UpsertProduct
             $data['description']['primary_manufacturer_id'] = collect($data['facet_manufacturers'])->firstWhere('is_primary', true)['facet_value_id'] ?? null;
         }
 
+        if (!array_key_exists('options_description', $data['description'])) {
+            // Reset options descriptions if they were deleted. Otherwise non-existant array key is not written and product_descriptions.options_description is not reset
+            $data['description']['options_description'] = [];
+        }
+        if (!array_key_exists('attributes_description', $data)) {
+            // Reset attributes descriptions if they were deleted. Otherwise non-existant array key is not written and product_descriptions.attributes_description is not reset
+            $data['description']['attributes_description'] = [];
+        }
 
         // Update produt data in single transaction
         return DB::transaction(function () use ($data, $storeId, $categoryFacets, $manufacturerFacets, $tagFacets, $optionFacets, $attributeFacets, $optionSignatures, $priceTiers, $comboSignatures) {
