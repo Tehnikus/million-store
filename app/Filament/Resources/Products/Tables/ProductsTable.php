@@ -2,74 +2,78 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use Arr;
+use Number;
 use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Support\AdminMenu\NavigationItem;
-use App\Filament\Support\Columns\ConversionImageColumn;
-use App\Filament\Support\Columns\MultilangTextColumn;
-use App\Models\Catalog\Product;
-use App\Models\Catalog\ProductDescription;
+use App\Filament\Support\Columns\{ConversionImageColumn, MultilangTextColumn};
+use App\Models\Catalog\{Product, ProductDescription, Category, Manufacturer, Option, OptionValue, Tag, ProductPriceTier};
 use App\Models\Global\Currency;
-use Arr;
-use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
+use Filament\Actions\{Action, BulkActionGroup, DeleteBulkAction, EditAction, DeleteAction};
 use Filament\Facades\Filament;
+use Filament\QueryBuilder\Constraints\BooleanConstraint;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\SelectConstraint;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\{Carbon, Collection, HtmlString, Facades\DB, Facades\Context};
 
-use Illuminate\Support\HtmlString;
 
 class ProductsTable
 {
     public static function configure(Table $table): Table
     {
        
-        $defaultCurrencyId = Currency::where('rate_default', true)->value('id');
+        $defaultCurrency = Currency::where('rate_default', true)->first();
+        $store = Filament::getTenant();
         return $table
             // Filter results by current store id
             // This separates model from store_id, only filament forms know about it
             // Thus models do not depend of filament tenant context
-            ->modifyQueryUsing(function (Builder $query) {
-                $storeId =  Filament::getTenant()->id;
+            ->modifyQueryUsing(function (Builder $query) use ($store) {
+                $storeId =  $store->id;
                 
                 $query
                     ->with(['descriptions' => function ($subQuery) use ($storeId) {
                         $subQuery->where('store_id', $storeId); // Get descriptions of current store only
                     }])
-                    // ->with(['priceTiers' => function ($subQuery) use ($storeId) {
-                    //     // Get prices of current store only
-                    //     $subQuery
-                    //         ->where('store_id', $storeId)
-                    //         ->whereNull('customer_group_id') // Customer group TODO
-                    //         ->where(function ($q) {
-                    //             $q->whereNull('valid_from')->orWhere('valid_from', '<=', now());
-                    //         })
-                    //         ->where(function ($q) {
-                    //             $q->whereNull('valid_until')->orWhere('valid_until', '>=', now());
-                    //         })
-                    //         ->orderByDesc('priority')
-                    //         ->with('prices'); // Join all tier prices
-                    // }])
-                ;
+                    ->with(['priceTiers' => function ($subQuery) use ($storeId) {
+                        // Get prices of current store only
+                        $subQuery
+                            ->where('store_id', $storeId)
+                            ->whereNull('customer_group_id') // Customer group TODO
+                            ->where(function ($q) {
+                                $q->whereNull('date_valid_from')->orWhere('date_valid_from', '<=', now());
+                            })
+                            ->where(function ($q) {
+                                $q->whereNull('date_valid_until')->orWhere('date_valid_until', '>=', now());
+                            })
+                            // ->orderByDesc('priority')
+                            ->with('prices'); // Join all tier prices
+                    }]);
             })
-            ->searchUsing(function (Builder $query, $search): Builder {
+            ->searchUsing(function (Builder $query, $search) use ($store): Builder {
                 if (filled($search)) {
                     $query->whereIn(
                         'products.id',
-                        ProductSearch::query($search, Filament::getTenant()->id)->pluck('id'),
+                        ProductSearch::query($search, $store->id)->pluck('id'),
                     );
                 }
 
                 return $query;
             })
-            ->searchDebounce('250ms')
+            ->searchDebounce('100ms')
             ->emptyStateIcon(NavigationItem::Products->icon())
             ->emptyStateHeading(__('admin.catalog.products.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.products.table.messages.empty_state_message'))
+            // ->recordClasses(fn (Model $record) => match ($record->currentDescription()?->is_active) {
+            //     false => 'opacity-50',
+            //     true => 'border-s-2 border-green-500',
+            //     default => null,
+            // })
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -177,8 +181,44 @@ class ProductsTable
                     ->label(__('admin.catalog.products.table.columns.updated_at')),
             ])
             ->filters([
-                //
-            ])
+                QueryBuilder::make()
+                    // ->constraintPickerColumns(5)
+                    // ->constraintPickerWidth('2xl')
+                    ->constraints([
+                        BooleanConstraint::make('descriptions.is_active')
+                            ->label(__('admin.catalog.products.table.filters.is_active'))
+                            ->icon(Heroicon::Play),
+                        BooleanConstraint::make('descriptions.is_available')
+                            ->label(__('admin.catalog.products.table.filters.is_available'))
+                            ->icon(Heroicon::OutlinedShoppingCart),
+                        SelectConstraint::make('categoryFacets.facet_value_id')
+                            ->options(fn() => Category::categoryChoices($store->id))
+                            ->searchable()
+                            ->multiple()
+                            ->label(__('admin.catalog.products.table.filters.categories'))
+                            ->icon(NavigationItem::Categories->icon()),
+                        SelectConstraint::make('manufacturerFacets.facet_value_id')
+                            ->options(fn() => Manufacturer::manufacturerChoices($store->id))
+                            ->searchable()
+                            ->multiple()
+                            ->label(__('admin.catalog.products.table.filters.manufacturers'))
+                            ->icon(NavigationItem::Manufacturers->icon()),
+                        SelectConstraint::make('tagFacets.facet_value_id')
+                            ->options(fn() => Tag::tagChoices($store->id))
+                            ->searchable()
+                            ->multiple()
+                            ->label(__('admin.catalog.products.table.filters.tags'))
+                            ->icon(NavigationItem::Tags->icon()),
+                        SelectConstraint::make('optionFacets.facet_value_id')
+                            ->options(fn () => OptionValue::optionValueGroupedChoices([], $store->id))
+                            ->searchable()
+                            ->multiple()
+                            ->label(__('admin.catalog.products.table.filters.options'))
+                            ->icon(NavigationItem::Options->icon()),
+
+                    ])
+            ], layout: FiltersLayout::AboveContentCollapsible)
+            // ->filtersFormColumns(3)
             ->recordActions([
                 Action::make('toggleActive')
                     ->requiresConfirmation(false)
