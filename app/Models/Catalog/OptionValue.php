@@ -66,14 +66,19 @@ class OptionValue extends Model
     //     ];
     // }
 
-        // Cache option list for select dropdowns with Octane support
-    protected static function optionValueChoices(?int $optionId, ?int $storeId): Collection
+    /**
+     * Cache option value list for select dropdowns with Octane support
+     * @param mixed $optionId
+     * @param int $storeId
+     * @return Collection
+     */
+    public static function optionValueChoices(?int $optionId, int $storeId): Collection
     {
-        if (blank($optionId) || blank($storeId)) {
+        if (blank($optionId)) {
             return collect();
         }
 
-        $key = "option_value_choices.{$optionId}";
+        $key = __METHOD__ . ".{$optionId}.{$storeId}";
 
         if (Context::has($key)) {
             return collect(Context::get($key));
@@ -89,5 +94,24 @@ class OptionValue extends Model
         Context::add($key, $choices->all());
 
         return $choices;
+    }
+
+    /**
+     * Group option values by option groups to display them in select dropdowns
+     * @param array $optionGroupIds
+     * @param int $storeId
+     * @return array
+     */
+    public static function optionValueGroupedChoices(array $optionGroupIds, int $storeId): array
+    {
+        $optionGroupNames = Option::optionChoices($storeId);
+        $optionGroupIds   = filled($optionGroupIds) ? $optionGroupIds : $optionGroupNames->keys();
+
+        return collect($optionGroupIds)
+            ->map(fn ($id) => (int) $id)
+            ->mapWithKeys(fn ($optionGroupId) => [
+                $optionGroupNames->get($optionGroupId, "#{$optionGroupId}") => static::optionValueChoices($optionGroupId, $storeId)->all(),
+            ])
+            ->all();
     }
 }

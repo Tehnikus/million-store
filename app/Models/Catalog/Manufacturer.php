@@ -125,10 +125,14 @@ class Manufacturer extends Model
         ];
     }
 
-    // Cache option list for select dropdowns with Octane support
-    protected static function manufacturerChoices(int $storeId): Collection
+    /**
+     * Cache manufacturer list for select dropdowns with Octane support
+     * @param int $storeId
+     * @return Collection
+     */
+    public static function manufacturerChoices(int $storeId): Collection
     {
-        $key = "manufacturer_choices.{$storeId}";
+        $key = __METHOD__ . ".{$storeId}";
 
         if (Context::has($key)) {
             return collect(Context::get($key));

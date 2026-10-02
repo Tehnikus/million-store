@@ -8,6 +8,8 @@ use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Context;
 use Spatie\Translatable\HasTranslations;
 
 class AttributeValue extends Model
@@ -61,4 +63,32 @@ class AttributeValue extends Model
     //         ],
     //     ];
     // }
+
+    /**
+     * Cache attribute values list for select dropdowns with Octane support
+     * @param mixed $attributeId
+     * @return Collection
+     */
+    public static function attributeValueChoices(?int $attributeId): Collection
+    {
+        if (blank($attributeId)) {
+            return collect();
+        }
+
+        $key = "attribute_value_choices.{$attributeId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = AttributeValue::query()
+            ->where('attribute_id', $attributeId)
+            ->where('is_active', true)
+            ->get()
+            ->mapWithKeys(fn (self $model) => [$model->id => $model->name]);
+
+        Context::add($key, $choices->all());
+
+        return $choices;
+    }
 }

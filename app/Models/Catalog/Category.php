@@ -125,10 +125,14 @@ class Category extends Model
         ];
     }
 
-    // Cache option list for select dropdowns with Octane support
-    protected static function categoryChoices(int $storeId): Collection
+    /**
+     * Cache category list for select dropdowns with Octane support
+     * @param int $storeId
+     * @return Collection
+     */
+    public static function categoryChoices(int $storeId): Collection
     {
-        $key = "category_choices.{$storeId}";
+        $key = __METHOD__ . ".{$storeId}";
 
         if (Context::has($key)) {
             return collect(Context::get($key));

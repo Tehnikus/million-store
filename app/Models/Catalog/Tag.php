@@ -97,10 +97,14 @@ class Tag extends Model
         ];
     }
 
-    // Cache option list for select dropdowns with Octane support
-    protected static function tagChoices(int $storeId): Collection
+    /**
+     * Cache option list for select dropdowns with Octane support
+     * @param int $storeId
+     * @return Collection
+     */
+    public static function tagChoices(int $storeId): Collection
     {
-        $key = "tag_choices.{$storeId}";
+        $key = __METHOD__ . ".{$storeId}";
 
         if (Context::has($key)) {
             return collect(Context::get($key));

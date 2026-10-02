@@ -42,10 +42,14 @@ class Option extends Model
         return $this->hasMany(OptionValue::class);
     }
 
-    // Cache option list for select dropdowns with Octane support
-    protected static function optionChoices(int $storeId): Collection
+    /**
+     * Cache option list for select dropdowns with Octane support
+     * @param int $storeId
+     * @return Collection
+     */
+    public static function optionChoices(int $storeId): Collection
     {
-        $key = "option_choices.{$storeId}";
+        $key = __METHOD__ . ".{$storeId}";
 
         if (Context::has($key)) {
             return collect(Context::get($key));
