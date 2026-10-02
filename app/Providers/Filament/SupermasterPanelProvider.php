@@ -87,7 +87,9 @@ class SupermasterPanelProvider extends PanelProvider
                     $table
                         ->paginated([50, 100, 200]) // Set the available "items per page" dropdown options globally
                         ->defaultPaginationPageOption(50) // Set the default option selected initially
-                        ->modifyUngroupedRecordActionsUsing(fn (Action $action) => $action->iconButton());
+                        ->modifyUngroupedRecordActionsUsing(fn (Action $action) => $action->iconButton())               
+                        ->filtersTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.filter')))
+                        ->columnManagerTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.columns')));
                 });
 
                 Action::configureUsing(function (Action $action): void {
