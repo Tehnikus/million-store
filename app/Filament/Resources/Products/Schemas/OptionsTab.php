@@ -9,8 +9,6 @@ use Filament\Forms\Components\{CheckboxList, Hidden, Repeater, RichEditor, Selec
 use Filament\Schemas\Components\{Fieldset, FusedGroup, Group, Section, Tabs\Tab, Utilities\Get, Utilities\Set};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Context;
-
 
 class OptionsTab
 {
@@ -35,9 +33,10 @@ class OptionsTab
                             ->live(debounce:0)
                             ->searchDebounce(200)
                             ->partiallyRenderComponentsAfterStateUpdated(['combinations', 'optionGroupValues', 'priceTiers', 'description.options_description'])
-                            ->afterStateUpdated(function (Get $get, Set $set) use ($store) {
+                            ->afterStateUpdated(function (Get $get, Set $set, ?Model $record) use ($store) {
                                 $validValueIds = static::validOptionValueIds((array) $get('optionGroups'), $store->id);
                                 $set('optionGroupValues', array_values(array_intersect((array) $get('optionGroupValues'), $validValueIds)));
+                                static::refreshCombinationCheckboxes($get, $set, $record, $store->id);
                             })
                             ->columnSpan(1),
                         Select::make('optionGroupValues')
@@ -47,7 +46,7 @@ class OptionsTab
                             ->placeholder(__('admin.catalog.products.tabs.options.placeholders.search_option_vals'))
                             ->searchingMessage(__('admin.catalog.products.tabs.options.placeholders.searching_option_vals'))
                             ->multiple()
-                            ->options(fn(Get $get) => static::valuesForOptionGroups((array) $get('optionGroups'), $store->id))
+                            ->options(fn(Get $get) => OptionValue::optionValueGroupedChoices((array) $get('optionGroups'), $store->id))
                             ->preload()
                             ->live(debounce:0)
                             ->searchDebounce(200)
@@ -122,16 +121,64 @@ class OptionsTab
             ]);
     }
 
-    protected static function valuesForOptionGroups(array $axisIds, int $storeId): array
+    /**
+     * The form of option descriptions in Repeater::make('options_description')
+     * @param mixed $languages
+     * @return Group[]
+     */
+    protected static function optionValueDescriptionsForm($languages)
     {
-        $axisNames = Option::optionChoices($storeId);
+        return [
+            Group::make(
+                collect($languages)->map(
+                    fn($language) =>
+                    Fieldset::make($language->name)
+                        ->schema([
+                            TextInput::make("name.{$language->locale}")
+                                ->live(onBlur: true)
+                                ->required()
+                                ->maxLength(255)
+                                ->prefix($language->locale)
+                                ->label(__('admin.catalog.products.tabs.options.labels.option_val_name'))
+                                ->placeholder(__('admin.catalog.products.tabs.options.labels.option_val_name'))
+                                ->hiddenLabel(),
 
-        return collect($axisIds)
-            ->map(fn ($id) => (int) $id)
-            ->mapWithKeys(fn ($axisId) => [
-                $axisNames->get($axisId, "#{$axisId}") => OptionValue::optionValueChoices($axisId, $storeId)->all(),
-            ])
-            ->all();
+                            RichEditor::make("description.{$language->locale}")
+                                ->columnSpanFull()
+                                ->placeholder(__('admin.catalog.products.tabs.options.helpers.description'))
+                                ->helperText(__('admin.catalog.products.tabs.options.helpers.description'))
+                                ->extraInputAttributes([
+                                    'style' => 'min-height: 7rem; max-height: 14vh; overflow-y: auto;'
+                                ])
+                                ->hiddenLabel(),
+                        ])
+                        ->dense()
+                )->all()
+            )
+        ];
+    }
+
+    // Item label for Repeater::make('options_description') to reflect changes in repeater's fields
+    protected static function groupItemLabel(array $state): ?string
+    {
+        $groupName = static::itemLabelText($state);
+        if (blank($groupName)) return null;
+
+        $valueNames = collect($state['description'] ?? [])
+            ->map(fn ($v) => static::itemLabelText($v))
+            ->filter()
+            ->implode(', ');
+
+        return $valueNames !== '' ? "{$groupName}: {$valueNames}" : $groupName;
+    }
+
+    // Single option item label for for Repeater::make('options_description') with respect to current locale and fallback
+    protected static function itemLabelText(array $state): ?string
+    {
+        $name = array_filter($state['name'] ?? []);
+        if (blank($name)) return null;
+
+        return $name[app()->getLocale()] ?? Arr::first($name);
     }
 
     protected static function validOptionValueIds(array $axisIds, int $storeId): array
@@ -143,7 +190,7 @@ class OptionsTab
     }
 
     /**
-     * Multiply arrays of ooption values to generate combinations of every option value to every other option value
+     * Multiply arrays of option values to generate combinations of every option value to every other option value
      * @param array $axisIds
      * @param array $valueIds
      * @param int $storeId
@@ -167,7 +214,7 @@ class OptionsTab
      * @param array $axisValues
      * @return string[]
      */
-    protected static function generateCombinations(array $axisValues, $storeId): array
+    protected static function generateCombinations(array $axisValues, int $storeId): array
     {
         $optionGroups = collect($axisValues)
             ->map(fn ($ids) => array_map('intval', (array) $ids))
@@ -203,10 +250,29 @@ class OptionsTab
     {
         $optionGroups = static::optionValuesFromFlat((array) $get('optionGroups'), (array) $get('optionGroupValues'), $storeId);
         $valid        = array_keys(static::generateCombinations($optionGroups, $storeId));
-        $combinations = array_values(array_intersect((array) $get('combinations'), $valid));
-        $set('combinations', $combinations);
+        $saved        = static::savedCombinationKeys($record, $storeId);
 
+        $combinations = array_values(array_unique(array_merge(
+            array_intersect((array) $get('combinations'), $valid),
+            array_intersect($saved, $valid),
+        )));
+
+        $set('combinations', $combinations);
         static::syncDescriptions($combinations, $get, $set, $record, $storeId);
+    }
+
+    protected static function savedCombinationKeys(?Model $record, int $storeId): array
+    {
+        if (!$record) {
+            return [];
+        }
+
+        return $record->options()
+            ->where('store_id', $storeId)
+            ->get()
+            ->map(fn ($option) => UpsertProduct::signatureKey($option->option_signature))
+            ->values()
+            ->all();
     }
 
     /**
@@ -302,62 +368,6 @@ class OptionsTab
         }
 
         return ['option_value_id' => $valueId, 'name' => $name, 'description' => $description];
-    }
-
-    protected static function optionValueDescriptionsForm($languages)
-    {
-        return [
-            Group::make(
-                collect($languages)->map(
-                    fn($language) =>
-                    Fieldset::make($language->name)
-                        ->schema([
-                            TextInput::make("name.{$language->locale}")
-                                ->live(onBlur: true)
-                                ->required()
-                                ->maxLength(255)
-                                ->prefix($language->locale)
-                                ->label(__('admin.catalog.products.tabs.options.labels.option_val_name'))
-                                ->placeholder(__('admin.catalog.products.tabs.options.labels.option_val_name'))
-                                ->hiddenLabel(),
-
-                            RichEditor::make("description.{$language->locale}")
-                                ->columnSpanFull()
-                                ->placeholder(__('admin.catalog.products.tabs.options.helpers.description'))
-                                ->helperText(__('admin.catalog.products.tabs.options.helpers.description'))
-                                ->extraInputAttributes([
-                                    'style' => 'min-height: 7rem; max-height: 14vh; overflow-y: auto;'
-                                ])
-                                ->hiddenLabel(),
-                        ])
-                        ->dense()
-                )->all()
-            )
-        ];
-    }
-
-    // Single option item label for option descriptions repeater
-    protected static function itemLabelText(array $state): ?string
-    {
-        $name = array_filter($state['name'] ?? []);
-        if (blank($name)) return null;
-
-        return $name[app()->getLocale()] ?? Arr::first($name);
-    }
-
-    // Item label for option descriptions repeater
-    protected static function groupItemLabel(array $state): ?string
-    {
-        $groupName = static::itemLabelText($state);
-        if (blank($groupName)) return null;
-
-        // $locale = app()->getLocale();
-        $valueNames = collect($state['description'] ?? [])
-            ->map(fn ($v) => static::itemLabelText($v))
-            ->filter()
-            ->implode(', ');
-
-        return $valueNames !== '' ? "{$groupName}: {$valueNames}" : $groupName;
     }
 
     // Render tab badge by JS
