@@ -11,7 +11,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
-use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -29,7 +28,7 @@ class CategoriesTable
             ->emptyStateIcon(NavigationItem::Categories->icon())
             ->emptyStateHeading(__('admin.catalog.categories.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.categories.helpers.group_title'))
-            ->modifyQueryUsing(fn($query) => $query->with('products')->where('store_id', $store->id))
+            ->modifyQueryUsing(fn($query) => $query->with(['products', 'parent'])->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -41,12 +40,16 @@ class CategoriesTable
                     ->label(__('admin.catalog.categories.model_label_singular')),
 
                 SelectColumn::make('parent_id')
-                    ->optionsRelationship(name: 'parent', titleAttribute: 'name')
+                    ->options(fn (?Category $record) => $record 
+                        ? Category::categoryChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                        : Category::categoryChoices($store->id)
+                    )
+                    ->searchableOptions(true)
                     ->native(false)
                     ->width('220px')
                     ->wrapHeader()
-                    ->label(__('admin.catalog.categories.fields.parent_id'))
-                    ->native(false),
+                    ->placeholder(__('admin.catalog.categories.fields.is_root'))
+                    ->label(__('admin.catalog.categories.fields.parent_id')),
 
                 TextColumn::make('products')
                     ->getStateUsing(fn(Category $record) => $record->products->count())

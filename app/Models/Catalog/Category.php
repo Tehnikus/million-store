@@ -88,6 +88,17 @@ class Category extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    /**
+     * Descendants category tree
+     * @return Collection
+     */
+    public function descendants(): Collection
+    {
+        return $this->children()
+            ->get()
+            ->flatMap(fn (self $child) => collect([$child])->merge($child->descendants()));
+    }
+
     // Reverse category relation for ManageCategoryProducts
     public function products(): BelongsToMany
     {

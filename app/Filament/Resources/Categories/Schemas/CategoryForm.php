@@ -14,7 +14,6 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Forms\Components\Toggle;
 use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\Builder;
 
 class CategoryForm
 {
@@ -30,17 +29,14 @@ class CategoryForm
                         Tab::make(__('admin.common.tabs.content'))
                             ->schema([
                                 Select::make('parent_id')
-                                    ->label(__('admin.catalog.categories.fields.parent_id'))
-                                    ->relationship(
-                                        name: 'parent', // Function name in Category model
-                                        titleAttribute: 'name',
-                                        ignoreRecord: true,
-                                        modifyQueryUsing: fn(Builder $query, $record) => $query->where('store_id', $store->id)
-                                        // ->whereNot('parent_id', $record?->id),
+                                    ->options(fn (?Category $record) => $record 
+                                        ? Category::categoryChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                                        : Category::categoryChoices($store->id)
                                     )
-                                    ->getOptionLabelFromRecordUsing(fn(Category $record) => $record->name)
                                     ->searchable()
                                     ->preload()
+                                    ->label(__('admin.catalog.categories.fields.parent_id'))
+                                    ->placeholder(__('admin.catalog.categories.fields.is_root'))
                                     ->helperText(__('admin.catalog.categories.helpers.parent_id')),
 
                                 Toggle::make('is_active')
