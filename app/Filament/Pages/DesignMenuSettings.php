@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Catalog\Category;
+use App\Models\Catalog\Manufacturer;
 use App\Models\Store\StoreSettings;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\{Builder, Builder\Block, RichEditor, Select, TextInput};
@@ -26,9 +27,10 @@ class DesignMenuSettings extends Page
 
     public function form(Schema $schema): Schema
     {
+        $store = Filament::getTenant();
         return $schema
             ->components([
-                Form::make([ self::menuBuilder('menu_settings') ])
+                Form::make([ self::menuBuilder('menu', $store->id) ])
                     ->livewireSubmitHandler('save')
                     ->footer([
                         Actions::make([
@@ -46,11 +48,11 @@ class DesignMenuSettings extends Page
 
     private const MAX_DEPTH = 5;
 
-    public static function menuBuilder(string $name, int $depth = 1): Builder
+    public static function menuBuilder(string $name, $storeId, int $depth = 1): Builder
     {
         return Builder::make($name)
             ->hiddenLabel()
-            ->blocks(self::menuBlocks($depth))
+            ->blocks(self::menuBlocks($depth, $storeId))
             ->collapsible()
             ->collapsed($depth > 3)
             ->cloneable()
@@ -62,11 +64,11 @@ class DesignMenuSettings extends Page
             ->collapseAllAction(fn (Action $action) => $action->color('primary')->icon(Heroicon::ArrowsPointingIn)->size(Size::ExtraLarge));
     }
 
-    private static function menuBlocks(int $depth): array
+    private static function menuBlocks(int $depth, $storeId): array
     {
         // Add child builder until MAX_DEPTH is reached
         $children = fn (): array => $depth < self::MAX_DEPTH
-            ? [self::menuBuilder('children', $depth + 1)]
+            ? [self::menuBuilder('children', $storeId, $depth + 1)]
             : [];
 
         return [
@@ -79,8 +81,7 @@ class DesignMenuSettings extends Page
                     Select::make('category_id')
                         ->options(fn () => []) // Preload categories
                         ->preload()
-                        ->getSearchResultsUsing(fn (string $search): array => Category::where('name', 'ilike', "%{$search}%")->limit(10)->pluck('name', 'id')->toArray())
-                        ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->name)
+                        ->options(Category::categoryChoices($storeId))
                         ->searchable()
                         ->required(),
                     ...$children(),
@@ -91,7 +92,9 @@ class DesignMenuSettings extends Page
                 ->icon(NavigationItem::Manufacturers->icon())
                 ->schema(fn () => [
                     Select::make('manufacturer_id')
-                        ->options(fn () => [])
+                        ->options(fn () => []) // Preload categories
+                        ->preload()
+                        ->options(Manufacturer::manufacturerChoices($storeId))
                         ->searchable()
                         ->required(),
                     ...$children(),
@@ -134,7 +137,7 @@ class DesignMenuSettings extends Page
 
     public function mount(): void
     {
-        $this->form->fill($this->getRecord()?->only('menu_settings') ?? []);
+        $this->form->fill($this->getRecord()?->only('menu') ?? []);
     }
 
     public function save(): void

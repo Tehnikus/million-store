@@ -23,6 +23,7 @@ return new class extends Migration
             $table->jsonb('seo_defaults')->nullable()->default('{}');           // SEO defaults
             $table->jsonb('notification_settings')->nullable()->default('{}');  // E-Mail and other notifications
             $table->jsonb('ai_settings')->nullable()->default('{}');            // AI settings
+            $table->jsonb('menu')->nullable()->default('{}');                   // Main menu
             $table->jsonb('contacts')->nullable()->default('{}');               // Contacts
             $table->timestamps();
 

@@ -21,6 +21,7 @@ class StoreSettings extends Model
         'notification_settings',
         'ai_settings',
         'layout_settings',
+        'menu',
         'contacts',
     ];
 
@@ -35,6 +36,7 @@ class StoreSettings extends Model
         'notification_settings' => 'array',
         'ai_settings'           => 'array',
         'layout_settings'       => 'array',
+        'menu'                  => 'array',
         'contacts'              => 'array',
     ];
 
