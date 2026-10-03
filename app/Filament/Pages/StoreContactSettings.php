@@ -1,7 +1,8 @@
 <?php
 namespace App\Filament\Pages;
 
-use App\Models\Store\StoreContact;
+use App\Models\Store\StoreSettings;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Form;
 use App\Filament\Schemas\Tabs\StoreContactForm;
 use Filament\Facades\Filament;
@@ -23,13 +24,6 @@ class StoreContactSettings extends Page implements HasForms
 
     public ?array $data = [];
 
-    public function mount(): void
-    {
-        $store = Filament::getTenant();
-        $contact = StoreContact::firstOrNew(['store_id' => $store->id]);
-        $this->form->fill($contact->toArray());
-    }
-
     public function form(Schema $schema): Schema
     {
         $store      = Filament::getTenant();
@@ -47,6 +41,7 @@ class StoreContactSettings extends Page implements HasForms
                         ])
                 ])
                 ->livewireSubmitHandler('save')
+                ->statePath('contacts')
                 ->footer([
                     Actions::make([
                         Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
@@ -55,20 +50,33 @@ class StoreContactSettings extends Page implements HasForms
             ]);
     }
 
+    public function mount(): void
+    {
+        $this->form->fill($this->getRecord()?->only('contacts') ?? []);
+    }
+
     public function save(): void
     {
         $store = Filament::getTenant();
-        $data = $this->form->getState();
+        $formData = $this->form->getState();
 
-        StoreContact::updateOrCreate(
+        $record = StoreSettings::updateOrCreate(
             ['store_id' => $store->id],
-            $data
+            $formData
         );
 
-        \Filament\Notifications\Notification::make()
-            ->title(__('admin.messages.contacts_saved'))
-            ->success()
-            ->send();
+        $this->form->record($record);
+
+        Notification::make()->success()->title(__('admin.messages.settings_saved'))->send();
+    }
+
+    public function getRecord(): ?StoreSettings
+    {
+        $store = Filament::getTenant();
+
+        return StoreSettings::query()
+            ->where('store_id', $store->id)
+            ->first();
     }
 
     // Some repeating navigation methods in one place

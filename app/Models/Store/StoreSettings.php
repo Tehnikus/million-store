@@ -21,8 +21,7 @@ class StoreSettings extends Model
         'notification_settings',
         'ai_settings',
         'layout_settings',
-        'menu_settings',
-        'maintenance_settings',
+        'contacts',
     ];
 
     protected $casts = [
@@ -36,8 +35,7 @@ class StoreSettings extends Model
         'notification_settings' => 'array',
         'ai_settings'           => 'array',
         'layout_settings'       => 'array',
-        'menu_settings'         => 'array',
-        'maintenance_settings'  => 'array',
+        'contacts'              => 'array',
     ];
 
     // This model depends on current store context
