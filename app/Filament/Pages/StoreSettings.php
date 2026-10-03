@@ -51,44 +51,45 @@ class StoreSettings extends Page
                     Tabs::make('settings_tabs')
                         ->tabs([
 
-                            Tab::make(__('admin.store_settings.tabs.delivery_settings'))
+                            Tab::make(__('admin.store_settings.tabs.delivery'))
                                 ->icon(NavigationItem::Delivery->icon())
                                 ->schema([
-                                    TextInput::make('delivery_settings.transit_min')
+                                    TextInput::make('transit_min')
                                         ->numeric()
-                                        ->label(__('admin.store_settings.delivery_settings.fields.transit_min'))
-                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.transit_min'))
-                                        ->helperText(__('admin.store_settings.delivery_settings.helpers.transit')),
-                                    TextInput::make('delivery_settings.transit_max')
+                                        ->label(__('admin.store_settings.delivery.fields.transit_min'))
+                                        ->placeholder(__('admin.store_settings.delivery.fields.transit_min'))
+                                        ->helperText(__('admin.store_settings.delivery.helpers.transit')),
+                                    TextInput::make('transit_max')
                                         ->numeric()
-                                        ->label(__('admin.store_settings.delivery_settings.fields.transit_max'))
-                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.transit_max'))
-                                        ->helperText(__('admin.store_settings.delivery_settings.helpers.transit')),
-                                    TextInput::make('delivery_settings.handling_min')
+                                        ->label(__('admin.store_settings.delivery.fields.transit_max'))
+                                        ->placeholder(__('admin.store_settings.delivery.fields.transit_max'))
+                                        ->helperText(__('admin.store_settings.delivery.helpers.transit')),
+                                    TextInput::make('handling_min')
                                         ->numeric()
-                                        ->label(__('admin.store_settings.delivery_settings.fields.handling_min'))
-                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.handling_min'))
-                                        ->helperText(__('admin.store_settings.delivery_settings.helpers.handling')),
-                                    TextInput::make('delivery_settings.handling_max')
+                                        ->label(__('admin.store_settings.delivery.fields.handling_min'))
+                                        ->placeholder(__('admin.store_settings.delivery.fields.handling_min'))
+                                        ->helperText(__('admin.store_settings.delivery.helpers.handling')),
+                                    TextInput::make('handling_max')
                                         ->numeric()
-                                        ->label(__('admin.store_settings.delivery_settings.fields.handling_max'))
-                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.handling_max'))
-                                        ->helperText(__('admin.store_settings.delivery_settings.helpers.handling')),
-                                    TextInput::make('delivery_settings.return_cost')
+                                        ->label(__('admin.store_settings.delivery.fields.handling_max'))
+                                        ->placeholder(__('admin.store_settings.delivery.fields.handling_max'))
+                                        ->helperText(__('admin.store_settings.delivery.helpers.handling')),
+                                    TextInput::make('return_cost')
                                         ->numeric()
-                                        ->label(__('admin.store_settings.delivery_settings.fields.return_cost'))
-                                        ->placeholder(__('admin.store_settings.delivery_settings.fields.return_cost'))
-                                        ->helperText(__('admin.store_settings.delivery_settings.helpers.return_cost')),
-                                ]),
-                            Tab::make(__('admin.store_settings.tabs.checkout_settings'))
+                                        ->label(__('admin.store_settings.delivery.fields.return_cost'))
+                                        ->placeholder(__('admin.store_settings.delivery.fields.return_cost'))
+                                        ->helperText(__('admin.store_settings.delivery.helpers.return_cost')),
+                                ])
+                                ->statePath('delivery'),
+                            Tab::make(__('admin.store_settings.tabs.checkout'))
                                 ->icon(NavigationItem::Payment->icon())
                                 ->schema([
-                                    Fieldset::make('admin.store_settings.checkout_settings.fields.minimal_order_total')
+                                    Fieldset::make('admin.store_settings.checkout.fields.minimal_order_total')
                                         ->schema(
                                             collect($currencies)->map(
                                                 fn($currency) =>
-                                                TextInput::make("checkout_settings.minimal_order_total.{$currency->iso_code}")
-                                                    ->placeholder(__('admin.store_settings.checkout_settings.fields.minimal_order_total'))
+                                                TextInput::make("minimal_order_total.{$currency->iso_code}")
+                                                    ->placeholder(__('admin.store_settings.checkout.fields.minimal_order_total'))
                                                     ->required()
                                                     ->prefix($currency->sign)
                                                     ->hiddenLabel()
@@ -100,11 +101,11 @@ class StoreSettings extends Page
                                                     ->hiddenLabel()
                                             )->all()
                                         )
-                                        ->label(__('admin.store_settings.checkout_settings.fields.minimal_order_total')),
+                                        ->label(__('admin.store_settings.checkout.fields.minimal_order_total')),
 
-                                    Fieldset::make(__('admin.store_settings.checkout_settings.fields.agreement_pages'))
+                                    Fieldset::make(__('admin.store_settings.checkout.fields.agreement_pages'))
                                         ->schema([
-                                            Select::make('checkout_settings.service_agreement')
+                                            Select::make('service_agreement')
                                                 ->options(fn () => StoreInfoPage::query()
                                                     ->where('store_id', $store->id)
                                                     ->where('is_active', true)
@@ -112,10 +113,10 @@ class StoreSettings extends Page
                                                 )
                                                 ->searchable()
                                                 ->preload()
-                                                ->label(__('admin.store_settings.checkout_settings.fields.service_agreement_page'))
-                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.service_agreement_page')),
+                                                ->label(__('admin.store_settings.checkout.fields.service_agreement_page'))
+                                                ->helperText(__('admin.store_settings.checkout.helpers.service_agreement_page')),
 
-                                            Select::make('checkout_settings.return_agreement')
+                                            Select::make('return_agreement')
                                                 ->options(fn () => StoreInfoPage::query()
                                                     ->where('store_id', $store->id)
                                                     ->where('is_active', true)
@@ -123,31 +124,31 @@ class StoreSettings extends Page
                                                 )
                                                 ->searchable()
                                                 ->preload()
-                                                ->label(__('admin.store_settings.checkout_settings.fields.return_rules_page'))
-                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.return_rules_page'))
+                                                ->label(__('admin.store_settings.checkout.fields.return_rules_page'))
+                                                ->helperText(__('admin.store_settings.checkout.helpers.return_rules_page'))
                                         ]),
-                                    Fieldset::make(__('admin.store_settings.checkout_settings.fields.checkout_address_fields'))
+                                    Fieldset::make(__('admin.store_settings.checkout.fields.checkout_address_fields'))
                                         ->schema([
                                             // Address fields
-                                            Repeater::make('checkout_settings.checkout_fields')
+                                            Repeater::make('checkout_fields')
                                                 ->table([
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_type'))->width('50%')->markAsRequired(),
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_name'))->width('50%')->markAsRequired(),
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.is_required'))->width('1%'),
+                                                    TableColumn::make(__('admin.store_settings.checkout.fields.field_type'))->width('50%')->markAsRequired(),
+                                                    TableColumn::make(__('admin.store_settings.checkout.fields.field_name'))->width('50%')->markAsRequired(),
+                                                    TableColumn::make(__('admin.store_settings.checkout.fields.is_required'))->width('1%'),
                                                 ])                                    
                                                 ->schema([
                                                     Select::make('type')
                                                         ->options([
-                                                            'country'     => __('admin.store_settings.checkout_settings.fields.country'),
-                                                            'city'        => __('admin.store_settings.checkout_settings.fields.city'),
-                                                            'street'      => __('admin.store_settings.checkout_settings.fields.street'),
-                                                            'building'    => __('admin.store_settings.checkout_settings.fields.building'),
-                                                            'apartment'   => __('admin.store_settings.checkout_settings.fields.apartment'),
-                                                            'postal_code' => __('admin.store_settings.checkout_settings.fields.postal_code'),
-                                                            'phone'       => __('admin.store_settings.checkout_settings.fields.phone'),
-                                                            'company'     => __('admin.store_settings.checkout_settings.fields.company'),
-                                                            'vat_number'  => __('admin.store_settings.checkout_settings.fields.vat_number'),
-                                                            'region'      => __('admin.store_settings.checkout_settings.fields.region'),
+                                                            'country'     => __('admin.store_settings.checkout.fields.country'),
+                                                            'city'        => __('admin.store_settings.checkout.fields.city'),
+                                                            'street'      => __('admin.store_settings.checkout.fields.street'),
+                                                            'building'    => __('admin.store_settings.checkout.fields.building'),
+                                                            'apartment'   => __('admin.store_settings.checkout.fields.apartment'),
+                                                            'postal_code' => __('admin.store_settings.checkout.fields.postal_code'),
+                                                            'phone'       => __('admin.store_settings.checkout.fields.phone'),
+                                                            'company'     => __('admin.store_settings.checkout.fields.company'),
+                                                            'vat_number'  => __('admin.store_settings.checkout.fields.vat_number'),
+                                                            'region'      => __('admin.store_settings.checkout.fields.region'),
                                                         ])
                                                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                                         ->required(),
@@ -158,35 +159,35 @@ class StoreSettings extends Page
                                                                 TextInput::make("label.{$language->locale}")
                                                                     ->required()
                                                                     ->prefix($language->locale)
-                                                                    ->label(__('admin.store_settings.checkout_settings.fields.field_name'))
-                                                                    ->placeholder(__('admin.store_settings.checkout_settings.fields.field_name'))
+                                                                    ->label(__('admin.store_settings.checkout.fields.field_name'))
+                                                                    ->placeholder(__('admin.store_settings.checkout.fields.field_name'))
                                                                     ->hiddenLabel()
                                                             )->all()
                                                         ),
                                                         Toggle::make('is_required')
-                                                            ->label(__('admin.store_settings.checkout_settings.fields.is_required'))
+                                                            ->label(__('admin.store_settings.checkout.fields.is_required'))
                                                 ])
                                                 ->reorderable()
-                                                ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
-                                                ->label(__('admin.store_settings.checkout_settings.fields.checkout_address_fields'))
-                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.checkout_fields')),
+                                                ->addActionLabel(__('admin.store_settings.checkout.fields.add_field'))
+                                                ->label(__('admin.store_settings.checkout.fields.checkout_address_fields'))
+                                                ->helperText(__('admin.store_settings.checkout.helpers.checkout_fields')),
                                             
                                             // Additional custom fields
-                                            Repeater::make('checkout_settings.custom_fields')
+                                            Repeater::make('custom_fields')
                                                 ->table([
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_type'))->width('50%')->markAsRequired(),
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.field_name'))->width('50%')->markAsRequired(),
-                                                    TableColumn::make(__('admin.store_settings.checkout_settings.fields.is_required'))->width('1%'),
+                                                    TableColumn::make(__('admin.store_settings.checkout.fields.field_type'))->width('50%')->markAsRequired(),
+                                                    TableColumn::make(__('admin.store_settings.checkout.fields.field_name'))->width('50%')->markAsRequired(),
+                                                    TableColumn::make(__('admin.store_settings.checkout.fields.is_required'))->width('1%'),
                                                 ])
                                                 ->schema([
                                                     Select::make('type')
                                                         ->options([
-                                                            'time'      => __('admin.store_settings.checkout_settings.fields.time'),
-                                                            'date'      => __('admin.store_settings.checkout_settings.fields.date'),
-                                                            'datetime'  => __('admin.store_settings.checkout_settings.fields.datetime'),
-                                                            'text'      => __('admin.store_settings.checkout_settings.fields.text'),
-                                                            'textarea'  => __('admin.store_settings.checkout_settings.fields.textarea'),
-                                                            'checkbox'  => __('admin.store_settings.checkout_settings.fields.checkbox'),
+                                                            'time'      => __('admin.store_settings.checkout.fields.time'),
+                                                            'date'      => __('admin.store_settings.checkout.fields.date'),
+                                                            'datetime'  => __('admin.store_settings.checkout.fields.datetime'),
+                                                            'text'      => __('admin.store_settings.checkout.fields.text'),
+                                                            'textarea'  => __('admin.store_settings.checkout.fields.textarea'),
+                                                            'checkbox'  => __('admin.store_settings.checkout.fields.checkbox'),
                                                         ]),
                                                     Hidden::make('name'),
                                                     FusedGroup::make()
@@ -196,36 +197,37 @@ class StoreSettings extends Page
                                                                 TextInput::make("label.{$language->locale}")
                                                                     ->required()
                                                                     ->prefix($language->locale)
-                                                                    ->label(__('admin.store_settings.checkout_settings.fields.field_name'))
-                                                                    ->placeholder(__('admin.store_settings.checkout_settings.fields.field_name'))
+                                                                    ->label(__('admin.store_settings.checkout.fields.field_name'))
+                                                                    ->placeholder(__('admin.store_settings.checkout.fields.field_name'))
                                                                     ->hiddenLabel()
                                                             )->all()
                                                         ),
                                                         Toggle::make('is_required')
-                                                            ->label(__('admin.store_settings.checkout_settings.fields.is_required'))
+                                                            ->label(__('admin.store_settings.checkout.fields.is_required'))
                                                 ])
                                                 ->reorderable()
-                                                ->addActionLabel(__('admin.store_settings.checkout_settings.fields.add_field'))
-                                                ->label(__('admin.store_settings.checkout_settings.fields.checkout_custom_fields'))
-                                                ->helperText(__('admin.store_settings.checkout_settings.helpers.custom_fields')),
+                                                ->addActionLabel(__('admin.store_settings.checkout.fields.add_field'))
+                                                ->label(__('admin.store_settings.checkout.fields.checkout_custom_fields'))
+                                                ->helperText(__('admin.store_settings.checkout.helpers.custom_fields')),
                                         ]),
-                                ]),
-                            Tab::make(__('admin.store_settings.tabs.legal_settings'))
+                                ])
+                                ->statePath('checkout'),
+                            Tab::make(__('admin.store_settings.tabs.legal'))
                                 ->icon(Heroicon::OutlinedShieldCheck)
                                 ->schema([
 
                                 ]),
-                            Tab::make(__('admin.store_settings.tabs.tax_settings'))
+                            Tab::make(__('admin.store_settings.tabs.taxes'))
                                 ->icon(NavigationItem::Taxes->icon())
                                 ->schema([
 
                                 ]),
-                            Tab::make(__('admin.store_settings.tabs.analytics_settings'))
+                            Tab::make(__('admin.store_settings.tabs.analytics'))
                                 ->icon(NavigationItem::Analytics->icon())
                                 ->schema([
 
                                 ]),
-                            Tab::make(__('admin.store_settings.tabs.notification_settings'))
+                            Tab::make(__('admin.store_settings.tabs.notifications'))
                                 ->icon(NavigationItem::Notifications->icon())
                                 ->schema([
 
@@ -318,7 +320,7 @@ class StoreSettings extends Page
                                         ]),
                                 ]),
 
-                            Tab::make(__('admin.store_settings.tabs.maintenance_settings'))
+                            Tab::make(__('admin.store_settings.tabs.maintenance'))
                                 ->icon(Heroicon::OutlinedWrenchScrewdriver)
                                 ->schema([
 
@@ -362,8 +364,8 @@ class StoreSettings extends Page
      */
     protected function setCheckoutFieldsKeys(array $data): array
     {
-        $data['checkout_settings']['custom_fields']   = self::assignCustomFieldKeys($data['checkout_settings']['custom_fields']   ?? []);
-        $data['checkout_settings']['checkout_fields'] = self::assignCheckoutFieldKeys($data['checkout_settings']['checkout_fields'] ?? []);
+        $data['checkout']['custom_fields']   = self::assignCustomFieldKeys($data['checkout']['custom_fields']   ?? []);
+        $data['checkout']['checkout_fields'] = self::assignCheckoutFieldKeys($data['checkout']['checkout_fields'] ?? []);
 
         return $data;
     }

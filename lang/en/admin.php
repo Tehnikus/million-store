@@ -903,16 +903,16 @@ return [
   'store_settings' => [
     'navigation_label' => 'Settings',
     'tabs' => [
-      'delivery_settings'       => 'Delivery',
-      'checkout_settings'       => 'Checkout',
-      'legal_settings'          => 'Legal settings',
-      'tax_settings'            => 'Taxes',
-      'analytics_settings'      => 'Analytics',
+      'delivery'                => 'Delivery',
+      'checkout'                => 'Checkout',
+      'legal'          => 'Legal settings',
+      'taxes'                   => 'Taxes',
+      'analytics'               => 'Analytics',
       'seo_defaults'            => 'SEO defaults',
-      'notification_settings'   => 'Notifications',
+      'notifications'           => 'Notifications',
       'maintenance'             => 'Maintenance',
     ],
-    'delivery_settings' => [
+    'delivery' => [
       'fields' => [
         'transit_min'   => 'Minimal delivery time (days)',
         'transit_max'   => 'Maximal delivery time (days)',
@@ -926,7 +926,7 @@ return [
         'return_cost' => 'This value is used in JSON-LD markup to show Google rich snippets, and only as fallback value',        
       ]
     ],
-    'checkout_settings' => [
+    'checkout' => [
       'fields' => [
         'minimal_order_total'     => 'Minimal checkout total',
         'agreement_pages'         => 'Agreement pages',

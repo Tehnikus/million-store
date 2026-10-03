@@ -2,29 +2,13 @@
 
 namespace App\Filament\Resources\Customers\Schemas;
 
-use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\TimePicker;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Checkbox;
-use Filament\Schemas\Components\FusedGroup;
+use Filament\Forms\Components\{Checkbox, DatePicker, DateTimePicker, Repeater, Select, Textarea, TextInput, TimePicker, Toggle};
+use Filament\Schemas\Components\{Fieldset, FusedGroup};
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\Component;
-
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Filament\Facades\Filament;
 use App\Models\Customer\CustomerGroup;
-use App\Models\Store\StoreSettings;
 use App\Models\Global\Country;
 
 class CustomerForm
@@ -33,11 +17,11 @@ class CustomerForm
     {
         // Get checkout fields store settings
         $store = Filament::getTenant();
-        $store->load(['storeSettings', 'storeLanguages', 'storeCurrencies', 'storeCountries']);
+        $store->load(['storeSettings', 'storeCurrencies', 'storeCountries']);
         $storeId            = $store->id;
-        $storeSettings      = $store->storeSettings->toArray() ?? [];
-        $checkoutFields     = $storeSettings['checkout_fields'] ?? [];
-        $customFields       = $storeSettings['custom_fields'] ?? [];
+        $checkoutSettings   = $store?->storeSettings?->checkout ?? [];
+        $checkoutFields     = $checkoutSettings['checkout_fields'] ?? [];
+        $customFields       = $checkoutSettings['custom_fields'] ?? [];
 
         return $schema
             ->components([
@@ -138,11 +122,7 @@ class CustomerForm
                         // Customer language
                         Select::make('locale')
                             ->options(
-                                Filament::getTenant()
-                                    ->languages()
-                                    ->wherePivot('is_active', true)
-                                    ->get()
-                                    ->pluck('name', 'locale')
+                                $store->activeLanguages()->pluck('name', 'locale')
                             )
                             ->required()
                             ->label(__('admin.customers.customer.fields.locale')),
@@ -199,7 +179,7 @@ class CustomerForm
     }
 
     /**
-     * Build customer address form from store_settings => checkout_settings
+     * Build customer address form from $store?->storeSettings?->checkout
      */
     private static function buildFixedFields(array $checkoutFields): array
     {

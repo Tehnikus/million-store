@@ -2,7 +2,8 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Design\LayoutEditor;
+// use App\Models\Design\LayoutEditor;
+use App\Models\Store\StoreSettings;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
@@ -75,12 +76,13 @@ class DesignLayoutEditor extends Page
                                 ])
                         ])
                 ])
-                    ->livewireSubmitHandler('save')
-                    ->footer([
-                        Actions::make([
-                            Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
-                        ]),
+                ->statePath('layouts')
+                ->livewireSubmitHandler('save')
+                ->footer([
+                    Actions::make([
+                        Action::make('save')->submit('save')->extraAttributes(['style' => 'min-width: 200px'])->label(__('admin.common.buttons.save')),
                     ]),
+                ]),
             ])
             ->record($this->getRecord())
             ->statePath('data');
@@ -88,18 +90,17 @@ class DesignLayoutEditor extends Page
 
     public function mount(): void
     {
-        $this->form->fill($this->getRecord()?->toArray() ?? []);
+        $this->form->fill($this->getRecord()?->only('layouts') ?? []);
     }
 
     public function save(): void
     {
         $store = Filament::getTenant();
         $formData = $this->form->getState();
-        $formData['store_id'] = $store->id;
 
-        $record = LayoutEditor::updateOrCreate(
-            ['store_id' => $formData['store_id']], // store_id condition
-            $formData                              // Data to be written
+        $record = StoreSettings::updateOrCreate(
+            ['store_id' => $store->id],
+            $formData
         );
 
         $this->form->record($record);
@@ -107,11 +108,11 @@ class DesignLayoutEditor extends Page
         Notification::make()->success()->title(__('admin.messages.settings_saved'))->send();
     }
 
-    public function getRecord(): ?LayoutEditor
+    public function getRecord(): ?StoreSettings
     {
         $store = Filament::getTenant();
 
-        return LayoutEditor::query()
+        return StoreSettings::query()
             ->where('store_id', $store->id)
             ->first();
     }
@@ -130,18 +131,18 @@ class DesignLayoutEditor extends Page
     }
 
     //     In blade
-//     @foreach ($page->content as $block)
-//     @switch($block['type'])
-//         @case('heading')
-//             @include('components.blocks.heading', ['data' => $block['data']])
-//             @break
+    //     @foreach ($page->content as $block)
+    //     @switch($block['type'])
+    //         @case('heading')
+    //             @include('components.blocks.heading', ['data' => $block['data']])
+    //             @break
 
     //         @case('content')
-//             @include('components.blocks.content', ['data' => $block['data']])
-//             @break
+    //             @include('components.blocks.content', ['data' => $block['data']])
+    //             @break
 
     //         @default
-//             {{-- Handle unknown block types gracefully --}}
-//     @endswitch
-// @endforeach
+    //             {{-- Handle unknown block types gracefully --}}
+    //     @endswitch
+    // @endforeach
 }

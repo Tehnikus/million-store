@@ -903,16 +903,16 @@ return [
   'store_settings' => [
     'navigation_label' => 'Налаштування',
     'tabs' => [
-      'delivery_settings'       => 'Доставка',
-      'checkout_settings'       => 'Замовлення',
-      'legal_settings'          => 'Правові налаштування',
-      'tax_settings'            => 'Податки',
-      'analytics_settings'      => 'Аналітка',
+      'delivery'                => 'Доставка',
+      'checkout'                => 'Замовлення',
+      'legal'          => 'Правові налаштування',
+      'taxes'                   => 'Податки',
+      'analytics'               => 'Аналітка',
       'seo_defaults'            => 'SEO за замовченням',
-      'notification_settings'   => 'Повідомлення',
+      'notifications'           => 'Сповіщення',
       'maintenance'             => 'Режим обслуговування',
     ],
-    'delivery_settings' => [
+    'delivery' => [
       'fields' => [
         'transit_min'   => 'Мінімальний час доставки (дні)',
         'transit_max'   => 'Максимальний час доставки (дні)',
@@ -926,7 +926,7 @@ return [
         'return_cost' => 'Це значення використовується в розмітці JSON-LD для відображення розширених сніпетів Google і лише як резервне значення',
       ]
     ],
-    'checkout_settings' => [
+    'checkout' => [
       'fields' => [
         'minimal_order_total'     => 'Мінімальна сума замовлення',
         'agreement_pages'         => 'Сторінки згоди',

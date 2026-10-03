@@ -2,7 +2,8 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Store\StoreHomepageDescription;
+use App\Models\Store\StoreSettings;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -11,10 +12,7 @@ use Filament\Facades\Filament;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Actions;
 use Filament\Actions\Action;
-use App\Filament\Schemas\Tabs\DescriptionTab;
-use App\Filament\Schemas\Tabs\FaqTab;
-use App\Filament\Schemas\Tabs\HowToTab;
-use App\Filament\Schemas\Tabs\FooterTab;
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab};
 
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
@@ -24,13 +22,6 @@ class StoreHomepage extends Page
     protected string $view = 'filament.pages.simple-form';
 
     public ?array $data = [];
-
-    public function mount(): void
-    {
-        $store = Filament::getTenant();
-        $contact = StoreHomepageDescription::firstOrNew(['store_id' => $store->id]);
-        $this->form->fill($contact->toArray());
-    }
 
     public function form(Schema $schema): Schema
     {
@@ -59,6 +50,7 @@ class StoreHomepage extends Page
                             )
                         ])
                 ])
+                ->statePath('homepage')
                 ->livewireSubmitHandler('save')
                 ->footer([
                     Actions::make([
@@ -69,21 +61,33 @@ class StoreHomepage extends Page
     }
 
 
+    public function mount(): void
+    {
+        $this->form->fill($this->getRecord()?->only('homepage') ?? []);
+    }
+
     public function save(): void
     {
         $store = Filament::getTenant();
-        $data = $this->form->getState();
-        // dd($data);
+        $formData = $this->form->getState();
 
-        StoreHomepageDescription::updateOrCreate(
+        $record = StoreSettings::updateOrCreate(
             ['store_id' => $store->id],
-            $data
+            $formData
         );
 
-        \Filament\Notifications\Notification::make()
-            ->title(__('admin.messages.homepage_saved'))
-            ->success()
-            ->send();
+        $this->form->record($record);
+
+        Notification::make()->success()->title(__('admin.messages.settings_saved'))->send();
+    }
+
+    public function getRecord(): ?StoreSettings
+    {
+        $store = Filament::getTenant();
+
+        return StoreSettings::query()
+            ->where('store_id', $store->id)
+            ->first();
     }
 
     // Some repeating navigation methods in one place
