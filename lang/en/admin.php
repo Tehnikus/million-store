@@ -910,7 +910,7 @@ return [
       'analytics_settings'      => 'Analytics',
       'seo_defaults'            => 'SEO defaults',
       'notification_settings'   => 'Notifications',
-      'maintenance_settings'    => 'Maintenance',
+      'maintenance'             => 'Maintenance',
     ],
     'delivery_settings' => [
       'fields' => [

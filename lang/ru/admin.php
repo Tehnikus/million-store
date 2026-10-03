@@ -31,7 +31,7 @@ return [
   ],
   'catalog' => [
     'products' => [
-      'navigation_label'      => 'Товари',
+      'navigation_label'      => 'Товары',
       'model_label_singular'  => 'Товар',
       'table' => [
         'columns' => [
@@ -910,7 +910,7 @@ return [
       'analytics_settings'      => 'Аналитика',
       'seo_defaults'            => 'SEO по умолчанию',
       'notification_settings'   => 'Уведомления',
-      'maintenance_settings'    => 'Режим обслуживания',
+      'maintenance'             => 'Режим обслуживания',
     ],
     'delivery_settings' => [
       'fields' => [

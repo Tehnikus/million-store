@@ -774,20 +774,20 @@ return [
     'menu_editor' => [
       'navigation_label'  => 'Головне меню',
       'subheading'        => 'Тут можна змінити наповення головного меню',
-    ],
-    'blocks' => [
-      'category'          => 'Категорія',
-      'manufacturer'      => 'Виробник',
-      'title'             => 'Заголовок',
-      'rich_text'         => 'Форматований текст',
-      'product_card'      => 'Карточка товара',
-    ],
-    'buttons' => [
-      'add_element'       => 'Додати елемент меню',
-      'add_between'       => 'Додати між елементами',
+      'blocks' => [
+        'category'          => 'Категорія',
+        'manufacturer'      => 'Виробник',
+        'title'             => 'Заголовок',
+        'rich_text'         => 'Форматований текст',
+        'product_card'      => 'Карточка товара',
+      ],
+      'buttons' => [
+        'add_element'       => 'Додати елемент меню',
+        'add_between'       => 'Додати між елементами',
+      ],
     ],
     'layout_editor' => [
-      'navigation_label'    => 'Редактор макетов',
+      'navigation_label'    => 'Редактор макетів',
       'subheading'          => 'Тут можна змінити розташування блоків на основних сторінках',
     ],
     'image_settings' => [
@@ -910,7 +910,7 @@ return [
       'analytics_settings'      => 'Аналітка',
       'seo_defaults'            => 'SEO за замовченням',
       'notification_settings'   => 'Повідомлення',
-      'maintenance_settings'    => 'Режим обслуговування',
+      'maintenance'             => 'Режим обслуговування',
     ],
     'delivery_settings' => [
       'fields' => [
