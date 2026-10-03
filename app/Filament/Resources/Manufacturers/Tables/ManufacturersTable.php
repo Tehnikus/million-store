@@ -28,7 +28,7 @@ class ManufacturersTable
             ->emptyStateIcon(NavigationItem::Manufacturers->icon())
             ->emptyStateHeading(__('admin.catalog.manufacturers.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.manufacturers.helpers.group_title'))
-            ->modifyQueryUsing(fn($query) => $query->with('products')->where('store_id', $store->id))
+            ->modifyQueryUsing(fn($query) => $query->with(['products', 'parent'])->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -40,11 +40,16 @@ class ManufacturersTable
                     ->label(__('admin.catalog.manufacturers.model_label_singular')),
 
                 SelectColumn::make('parent_id')
-                    ->optionsRelationship(name: 'parent', titleAttribute: 'name')
+                    ->options(fn (?Manufacturer $record) => $record 
+                        ? Manufacturer::manufacturerChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                        : Manufacturer::manufacturerChoices($store->id)
+                    )
+                    ->searchableOptions(true)
                     ->native(false)
                     ->wrapHeader()
                     ->width('220px')
-                    ->label(__('admin.catalog.manufacturers.fields.parent_id')),
+                    ->label(__('admin.catalog.manufacturers.fields.parent_id'))
+                    ->placeholder(__('admin.catalog.manufacturers.fields.is_root')),
 
                 TextColumn::make('products')
                     ->getStateUsing(fn(Manufacturer $record) => $record->products->count())

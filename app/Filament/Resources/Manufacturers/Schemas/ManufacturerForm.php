@@ -30,18 +30,13 @@ class ManufacturerForm
                         Tab::make(__('admin.common.tabs.content'))
                             ->schema([
                                 Select::make('parent_id')
-                                    ->label(__('admin.catalog.manufacturers.fields.parent_id'))
-                                    ->relationship(
-                                        name: 'parent', // Function name in Manufacturer model
-                                        titleAttribute: 'name',
-                                        ignoreRecord: true,
-                                        modifyQueryUsing: fn(Builder $query, $record) => $query->where('store_id', Filament::getTenant()->id)
-                                        // ->whereNot('parent_id', $record?->id),
+                                    ->options(fn (?Manufacturer $record) => $record 
+                                        ? Manufacturer::manufacturerChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                                        : Manufacturer::manufacturerChoices($store->id)
                                     )
-                                    ->getOptionLabelFromRecordUsing(fn(Manufacturer $record) => $record->name)
                                     ->searchable()
                                     ->preload()
-                                    ->default(null)
+                                    ->label(__('admin.catalog.manufacturers.fields.parent_id'))
                                     ->placeholder(__('admin.catalog.manufacturers.fields.is_root'))
                                     ->helperText(__('admin.catalog.manufacturers.helpers.parent_id')),
 

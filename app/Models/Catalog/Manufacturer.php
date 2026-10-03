@@ -88,6 +88,17 @@ class Manufacturer extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    /**
+     * Descendants manufacturer tree
+     * @return Collection
+     */
+    public function descendants(): Collection
+    {
+        return $this->children()
+            ->get()
+            ->flatMap(fn (self $child) => collect([$child])->merge($child->descendants()));
+    }
+
     // Reverse manufacturer relation for ManageManufacturerProducts
     public function products(): BelongsToMany
     {
