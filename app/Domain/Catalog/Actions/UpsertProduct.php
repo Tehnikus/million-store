@@ -3,6 +3,7 @@
 namespace App\Domain\Catalog\Actions;
 
 use App\Domain\Catalog\FacetType;
+use App\Domain\Catalog\Search\SearchIndexer;
 use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\Product;
 use App\Models\Catalog\ProductDescription;
@@ -130,6 +131,9 @@ class UpsertProduct
             app(SyncProductFacets::class)->handle($product->id, $storeId, FacetType::Tag,            $tagFacets);
             app(SyncProductFacets::class)->handle($product->id, $storeId, FacetType::OptionValue,    $optionFacets);
             app(SyncProductFacets::class)->handle($product->id, $storeId, FacetType::AttributeValue, $attributeFacets);
+            
+            // Rebuild vector serach index
+            app(SearchIndexer::class)->rebuildProduct($product->id, $storeId);
 
             // Update product_options
             ProductOption::where('product_id', $product->id)
