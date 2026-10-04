@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogComments\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Blog\BlogComment;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -27,6 +28,9 @@ class BlogCommentsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->emptyStateIcon(NavigationItem::BlogComments->icon())
+            ->emptyStateHeading(__('admin.blog.comments.navigation_label'))
+            ->emptyStateDescription(__('admin.blog.comments.helpers.empty_state_message'))
             ->columns([
                 TextColumn::make('blogPost.name')
                     ->limit(30)

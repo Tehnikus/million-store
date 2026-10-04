@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogTags\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
@@ -18,6 +19,9 @@ class BlogTagsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->emptyStateIcon(NavigationItem::BlogTags->icon())
+            ->emptyStateHeading(__('admin.blog.tags.navigation_label'))
+            ->emptyStateDescription(__('admin.blog.tags.helpers.empty_state_message'))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')

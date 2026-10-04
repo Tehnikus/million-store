@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BlogPosts\Tables;
 
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use Filament\Actions\BulkActionGroup;
@@ -18,6 +19,9 @@ class BlogPostsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->emptyStateIcon(NavigationItem::BlogPosts->icon())
+            ->emptyStateHeading(__('admin.blog.posts.navigation_label'))
+            ->emptyStateDescription(__('admin.blog.posts.helpers.empty_state_message'))
             ->modifyQueryUsing(fn ($query) => $query->with('blogTags')->with('author')->with('comments'))
             ->columns([
                 ConversionImageColumn::make('images')

@@ -632,7 +632,8 @@ return [
         'add_social_link' => 'Add author social link'
       ],
       'helpers' => [
-        'avatar' => 'Displayed in every author\'s post and on author\'s page '
+        'avatar'              => 'Displayed in every author\'s post and on author\'s page',
+        'empty_state_message' => 'Blog authors allow blog posts to be categorized by author. This improves navigation and builds trust with search engines',
       ],
     ],
     'comments' => [
@@ -666,6 +667,9 @@ return [
         'admin_reply'        => 'Admin reply',
         'customer_comment'   => 'Customer comment',
         'store_reply_author' => 'Store reply author',
+      ],
+      'helpers' => [
+        'empty_state_message' => 'Here you can edit visitor comments on your blog posts',
       ]
     ],
     'tags'  => [
@@ -681,6 +685,7 @@ return [
       ],
       'helpers' => [
         'manage_posts_title' => 'Posts in ":name" tag',
+        'empty_state_message' => 'Blog post tags allow you to categorize articles by topic. Multiple tags can be assigned to a single article',
       ],
     ],
     'posts' => [
@@ -694,7 +699,8 @@ return [
         'created_at'  => 'Created at',
       ],
       'helpers' => [
-        'tags' => 'Which tags this post is related to'
+        'tags'                => 'Which tags this post is related to',
+        'empty_state_message' => 'Your blog posts will be displayed here. You can link products to posts to display product links on the post pages',
       ],
     ]
   ],
