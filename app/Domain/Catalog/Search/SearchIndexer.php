@@ -351,9 +351,11 @@ class SearchIndexer
      * Note the form copies the global name into the override when an attribute/option is picked, so an override
      * is a snapshot: renaming the global entity later does not change what this product shows (or indexes).
      *
+     * Public because the product form reuses it to label the "excluded from search" tags with the same names.
+     *
      * @return array<string, array<int, array<string, string>>>  e.g. ['attribute' => [2 => ['ru' => 'Дисплей']], 'option_value' => [...]]
      */
-    private function nameOverrides(ProductDescription $description): array
+    public function nameOverrides(ProductDescription $description): array
     {
         $sources = [
             [$description->attributes_description, 'attribute_id', 'attribute_value_id', SearchRefType::Attribute, SearchRefType::AttributeValue],
