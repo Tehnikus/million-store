@@ -297,6 +297,18 @@ class OptionsTab
             ->unique(fn ($row) => "{$row['option_id']}-{$row['option_value_id']}")
             ->groupBy('option_id');
 
+        if ($selected->isEmpty()) {
+            $set('description.options_description', []);
+            return;
+        }
+
+        // Get all data batches in two queries instead of N+1 query for every value
+        $optionModels = Option::whereIn('id', $selected->keys()->all())->get()->keyBy('id');
+        $valueModels  = OptionValue::whereIn(
+            'id',
+            $selected->flatMap(fn ($rows) => $rows)->pluck('option_value_id')->all()
+        )->get()->keyBy('id');
+
         $current   = collect($get('description.options_description'));
         $productId = $record?->id;
 
@@ -308,33 +320,33 @@ class OptionsTab
                 ?->options_description
             : null;
 
-        $rebuilt = $selected->map(function ($rows, $optionId) use ($current, $override) {
+        $rebuilt = $selected->map(function ($rows, $optionId) use ($current, $override, $optionModels, $valueModels) {
             $existingOption = $current->first(fn ($o) => (int) ($o['option_id'] ?? null) === (int) $optionId);
             $existingValues = collect($existingOption['description'] ?? []);
 
-            $values = $rows->map(function ($row) use ($existingValues, $override, $optionId) {
+            $values = $rows->map(function ($row) use ($existingValues, $override, $optionId, $valueModels) {
                 return $existingValues->first(fn ($v) => (int) ($v['option_value_id'] ?? null) === $row['option_value_id'])
-                    ?? static::defaultOptionValueData($row['option_value_id'], $optionId, $override);
+                    ?? static::defaultOptionValueData($valueModels->get($row['option_value_id']), $row['option_value_id'], $optionId, $override);
             })->values()->all();
 
             return [
                 'option_id'   => $optionId,
-                'name'        => $existingOption['name'] ?? static::defaultOptionName($optionId, $override),
+                'name'        => $existingOption['name'] ?? static::defaultOptionName($optionModels->get($optionId), $optionId, $override),
                 'description' => $values,
             ];
         })->values()->all();
-        
+
         $set('description.options_description', $rebuilt);
     }
 
-    protected static function defaultOptionName(int $optionId, ?array $override): array
+    protected static function defaultOptionName(?Option $default, int $optionId, ?array $override): array
     {
-        $default = Option::find($optionId);
-        if (!$default)
+        if (!$default) {
             return [];
+        }
 
         $overrideGroup = collect($override)
-            ->first(fn($group) => (int) ($group['option_id'] ?? null) === $optionId);
+            ->first(fn ($group) => (int) ($group['option_id'] ?? null) === $optionId);
 
         $nameOverride = $overrideGroup['name'] ?? [];
         $result = [];
@@ -346,9 +358,9 @@ class OptionsTab
         return $result;
     }
 
-    protected static function defaultOptionValueData(int $valueId, int $optionId, ?array $override): array
+    protected static function defaultOptionValueData(?OptionValue $model, int $valueId, int $optionId, ?array $override): array
     {
-        $default = OptionValue::find($valueId)?->toArray();
+        $default = $model?->toArray();
         if (!$default) {
             return ['option_value_id' => $valueId, 'name' => [], 'description' => []];
         }
