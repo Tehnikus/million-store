@@ -34,20 +34,36 @@ class PricesTab
                                         'discount_percent'  => __('admin.catalog.products.tabs.prices.labels.discount_percent'),
                                     ])
                                     ->colors([
-                                        'is_base'           => 'success',
-                                        'discount_amount'   => 'primary',
-                                        'discount_percent'  => 'primary',
+                                        'is_base'           => 'primary',
+                                        'discount_amount'   => 'success',
+                                        'discount_percent'  => 'success',
                                     ])
-                                    ->default('is_base')
-                                    ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
+                                    ->default(fn(Get $get) => collect($get('../../priceTiers'))->contains(fn ($tier) => ($tier['status'] ?? null) === 'is_base') ? 'discount_amount' : 'is_base')
+                                    ->disabled(fn (Get $get): bool => $get('status') === 'is_base')
+                                    ->disableOptionWhen(fn (string $value, Get $get): bool =>
+                                        $value === 'is_base'
+                                        && $get('status') !== 'is_base'
+                                        && collect($get('../../priceTiers'))->contains(fn ($tier) => ($tier['status'] ?? null) === 'is_base')
+                                        // && \count($get('../../priceTiers')) <= 1
+                                    )
                                     ->required()
                                     ->grouped()
                                     ->live()
                                     ->partiallyRenderComponentsAfterStateUpdated(['discount'])
-                                    ->inline(),
+                                    ->inline()
+                                    ->fullWidth()
+                                    ->label(__('admin.catalog.products.tabs.prices.labels.status'))
+                                    ->helperText(__('admin.catalog.products.tabs.prices.helpers.status')),
                                 
                                 TextInput::make('discount')
                                     ->label(function(Get $get) {
+                                        return match ($get('status')) {
+                                            'discount_percent' => __('admin.catalog.products.tabs.prices.labels.discount_percent'),
+                                            'discount_amount'  => __('admin.catalog.products.tabs.prices.labels.discount_amount'),
+                                            default            => null,
+                                        };
+                                    })
+                                    ->placeholder(function(Get $get) {
                                         return match ($get('status')) {
                                             'discount_percent' => __('admin.catalog.products.tabs.prices.labels.discount_percent'),
                                             'discount_amount'  => __('admin.catalog.products.tabs.prices.labels.discount_amount'),
@@ -106,35 +122,35 @@ class PricesTab
                                 ->label(__('admin.catalog.products.tabs.prices.labels.price_name'))
                                 ->helperText(__('admin.catalog.products.tabs.prices.helpers.price_name')),
 
-
                                 Select::make('customer_group_id')
                                     ->options(fn() => static::customerGroupChoices($store->id))
-                                    ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
+                                    ->disabled(fn (Get $get): bool => $get('status') === 'is_base')
+                                    ->visible(fn(Get $get) => $get('status') !== 'is_base')
                                     ->placeholder(__('admin.catalog.products.tabs.prices.labels.no_group'))
                                     ->label(__('admin.catalog.products.tabs.prices.labels.customer_group'))
                                     ->helperText(__('admin.catalog.products.tabs.prices.helpers.customer_group')),
 
-                                Group::make([
-                                    TextInput::make('priority')
-                                        ->numeric()
-                                        // ->live()
-                                        ->default(fn (Get $get): int => \count($get('../../priceTiers')))
-                                        ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
-                                        ->columnSpan(1)
-                                        ->label(__('admin.catalog.products.tabs.prices.labels.priority'))
-                                        ->placeholder(__('admin.catalog.products.tabs.prices.labels.priority_placeholder'))
-                                        ->helperText(__('admin.catalog.products.tabs.prices.helpers.priority')),
-                                    TextInput::make('valid_quantity')
-                                        ->numeric()
-                                        ->nullable()
-                                        ->columnSpan(1)
-                                        ->default(1)
-                                        ->disabled(fn (Get $get): bool => \count($get('../../priceTiers')) <= 1)
-                                        ->label(__('admin.catalog.products.tabs.prices.labels.valid_quantity'))
-                                        ->placeholder(__('admin.catalog.products.tabs.prices.labels.pcs'))
-                                        ->helperText(__('admin.catalog.products.tabs.prices.helpers.valid_quantity')),
-                                ])
-                                ->columns(2),
+                                TextInput::make('priority')
+                                    ->numeric()
+                                    // ->live()
+                                    ->default(fn (Get $get) => collect($get('../../priceTiers'))->count())
+                                    ->disabled(fn (Get $get): bool => $get('status') === 'is_base')
+                                    ->visible(fn(Get $get) => $get('status') !== 'is_base')
+                                    ->columnSpan(1)
+                                    ->label(__('admin.catalog.products.tabs.prices.labels.priority'))
+                                    ->placeholder(__('admin.catalog.products.tabs.prices.labels.priority_placeholder'))
+                                    ->helperText(__('admin.catalog.products.tabs.prices.helpers.priority')),
+
+                                TextInput::make('valid_quantity')
+                                    ->numeric()
+                                    ->nullable()
+                                    ->columnSpan(1)
+                                    ->default(1)
+                                    ->disabled(fn (Get $get): bool => $get('status') === 'is_base')
+                                    ->visible(fn(Get $get) => $get('status') !== 'is_base')
+                                    ->label(__('admin.catalog.products.tabs.prices.labels.valid_quantity'))
+                                    ->placeholder(__('admin.catalog.products.tabs.prices.labels.pcs'))
+                                    ->helperText(__('admin.catalog.products.tabs.prices.helpers.valid_quantity')),
 
                                 FusedGroup::make([
                                     DateTimePicker::make('date_valid_from')
@@ -163,6 +179,12 @@ class PricesTab
                             ->columnSpan(2)
                             ->dense(),
                     ])
+                    ->rule(fn () => function (string $attribute, $value, \Closure $fail) {
+                        $baseCount = collect($value)->filter(fn ($tier) => ($tier['status'] ?? null) === 'is_base')->count();
+                        if ($baseCount !== 1) {
+                            $fail(__('admin.catalog.products.tabs.prices.errors.exactly_one_base'));
+                        }
+                    })
                     ->addActionLabel(__('admin.catalog.products.tabs.prices.buttons.add_price_tier'))
                     ->label(__('admin.catalog.products.tabs.prices.labels.price_tiers'))
                     ->belowLabel(__('admin.catalog.products.tabs.prices.helpers.price_tiers'))

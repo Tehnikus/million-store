@@ -119,6 +119,7 @@ return [
             'valid_until'       => 'Price valid until date',
             'customer_group'    => 'Customer group',
             'no_group'          => 'All customers',
+            'status'            => 'Price tier type',
             'is_base'           => 'Base price',
             'discount_amount'   => 'Discount amount',
             'discount_percent'  => 'Discount percent',
@@ -130,7 +131,8 @@ return [
             'priority_placeholder' => 'Greater number = more priority',
           ],
           'helpers' => [
-            'price_tiers'       => 'Each price tier contains the prices of all product variants in all currencies. A product must always have a base price level - that is, prices without discounts or conditions. To add discounts, create an additional price tier',
+            'price_tiers'       => 'Each price tier contains the prices of all product variants in all currencies',
+            'status'            => 'A product must always have a base price level - that is, prices without discounts or conditions. To add discounts, create an additional price tier',
             'price_name'        => 'Displayed as badge near the price. Leave blank if you don\'t need this',
             'valid_quantity'    => 'Minimal product quantity in cart to apply this price',
             'priority'          => 'If multiple prices have similar appliance conditions, the higher priority price will be used',
@@ -151,7 +153,7 @@ return [
             'from_qty'          => 'from :qty pcs'
           ],
           'errors' => [
-            'exactly_one_base' => 'The product must have base price'
+            'exactly_one_base' => 'The product must have a base price'
           ],
         ],
         'options' => [
