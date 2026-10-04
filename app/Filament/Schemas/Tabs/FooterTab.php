@@ -32,21 +32,6 @@ class FooterTab
                     TextInput::make('tab')->required()->placeholder(__('admin.common.fields.footer_tab')),
                     RichEditor::make('content')
                         ->columnSpanFull()
-                        ->resizableImages()
-                        ->toolbarButtons([
-                            ['bold', 'textColor'],
-                            ['h2', 'h3', 'h4'],
-                            ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
-                            ['blockquote', 'bulletList', 'orderedList'],
-                            ['table', 'attachFiles'],
-                            ['details', 'clearFormatting'],
-                            ['undo', 'redo'],
-                        ])
-                        ->floatingToolbars([
-                            'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor'],
-                            'heading' => ['h1', 'h2', 'h3', 'h4'],
-                            'table' => ['tableAddColumnBefore', 'tableAddColumnAfter', 'tableDeleteColumn', 'tableAddRowBefore', 'tableAddRowAfter', 'tableDeleteRow', 'tableMergeCells', 'tableSplitCell', 'tableToggleHeaderRow', 'tableToggleHeaderCell', 'tableDelete',],
-                        ])
                         ->extraInputAttributes([
                             'style' => 'min-height: 10rem; max-height: 50vh; overflow-y: auto;'
                         ])

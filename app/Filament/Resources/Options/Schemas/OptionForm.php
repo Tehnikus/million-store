@@ -130,10 +130,6 @@ class OptionForm
                                                 RichEditor::make("description.{$language->locale}")
                                                     ->columnSpanFull()
                                                     ->placeholder(__('admin.catalog.options.fields.description'))
-                                                    ->toolbarButtons([
-                                                        'paragraph' => ['bold', 'italic', 'underline', 'link', 'textColor', 'alignStart', 'alignCenter', 'alignEnd', 'alignJustify', 'clearFormatting', 'undo', 'redo']
-                                                    ])
-                                                    ->floatingToolbars([])
                                                     ->extraInputAttributes([
                                                         'style' => 'min-height: 7rem; max-height: 15vh; overflow-y: auto;'
                                                     ])
