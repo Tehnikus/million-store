@@ -38,6 +38,8 @@ return new class extends Migration
             $table->jsonb('how_to')->nullable()->default('{}');
             $table->jsonb('footer')->nullable()->default('{}');
             $table->jsonb('images')->nullable()->default('{}');
+            $table->jsonb('search_custom_terms')->nullable()->default('{}');
+            $table->jsonb('search_excluded_refs')->nullable()->default('{}');
             $table->timestamps();
             
             // Indexes
