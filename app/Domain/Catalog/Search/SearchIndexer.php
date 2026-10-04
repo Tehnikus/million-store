@@ -97,8 +97,9 @@ class SearchIndexer
         // Entities are language-independent, so load them once and reuse for every language
         $entities = $this->collectEntities($productId, $storeId, $description->search_excluded_refs ?? []);
         $refs     = $this->buildRefs($entities);
+        $overrides = $this->nameOverrides($description);
 
-        DB::transaction(function () use ($description, $productId, $storeId, $languageIds, $activeLanguages, $languages, $entities, $refs) {
+        DB::transaction(function () use ($description, $productId, $storeId, $languageIds, $activeLanguages, $languages, $entities, $refs, $overrides) {
 
             if ($languageIds === null) {
                 DB::table('product_search_index')
@@ -109,7 +110,7 @@ class SearchIndexer
             }
 
             foreach ($languages as $language) {
-                $texts = $this->buildTexts($description, $entities, $language->locale);
+                $texts = $this->buildTexts($description, $entities, $overrides, $language->locale);
 
                 // No name in this language = product is not translated there = not searchable there.
                 // Without this a row with only category/tag words would find untranslated products.
@@ -299,7 +300,7 @@ class SearchIndexer
     /**
      * @return array{a: string, b: string, c: string, d: string}
      */
-    private function buildTexts(ProductDescription $description, array $entities, string $locale): array
+    private function buildTexts(ProductDescription $description, array $entities, array $overrides, string $locale): array
     {
         // Name in this store and language; global_name is the fallback. Strict locale, no fallback locale:
         // an Ukrainian row must not be filled with Russian words.
@@ -314,8 +315,8 @@ class SearchIndexer
                 $this->translated($description, 'search_custom_terms', $locale),
             ]),
             'c' => $this->joinWords([
-                ...$this->groupWords($entities['attributes'], $locale),
-                ...$this->groupWords($entities['options'], $locale),
+                ...$this->groupWords($entities['attributes'], SearchRefType::Attribute, SearchRefType::AttributeValue, $overrides, $locale),
+                ...$this->groupWords($entities['options'], SearchRefType::Option, SearchRefType::OptionValue, $overrides, $locale),
             ]),
             'd' => $this->joinWords($this->names($entities['tags'], $locale)),
         ];
@@ -326,19 +327,63 @@ class SearchIndexer
      *
      * @return string[]
      */
-    private function groupWords(Collection $groups, string $locale): array
+    private function groupWords(Collection $groups, SearchRefType $groupRef, SearchRefType $valueRef, array $overrides, string $locale): array
     {
         $words = [];
 
         foreach ($groups as $item) {
-            $words[] = $this->translated($item['group'], 'name', $locale);
+            $words[] = $this->displayName($item['group'], $groupRef, $overrides, $locale);
 
             foreach ($item['values'] as $value) {
-                $words[] = $this->translated($value, 'name', $locale);
+                $words[] = $this->displayName($value, $valueRef, $overrides, $locale);
             }
         }
 
         return $words;
+    }
+
+    /**
+     * Per-product name overrides saved by the product form into product_descriptions:
+     *   attributes_description: [{attribute_id, name: {locale: ...}, description: [{attribute_value_id, name: {locale: ...}}]}]
+     *   options_description:    [{option_id,    name: {locale: ...}, description: [{option_value_id,    name: {locale: ...}}]}]
+     * The storefront shows these names, so the search must index them too.
+     *
+     * Note the form copies the global name into the override when an attribute/option is picked, so an override
+     * is a snapshot: renaming the global entity later does not change what this product shows (or indexes).
+     *
+     * @return array<string, array<int, array<string, string>>>  e.g. ['attribute' => [2 => ['ru' => 'Дисплей']], 'option_value' => [...]]
+     */
+    private function nameOverrides(ProductDescription $description): array
+    {
+        $sources = [
+            [$description->attributes_description, 'attribute_id', 'attribute_value_id', SearchRefType::Attribute, SearchRefType::AttributeValue],
+            [$description->options_description,    'option_id',    'option_value_id',    SearchRefType::Option,    SearchRefType::OptionValue],
+        ];
+
+        $overrides = [];
+
+        foreach ($sources as [$groups, $groupKey, $valueKey, $groupRef, $valueRef]) {
+            foreach ($groups ?? [] as $group) {
+                $overrides[$groupRef->value][(int) ($group[$groupKey] ?? 0)] = $group['name'] ?? [];
+
+                foreach ($group['description'] ?? [] as $value) {
+                    $overrides[$valueRef->value][(int) ($value[$valueKey] ?? 0)] = $value['name'] ?? [];
+                }
+            }
+        }
+
+        return $overrides;
+    }
+
+    /**
+     * Name as the storefront shows it: product override in this locale, else the global reference book name.
+     * An empty override falls back too (the form allows clearing it).
+     */
+    private function displayName(Model $model, SearchRefType $ref, array $overrides, string $locale): string
+    {
+        $override = trim((string) ($overrides[$ref->value][$model->getKey()][$locale] ?? ''));
+
+        return $override !== '' ? $override : $this->translated($model, 'name', $locale);
     }
 
     /**
