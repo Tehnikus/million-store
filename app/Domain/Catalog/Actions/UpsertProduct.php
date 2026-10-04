@@ -84,7 +84,7 @@ class UpsertProduct
             // Reset options descriptions if they were deleted. Otherwise non-existant array key is not written and product_descriptions.options_description is not reset
             $data['description']['options_description'] = [];
         }
-        if (!array_key_exists('attributes_description', $data)) {
+        if (!array_key_exists('attributes_description', $data['description'])) {
             // Reset attributes descriptions if they were deleted. Otherwise non-existant array key is not written and product_descriptions.attributes_description is not reset
             $data['description']['attributes_description'] = [];
         }
