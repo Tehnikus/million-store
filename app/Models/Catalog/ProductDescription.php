@@ -35,7 +35,8 @@ class ProductDescription extends Model
         'faq',
         'how_to',
         'footer',
-        'robots',
+        'search_custom_terms',
+        'search_excluded_refs',
     ];
 
     protected $casts = [
@@ -59,6 +60,8 @@ class ProductDescription extends Model
         'faq'                       => 'array',
         'how_to'                    => 'array',
         'footer'                    => 'array',
+        'search_custom_terms'       => 'array',
+        'search_excluded_refs'      => 'array',
     ];
     protected $translatable = [
         'name',
@@ -71,6 +74,7 @@ class ProductDescription extends Model
         'faq',
         'how_to',
         'footer',
+        'search_custom_terms'
     ];
 
     public function product(): BelongsTo
