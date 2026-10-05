@@ -23,7 +23,8 @@ class ImagesTab
     {
         return Tab::make('images')
             ->schema(self::schema($store, $languages, $config))
-            ->label(self::label());
+            ->label(self::label())
+            ->icon(Heroicon::OutlinedPhoto);
     }
 
     public static function schema($store, $languages, $config = []): array
