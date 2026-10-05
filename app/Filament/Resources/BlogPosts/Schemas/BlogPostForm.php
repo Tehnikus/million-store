@@ -32,33 +32,42 @@ class BlogPostForm
                     ->schema([
 
                         Tab::make(__('admin.common.tabs.content'))
+                            ->icon(Heroicon::PencilSquare)
+                            ->label(__('admin.common.tabs.content'))
                             ->schema([
-                                Toggle::make('is_active')
-                                    ->label(__('admin.blog.posts.fields.is_active'))
-                                    ->default(true),
-                                // Relation of blog post to blog tags
-                                Select::make('blog_tags')
-                                    ->label(__('admin.blog.tags.navigation_label'))
-                                    ->relationship(
-                                        name: 'blogTags', // Function name in BlogTags
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
-                                    )
-                                    ->getOptionLabelFromRecordUsing(fn(BlogTag $record) => $record->name)
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->helperText(__('admin.blog.posts.helpers.tags')),
-                                Select::make('author_id')
-                                    ->label(__('admin.blog.authors.model_label_singular'))
-                                    ->relationship(
-                                        name: 'author',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
-                                    )
-                                    ->getOptionLabelFromRecordUsing(fn(BlogAuthor $record) => $record->name)
-                                    ->searchable()
-                                    ->preload(),
+                                Section::make(__('admin.blog.posts.fields.main'))
+                                    ->description(__('admin.blog.posts.helpers.main'))
+                                    ->schema([
+
+                                        Toggle::make('is_active')
+                                            ->label(__('admin.blog.posts.fields.is_active'))
+                                            ->helperText(__('admin.blog.posts.helpers.is_active'))
+                                            ->default(true),
+                                        // Relation of blog post to blog tags
+                                        Select::make('blog_tags')
+                                            ->label(__('admin.blog.tags.navigation_label'))
+                                            ->relationship(
+                                                name: 'blogTags', // Function name in BlogTags
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(fn(BlogTag $record) => $record->name)
+                                            ->multiple()
+                                            ->searchable()
+                                            ->preload()
+                                            ->helperText(__('admin.blog.posts.helpers.tags')),
+                                        Select::make('author_id')
+                                            ->label(__('admin.blog.authors.model_label_singular'))
+                                            ->helperText(__('admin.blog.posts.helpers.author'))
+                                            ->relationship(
+                                                name: 'author',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(fn(BlogAuthor $record) => $record->name)
+                                            ->searchable()
+                                            ->preload(),
+                                    ]),
 
                                         Tabs::make('languages')
                                             ->schema([
