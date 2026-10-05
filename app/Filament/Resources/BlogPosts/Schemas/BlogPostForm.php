@@ -2,21 +2,21 @@
 
 namespace App\Filament\Resources\BlogPosts\Schemas;
 
-use App\Models\Blog\BlogTag;
-use App\Models\Blog\BlogAuthor;
-use App\Filament\Schemas\Tabs\DescriptionTab;
-use App\Filament\Schemas\Tabs\FaqTab;
-use App\Filament\Schemas\Tabs\HowToTab;
-use App\Filament\Schemas\Tabs\FooterTab;
-use App\Filament\Schemas\Tabs\ImagesTab;
+use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
+use App\Filament\Resources\Products\RelationManagers\BlogCommentsRelationManager;
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Models\Blog\{BlogComment, BlogPost, BlogTag, BlogAuthor};
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use Filament\Facades\Filament;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
-
 
 class BlogPostForm
 {
@@ -28,6 +28,7 @@ class BlogPostForm
         return $schema
             ->components([
                 Tabs::make('blog_post')
+                    ->contained(false)
                     ->schema([
 
                         Tab::make(__('admin.common.tabs.content'))
@@ -78,7 +79,21 @@ class BlogPostForm
                                             ])
 
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'blog_post'])
+
+                        ImagesTab::make($store, $languages, ['type' => 'blog_post']),
+
+                        Tab::make('reviews')
+                            ->label(__('admin.catalog.products.tabs.reviews.label'))
+                            ->icon(NavigationItem::BlogComments->icon())
+                            ->visible(fn(?BlogPost $record) => $record !== null)
+                            ->badge(fn(?BlogPost $record) => $record !== null ? (($count = BlogComment::where('blog_post_id', $record->id)->count()) ? $count : null) : null)
+                            ->schema([
+                                Livewire::make(BlogCommentsRelationManager::class, fn(?BlogPost $record, ?EditBlogPost $livewire) => [
+                                    'ownerRecord' => $record,
+                                    'pageClass'   => $livewire::class,
+                                ])
+                            ]),
+
                     ]),
             ]);
     }

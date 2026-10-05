@@ -45,17 +45,17 @@ class BlogPostResource extends Resource
             'index'     => ListBlogPosts::route('/'),
             'create'    => CreateBlogPost::route('/create'),
             'edit'      => EditBlogPost::route('/{record}/edit'),
-            'comments'  => ManageBlogPostComments::route('/{record}/comments')
+            // 'comments'  => ManageBlogPostComments::route('/{record}/comments')
         ];
     }
 
-    public static function getRecordSubNavigation(Page $page): array
-    {
-        return $page->generateNavigationItems([
-            EditBlogPost::class,
-            ManageBlogPostComments::class,
-        ]);
-    }
+    // public static function getRecordSubNavigation(Page $page): array
+    // {
+    //     return $page->generateNavigationItems([
+    //         EditBlogPost::class,
+    //         ManageBlogPostComments::class,
+    //     ]);
+    // }
 
     // Only search by name to avoid excessive overhead and search results bloat
     public static function getGloballySearchableAttributes(): array

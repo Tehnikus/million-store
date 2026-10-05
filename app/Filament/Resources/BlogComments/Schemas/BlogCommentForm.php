@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BlogCommentForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Schema $schema, $postId = null): Schema
     {
         return $schema
             ->components([
@@ -26,6 +26,8 @@ class BlogCommentForm
                         modifyQueryUsing: fn(Builder $query) => $query->where('store_id', Filament::getTenant()->id),
                     )
                     ->getOptionLabelFromRecordUsing(fn(BlogPost $record) => $record->name)
+                    ->default($postId)
+                    ->disabled(fn() => $postId !== null)
                     ->searchable()
                     ->preload()
                     ->required(),
