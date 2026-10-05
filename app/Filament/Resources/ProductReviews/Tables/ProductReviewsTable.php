@@ -50,10 +50,10 @@ class ProductReviewsTable
                     ->width('1%')
                     ->color('primary'),
 
-                TextColumn::make('review_body')
+                TextColumn::make('reviewsBody')
                     ->label(__('admin.catalog.product_reviews.fields.body'))
                     ->wrap()
-                    ->formatStateUsing(function (ProductReview $record) {
+                    ->getStateUsing(function (ProductReview $record) {
                         $stars = '';
                         $positives = [];
                         $negatives = [];

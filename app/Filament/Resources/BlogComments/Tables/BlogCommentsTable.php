@@ -48,11 +48,11 @@ class BlogCommentsTable
                     ->width('1%')
                     ->color('primary'),
 
-                TextColumn::make('body')
+                TextColumn::make('reviewsBody')
                     ->label(__('admin.blog.comments.fields.body'))
                     ->limit(60)
                     ->wrap()
-                    ->formatStateUsing(function (BlogComment $record) {
+                    ->getStateUsing(function (BlogComment $record) {
                         $stars = '';
                         if ($record->rating) {
                             $stars = '<div style="margin-bottom: 4px;">'
