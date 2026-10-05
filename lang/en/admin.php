@@ -246,7 +246,7 @@ return [
       ],
       'helpers' => [
         'parent_id'       => 'Select parent manufacturer or leave blank to set this manufacturer as Root',
-        'group_title'     => 'Product manufacturers are displayed on the product page as a logo and a link, as well as in the product filter. A product may have multiple associated manufacturers, but only the primary one is displayed on the product page.',
+        'group_title'     => 'Product manufacturers are displayed on the product page as a logo and a link, as well as in the product filter. A product may have multiple associated manufacturers, but only the primary one is displayed on the product page',
       ],
     ],
     'attributes' => [
@@ -446,7 +446,7 @@ return [
       'messages' => [
         'anonymize_title'       => 'Anonymize user data?',
         'anonymize_description' => 'This action is irreversible. All user personal data will be replaced with dummy placeholders',
-        'anonymize_confirm'     => 'I acknowledge, continue.',
+        'anonymize_confirm'     => 'I acknowledge, continue',
       ]
     ],
     'customer_groups' => [
@@ -692,6 +692,7 @@ return [
       'navigation_label'      => 'Posts',
       'model_label_singular'  => 'Post',
       'fields'  => [
+        'main'        => 'Main settings',
         'image'       => 'Image',
         'name'        => 'Name',
         'sort_order'  => 'Sort order',
@@ -699,7 +700,10 @@ return [
         'created_at'  => 'Created at',
       ],
       'helpers' => [
-        'tags'                => 'Which tags this post is related to',
+        'main'                => 'Blog post author, tags and display settings',
+        'is_active'           => 'Article display setting. If the article is disabled, it will not appear on the Blog or on related product pages',
+        'author'              => 'If an author is selected, the article page will display their name, avatar, a short description, and a link to the author\'s other articles',
+        'tags'                => 'Article tags provide simple, "flat" navigation. An article can have multiple tags',
         'empty_state_message' => 'Your blog posts will be displayed here. You can link products to posts to display product links on the post pages',
       ],
     ]
@@ -1018,8 +1022,8 @@ return [
             'model'             => 'Model'
           ],
           'helpers' => [
-            'prompt_settings'   => 'Create predefined prompts here. You will be able to select one of the prompts or edit it before sending the request to the AI.',
-            'providers'         => 'Add an AI service provider of your choice here. You can add multiple providers and select the one that fits your needs later on all edit pages in the modal dialog.',
+            'prompt_settings'   => 'Create predefined prompts here. You will be able to select one of the prompts or edit it before sending the request to the AI',
+            'providers'         => 'Add an AI service provider of your choice here. You can add multiple providers and select the one that fits your needs later on all edit pages in the modal dialog',
             'prompt'            => 'Write the prompt for the AI model here',
             'select_prompt'     => 'Select the provider and the prompt',
             'no_settings'       => 'To use AI features first set AI provider and API key in <a href=":url" style="color: var(--primary-500); font-weight: 600; text-decoration: underline;" target="_blank">Store settings</a>',
