@@ -140,6 +140,17 @@ class ProductForm
                                     'pageClass'   => $livewire::class,
                                 ])
                             ]),
+                        Tab::make('blogPosts')
+                            ->label(__('admin.catalog.products.tabs.blog_posts.label'))
+                            ->icon(NavigationItem::BlogPosts->icon())
+                            ->visible(fn(?Product $record) => $record !== null && $record->descriptions->where('store_id', $store->id)->first() !== null)
+                            ->badge(fn (?Product $record) => $record?->blogPosts()->count() ?: null)
+                            ->schema([
+                                Livewire::make(BlogPostsRelationManager::class, fn(?Product $record, ?EditProduct $livewire) => [
+                                    'ownerRecord' => $record,
+                                    'pageClass'   => $livewire::class,
+                                ])
+                            ]),
                         Tab::make('statistics')
                             ->label(__('admin.catalog.products.tabs.statistics.label'))
                             ->icon(NavigationItem::Orders->icon())
