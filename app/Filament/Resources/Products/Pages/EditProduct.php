@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Livewire\Attributes\On;
 
 
 class EditProduct extends EditRecord
@@ -148,8 +149,9 @@ class EditProduct extends EditRecord
         ];
     }
 
-    // public function hasCombinedRelationManagerTabsWithContent(): bool
-    // {
-    //     return true;
-    // }
+    #[On('refresh-tabs')]
+    public function refreshTabBadges(): void
+    {
+        // Empty method to refresh tab relation manager badges
+    }
 }

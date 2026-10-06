@@ -28,14 +28,14 @@ class ReviewsRelationManager extends RelationManager
             ->searchable(false)
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()->after(fn () => $this->refreshBadges()),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()->after(fn () => $this->refreshBadges()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->after(fn () => $this->refreshBadges()),
                 ]),
             ]);
     }
@@ -43,5 +43,11 @@ class ReviewsRelationManager extends RelationManager
     protected function getTableHeading(): string
     {
         return __('admin.catalog.products.tabs.reviews.label');
+    }
+
+    protected function refreshBadges(): void
+    {
+        $this->dispatch('refresh-tabs');
+        $this->dispatch('refresh-sidebar');
     }
 }
