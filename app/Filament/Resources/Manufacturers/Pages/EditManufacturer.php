@@ -6,6 +6,7 @@ use App\Filament\Resources\Manufacturers\ManufacturerResource;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Livewire\Attributes\On;
 
 class EditManufacturer extends EditRecord
 {
@@ -21,5 +22,11 @@ class EditManufacturer extends EditRecord
     public static function getNavigationIcon(): string
     {
         return NavigationItem::Manufacturers->icon();
+    }
+
+    #[On('refresh-tabs')]
+    public function refreshTabBadges(): void
+    {
+        // Empty method to refresh tab relation manager badges
     }
 }

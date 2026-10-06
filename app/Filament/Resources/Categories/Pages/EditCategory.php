@@ -6,6 +6,7 @@ use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Livewire\Attributes\On;
 
 class EditCategory extends EditRecord
 {
@@ -21,5 +22,11 @@ class EditCategory extends EditRecord
     public static function getNavigationIcon(): string
     {
         return NavigationItem::Categories->icon();
+    }
+
+    #[On('refresh-tabs')]
+    public function refreshTabBadges(): void
+    {
+        // Empty method to refresh tab relation manager badges
     }
 }
