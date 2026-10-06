@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Context;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
 use App\Domain\Media\Concerns\HasProcessedImages;
@@ -116,5 +118,28 @@ class BlogPost extends Model
     protected static function navigationBadgeResources(): array
     {
         return [BlogPostResource::class];
+    }
+
+        /**
+     * Cache blog posts list for select dropdowns with Octane support
+     * @param int $storeId
+     * @return Collection
+     */
+    public static function blogPostChoices(int $storeId): Collection
+    {
+        $key = __METHOD__ . ".{$storeId}";
+
+        if (Context::has($key)) {
+            return collect(Context::get($key));
+        }
+
+        $choices = self::query()
+            ->where('store_id', $storeId)
+            ->get()
+            ->mapWithKeys(fn (self $model) => [$model->id => $model->name]);
+
+        Context::add($key, $choices->all());
+
+        return $choices;
     }
 }
