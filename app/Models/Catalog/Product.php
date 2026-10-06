@@ -4,6 +4,7 @@ namespace App\Models\Catalog;
 
 use App\Domain\Catalog\FacetType;
 use App\Domain\Seo\HasSlugs;
+use App\Models\Blog\BlogPost;
 use App\Models\Catalog\FacetIndex;
 use App\Models\Catalog\ProductDescription;
 use App\Models\Catalog\ProductOption;
@@ -97,6 +98,13 @@ class Product extends Model
     public function attributeFacets(): HasMany
     {
         return $this->hasMany(FacetIndex::class)->where('facet_type_id', FacetType::AttributeValue->value);
+    }
+
+    public function blogPosts(): BelongsToMany
+    {
+        return $this->belongsToMany(BlogPost::class, 'product_blog_posts', 'product_id', 'blog_post_id')
+            ->withPivot(['store_id', 'post_sort_order'])
+            ->withTimestamps();
     }
 
     // // Reverse category relation for ManageCategoryProducts

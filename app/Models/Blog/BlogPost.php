@@ -4,6 +4,7 @@ namespace App\Models\Blog;
 
 use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
 use App\Filament\Resources\BlogPosts\BlogPostResource;
+use App\Models\Catalog\Product;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,6 +91,13 @@ class BlogPost extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(BlogComment::class, 'blog_post_id');
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'product_blog_posts', 'blog_post_id', 'product_id')
+            ->withPivot(['store_id', 'product_sort_order'])
+            ->withTimestamps();
     }
 
     // Required for image conversions
