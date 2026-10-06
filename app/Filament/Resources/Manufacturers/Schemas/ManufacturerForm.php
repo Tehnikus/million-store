@@ -2,7 +2,11 @@
 
 namespace App\Filament\Resources\Manufacturers\Schemas;
 
+use App\Filament\Resources\Manufacturers\Pages\EditManufacturer;
+use App\Filament\Resources\Products\RelationManagers\ManufacturerProductsRelationManager;
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Manufacturer;
+use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use App\Filament\Schemas\Tabs\DescriptionTab;
@@ -14,6 +18,7 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Forms\Components\Toggle;
 use Filament\Facades\Filament;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 
 class ManufacturerForm
@@ -26,8 +31,10 @@ class ManufacturerForm
         return $schema
             ->components([
                 Tabs::make('manufacturer')
+                    ->contained(false)
                     ->schema([
                         Tab::make(__('admin.common.tabs.content'))
+                            ->icon(Heroicon::OutlinedPencilSquare)
                             ->schema([
                                 Select::make('parent_id')
                                     ->options(fn (?Manufacturer $record) => $record 
@@ -65,7 +72,18 @@ class ManufacturerForm
                                         )
                                     ])
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'manufacturer'])
+                        ImagesTab::make($store, $languages, ['type' => 'manufacturer']),
+                        Tab::make('products')
+                            ->label(__('admin.blog.posts.tabs.products.label'))
+                            ->icon(NavigationItem::Products->icon())
+                            ->visible(fn(?Manufacturer $record) => $record !== null)
+                            ->badge(fn (?Manufacturer $record) => $record?->products()->count() ?: null)
+                            ->schema([
+                                Livewire::make(ManufacturerProductsRelationManager::class, fn(?Manufacturer $record, ?EditManufacturer $livewire) => [
+                                    'ownerRecord' => $record,
+                                    'pageClass'   => $livewire::class,
+                                ])
+                            ]),
                     ]),
             ]);
     }
