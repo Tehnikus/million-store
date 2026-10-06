@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Products\RelationManagers;
 use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Products\Tables\ProductsTable;
+use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Product;
 use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
@@ -24,6 +25,7 @@ class PostProductsRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
+        $parentRecord = $this->getOwnerRecord();
         return ProductsTable::configure($table)
             ->recordActions([
                 Action::make('editPost')
@@ -37,7 +39,7 @@ class PostProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
-                    ->modalHeading(__('admin.blog.posts.tabs.products.labels.attach_heading'))
+                    ->modalHeading(__('admin.common.helpers.manager_page_modal_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                     ->preloadRecordSelect()
                     ->recordSelect(fn (Select $select) => $select
                         ->options(fn (): array => $this->productOptions())
@@ -84,6 +86,6 @@ class PostProductsRelationManager extends RelationManager
 
     protected function getTableHeading(): string
     {
-        return __('admin.blog.posts.tabs.products.labels.table_heading');
+         return __('admin.common.helpers.manager_page_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $this->getOwnerRecord()?->name]);
     }
 }
