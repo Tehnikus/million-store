@@ -81,15 +81,14 @@ class SupermasterPanelProvider extends PanelProvider
             ->databaseTransactions() // Not sure if this works, needs test under PostgreSQL
             ->brandName('')          // Set brand name
             ->tenant(Store::class)   // Connect panel context to store: data, that belongs to single store will be changed according to current selected store
-            // Setpagination preferences
             ->bootUsing(function () {
                 Table::configureUsing(function (Table $table) {
                     $table
                         ->paginated([50, 100, 200]) // Set the available "items per page" dropdown options globally
                         ->defaultPaginationPageOption(50) // Set the default option selected initially
-                        ->modifyUngroupedRecordActionsUsing(fn (Action $action) => $action->iconButton())               
-                        ->filtersTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.filter')))
-                        ->columnManagerTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.columns')));
+                        ->modifyUngroupedRecordActionsUsing(fn (Action $action) => $action->iconButton()) // Always display table record actions as icons (hide text)
+                        ->filtersTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.filter'))) // Table filter button appearence and text 
+                        ->columnManagerTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.columns'))); // Table columns button appearence and text
                 });
 
                 Action::configureUsing(function (Action $action): void {
@@ -219,6 +218,7 @@ class SupermasterPanelProvider extends PanelProvider
                         ->columnSpanFull();
                 });
             })
+            ->sidebarWidth('20rem')
             ->sidebarCollapsibleOnDesktop() // Set admin main menu to collapsible
             ->maxContentWidth(Width::Full)  // Set main page content to fill width
             ->resourceCreatePageRedirect('index') // Redirect on resource create
