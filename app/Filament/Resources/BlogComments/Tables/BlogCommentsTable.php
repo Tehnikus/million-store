@@ -71,7 +71,10 @@ class BlogCommentsTable
                 ToggleColumn::make('is_approved')
                     ->label(__('admin.blog.comments.fields.is_approved'))
                     ->alignment(Alignment::Center)
-                    ->width('1%'),
+                    ->width('1%')
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                    }),
 
                 TextColumn::make('created_at')
                     ->label(__('admin.blog.comments.fields.created_at'))
