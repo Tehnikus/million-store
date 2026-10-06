@@ -3,14 +3,17 @@
 namespace App\Filament\Resources\Products\RelationManagers;
 
 use App\Domain\Catalog\Search\ProductSearch;
+use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Models\Catalog\Product;
+use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class PostProductsRelationManager extends RelationManager
@@ -23,6 +26,11 @@ class PostProductsRelationManager extends RelationManager
     {
         return ProductsTable::configure($table)
             ->recordActions([
+                Action::make('editPost')
+                    ->label(__('filament-actions::edit.single.label'))
+                    ->icon(Heroicon::PencilSquare)
+                    ->url(fn (Product $record): string => ProductResource::getUrl('edit', ['record' => $record]))
+                    ->openUrlInNewTab(),
                 DetachAction::make()
                     ->modalHeading(__('admin.blog.posts.tabs.products.labels.detach_heading'))
                     ->after(fn () => $this->dispatch('refresh-tabs')),
