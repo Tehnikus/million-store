@@ -84,7 +84,10 @@ class ProductReviewsTable
                 ToggleColumn::make('is_approved')
                     ->label(__('admin.catalog.product_reviews.fields.is_approved'))
                     ->alignment(Alignment::Center)
-                    ->width('1%'),
+                    ->width('1%')
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                    }),
 
                 TextColumn::make('created_at')
                     ->label(__('admin.catalog.product_reviews.fields.created_at'))
