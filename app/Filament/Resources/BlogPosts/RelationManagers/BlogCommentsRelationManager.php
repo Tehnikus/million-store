@@ -27,21 +27,21 @@ class BlogCommentsRelationManager extends RelationManager
         return BlogCommentsTable::configure($table)
             ->searchable(false)
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()->modalHeading(__('admin.blog.posts.tabs.comments.edit_modal_heading')),
+                DeleteAction::make()->after(fn () => $this->dispatch('refresh-tabs')),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()->after(fn () => $this->dispatch('refresh-tabs'))->modalHeading(__('admin.blog.posts.tabs.comments.create_modal_heading')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->after(fn () => $this->dispatch('refresh-tabs')),
                 ]),
             ]);
     }
 
     protected function getTableHeading(): string
     {
-        return __('admin.catalog.products.tabs.reviews.label');
+        return __('admin.blog.posts.tabs.comments.label');
     }
 }
