@@ -27,11 +27,11 @@ class BlogCommentsRelationManager extends RelationManager
         return BlogCommentsTable::configure($table)
             ->searchable(false)
             ->recordActions([
-                EditAction::make()->modalHeading(__('admin.blog.posts.tabs.comments.edit_modal_heading'))->after(fn () => $this->refreshBadges()),
+                EditAction::make()->modalHeading(__('admin.blog.posts.tabs.comments.labels.edit_modal_heading'))->after(fn () => $this->refreshBadges()),
                 DeleteAction::make()->after(fn () => $this->refreshBadges()),
             ])
             ->headerActions([
-                CreateAction::make()->after(fn () => $this->refreshBadges())->modalHeading(__('admin.blog.posts.tabs.comments.create_modal_heading')),
+                CreateAction::make()->after(fn () => $this->refreshBadges())->modalHeading(__('admin.blog.posts.tabs.comments.labels.create_modal_heading')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -42,7 +42,7 @@ class BlogCommentsRelationManager extends RelationManager
 
     protected function getTableHeading(): string
     {
-        return __('admin.blog.posts.tabs.comments.label');
+        return __('admin.blog.posts.tabs.comments.labels.table_heading');
     }
 
     protected function refreshBadges(): void

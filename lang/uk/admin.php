@@ -213,6 +213,9 @@ return [
         'inventory' => [
           'label' => 'Склад'
         ],
+        'blog_posts' => [
+          'label' => 'Статті',
+        ],
         'reviews' => [
           'label' => 'Відгуки',
         ],
@@ -373,7 +376,7 @@ return [
         'email'              => 'Email',
         'body'               => 'Текст відгуку',
         'rating'             => 'Рейтинг',
-        'is_approved'        => 'Схвалено',
+        'is_approved'        => 'Ухвалено',
         'created_at'         => 'Дата створення',
         'reply_body'         => 'Відповідь',
         'locale'             => 'Мова',
@@ -383,7 +386,7 @@ return [
         'negative_notes'     => 'Недоліки',
       ],
       'filters' => [
-        'is_approved'        => 'Схвалено',
+        'is_approved'        => 'Ухвалені',
         'rating'             => 'Рейтинг',
         'no_reply'           => 'Без відповіді',
       ],
@@ -691,6 +694,24 @@ return [
     'posts' => [
       'navigation_label'      => 'Статті',
       'model_label_singular'  => 'Стаття',
+      'tabs' => [
+        'products' => [
+          'label' => 'Товари',
+          'labels' => [
+            'table_heading'   => 'Пов\'язані товари',
+            'attach_heading'  => 'Прикріпити товари до цієї статті',
+            'detach_heading'  => 'Відкріпити товари від цієї статті',
+          ],
+        ],
+        'comments' => [
+          'label' => 'Відгуки',
+          'labels' => [
+            'table_heading'         => 'Керування відгуками отзывами',
+            'edit_modal_heading'    => 'Редагувати відгук до статті',
+            'create_modal_heading'  => 'Написати відгук до статті',
+          ],
+        ],
+      ],
       'fields'  => [
         'main'        => 'Основні настройки',
         'image'       => 'Фото',

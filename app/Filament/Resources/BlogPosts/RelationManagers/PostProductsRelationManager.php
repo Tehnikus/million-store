@@ -24,11 +24,12 @@ class PostProductsRelationManager extends RelationManager
         return ProductsTable::configure($table)
             ->recordActions([
                 DetachAction::make()
+                    ->modalHeading(__('admin.blog.posts.tabs.products.labels.detach_heading'))
                     ->after(fn () => $this->dispatch('refresh-tabs')),
             ])
             ->headerActions([
                 AttachAction::make()
-                    ->modalHeading(__('admin.blog.posts.tabs.products.attach_heading'))
+                    ->modalHeading(__('admin.blog.posts.tabs.products.labels.attach_heading'))
                     ->preloadRecordSelect()
                     ->recordSelect(fn (Select $select) => $select
                         ->options(fn (): array => $this->productOptions())
@@ -47,6 +48,7 @@ class PostProductsRelationManager extends RelationManager
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make()
+                        ->modalHeading(__('admin.blog.posts.tabs.products.labels.detach_heading'))
                         ->after(fn () => $this->dispatch('refresh-tabs')),
                 ]),
             ]);
@@ -74,6 +76,6 @@ class PostProductsRelationManager extends RelationManager
 
     protected function getTableHeading(): string
     {
-        return __('admin.blog.posts.tabs.products.label');
+        return __('admin.blog.posts.tabs.products.labels.table_heading');
     }
 }

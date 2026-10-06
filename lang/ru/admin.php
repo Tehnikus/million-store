@@ -213,6 +213,9 @@ return [
         'inventory' => [
           'label' => 'Склад'
         ],
+        'blog_posts' => [
+          'label' => 'Статьи',
+        ],
         'reviews' => [
           'label' => 'Отзывы',
         ],
@@ -691,6 +694,24 @@ return [
     'posts' => [
       'navigation_label'      => 'Статьи',
       'model_label_singular'  => 'Статья',
+      'tabs' => [
+        'products' => [
+          'label' => 'Товары',
+          'labels' => [
+            'table_heading'   => 'Связанные товары',
+            'attach_heading'  => 'Прикрепить товары к этой статье',
+            'detach_heading'  => 'Открепить товары от этой статьи',
+          ],
+        ],
+        'comments' => [
+          'label' => 'Отзывы',
+          'labels' => [
+            'table_heading'         => 'Управление отзывами',
+            'edit_modal_heading'    => 'Редактировать отзыв к статье',
+            'create_modal_heading'  => 'Написать отзыв к статье',
+          ],
+        ],
+      ],
       'fields'  => [
         'main'        => 'Основные настройки',
         'image'       => 'Фото',

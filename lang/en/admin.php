@@ -213,6 +213,9 @@ return [
         'inventory' => [
           'label' => 'Inventory'
         ],
+        'blog_posts' => [
+          'label' => 'Blog posts',
+        ],
         'reviews' => [
           'label' => 'Reviews',
         ],
@@ -691,6 +694,24 @@ return [
     'posts' => [
       'navigation_label'      => 'Posts',
       'model_label_singular'  => 'Post',
+      'tabs' => [
+        'products' => [
+          'label' => 'Products',
+          'labels' => [
+            'table_heading'   => 'Related products',
+            'attach_heading'  => 'Attach products to this blog post',
+            'detach_heading'  => 'Detach products from this blog post',
+          ],
+        ],
+        'comments' => [
+          'label' => 'Comments',
+          'labels' => [
+            'table_heading'         => 'Manage comments',
+            'edit_modal_heading'    => 'Edit blog post comment',
+            'create_modal_heading'  => 'Create blog post comment',
+          ],
+        ],
+      ],
       'fields'  => [
         'main'        => 'Main settings',
         'image'       => 'Image',

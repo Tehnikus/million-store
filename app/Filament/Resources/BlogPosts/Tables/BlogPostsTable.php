@@ -44,6 +44,14 @@ class BlogPostsTable
                     ->badge()
                     ->width('1%'),
 
+                TextColumn::make('products_count')
+                    ->counts('products')
+                    ->label(__('admin.catalog.products.navigation_label'))
+                    ->alignment(Alignment::Center)
+                    ->badge()
+                    ->width('1%')
+                    ->wrapHeader(),
+
                 TextColumn::make('comments_count')
                     ->counts('comments')
                     ->label(__('admin.blog.comments.navigation_label'))

@@ -87,17 +87,6 @@ class BlogPostForm
 
                         ImagesTab::make($store, $languages, ['type' => 'blog_post']),
 
-                        Tab::make('reviews')
-                            ->label(__('admin.blog.posts.tabs.reviews.label'))
-                            ->icon(NavigationItem::BlogComments->icon())
-                            ->visible(fn(?BlogPost $record) => $record !== null)
-                            ->badge(fn (?BlogPost $record) => $record?->comments()->count() ?: null)
-                            ->schema([
-                                Livewire::make(BlogCommentsRelationManager::class, fn(?BlogPost $record, ?EditBlogPost $livewire) => [
-                                    'ownerRecord' => $record,
-                                    'pageClass'   => $livewire::class,
-                                ])
-                            ]),
                         Tab::make('products')
                             ->label(__('admin.blog.posts.tabs.products.label'))
                             ->icon(NavigationItem::Products->icon())
@@ -110,6 +99,17 @@ class BlogPostForm
                                 ])
                             ]),
 
+                        Tab::make('reviews')
+                            ->label(__('admin.blog.posts.tabs.comments.label'))
+                            ->icon(NavigationItem::BlogComments->icon())
+                            ->visible(fn(?BlogPost $record) => $record !== null)
+                            ->badge(fn (?BlogPost $record) => $record?->comments()->count() ?: null)
+                            ->schema([
+                                Livewire::make(BlogCommentsRelationManager::class, fn(?BlogPost $record, ?EditBlogPost $livewire) => [
+                                    'ownerRecord' => $record,
+                                    'pageClass'   => $livewire::class,
+                                ])
+                            ]),
                     ]),
             ]);
     }
