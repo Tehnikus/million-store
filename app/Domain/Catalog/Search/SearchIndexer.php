@@ -17,7 +17,6 @@ use App\Models\Global\StoreLanguage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Builds product_search_index rows. The only place that knows how a search document is assembled.
@@ -38,15 +37,16 @@ use Illuminate\Support\Facades\Log;
  * Everything here is synchronous for now. If rebuilds ever move to queue jobs, only the callers change:
  * dispatch a job that calls rebuildProduct() / rebuildForEntity() instead of calling them directly.
  *
- * Do NOT bind as a singleton (Octane): the instance caches store languages and ts configs.
+ * Do NOT bind as a singleton (Octane): the instance caches store languages (and so does its TsConfigResolver).
  */
 class SearchIndexer
 {
     /** @var array<int, Collection<int, Language>> active languages per store */
     private array $storeLanguages = [];
 
-    /** @var array<string, string> requested ts_config name => name that actually exists in Postgres */
-    private array $tsConfigs = [];
+    public function __construct(private TsConfigResolver $tsConfigs)
+    {
+    }
 
     // ------------------------------------------------------------------------------------------
     // Public API
@@ -440,7 +440,7 @@ class SearchIndexer
             $productId,
             $storeId,
             $language->id,
-            $this->tsConfig($language),
+            $this->tsConfigs->resolve($language->ts_config),
             $texts['a'],
             $texts['b'],
             $texts['c'],
@@ -466,33 +466,5 @@ class SearchIndexer
                 ->select('language_id'))
             ->orderBy('id')
             ->get();
-    }
-
-    /**
-     * languages.ts_config is a free-form string, but a missing dictionary makes the ::regconfig cast fail
-     * and would break saving a product (inside a transaction it would also abort it).
-     * Fall back to 'simple' (no stemming, still searchable) and log it.
-     * Checked against the pg_ts_config catalog, limited to configs visible in the current search_path -
-     * exactly the ones the ::regconfig cast can resolve. Schema-qualified names ('public.ukrainian')
-     * are not supported here; install the dictionary into a schema on the search_path instead.
-     */
-    private function tsConfig(Language $language): string
-    {
-        $wanted = $language->ts_config ?: 'simple';
-
-        if (! isset($this->tsConfigs[$wanted])) {
-            $exists = (bool) DB::scalar(
-                'SELECT EXISTS (SELECT 1 FROM pg_ts_config WHERE cfgname = ? AND pg_ts_config_is_visible(oid))',
-                [$wanted]
-            );
-
-            if (! $exists) {
-                Log::warning("Search: text search config '{$wanted}' of language #{$language->id} does not exist in Postgres, using 'simple'.");
-            }
-
-            $this->tsConfigs[$wanted] = $exists ? $wanted : 'simple';
-        }
-
-        return $this->tsConfigs[$wanted];
     }
 }
