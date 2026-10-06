@@ -107,6 +107,16 @@ class Product extends Model
             ->withTimestamps();
     }
 
+    // Relation for products table
+    public function placementFacets(): HasMany
+    {
+        return $this->hasMany(FacetIndex::class)->whereIn('facet_type_id', [
+            FacetType::Category->value,
+            FacetType::Manufacturer->value,
+            FacetType::Tag->value,
+        ]);
+    }
+
     // // Reverse category relation for ManageCategoryProducts
     // public function categories(): BelongsToMany
     // {

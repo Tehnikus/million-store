@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Domain\Catalog\FacetType;
+use App\Models\Catalog\FacetIndex;
 use Arr;
+use Illuminate\Support\Js;
 use Number;
 use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Support\AdminMenu\NavigationItem;
@@ -53,7 +56,8 @@ class ProductsTable
                             })
                             // ->orderByDesc('priority')
                             ->with('prices'); // Join all tier prices
-                    }]);
+                    }])
+                    ->with(['placementFacets' => fn ($subQuery) => $subQuery->where('store_id', $storeId)]);
             })
             ->searchUsing(function (Builder $query, $search) use ($store): Builder {
                 if (filled($search)) {
@@ -92,7 +96,7 @@ class ProductsTable
                     ->searchable(isIndividual: true)
                     ->toggleable(isToggledHiddenByDefault: false),
 
-                MultilangTextColumn::make('productName')
+                MultilangTextColumn::make('productName') // TODO Fix individual search
                     ->recordColumnAll(fn ($record) => $record->currentDescription()?->getTranslations('name'))
                     ->placeholder(__('admin.catalog.products.table.columns.is_not_associated'))
                     ->label(__('admin.catalog.products.table.columns.store_name'))
@@ -116,6 +120,14 @@ class ProductsTable
                     ->searchable(isIndividual: true)
                     ->toggleable(isToggledHiddenByDefault: false),
 
+                TextColumn::make('placement')
+                    ->label(__('admin.catalog.products.table.columns.placement'))
+                    ->getStateUsing(fn (Product $record) => static::renderPlacement($record, $store->id))
+                    ->html()
+                    ->placeholder('--')
+                    ->wrapHeader()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                
                 TextColumn::make('descriptions.options_description')
                     ->formatStateUsing(fn ($record) => static::renderFacetGroups(
                         $record->currentDescription()?->options_description ?? [], 'description', 'success')
@@ -369,5 +381,45 @@ class ProductsTable
         $locale = app()->getLocale();
 
         return $translations[$locale] ?? Arr::first($translations) ?? '';
+    }
+
+    protected static function renderPlacement(Product $record, int $storeId): ?HtmlString
+    {
+        $groups = [
+            [FacetType::Category,     Category::categoryChoices($storeId),         'success', __('admin.catalog.products.table.filters.categories')],
+            [FacetType::Manufacturer, Manufacturer::manufacturerChoices($storeId), 'warning', __('admin.catalog.products.table.filters.manufacturers')],
+            [FacetType::Tag,          Tag::tagChoices($storeId),                   'info',    __('admin.catalog.products.table.filters.tags')],
+        ];
+
+        $html = collect($groups)
+            ->map(function (array $group) use ($record) {
+                [$type, $choices, $color, $label] = $group;
+
+                $badges = $record->placementFacets
+                    ->filter(fn (FacetIndex $facet) => $facet->facet_type_id === $type)
+                    ->map(fn (FacetIndex $facet) => $choices->get($facet->facet_value_id))
+                    ->filter()
+                    ->map(fn (string $name) => static::badge($name, $color))
+                    ->implode(' ');
+
+                if ($badges === '') {
+                    return null;
+                }
+
+                $tooltip = e(Js::from($label));
+
+                return "<span x-tooltip=\"{content: {$tooltip}, theme: \$store.theme, allowHTML: false}\">{$badges}</span>";
+            })
+            ->filter()
+            ->implode('<br>');
+
+        return $html !== '' ? new HtmlString($html) : null;
+    }
+
+    protected static function badge(string $text, string $color): string
+    {
+        return "<span class=\"inline-flex fi-color fi-color-{$color} fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm\">"
+            . e($text)
+            . '</span>';
     }
 }

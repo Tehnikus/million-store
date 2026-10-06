@@ -42,6 +42,7 @@ return [
           'updated_at'              => 'Updated',
           'valid_until'             => 'until',
           'store_name'              => 'Store name',
+          'placement'               => 'Placement',
           'is_active'               => 'Active in this store',
           'is_not_active'           => 'Not active in this store',
           'is_not_associated'       => 'Not associated to this store',

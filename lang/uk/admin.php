@@ -42,6 +42,7 @@ return [
           'updated_at'              => 'Змінено',
           'valid_until'             => 'до',
           'store_name'              => 'Назва в магазині',
+          'placement'               => 'Розміщення',
           'is_active'               => 'Активний у цьому магазині',
           'is_not_active'           => 'Неактивний у цьому магазині',
           'is_not_associated'       => 'Не зв\'язаний з цим магазином',

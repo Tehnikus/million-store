@@ -41,6 +41,7 @@ return [
           'created_at'              => 'Создан',
           'updated_at'              => 'Изменен',
           'valid_until'             => 'до',
+          'placement'               => 'Размещение',
           'store_name'              => 'Название в магазине',
           'is_active'               => 'Активен в этом магазине',
           'is_not_active'           => 'Неактивен в этом магазине',
