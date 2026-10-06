@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Filament\Resources\Products\Pages\EditProduct;
+use App\Filament\Resources\Products\RelationManagers\BlogPostsRelationManager;
 use App\Filament\Resources\Products\RelationManagers\ReviewsRelationManager;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
@@ -63,7 +64,7 @@ class ProductForm
                                             ->statePath('description.is_active')
                                             ->default(true)
                                             ->onIcon(Heroicon::Play)->onColor('success')
-                                            ->offIcon(Heroicon::Stop),
+                                            ->offIcon(Heroicon::Stop)->offColor('danger'),
                                         // Product status toggle
                                         Toggle::make('is_active')
                                             ->label(__('admin.catalog.products.tabs.content.labels.is_available'))
@@ -71,7 +72,7 @@ class ProductForm
                                             ->statePath('description.is_available')
                                             ->default(true)
                                             ->onIcon(Heroicon::ShoppingCart)->onColor('success')
-                                            ->offIcon(Heroicon::XMark)
+                                            ->offIcon(Heroicon::XMark)->offColor('danger')
                                     ]),
                                 Tabs::make('languages')
                                     ->schema([
@@ -111,6 +112,9 @@ class ProductForm
 
                         PlacementTab::make($store, $languages)
                             ->label(__('admin.catalog.products.tabs.placement.label'))
+                            ->icon(NavigationItem::Categories->icon()),
+                        SearchTab::make($store, $languages)
+                            ->label('Search')
                             ->icon(NavigationItem::Categories->icon()),
                         PricesTab::make($store, $currencies, $languages)
                             ->label(__('admin.catalog.products.tabs.prices.label'))
