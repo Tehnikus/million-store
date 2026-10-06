@@ -3,18 +3,14 @@
 namespace App\Filament\Resources\BlogPosts\Schemas;
 
 use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
-use App\Filament\Resources\Products\RelationManagers\BlogCommentsRelationManager;
+use App\Filament\Resources\Products\RelationManagers\{BlogCommentsRelationManager, PostProductsRelationManager};
 use App\Filament\Support\AdminMenu\NavigationItem;
-use App\Models\Blog\{BlogComment, BlogPost, BlogTag, BlogAuthor};
+use App\Models\Blog\{BlogPost, BlogTag, BlogAuthor};
 use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use Filament\Facades\Filament;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Livewire;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\{Livewire, Section, Tabs, Tabs\Tab};
+use Filament\Forms\Components\{Toggle, Select};
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -92,12 +88,23 @@ class BlogPostForm
                         ImagesTab::make($store, $languages, ['type' => 'blog_post']),
 
                         Tab::make('reviews')
-                            ->label(__('admin.catalog.products.tabs.reviews.label'))
+                            ->label(__('admin.blog.posts.tabs.reviews.label'))
                             ->icon(NavigationItem::BlogComments->icon())
                             ->visible(fn(?BlogPost $record) => $record !== null)
-                            ->badge(fn(?BlogPost $record) => $record !== null ? (($count = BlogComment::where('blog_post_id', $record->id)->count()) ? $count : null) : null)
+                            ->badge(fn (?BlogPost $record) => $record?->comments()->count() ?: null)
                             ->schema([
                                 Livewire::make(BlogCommentsRelationManager::class, fn(?BlogPost $record, ?EditBlogPost $livewire) => [
+                                    'ownerRecord' => $record,
+                                    'pageClass'   => $livewire::class,
+                                ])
+                            ]),
+                        Tab::make('products')
+                            ->label(__('admin.blog.posts.tabs.products.label'))
+                            ->icon(NavigationItem::Products->icon())
+                            ->visible(fn(?BlogPost $record) => $record !== null)
+                            ->badge(fn (?BlogPost $record) => $record?->products()->count() ?: null)
+                            ->schema([
+                                Livewire::make(PostProductsRelationManager::class, fn(?BlogPost $record, ?EditBlogPost $livewire) => [
                                     'ownerRecord' => $record,
                                     'pageClass'   => $livewire::class,
                                 ])
