@@ -981,30 +981,6 @@ return [
 
   // Stores
   'stores' => [
-    'navigation_label'      => 'Stores',
-    'model_label_singular'  => 'Store',
-    'fields' => [
-      'name'                => 'Name',
-      'host'                => 'Domain name',
-      'languages'           => 'Languages',
-      'currencies'          => 'Currencies',
-      'countries'           => 'Countries',
-      'is_active'           => 'Active',
-      'add_language'        => 'Add store language',
-      'add_currency'        => 'Add store currency',
-      'add_country'         => 'Add store country',
-    ],
-    'relations' => [
-      'languages' => [
-        'is_default' => 'Default language',
-        'is_active'  => 'Active for store',
-      ],
-    ],
-    'helpers' => [
-      'name'              => 'Name to display in admin panel',
-      'host'              => 'Store domain name name without http:// or https://. <br> Example <u><b>store.com</b></u>',
-      'host_placeholder'  => 'store.com'
-    ],
     'store_settings' => [
       'tabs' => [
         'ai_settings' => [
@@ -1132,6 +1108,43 @@ return [
         'add_region' => 'Not necessary, you can skip this',
         'iso_code'   => 'Country ISO code in two letter ISO 3166-1 alpha-2 format: UA, PL, US, GB, etc. ISO code is used in JSON-LD microdata to display Google rich snippets',
         'phone_code' => 'Phone code of country: +380, +48, +1, +44 to format phone numbers on checkout process',
+      ],
+    ],
+
+    'stores' => [
+      'navigation_label'      => 'Stores',
+      'model_label_singular'  => 'Store',
+      'labels' => [
+        'main'                => 'Main settings',
+        'localization'        => 'Localization settings',
+        'name'                => 'Name',
+        'host'                => 'Domain name',
+        'languages'           => 'Languages',
+        'currencies'          => 'Currencies',
+        'countries'           => 'Countries',
+        'is_active'           => 'Active',
+        'add_language'        => 'Add store language',
+        'add_currency'        => 'Add store currency',
+        'add_country'         => 'Add store country',
+      ],
+      'relations' => [
+        'languages' => [
+          'is_default' => 'Default language',
+          'is_active'  => 'Active for store',
+        ],
+      ],
+      'helpers' => [
+        'main'              => 'Set store\'s domain, store name that will be displayed in admin panel and store status',
+        'localization'      => 'Set the languages your customers will see, the currencies they can pay with, and the countries your store will ship products to',
+        'name'              => 'Name to display in admin panel',
+        'host'              => 'Store domain name name without http:// or https://. <br> Example <u><b>store.com</b></u>',
+        'is_active'         => 'Global store status. If the store is set inactive, the website will stop opening. Use in case on maintenance',
+        'host_placeholder'  => 'store.com'
+      ],
+      'errors' => [
+        'languages'         => 'At least one language must be active and selected as the default language',
+        'currencies'        => 'At least one currency must be active',
+        'countries'         => 'At least one country must be active',
       ],
     ],
 

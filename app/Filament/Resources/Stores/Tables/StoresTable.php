@@ -20,10 +20,10 @@ class StoresTable
                 $query->with(['countries', 'languages', 'currencies']);
             })
             ->columns([
-                TextColumn::make('name')->label(__('admin.stores.fields.name')),
-                TextColumn::make('host')->label(__('admin.stores.fields.host')),
-                TextColumn::make('countries.name')->label(__('admin.stores.fields.countries'))->badge()->width('1%')->alignment(Alignment::Center),
-                TextColumn::make('languages.locale')->label(__('admin.stores.fields.languages'))->badge()->width('1%')->alignment(Alignment::Center)
+                TextColumn::make('name')->label(__('admin.global.stores.labels.name')),
+                TextColumn::make('host')->label(__('admin.global.stores.labels.host')),
+                TextColumn::make('countries.name')->label(__('admin.global.stores.labels.countries'))->badge()->width('1%')->alignment(Alignment::Center),
+                TextColumn::make('languages.locale')->label(__('admin.global.stores.labels.languages'))->badge()->width('1%')->alignment(Alignment::Center)
                     // Get store active languages
                     ->getStateUsing(function (Store $record) {
                         return $record->languages
@@ -39,7 +39,7 @@ class StoresTable
                             ?->pivot->is_default;
                         return $isDefault ? 'success' : 'primary'; 
                     }),
-                TextColumn::make('currencies.sign')->label(__('admin.stores.fields.currencies'))->badge()->width('1%')->alignment(Alignment::Center),
+                TextColumn::make('currencies.sign')->label(__('admin.global.stores.labels.currencies'))->badge()->width('1%')->alignment(Alignment::Center),
             ])
             ->filters([
                 //
