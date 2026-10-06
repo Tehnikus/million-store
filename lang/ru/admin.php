@@ -228,6 +228,21 @@ return [
     'categories' => [
       'navigation_label'      => 'Категории',
       'model_label_singular'  => 'Категория',
+      'tabs' => [
+        'products' => [
+          'label' => 'Товары',
+          'labels' => [
+            'table_heading'   => 'Связанные товары',
+            'attach_heading'  => 'Прикрепить товары к этой категории',
+            'detach_heading'  => 'Открепить товары от этой категории',
+            'is_primary'      => 'Основная категория',
+            'make_primary'    => 'Сделать эту категорию основной',
+          ],
+          'helpers' => [
+            'empty_state' => 'Тут вы можете быстро добавить товары к этой категории',
+          ],
+        ],
+      ],
       'fields' => [
         'is_active'       => 'Активна',
         'is_root'         => 'Корневая',
@@ -242,6 +257,18 @@ return [
     'manufacturers' => [
       'navigation_label'      => 'Производители',
       'model_label_singular'  => 'Производитель',
+      'tabs' => [
+        'products' => [
+          'label' => 'Товары',
+          'labels' => [
+            'table_heading'   => 'Связанные товары',
+            'attach_heading'  => 'Прикрепить товары к этому производителя',
+            'detach_heading'  => 'Открепить товары от этого производителя',
+            'is_primary'      => 'Основной производитель',
+            'make_primary'    => 'Сделать этот производитель основным',
+          ],
+        ],
+      ],
       'fields'  => [
         'is_active'       => 'Активен',
         'is_root'         => 'Корневой',

@@ -228,6 +228,21 @@ return [
     'categories' => [
       'navigation_label'      => 'Categories',
       'model_label_singular'  => 'Category',
+      'tabs' => [
+        'products' => [
+          'label' => 'Products',
+          'labels' => [
+            'table_heading'   => 'Related products',
+            'attach_heading'  => 'Attach products to this category',
+            'detach_heading'  => 'Detach products from this category',
+            'is_primary'      => 'Primary category',
+            'make_primary'    => 'Make this category primary',
+          ],
+          'helpers' => [
+            'empty_state' => 'You can quickly add products to this category here',
+          ],
+        ],
+      ],
       'fields' => [
         'is_active'       => 'Active',
         'is_root'         => 'Root',
@@ -242,6 +257,18 @@ return [
     'manufacturers' => [
       'navigation_label'      => 'Manufacturers',
       'model_label_singular'  => 'Manufacturer',
+      'tabs' => [
+        'products' => [
+          'label' => 'Products',
+          'labels' => [
+            'table_heading'   => 'Related products',
+            'attach_heading'  => 'Attach products to this manufacturer',
+            'detach_heading'  => 'Detach products from this manufacturer',
+            'is_primary'      => 'Primary manufacturer',
+            'make_primary'    => 'Make this manufacturer primary',
+          ],
+        ],
+      ],
       'fields'  => [
         'is_active'       => 'Active',
         'is_root'         => 'Root',

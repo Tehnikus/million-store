@@ -228,6 +228,21 @@ return [
     'categories' => [
       'navigation_label'      => 'Категорії',
       'model_label_singular'  => 'Категорія',
+      'tabs' => [
+        'products' => [
+          'label' => 'Товари',
+          'labels' => [
+            'table_heading'   => 'Пов\'язані товари',
+            'attach_heading'  => 'Прикріпити товари до цієї категорії',
+            'detach_heading'  => 'Відкріпити товари від цієї категорії',
+            'is_primary'      => 'Основна категорія',
+            'make_primary'    => 'Зробити цю категорію основною',
+          ],
+          'helpers' => [
+            'empty_state' => 'Тут ви можете швидко додати товари до цієї категорії',
+          ],
+        ],
+      ],
       'fields' => [
         'is_active'       => 'Активна',
         'is_root'         => 'Коренева',
@@ -242,6 +257,18 @@ return [
     'manufacturers' => [
       'navigation_label'      => 'Виробники',
       'model_label_singular'  => 'Виробник',
+      'tabs' => [
+        'products' => [
+          'label' => 'Товари',
+          'labels' => [
+            'table_heading'   => 'Пов\'язані товари',
+            'attach_heading'  => 'Прикріпити товари до цього виробника',
+            'detach_heading'  => 'Відкріпити товари від цього виробника',
+            'is_primary'      => 'Основний виробник',
+            'make_primary'    => 'Зробити цей виробник основним',
+          ],
+        ],
+      ],
       'fields'  => [
         'is_active'       => 'Активний',
         'is_root'         => 'Кореневий',
