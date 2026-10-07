@@ -2,19 +2,26 @@
 
 namespace App\Filament\Resources\Tags\Schemas;
 
+use App\Filament\Resources\Products\RelationManagers\TagProductsRelationManager;
+use App\Filament\Resources\Tags\Pages\EditTag;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
 use App\Filament\Schemas\Tabs\FooterTab;
 use App\Filament\Schemas\Tabs\HowToTab;
 use App\Filament\Schemas\Tabs\ImagesTab;
+use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Models\Catalog\Tag;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\CodeEditor;
 use Filament\Forms\Components\CodeEditor\Enums\Language;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Livewire;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 class TagForm
 {
@@ -27,28 +34,32 @@ class TagForm
             ->components([
 
                 Tabs::make('tag')
+                    ->contained(false)
                     ->schema([
                         Tab::make(__('admin.common.tabs.content'))
+                            ->icon(Heroicon::OutlinedPencilSquare)
                             ->schema([
-
-                                Group::make([
-
-                                    Toggle::make('is_active')
-                                        ->label(__('admin.catalog.tags.fields.is_active'))
-                                        ->helperText(__('admin.catalog.tags.helpers.is_active'))
-                                        ->default(true),
-
-                                    Toggle::make('show_in_facets')
-                                        ->label(__('admin.catalog.tags.fields.show_in_facets'))
-                                        ->helperText(__('admin.catalog.tags.helpers.show_in_facets'))
-                                        ->default(true),
-                                ])
-                                ->columnSpanFull(),
-
-                                CodeEditor::make('inline_style')
-                                    ->language(Language::Css)
-                                    ->label(__('admin.catalog.tags.fields.inline_style'))
-                                    ->helperText(__('admin.catalog.tags.helpers.inline_style')),
+                                Section::make(__('admin.catalog.tags.tabs.content.labels.main'))
+                                    ->collapsible()
+                                    ->collapsed(fn($operation) => $operation !== 'create')
+                                    ->schema([
+                                        Group::make([
+                                            Toggle::make('is_active')
+                                                ->label(__('admin.catalog.tags.tabs.content.labels.is_active'))
+                                                ->helperText(__('admin.catalog.tags.tabs.content.helpers.is_active'))
+                                                ->default(true),
+                                            Toggle::make('show_in_facets')
+                                                ->label(__('admin.catalog.tags.tabs.content.labels.show_in_facets'))
+                                                ->helperText(__('admin.catalog.tags.tabs.content.helpers.show_in_facets'))
+                                                ->default(true),
+                                        ])
+                                        ->columnSpanFull(),
+        
+                                        CodeEditor::make('inline_style')
+                                            ->language(Language::Css)
+                                            ->label(__('admin.catalog.tags.tabs.content.labels.inline_style'))
+                                            ->helperText(__('admin.catalog.tags.tabs.content.helpers.inline_style')),
+                                    ]),
 
                                 Tabs::make('languages')
                                     ->schema([
