@@ -6,6 +6,7 @@ use App\Filament\Resources\Tags\TagResource;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Livewire\Attributes\On;
 
 class EditTag extends EditRecord
 {
@@ -21,5 +22,11 @@ class EditTag extends EditRecord
     public static function getNavigationIcon(): string
     {
         return NavigationItem::Tags->icon();
+    }
+
+    #[On('refresh-tabs')]
+    public function refreshTabBadges(): void
+    {
+        // Empty method to refresh tab relation manager badges
     }
 }
