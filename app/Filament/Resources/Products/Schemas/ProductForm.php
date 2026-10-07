@@ -113,9 +113,9 @@ class ProductForm
                         PlacementTab::make($store, $languages)
                             ->label(__('admin.catalog.products.tabs.placement.label'))
                             ->icon(NavigationItem::Categories->icon()),
-                        SearchTab::make($store, $languages)
-                            ->label('Search')
-                            ->icon(NavigationItem::Categories->icon()),
+                        // SearchTab::make($store, $languages)
+                        //     ->label('Search')
+                        //     ->icon(NavigationItem::Categories->icon()),
                         PricesTab::make($store, $currencies, $languages)
                             ->label(__('admin.catalog.products.tabs.prices.label'))
                             ->icon(NavigationItem::Currencies->icon()),
