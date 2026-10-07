@@ -90,12 +90,22 @@ return [
             'is_primary_manufacturer' => 'Primary manufacturer',
             'product_tags'            => 'Product tags',
             'tag'                     => 'Tag',
-            'sort_order'              => 'Sort order'
+            'sort_order'              => 'Sort order',
+            'search_custom_terms'     => 'Custom search terms',
+            'search_excluded_refs'    => 'Excluded search references',
+            'attribute_group'         => 'Attribute group',
+            'option_group'            => 'Option group',
+          ],
+          'placeholders' => [
+            'search_custom_terms'     => 'Custom search terms',
+            'search_excluded_refs'    => 'Categories, Manufacturers, Tags, Options, Attributes...',
           ],
           'helpers' => [
-            'categories'    => 'Select categories where product will be displayed. Primary category is used to build product URL',
-            'manufacturers' => 'Select manufacturers where product will be displayed. Primary manufacturer is used to display the manufacturer\'s logo and link on the product page',
-            'tags'          => 'Product tag is an additional way to group products together to show them on SEO filter page. They can be also displayed as badges on product miniature and product main image',
+            'categories'            => 'Select categories where product will be displayed. Primary category is used to build product URL',
+            'manufacturers'         => 'Select manufacturers where product will be displayed. Primary manufacturer is used to display the manufacturer\'s logo and link on the product page',
+            'tags'                  => 'Product tag is an additional way to group products together to show them on SEO filter page. They can be also displayed as badges on product miniature and product main image',
+            'search_custom_terms'   => 'You can add custom search terms so that this product can be found by searching for those words',
+            'search_excluded_refs'  => 'You can exclude search references so that this product will NOT be found by searching those references',
           ],
           'buttons' => [
             'add_tag'                 => 'Add product tag',
@@ -216,6 +226,7 @@ return [
         ],
         'blog_posts' => [
           'label' => 'Blog posts',
+          'empty_state' => 'Here you can attach Blog posts to this product. Attached posts will be displayed on product page in additional infos section',
         ],
         'reviews' => [
           'label' => 'Reviews',
@@ -229,55 +240,60 @@ return [
       'navigation_label'      => 'Categories',
       'model_label_singular'  => 'Category',
       'tabs' => [
+        'content' => [
+          'labels' => [
+            'main'            => 'Main settings',
+            'is_active'       => 'Active',
+            'is_root'         => 'Root',
+            'show_in_facets'  => 'Show in facets',
+            'parent_id'       => 'Parent category',
+          ],
+          'helpers' => [
+            'main'        => 'Parent category, status and filter block display',
+            'parent_id'   => 'Select parent category or leave blank to set this category as Root',
+          ],
+        ],
         'products' => [
           'label' => 'Products',
           'labels' => [
-            'table_heading'   => 'Related products',
-            'attach_heading'  => 'Attach products to this category',
-            'detach_heading'  => 'Detach products from this category',
             'is_primary'      => 'Primary category',
             'make_primary'    => 'Make this category primary',
           ],
-          'helpers' => [
-            'empty_state' => 'You can quickly add products to this category here',
-          ],
+          'empty_state' => 'You can quickly attach products to this category here',
         ],
       ],
-      'fields' => [
-        'is_active'       => 'Active',
-        'is_root'         => 'Root',
-        'show_in_facets'  => 'Show in facets',
-        'parent_id'       => 'Parent category',
-      ],
-      'helpers' => [
-        'parent_id'       => 'Select parent category or leave blank to set this category as Root',
-        'group_title'     => 'Categories are the primary way of grouping products. Each product can be associated to multiple categories',
+      'table' => [
+        'empty_state' => 'Categories are the primary way of grouping products. Each product can be associated to multiple categories',
       ],
     ],
     'manufacturers' => [
       'navigation_label'      => 'Manufacturers',
       'model_label_singular'  => 'Manufacturer',
       'tabs' => [
+        'content' => [
+          'labels' => [
+            'main'            => 'Main settings',
+            'is_active'       => 'Active',
+            'is_root'         => 'Root',
+            'show_in_facets'  => 'Show in facets',
+            'parent_id'       => 'Parent manufacturer',
+          ],
+          'helpers' => [
+            'main'        => 'Parent manufacturer, status and filter block display',
+            'parent_id'   => 'Select parent manufacturer or leave blank to set this manufacturer as Root',
+          ],
+        ],
         'products' => [
           'label' => 'Products',
           'labels' => [
-            'table_heading'   => 'Related products',
-            'attach_heading'  => 'Attach products to this manufacturer',
-            'detach_heading'  => 'Detach products from this manufacturer',
             'is_primary'      => 'Primary manufacturer',
             'make_primary'    => 'Make this manufacturer primary',
           ],
+          'empty_state' => 'You can quickly attach products to this manufacturer here',
         ],
       ],
-      'fields'  => [
-        'is_active'       => 'Active',
-        'is_root'         => 'Root',
-        'show_in_facets'  => 'Show in facets',
-        'parent_id'       => 'Parent manufacturer',
-      ],
-      'helpers' => [
-        'parent_id'       => 'Select parent manufacturer or leave blank to set this manufacturer as Root',
-        'group_title'     => 'Product manufacturers are displayed on the product page as a logo and a link, as well as in the product filter. A product may have multiple associated manufacturers, but only the primary one is displayed on the product page',
+      'table' => [
+        'group_title' => 'Product manufacturers are displayed on the product page as a logo and a link, as well as in the product filter. A product may have multiple associated manufacturers, but only the primary one is displayed on the product page',
       ],
     ],
     'attributes' => [
@@ -344,17 +360,29 @@ return [
     'tags' => [
       'navigation_label'      => 'Tags',
       'model_label_singular'  => 'Tag',
-      'fields'  => [
-        'show_in_facets'  => 'Show in filter',
-        'is_active'       => 'Active',
-        'inline_style'    => 'Inline style',
-      ],
-      'helpers' => [
-        'is_active'       => 'Show this tag on product page in tag cloud and in filter block',
-        'show_in_facets'  => 'Show this tag in filter block',
-        'inline_style'    => 'Inline style to be applied to your tag on product miniature and product page',
-        'group_title'     => 'Tags are used to group products when you need to combine items into a group and create a landing page for them. Tags are also displayed in products filter',
-      ],
+      'tabs' => [
+        'content' => [
+          'labels'  => [
+            'main'            => 'Main settings',
+            'show_in_facets'  => 'Show in filter',
+            'is_active'       => 'Active',
+            'inline_style'    => 'Inline style',
+          ],
+          'helpers' => [
+            'main'            => 'Inline style, status and filter block display',
+            'is_active'       => 'Show this tag on product page in tag cloud and in filter block',
+            'show_in_facets'  => 'Show this tag in filter block',
+            'inline_style'    => 'Inline style to be applied to your tag on product miniature and product page',
+          ],
+        ],
+        'products' => [
+          'label'       => 'Products',
+          'empty_state' => 'Here you can quickly attach products to this tag',
+        ],
+        ],
+      'table' => [
+        'empty_state' => 'Tags are used to group products when you need to combine items into a group and create a landing page for them. Tags are also displayed in products filter',
+      ]
     ],
     'facet_pages' => [
       'navigation_label'      => 'Filter pages',
@@ -723,13 +751,25 @@ return [
       'navigation_label'      => 'Posts',
       'model_label_singular'  => 'Post',
       'tabs' => [
+        'content' => [
+          'labels'  => [
+            'main'        => 'Main settings',
+            'image'       => 'Image',
+            'name'        => 'Name',
+            'sort_order'  => 'Sort order',
+            'is_active'   => 'Active',
+            'created_at'  => 'Created at',
+          ],
+          'helpers' => [
+            'main'                => 'Blog post author, tags and display settings',
+            'is_active'           => 'Article display setting. If the article is disabled, it will not appear on the Blog or on related product pages',
+            'author'              => 'If an author is selected, the article page will display their name, avatar, a short description, and a link to the author\'s other articles',
+            'tags'                => 'Article tags provide simple, "flat" navigation. An article can have multiple tags',
+          ],
+        ],
         'products' => [
           'label' => 'Products',
-          'labels' => [
-            'table_heading'   => 'Related products',
-            'attach_heading'  => 'Attach products to this blog post',
-            'detach_heading'  => 'Detach products from this blog post',
-          ],
+          'empty_state' => 'Here you can quickly attach products to this post',
         ],
         'comments' => [
           'label' => 'Comments',
@@ -740,21 +780,9 @@ return [
           ],
         ],
       ],
-      'fields'  => [
-        'main'        => 'Main settings',
-        'image'       => 'Image',
-        'name'        => 'Name',
-        'sort_order'  => 'Sort order',
-        'is_active'   => 'Active',
-        'created_at'  => 'Created at',
-      ],
-      'helpers' => [
-        'main'                => 'Blog post author, tags and display settings',
-        'is_active'           => 'Article display setting. If the article is disabled, it will not appear on the Blog or on related product pages',
-        'author'              => 'If an author is selected, the article page will display their name, avatar, a short description, and a link to the author\'s other articles',
-        'tags'                => 'Article tags provide simple, "flat" navigation. An article can have multiple tags',
-        'empty_state_message' => 'Your blog posts will be displayed here. You can link products to posts to display product links on the post pages',
-      ],
+      'table' => [
+        'empty_state' => 'Your blog posts will be displayed here. You can link products to posts to display product links on the post pages',
+      ]
     ]
   ],
   'common' => [
@@ -795,7 +823,8 @@ return [
       'image_type_not_set_info'   => 'Image type <b>:type</b> is missing! Set this image in Design/Image settings to add images for this page',
       'image_type_not_set_title'  => 'Image dimensions are not set',
       'manager_page_title'        => ':entities in :name',
-      'manager_page_modal_title'  => 'Attach :entities to :name',
+      'manager_page_attach_title'  => 'Attach :entities to :name',
+      'manager_page_detach_title'  => 'Detach :entities from :name',
     ],
     'tabs' => [
       'content'     => 'Content',
@@ -813,6 +842,7 @@ return [
       'edit'              => 'Edit',
       'filter'            => 'Filter',
       'columns'           => 'Columns',
+      'reorder'           => 'Reorder',
       'add_faq_row'       => 'Add new Question/Answer',
       'add_image_row'     => 'Add new image',
       'add_how_to_step'   => 'Add new HowTo step',

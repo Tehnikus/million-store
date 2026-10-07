@@ -42,6 +42,7 @@ class TagForm
                                 Section::make(__('admin.catalog.tags.tabs.content.labels.main'))
                                     ->collapsible()
                                     ->collapsed(fn($operation) => $operation !== 'create')
+                                    ->description(__('admin.catalog.tags.tabs.content.helpers.main'))
                                     ->schema([
                                         Group::make([
                                             Toggle::make('is_active')

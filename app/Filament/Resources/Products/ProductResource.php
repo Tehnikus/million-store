@@ -13,7 +13,9 @@ use App\Models\Catalog\Product;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductResource extends Resource
 {
@@ -63,5 +65,19 @@ class ProductResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['descriptions']);
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return "{$record?->currentDescription()?->name} ({$record->global_name})";
+    }
+
+    public static function getRecordTitle(?Model $record): string|Htmlable|null
+    {
+        if (!$record) {
+            return null;
+        }
+
+        return "{$record->currentDescription()?->name} ({$record->global_name})";
     }
 }

@@ -27,7 +27,7 @@ class ManufacturersTable
         return $table
             ->emptyStateIcon(NavigationItem::Manufacturers->icon())
             ->emptyStateHeading(__('admin.catalog.manufacturers.navigation_label'))
-            ->emptyStateDescription(__('admin.catalog.manufacturers.helpers.group_title'))
+            ->emptyStateDescription(__('admin.catalog.manufacturers.table.empty_state'))
             ->modifyQueryUsing(fn($query) => $query->with(['products', 'parent'])->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
@@ -48,8 +48,8 @@ class ManufacturersTable
                     ->native(false)
                     ->wrapHeader()
                     ->width('220px')
-                    ->label(__('admin.catalog.manufacturers.fields.parent_id'))
-                    ->placeholder(__('admin.catalog.manufacturers.fields.is_root')),
+                    ->label(__('admin.catalog.manufacturers.tabs.content.labels.parent_id'))
+                    ->placeholder(__('admin.catalog.manufacturers.tabs.content.labels.is_root')),
 
                 TextColumn::make('products')
                     ->getStateUsing(fn(Manufacturer $record) => $record->products->count())
@@ -64,23 +64,26 @@ class ManufacturersTable
                     ->sortable()
                     ->width('100px')
                     ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.manufacturers.fields.is_active')),
+                    ->label(__('admin.catalog.manufacturers.tabs.content.labels.is_active'))
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                    }),
 
-                // ToggleColumn::make('show_in_facets')
-                //     ->sortable()
-                //     ->width('100px')
-                //     ->wrapHeader()
-                //     ->alignment(Alignment::Center)
-                //     ->label(__('admin.catalog.manufacturers.fields.show_in_facets')),
+                ToggleColumn::make('show_in_facets')
+                    ->sortable()
+                    ->width('100px')
+                    ->wrapHeader()
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.manufacturers.tabs.content.labels.show_in_facets')),
                 
             ])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->groups([
                 Group::make('parent_id')
-                    ->label(__('admin.catalog.manufacturers.fields.parent_id'))
+                    ->label(__('admin.catalog.manufacturers.tabs.content.labels.parent_id'))
                     ->getTitleFromRecordUsing(function (Manufacturer $record) {
-                        return $record->parent?->name ?? __('admin.catalog.manufacturers.fields.is_root');
+                        return $record->parent?->name ?? __('admin.catalog.manufacturers.tabs.content.labels.is_root');
                     })
                     ->orderQueryUsing(
                         fn(Builder $query, string $direction) => $query

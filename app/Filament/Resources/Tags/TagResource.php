@@ -47,17 +47,17 @@ class TagResource extends Resource
             'index'     => ListTags::route('/'),
             'create'    => CreateTag::route('/create'),
             'edit'      => EditTag::route('/{record}/edit'),
-            'products'  => ManageTagProducts::route('{record}/products'),
+            // 'products'  => ManageTagProducts::route('{record}/products'),
         ];
     }
 
-    public static function getRecordSubNavigation(Page $page): array
-    {
-        return $page->generateNavigationItems([
-            EditTag::class,
-            ManageTagProducts::class,
-        ]);
-    }
+    // public static function getRecordSubNavigation(Page $page): array
+    // {
+    //     return $page->generateNavigationItems([
+    //         EditTag::class,
+    //         ManageTagProducts::class,
+    //     ]);
+    // }
 
     // Global search columns list
     public static function getGloballySearchableAttributes(): array

@@ -37,6 +37,9 @@ class CategoryForm
                             ->icon(Heroicon::OutlinedPencilSquare)
                             ->schema([
                                 Section::make(__('admin.catalog.categories.tabs.content.labels.main'))
+                                    ->collapsible()
+                                    ->collapsed(fn($operation) => $operation !== 'create')
+                                    ->description(__('admin.catalog.categories.tabs.content.helpers.main'))
                                     ->schema([
                                         Select::make('parent_id')
                                             ->options(fn (?Category $record) => $record 

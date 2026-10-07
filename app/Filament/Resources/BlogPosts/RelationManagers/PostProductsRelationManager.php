@@ -27,6 +27,8 @@ class PostProductsRelationManager extends RelationManager
     {
         $parentRecord = $this->getOwnerRecord();
         return ProductsTable::configure($table)
+            ->emptyStateHeading(__('admin.common.helpers.manager_page_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
+            ->emptyStateDescription(__('admin.blog.posts.tabs.products.empty_state'))
             ->recordActions([
                 Action::make('editPost')
                     ->label(__('filament-actions::edit.single.label'))
@@ -34,12 +36,12 @@ class PostProductsRelationManager extends RelationManager
                     ->url(fn (Product $record): string => ProductResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(),
                 DetachAction::make()
-                    ->modalHeading(__('admin.blog.posts.tabs.products.labels.detach_heading'))
+                    ->modalHeading(__('admin.common.helpers.manager_page_detach_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                     ->after(fn () => $this->dispatch('refresh-tabs')),
             ])
             ->headerActions([
                 AttachAction::make()
-                    ->modalHeading(__('admin.common.helpers.manager_page_modal_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
+                    ->modalHeading(__('admin.common.helpers.manager_page_attach_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                     ->preloadRecordSelect()
                     ->recordSelect(fn (Select $select) => $select
                         ->options(fn (): array => $this->productOptions())
@@ -58,7 +60,7 @@ class PostProductsRelationManager extends RelationManager
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make()
-                        ->modalHeading(__('admin.blog.posts.tabs.products.labels.detach_heading'))
+                        ->modalHeading(__('admin.common.helpers.manager_page_detach_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                         ->after(fn () => $this->dispatch('refresh-tabs')),
                 ]),
             ]);

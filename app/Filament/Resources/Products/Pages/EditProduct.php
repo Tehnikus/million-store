@@ -9,6 +9,7 @@ use App\Models\Catalog\ProductDescription;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\On;
 
@@ -154,4 +155,11 @@ class EditProduct extends EditRecord
     {
         // Empty method to refresh tab relation manager badges
     }
+
+    // public function getTitle(): string|Htmlable
+    // {
+    //     $record = $this->record;
+
+    //     return "{$record?->currentDescription()?->name} ({$record->global_name})";
+    // }
 }

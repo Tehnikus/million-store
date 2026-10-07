@@ -25,6 +25,8 @@ class ManufacturerProductsRelationManager extends RelationManager
         $parentRecord = $this->getOwnerRecord(); // Current manufacturer
         return ProductsTable::configure($table)
             ->recordTitleAttribute('global_name')
+            ->emptyStateHeading(__('admin.common.helpers.manager_page_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
+            ->emptyStateDescription(__('admin.catalog.manufacturers.tabs.products.empty_state'))
             ->recordActions([
                 Action::make('makePrimary')
                     ->iconButton()
@@ -41,7 +43,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ->url(fn (Product $record): string => ProductResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(),
                 DetachAction::make()
-                    ->modalHeading(__('admin.catalog.manufacturers.tabs.products.labels.detach_heading'))
+                    ->modalHeading(__('admin.common.helpers.manager_page_detach_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                     ->after(function (Product $record) {
                         $this->reindex([$record->id]);
                         $this->dispatch('refresh-tabs');
@@ -49,7 +51,7 @@ class ManufacturerProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
-                    ->modalHeading(__('admin.common.helpers.manager_page_modal_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
+                    ->modalHeading(__('admin.common.helpers.manager_page_attach_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                     ->preloadRecordSelect()
                     ->recordSelect(fn (Select $select) => $select
                         ->options(fn (): array => $this->productOptions())
@@ -72,7 +74,7 @@ class ManufacturerProductsRelationManager extends RelationManager
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make()
-                        ->modalHeading(__('admin.catalog.manufacturers.tabs.products.labels.detach_heading'))
+                        ->modalHeading(__('admin.common.helpers.manager_page_detach_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                         ->after(function (Collection $records) {
                             $this->reindex($records->modelKeys());
                             $this->dispatch('refresh-tabs');

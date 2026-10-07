@@ -88,7 +88,11 @@ class SupermasterPanelProvider extends PanelProvider
                         ->defaultPaginationPageOption(50) // Set the default option selected initially
                         ->modifyUngroupedRecordActionsUsing(fn (Action $action) => $action->iconButton()) // Always display table record actions as icons (hide text)
                         ->filtersTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.filter'))) // Table filter button appearence and text 
-                        ->columnManagerTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.columns'))); // Table columns button appearence and text
+                        ->columnManagerTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.columns'))) // Table columns button appearence and text
+                        ->reorderRecordsTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.reorder')))
+                        // ->deferLoading()
+                        // ->loadingSkeleton()
+                        ;
                 });
 
                 Action::configureUsing(function (Action $action): void {

@@ -29,7 +29,7 @@ class ManageBlogPostTags extends ManageRelatedRecords
                 AttachAction::make()
                     ->preloadRecordSelect()
                     ->label(__('admin.common.buttons.attach_record'))
-                    ->modalHeading(__('admin.common.helpers.manager_page_modal_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $this->getOwnerRecord()?->name]))
+                    ->modalHeading(__('admin.common.helpers.manager_page_attach_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $this->getOwnerRecord()?->name]))
             ])
             ->recordAction(null) // Reset previous actions (remove "edit on click")
             ->recordActions([

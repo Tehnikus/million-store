@@ -31,13 +31,15 @@ class BlogPostForm
                             ->icon(Heroicon::PencilSquare)
                             ->label(__('admin.common.tabs.content'))
                             ->schema([
-                                Section::make(__('admin.blog.posts.fields.main'))
-                                    ->description(__('admin.blog.posts.helpers.main'))
+                                Section::make(__('admin.blog.posts.tabs.content.labels.main'))
+                                    ->description(__('admin.blog.posts.tabs.content.helpers.main'))
+                                    ->collapsible()
+                                    ->collapsed(fn($operation) => $operation !== 'create')
                                     ->schema([
 
                                         Toggle::make('is_active')
-                                            ->label(__('admin.blog.posts.fields.is_active'))
-                                            ->helperText(__('admin.blog.posts.helpers.is_active'))
+                                            ->label(__('admin.blog.posts.tabs.content.labels.is_active'))
+                                            ->helperText(__('admin.blog.posts.tabs.content.helpers.is_active'))
                                             ->default(true),
                                         // Relation of blog post to blog tags
                                         Select::make('blog_tags')
@@ -51,10 +53,10 @@ class BlogPostForm
                                             ->multiple()
                                             ->searchable()
                                             ->preload()
-                                            ->helperText(__('admin.blog.posts.helpers.tags')),
+                                            ->helperText(__('admin.blog.posts.tabs.content.helpers.tags')),
                                         Select::make('author_id')
                                             ->label(__('admin.blog.authors.model_label_singular'))
-                                            ->helperText(__('admin.blog.posts.helpers.author'))
+                                            ->helperText(__('admin.blog.posts.tabs.content.helpers.author'))
                                             ->relationship(
                                                 name: 'author',
                                                 titleAttribute: 'name',

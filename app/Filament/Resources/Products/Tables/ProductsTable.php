@@ -229,7 +229,7 @@ class ProductsTable
                             ->icon(NavigationItem::Options->icon()),
 
                     ])
-            ], layout: FiltersLayout::AboveContentCollapsible)
+            ])
             // ->filtersFormColumns(3)
             ->recordActions([
                 Action::make('toggleActive')

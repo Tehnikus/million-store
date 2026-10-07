@@ -21,7 +21,7 @@ class BlogPostsTable
         return $table
             ->emptyStateIcon(NavigationItem::BlogPosts->icon())
             ->emptyStateHeading(__('admin.blog.posts.navigation_label'))
-            ->emptyStateDescription(__('admin.blog.posts.helpers.empty_state_message'))
+            ->emptyStateDescription(__('admin.blog.posts.table.empty_state'))
             ->modifyQueryUsing(fn ($query) => $query->with('blogTags')->with('author')->with('comments'))
             ->columns([
                 ConversionImageColumn::make('images')
@@ -31,7 +31,7 @@ class BlogPostsTable
                 MultilangTextColumn::make('name')
                     ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
                     ->wrapHeader()
-                    ->label(__('admin.blog.posts.fields.name')),
+                    ->label(__('admin.blog.posts.tabs.content.labels.name')),
 
                 TextColumn::make('author.name')
                     ->label(__('admin.blog.authors.model_label_singular'))
@@ -61,7 +61,7 @@ class BlogPostsTable
                     ->wrapHeader(),
 
                 ToggleColumn::make('is_active')
-                    ->label(__('admin.blog.posts.fields.is_active'))
+                    ->label(__('admin.blog.posts.tabs.content.labels.is_active'))
                     ->alignment(Alignment::Center)
                     ->width('100px')
                     ->afterStateUpdated(function ($livewire) {
@@ -69,7 +69,7 @@ class BlogPostsTable
                     }),
 
                 TextColumn::make('created_at')
-                    ->label(__('admin.blog.posts.fields.created_at'))
+                    ->label(__('admin.blog.posts.tabs.content.labels.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->width('1%')

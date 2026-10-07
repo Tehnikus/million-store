@@ -7,6 +7,7 @@ use App\Filament\Resources\Products\RelationManagers\ManufacturerProductsRelatio
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Manufacturer;
 use Filament\Schemas\Components\Livewire;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use App\Filament\Schemas\Tabs\DescriptionTab;
@@ -19,7 +20,6 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Forms\Components\Toggle;
 use Filament\Facades\Filament;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Database\Eloquent\Builder;
 
 class ManufacturerForm
 {
@@ -36,23 +36,28 @@ class ManufacturerForm
                         Tab::make(__('admin.common.tabs.content'))
                             ->icon(Heroicon::OutlinedPencilSquare)
                             ->schema([
-                                Select::make('parent_id')
-                                    ->options(fn (?Manufacturer $record) => $record 
-                                        ? Manufacturer::manufacturerChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
-                                        : Manufacturer::manufacturerChoices($store->id)
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->label(__('admin.catalog.manufacturers.fields.parent_id'))
-                                    ->placeholder(__('admin.catalog.manufacturers.fields.is_root'))
-                                    ->helperText(__('admin.catalog.manufacturers.helpers.parent_id')),
-
-                                Toggle::make('is_active')
-                                    ->label(__('admin.catalog.manufacturers.fields.is_active'))
-                                    ->default(true),
-                                Toggle::make('show_in_facets')
-                                    ->label(__('admin.catalog.manufacturers.fields.show_in_facets'))
-                                    ->default(true),
+                                Section::make(__('admin.catalog.manufacturers.tabs.content.labels.main'))
+                                    ->collapsible()
+                                    ->collapsed(fn($operation) => $operation !== 'create')
+                                    ->description(__('admin.catalog.manufacturers.tabs.content.helpers.main'))
+                                    ->schema([
+                                        Select::make('parent_id')
+                                            ->options(fn (?Manufacturer $record) => $record 
+                                                ? Manufacturer::manufacturerChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                                                : Manufacturer::manufacturerChoices($store->id)
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->label(__('admin.catalog.manufacturers.tabs.content.labels.parent_id'))
+                                            ->placeholder(__('admin.catalog.manufacturers.tabs.content.labels.is_root'))
+                                            ->helperText(__('admin.catalog.manufacturers.tabs.content.labels.parent_id')),
+                                        Toggle::make('is_active')
+                                            ->label(__('admin.catalog.manufacturers.tabs.content.labels.is_active'))
+                                            ->default(true),
+                                        Toggle::make('show_in_facets')
+                                            ->label(__('admin.catalog.manufacturers.tabs.content.labels.show_in_facets'))
+                                            ->default(true),
+                                    ]),
                                 Tabs::make('languages')
                                     ->schema([
                                         ...collect($languages)->map(
@@ -74,7 +79,7 @@ class ManufacturerForm
                             ]),
                         ImagesTab::make($store, $languages, ['type' => 'manufacturer']),
                         Tab::make('products')
-                            ->label(__('admin.blog.posts.tabs.products.label'))
+                            ->label(__('admin.catalog.manufacturers.tabs.products.label'))
                             ->icon(NavigationItem::Products->icon())
                             ->visible(fn(?Manufacturer $record) => $record !== null)
                             ->badge(fn (?Manufacturer $record) => $record?->products()->count() ?: null)

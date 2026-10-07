@@ -7,6 +7,7 @@ use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Tag;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
@@ -23,7 +24,7 @@ class TagsTable
         return $table
             ->emptyStateIcon(NavigationItem::Tags->icon())
             ->emptyStateHeading(__('admin.catalog.tags.navigation_label'))
-            ->emptyStateDescription(__('admin.catalog.tags.helpers.group_title'))
+            ->emptyStateDescription(__('admin.catalog.tags.table.empty_state'))
             ->modifyQueryUsing(fn($query) => $query->with('products')->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
@@ -47,6 +48,7 @@ class TagsTable
                     ->sortable()
                     ->width('100px')
                     ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.tags.tabs.content.labels.is_active'))
                     ->afterStateUpdated(function ($livewire) {
                         $livewire->dispatch('refresh-sidebar');
                     }),
@@ -56,13 +58,14 @@ class TagsTable
                     ->width('100px')
                     ->wrapHeader()
                     ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.tags.fields.show_in_facets')),
+                    ->label(__('admin.catalog.tags.tabs.content.labels.show_in_facets')),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
