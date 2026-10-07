@@ -8,6 +8,7 @@ use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Category;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Livewire;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use App\Filament\Schemas\Tabs\DescriptionTab;
 use App\Filament\Schemas\Tabs\FaqTab;
@@ -35,23 +36,26 @@ class CategoryForm
                         Tab::make(__('admin.common.tabs.content'))
                             ->icon(Heroicon::OutlinedPencilSquare)
                             ->schema([
-                                Select::make('parent_id')
-                                    ->options(fn (?Category $record) => $record 
-                                        ? Category::categoryChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
-                                        : Category::categoryChoices($store->id)
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->label(__('admin.catalog.categories.fields.parent_id'))
-                                    ->placeholder(__('admin.catalog.categories.fields.is_root'))
-                                    ->helperText(__('admin.catalog.categories.helpers.parent_id')),
-
-                                Toggle::make('is_active')
-                                    ->label(__('admin.catalog.categories.fields.is_active'))
-                                    ->default(true),
-                                Toggle::make('show_in_facets')
-                                    ->label(__('admin.catalog.categories.fields.show_in_facets'))
-                                    ->default(true),
+                                Section::make(__('admin.catalog.categories.tabs.content.labels.main'))
+                                    ->schema([
+                                        Select::make('parent_id')
+                                            ->options(fn (?Category $record) => $record 
+                                                ? Category::categoryChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                                                : Category::categoryChoices($store->id)
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->label(__('admin.catalog.categories.tabs.content.labels.parent_id'))
+                                            ->placeholder(__('admin.catalog.categories.tabs.content.labels.is_root'))
+                                            ->helperText(__('admin.catalog.categories.tabs.content.helpers.parent_id')),
+        
+                                        Toggle::make('is_active')
+                                            ->label(__('admin.catalog.categories.tabs.content.labels.is_active'))
+                                            ->default(true),
+                                        Toggle::make('show_in_facets')
+                                            ->label(__('admin.catalog.categories.tabs.content.labels.show_in_facets'))
+                                            ->default(true),
+                                    ]),
                                 Tabs::make('languages')
                                     ->schema([
                                         ...collect($languages)->map(
@@ -74,7 +78,7 @@ class CategoryForm
                             ]),
                         ImagesTab::make($store, $languages, ['type' => 'category']),
                         Tab::make('products')
-                            ->label(__('admin.blog.posts.tabs.products.label'))
+                            ->label(__('admin.catalog.categories.tabs.products.label'))
                             ->icon(NavigationItem::Products->icon())
                             ->visible(fn(?Category $record) => $record !== null)
                             ->badge(fn (?Category $record) => $record?->products()->count() ?: null)
