@@ -79,7 +79,18 @@ class TagForm
                                         )
                                     ])
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'tag'])
+                        ImagesTab::make($store, $languages, ['type' => 'tag']),
+                        Tab::make('products')
+                            ->label(__('admin.catalog.tags.tabs.products.label'))
+                            ->icon(NavigationItem::Products->icon())
+                            ->visible(fn(?Tag $record) => $record !== null)
+                            ->badge(fn (?Tag $record) => $record?->products()->count() ?: null)
+                            ->schema([
+                                Livewire::make(TagProductsRelationManager::class, fn(?Tag $record, ?EditTag $livewire) => [
+                                    'ownerRecord' => $record,
+                                    'pageClass'   => $livewire::class,
+                                ])
+                            ]),
                     ])
                     ->columnSpanFull(),
             ]);
