@@ -63,7 +63,10 @@ class BlogPostsTable
                 ToggleColumn::make('is_active')
                     ->label(__('admin.blog.posts.fields.is_active'))
                     ->alignment(Alignment::Center)
-                    ->width('100px'),
+                    ->width('100px')
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                    }),
 
                 TextColumn::make('created_at')
                     ->label(__('admin.blog.posts.fields.created_at'))
