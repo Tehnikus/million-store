@@ -272,7 +272,7 @@ return [
             'make_primary_single'   => 'Select new primary category for :product',
             'make_primary_warning'  => 'Warning! This action will change the product URL!',
             'detach_bulk'           => 'Products for which this category is the primary one will be skipped. This action only affects where products will be displayed',
-            'detach_single'         => 'This action only affects where products will be displayed',
+            'detach_single'         => 'This action only affects where product will be displayed',
           ],
           'notifications' => [
             'detached'        => 'Products detached from category: :count',
@@ -321,10 +321,10 @@ return [
             'make_primary_single'   => 'Select new primary manufacturer for :product',
             'make_primary_warning'  => 'Warning! This action will change manufacturer displayed in additional product info!',
             'detach_bulk'           => 'Products for which is manufacturer is primary one will be skipped. This action only affects where products will be displayed',
-            'detach_single'         => 'This action only affects where products will be displayed',
+            'detach_single'         => 'This action only affects where product will be displayed',
           ],
           'notifications' => [
-            'detached'        => 'Products deleted from manufacturer: :count',
+            'detached'        => 'Products detached from manufacturer: :count',
             'detach_skipped'  => 'Following products were skipped because this manufacturer is primary for them: ',
           ],
           'empty_state' => 'You can quickly attach products to this manufacturer here. A product may have multiple associated manufacturers, but only the primary one is displayed on the product page. Other manufacturers are used to filter products',
@@ -415,9 +415,25 @@ return [
         ],
         'products' => [
           'label'       => 'Products',
+          'labels' => [
+            'table_title'           => 'Products in :name tag',
+            'detach_from'           => 'Detach :product from :name tag?',
+            'detach_button'         => 'Detach',
+            'add_products'          => 'Add products',
+            'add_products_heading'  => 'Add products to :name tag',
+            'detach_bulk'           => 'Detach selected',
+          ],
+          'helpers' => [
+            'detach_single'         => 'This action only affects where product will be displayed',
+            'attach_description'    => 'Added products will be displayed in this tag',
+            'detach_bulk'           => 'This action only affects where products will be displayed',
+          ],
+          'notifications' => [
+            'detached'              => 'Products detached from manufacturer: :count'
+          ],
           'empty_state' => 'Here you can quickly attach products to this tag',
         ],
-        ],
+      ],
       'table' => [
         'empty_state' => 'Tags are used to group products when you need to combine items into a group and create a landing page for them. Tags are also displayed in products filter',
       ]
