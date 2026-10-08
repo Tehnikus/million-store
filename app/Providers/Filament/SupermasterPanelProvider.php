@@ -105,7 +105,7 @@ class SupermasterPanelProvider extends PanelProvider
                     if ($action->getName() === 'attach') {
                         $action->color('primary')->icon('heroicon-o-plus');
                     }
-                    $action->modalWidth(Width::ScreenLarge);
+                    $action->modalWidth(Width::TwoExtraLarge);
                 });
 
                 Tabs::configureUsing(function($tabs) {

@@ -317,6 +317,7 @@ class DescriptionTab
             ->icon(NavigationItem::MetaEditor->icon())->hiddenLabel()->iconSize(IconSize::Medium)
             ->color('info')
             ->tooltip(__('admin.common.buttons.meta_editor'))
+            ->modalWidth(Width::ScreenLarge)
             // ->visible(fn (string $operation): bool => $operation === 'edit')
             ->schema([
                 Select::make('formula_id')

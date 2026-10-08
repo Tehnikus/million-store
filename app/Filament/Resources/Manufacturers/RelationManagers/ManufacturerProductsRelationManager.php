@@ -47,7 +47,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ->modalDescription(__('admin.catalog.manufacturers.tabs.products.helpers.make_primary_warning'))
                     ->modalSubmitActionLabel(__('admin.catalog.manufacturers.tabs.products.labels.make_primary'))
                     ->modalIcon(NavigationItem::Slugs->icon())->modalIconColor('warning')
-                    ->modalWidth(Width::Large)
+                    ->modalWidth(Width::TwoExtraLarge)
                     ->schema([
                         Select::make('manufacturer_id')
                             ->label(__('admin.catalog.manufacturers.tabs.products.labels.is_primary'))
@@ -79,7 +79,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ->modalHeading(fn(Product $record) => __('admin.catalog.manufacturers.tabs.products.labels.detach_from', ['name' => $parentRecord?->name, 'product' => $record->global_name]))
                     ->modalDescription(__('admin.catalog.manufacturers.tabs.products.helpers.detach_single'))
                     ->modalSubmitActionLabel(__('admin.catalog.manufacturers.tabs.products.labels.detach_button'))
-                    ->modalWidth(Width::Large)
+                    ->modalWidth(Width::TwoExtraLarge)
                     ->after(function (Product $record) {
                         $this->reindex([$record->id]);
                         $this->dispatch('refresh-tabs');
@@ -92,7 +92,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ->modalDescription(__('admin.catalog.manufacturers.tabs.products.helpers.attach_description'))
                     ->modalSubmitActionLabel(__('admin.catalog.manufacturers.tabs.products.labels.add_products'))
                     ->modalIcon(Heroicon::Plus)
-                    ->modalWidth(Width::ExtraLarge)
+                    ->modalWidth(Width::TwoExtraLarge)
                     ->multiple()
                     ->preloadRecordSelect()
                     ->recordSelect(fn (Select $select) => $select
@@ -129,7 +129,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ->modalHeading(__('admin.catalog.manufacturers.tabs.products.labels.make_primary_bulk'))
                     ->modalDescription(__('admin.catalog.manufacturers.tabs.products.helpers.make_primary_warning'))
                     ->modalSubmitActionLabel(__('admin.catalog.manufacturers.tabs.products.labels.make_primary'))
-                    ->modalWidth(Width::Large)
+                    ->modalWidth(Width::TwoExtraLarge)
                     ->schema([
                         Select::make('manufacturer_id')
                             ->label(__('admin.catalog.manufacturers.tabs.products.labels.is_primary'))
@@ -150,7 +150,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ->modalHeading(__('admin.catalog.manufacturers.tabs.products.labels.detach_bulk'))
                     ->modalDescription(__('admin.catalog.manufacturers.tabs.products.helpers.detach_bulk'))
                     ->modalSubmitActionLabel(__('admin.catalog.manufacturers.tabs.products.labels.detach_button'))
-                    ->modalWidth(Width::Large)
+                    ->modalWidth(Width::TwoExtraLarge)
                     ->action(function (EloquentCollection $records) use ($parentRecord) {
                         [$skipped, $allowed] = $records->partition(fn (Product $p) => $this->isPrimaryManufacturer($p));
 
