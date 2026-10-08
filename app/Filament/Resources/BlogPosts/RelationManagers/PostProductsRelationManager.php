@@ -1,17 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\Products\RelationManagers;
+namespace App\Filament\Resources\BlogPosts\RelationManagers;
 
 use App\Domain\Catalog\Search\ProductSearch;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Product;
-use Filament\Actions\Action;
-use Filament\Actions\AttachAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DetachAction;
-use Filament\Actions\DetachBulkAction;
+use Filament\Actions\{Action, AttachAction, BulkActionGroup, DetachAction, DetachBulkAction};
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;

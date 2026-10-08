@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Products\RelationManagers;
+namespace App\Filament\Resources\Tags\RelationManagers;
 
 use App\Domain\Catalog\Search\{ProductSearch, SearchIndexer};
 use App\Filament\Resources\Products\{ProductResource, Tables\ProductsTable};

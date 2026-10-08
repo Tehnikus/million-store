@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\BlogPosts\Schemas;
 
 use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
-use App\Filament\Resources\Products\RelationManagers\{BlogCommentsRelationManager, PostProductsRelationManager};
+use App\Filament\Resources\BlogPosts\RelationManagers\{BlogCommentsRelationManager, PostProductsRelationManager};
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Blog\{BlogPost, BlogTag, BlogAuthor};
 use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};

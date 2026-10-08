@@ -2,32 +2,21 @@
 
 namespace App\Filament\Schemas\Tabs;
 
-use App\Domain\Ai\AiConnection;
-use App\Domain\Ai\AiProvider;
-use App\Models\Store\StoreSettings;
+use App\Domain\Ai\{AiConnection, AiProvider};
 use App\Filament\Schemas\Fields\SlugInput;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Seo\MetaTagFormula;
+use App\Models\Store\StoreSettings;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{Hidden, RichEditor, Select, Textarea, TextInput};
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Actions;
-use Filament\Schemas\Components\Component;
-use Filament\Schemas\Components\FusedGroup;
-use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\{Actions, Component, FusedGroup, Tabs\Tab};
+use Filament\Schemas\Components\Utilities\{Get, Set};
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\IconSize;
-use Filament\Support\Enums\Width;
+use Filament\Support\Enums\{IconSize, Width};
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Str;
-use Illuminate\Support\HtmlString;
+use Illuminate\Support\{Str, HtmlString};
 use Illuminate\Database\Eloquent\Model;
 
 

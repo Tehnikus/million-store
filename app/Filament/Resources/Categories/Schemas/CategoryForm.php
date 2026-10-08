@@ -3,21 +3,15 @@
 namespace App\Filament\Resources\Categories\Schemas;
 
 use App\Filament\Resources\Categories\Pages\EditCategory;
-use App\Filament\Resources\Products\RelationManagers\CategoryProductsRelationManager;
+use App\Filament\Resources\Categories\RelationManagers\CategoryProductsRelationManager;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Category;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Livewire;
-use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\{Select, Toggle};
+use Filament\Schemas\Components\{Livewire, Section};
 use Filament\Schemas\Schema;
-use App\Filament\Schemas\Tabs\DescriptionTab;
-use App\Filament\Schemas\Tabs\FaqTab;
-use App\Filament\Schemas\Tabs\HowToTab;
-use App\Filament\Schemas\Tabs\FooterTab;
-use App\Filament\Schemas\Tabs\ImagesTab;
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Forms\Components\Toggle;
 use Filament\Facades\Filament;
 use Filament\Support\Icons\Heroicon;
 

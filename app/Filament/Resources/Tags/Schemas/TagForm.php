@@ -2,24 +2,14 @@
 
 namespace App\Filament\Resources\Tags\Schemas;
 
-use App\Filament\Resources\Products\RelationManagers\TagProductsRelationManager;
+use App\Filament\Resources\Tags\RelationManagers\TagProductsRelationManager;
 use App\Filament\Resources\Tags\Pages\EditTag;
-use App\Filament\Schemas\Tabs\DescriptionTab;
-use App\Filament\Schemas\Tabs\FaqTab;
-use App\Filament\Schemas\Tabs\FooterTab;
-use App\Filament\Schemas\Tabs\HowToTab;
-use App\Filament\Schemas\Tabs\ImagesTab;
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, FooterTab, HowToTab, ImagesTab};
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Tag;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\CodeEditor;
-use Filament\Forms\Components\CodeEditor\Enums\Language;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Livewire;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Forms\Components\{CodeEditor, CodeEditor\Enums\Language, Toggle};
+use Filament\Schemas\Components\{Group, Livewire, Section, Tabs, Tabs\Tab};
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
