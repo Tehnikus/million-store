@@ -27,6 +27,7 @@ enum NavigationItem: string
     // Warehouse
     case StockStatus    = 'stock.status';
     case StockMovements = 'stock.movements';
+    case Suppliers      = 'stock.suppliers';
 
     // Customers
     case Customers      = 'customers.customer';
@@ -86,7 +87,7 @@ enum NavigationItem: string
                 => NavigationGroup::Orders,
 
             // Stock
-            self::StockStatus, self::StockMovements,
+            self::StockStatus, self::StockMovements, self::Suppliers,
                 => NavigationGroup::Stock,
 
             // Customers
@@ -140,6 +141,7 @@ enum NavigationItem: string
             // Stock
             self::StockStatus       => 'heroicon-o-archive-box',
             self::StockMovements    => 'heroicon-o-arrows-right-left',
+            self::Suppliers         => 'heroicon-o-folder-open',
 
             // Customers
             self::Customers         => 'heroicon-o-user',
@@ -200,7 +202,7 @@ enum NavigationItem: string
             self::Options           => 6,
             self::Tags              => 7,
             self::FacetFilter       => 8,
-            self::ProductReviews   => 9,
+            self::ProductReviews    => 9,
 
             // Customers
             self::Customers         => 1,
@@ -217,6 +219,7 @@ enum NavigationItem: string
             // Stock
             self::StockStatus       => 1,
             self::StockMovements    => 2,
+            self::Suppliers         => 3,
 
             // Blog
             self::BlogPosts         => 1,
