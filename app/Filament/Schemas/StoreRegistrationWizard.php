@@ -276,19 +276,19 @@ class StoreRegistrationWizard
                     TextInput::make('name')
                         ->required()
                         ->maxLength(255)
-                        ->label(__('admin.stores.fields.name'))
-                        ->helperText(new HtmlString(__('admin.stores.helpers.name'))),
+                        ->label(__('admin.global.stores.labels.name'))
+                        ->helperText(new HtmlString(__('admin.global.stores.helpers.name'))),
 
                     TextInput::make('host')
                         ->required()
                         ->unique('stores', 'host')
                         ->prefix('https://')
                         ->maxLength(255)
-                        ->label(__('admin.stores.fields.host'))
-                        ->helperText(new HtmlString(__('admin.stores.helpers.host'))),
+                        ->label(__('admin.global.stores.labels.host'))
+                        ->helperText(new HtmlString(__('admin.global.stores.helpers.host'))),
 
                     Toggle::make('is_active')
-                        ->label(__('admin.stores.fields.is_active'))
+                        ->label(__('admin.global.stores.labels.is_active'))
                         ->default(true)
                         ->live()
                         ->statePath('data.store.store.is_active'),
