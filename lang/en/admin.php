@@ -1048,14 +1048,14 @@ return [
   'store_settings' => [
     'navigation_label' => 'Settings',
     'tabs' => [
-      'delivery'                => 'Delivery',
-      'checkout'                => 'Checkout',
-      'legal'          => 'Legal settings',
-      'taxes'                   => 'Taxes',
-      'analytics'               => 'Analytics',
-      'seo_defaults'            => 'SEO defaults',
-      'notifications'           => 'Notifications',
-      'maintenance'             => 'Maintenance',
+      'delivery'        => 'Delivery',
+      'checkout'        => 'Checkout',
+      'legal'           => 'Legal settings',
+      'taxes'           => 'Taxes',
+      'analytics'       => 'Analytics',
+      'seo_defaults'    => 'SEO defaults',
+      'notifications'   => 'Notifications',
+      'maintenance'     => 'Maintenance',
     ],
     'delivery' => [
       'fields' => [
