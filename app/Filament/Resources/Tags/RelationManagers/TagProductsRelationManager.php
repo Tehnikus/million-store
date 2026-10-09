@@ -91,6 +91,8 @@ class TagProductsRelationManager extends RelationManager
                     ->modalWidth(Width::TwoExtraLarge)
                     ->action(function (EloquentCollection $records) use ($parentRecord) {
                         $parentRecord->products()->detach($records);
+                        $this->reindex($records->modelKeys());
+
                         Notification::make()
                             ->title(__('admin.catalog.tags.tabs.products.notifications.detached', ['count' => $records->count()]))
                             ->success()
@@ -122,11 +124,15 @@ class TagProductsRelationManager extends RelationManager
             ->all();
     }
 
-    // Reindex products global search index after products were attached/detached from parent record
+    // Rebuild search index of these products after they were attached/detached from the parent record.
+    // Relations live in facet_index, which is what SearchIndexer reads, so this must run AFTER attach/detach.
     private function reindex(array $productIds): void
     {
-        // TODO Reindex search here
-        // app(SearchIndexer::class)->products($productIds, $this->getOwnerRecord()->store_id);
+        if ($productIds === []) {
+            return;
+        }
+
+        app(SearchIndexer::class)->rebuildProducts($productIds, $this->getOwnerRecord()->store_id);
     }
 
     protected function getTableHeading(): string

@@ -68,6 +68,19 @@ class SearchIndexer
     }
 
     /**
+     * Rebuild several products of one store: relation managers (attach / detach), bulk actions.
+     * Call it on ONE instance so store languages and ts configs are loaded once for the whole batch.
+     *
+     * @param int[] $productIds
+     */
+    public function rebuildProducts(array $productIds, int $storeId): void
+    {
+        foreach (array_unique(array_map('intval', $productIds)) as $productId) {
+            $this->rebuildProduct($productId, $storeId);
+        }
+    }
+
+    /**
      * Rebuild index rows of ONE product in ONE store.
      *
      * @param int[]|null $languageIds  limit to these languages; null = all active languages of the store

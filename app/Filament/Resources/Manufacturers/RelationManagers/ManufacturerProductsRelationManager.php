@@ -35,7 +35,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                 Action::make('makePrimary')
                     ->iconButton()
                     // ->icon(fn (Product $record) => $this->isPrimaryManufacturer($record) ? Heroicon::Star : Heroicon::OutlinedStar)
-                    ->icon(NavigationItem::Slugs->icon())
+                    ->icon(NavigationItem::Manufacturers->icon())
                     ->color(fn (Product $record) => $this->isPrimaryManufacturer($record) ? 'warning' : 'gray')
                     ->tooltip(fn (Product $record) => $this->isPrimaryManufacturer($record)
                         ? __('admin.catalog.manufacturers.tabs.products.labels.is_primary')
@@ -46,7 +46,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ))
                     ->modalDescription(__('admin.catalog.manufacturers.tabs.products.helpers.make_primary_warning'))
                     ->modalSubmitActionLabel(__('admin.catalog.manufacturers.tabs.products.labels.make_primary'))
-                    ->modalIcon(NavigationItem::Slugs->icon())->modalIconColor('warning')
+                    ->modalIcon(NavigationItem::Manufacturers->icon())->modalIconColor('warning')
                     ->modalWidth(Width::TwoExtraLarge)
                     ->schema([
                         Select::make('manufacturer_id')
@@ -123,8 +123,8 @@ class ManufacturerProductsRelationManager extends RelationManager
             ->toolbarActions([
                 BulkAction::make('makePrimaryBulk')
                     ->label(__('admin.catalog.manufacturers.tabs.products.labels.make_primary_bulk'))
-                    ->icon(NavigationItem::Slugs->icon())
-                    ->modalIcon(NavigationItem::Slugs->icon())
+                    ->icon(NavigationItem::Manufacturers->icon())
+                    ->modalIcon(NavigationItem::Manufacturers->icon())
                     ->modalIconColor('warning')
                     ->modalHeading(__('admin.catalog.manufacturers.tabs.products.labels.make_primary_bulk'))
                     ->modalDescription(__('admin.catalog.manufacturers.tabs.products.helpers.make_primary_warning'))
@@ -235,11 +235,15 @@ class ManufacturerProductsRelationManager extends RelationManager
         return (int) $product->currentDescription()?->primary_manufacturer_id === (int) $this->getOwnerRecord()->id;
     }
 
-    // Reindex products global search index after products were attached/detached from parent record
+    // Rebuild search index of these products after they were attached/detached from the parent record.
+    // Relations live in facet_index, which is what SearchIndexer reads, so this must run AFTER attach/detach.
     private function reindex(array $productIds): void
     {
-        // TODO Reindex search here
-        // app(SearchIndexer::class)->products($productIds, $this->getOwnerRecord()->store_id);
+        if ($productIds === []) {
+            return;
+        }
+
+        app(SearchIndexer::class)->rebuildProducts($productIds, $this->getOwnerRecord()->store_id);
     }
 
     protected function getTableHeading(): string
