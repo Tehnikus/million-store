@@ -143,8 +143,8 @@ class SlugInput
                         $row = Slug::query()
                             ->where('sluggable_type', $record->getMorphClass())
                             ->where('sluggable_id', $record->getKey())
-                            ->where('store_id', Filament::getTenant()->id)
                             ->where('language_id', $language->id)
+                            ->where('store_id', Filament::getTenant()->id)
                             ->where('is_active', true)
                             ->first();
 

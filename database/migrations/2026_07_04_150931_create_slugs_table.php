@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Tpetry\PostgresqlEnhanced\Schema\Blueprint;
+use Tpetry\PostgresqlEnhanced\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unique(['store_id', 'language_id', 'slug']);
 
             // Indexes
-            $table->index(['sluggable_type', 'sluggable_id', 'store_id', 'language_id'], 'slugs_entity_lookup');
+            $table->index(['sluggable_type', 'sluggable_id', 'language_id', 'store_id', 'is_active'], 'slugs_entity_lookup');
         });
     }
 
