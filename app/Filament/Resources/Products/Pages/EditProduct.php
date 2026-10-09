@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Pages;
 
 use App\Domain\Catalog\Actions\UpsertProduct;
 use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Resources\Products\Schemas\PlacementTab;
 use App\Models\Catalog\OptionValue;
 use App\Models\Catalog\ProductDescription;
 use Filament\Actions\DeleteAction;
@@ -65,6 +66,10 @@ class EditProduct extends EditRecord
                 'facet_group_id' => $facet->facet_group_id,
                 'sort_order'     => $facet->sort_order,
             ])->all();
+
+        // Select multiple casts its state to a flat list of scalars before formatStateUsing runs,
+        // so the grouped {"category": [5]} shape must be flattened here
+        $data['description']['search_excluded_refs'] = PlacementTab::flattenRefs($description?->search_excluded_refs ?? []);
 
         // Product model relation Product->options()
         // Fill options tab

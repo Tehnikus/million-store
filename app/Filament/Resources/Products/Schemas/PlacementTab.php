@@ -2,22 +2,16 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
-use App\Domain\Catalog\Search\SearchIndexer;
 use App\Domain\Catalog\Search\SearchRefType;
-use App\Models\Catalog\Attribute;
-use App\Models\Catalog\AttributeValue;
-use App\Models\Catalog\Option;
-use App\Models\Catalog\OptionValue;
-use App\Models\Catalog\Product;
-use App\Models\Catalog\ProductDescription;
+use App\Models\Catalog\{Attribute, AttributeValue, Option, OptionValue};
 use Closure;
 use App\Domain\Catalog\FacetType;
 use App\Models\Catalog\{Category, FacetIndex, Manufacturer, Tag};
 use Filament\Forms\Components\{Hidden, Repeater, Repeater\TableColumn, Select, TextInput, Toggle};
-use Filament\Schemas\Components\{Callout, FusedGroup, Section, Tabs\Tab, Utilities\Get, Utilities\Set};
+use Filament\Schemas\Components\{Callout, FusedGroup, Section, Tabs\Tab};
+use Filament\Schemas\Components\Utilities\{Get, Set};
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class PlacementTab
 {
@@ -216,17 +210,27 @@ class PlacementTab
                 Section::make(__('admin.catalog.products.tabs.placement.labels.search_excluded_refs'))
                     ->description(__('admin.catalog.products.tabs.placement.helpers.search_excluded_refs'))
                     ->schema([
+                        // Options come from the CURRENT form state (not from the DB), so they follow the repeaters
+                        // on this tab and on the Attributes / Options tabs without any re-render triggers:
+                        // options() is a Closure, so Filament marks the select as having dynamic options and fetches them
+                        // from the server (getOptionsForJs) every time the dropdown is opened.
                         Select::make('search_excluded_refs')
                             ->statePath('description.search_excluded_refs')
                             ->multiple()
                             ->searchable()
-                            ->options(fn (?Product $record) => static::candidates($record, $store))
+                            ->options(fn (Get $get, ?array $state) => static::excludedOptions($get, $store->id, (array) $state))
                             ->placeholder(__('admin.catalog.products.tabs.placement.placeholders.search_excluded_refs'))
                             ->hiddenLabel()
-                            // DB -> form: {"category": [5]} -> ["category:5"]
-                            ->formatStateUsing(fn ($state) => static::flattenRefs((array) $state))
+                            // DB -> form happens in EditProduct::mutateFormDataBeforeFill() via flattenRefs(), NOT in formatStateUsing():
+                            // Select multiple applies OptionsArrayStateCast before formatStateUsing runs, and that cast drops
+                            // every non-scalar item, so the grouped {"category": [5]} shape would arrive here as [].
                             // Form -> DB: ["category:5"] -> {"category": [5]}
-                            ->dehydrateStateUsing(fn ($state) => static::groupRefs((array) $state)),
+                            // Exclusions of entities that are no longer linked to the product are dropped here,
+                            // so re-linking a category later does not silently bring back an old exclusion.
+                            ->dehydrateStateUsing(fn ($state, Get $get) => static::groupRefs(array_values(array_intersect(
+                                (array) $state,
+                                array_keys(static::linkedRefs($get, $store->id)),
+                            )))),
                     ]),
             ]);
     }
@@ -258,122 +262,175 @@ class PlacementTab
 
     
     /**
-     * Options of the "excluded" select: every entity the index currently contains plus every current exclusion
-     * (so an excluded entity can be brought back, even if it is no longer linked to the product).
+     * Options of the "excluded from search" select, grouped by entity type:
+     *   ['Categories' => ['category:5' => 'Blood pressure monitors'], 'Attributes' => [...], ...]
      *
-     * @return array<string, string>  "type:id" => "Type: name"
+     * Values that are selected but no longer linked to the product (a category was removed in the repeater)
+     * are still returned as options, with their raw key as label: Select validates that every selected value
+     * is among its options, so without them saving would fail. Selected options are hidden in the dropdown anyway,
+     * and dehydrateStateUsing() drops them on save.
+     *
+     * @param string[] $selected  current state of the select, ["category:5", ...]
+     * @return array<string, array<string, string>>
      */
-    protected static function candidates(?Product $record, $store): array
+    protected static function excludedOptions(Get $get, int $storeId, array $selected): array
     {
-        if ($record === null) {
-            return [];
+        $linked = static::linkedRefs($get, $storeId);
+        $groups = [];
+
+        foreach ($linked as $key => $item) {
+            $groups[$item['group']][$key] = $item['label'];
         }
 
-        $description = ProductDescription::query()
-            ->where('product_id', $record->id)
-            ->where('store_id', $store->id)
-            ->first();
-
-        if ($description === null) {
-            return [];
+        foreach (array_diff(array_map('strval', $selected), array_keys($linked)) as $staleKey) {
+            $groups['—'][$staleKey] = $staleKey;
         }
 
-        // Entities the index was built from at the last save
-        $refs = static::indexedRefs($record->id, $store->id);
+        return $groups;
+    }
 
-        // ...plus current exclusions
-        foreach ($description->search_excluded_refs ?? [] as $type => $ids) {
-            $refs[$type] = array_values(array_unique([...($refs[$type] ?? []), ...array_map('intval', (array) $ids)]));
+    /**
+     * Every entity linked to the product in the current form state, in the same shape the indexer uses
+     * (attribute and option GROUPS are separate entries from their VALUES).
+     * Names come from the form state where it has them (per-product overrides of attributes/options),
+     * otherwise from the cached *Choices() lists. No extra queries beyond those caches.
+     *
+     * @return array<string, array{group: string, label: string}>  keyed "type:id", in display order
+     */
+    protected static function linkedRefs(Get $get, int $storeId): array
+    {
+        $items = [];
+
+        $simple = [
+            [SearchRefType::Category,     'facet_categories',    Category::categoryChoices($storeId)],
+            [SearchRefType::Manufacturer, 'facet_manufacturers', Manufacturer::manufacturerChoices($storeId)],
+            [SearchRefType::Tag,          'facet_tags',          Tag::tagChoices($storeId)],
+        ];
+
+        foreach ($simple as [$type, $path, $choices]) {
+            $group = static::typeGroupLabel($type);
+
+            foreach ((array) $get($path) as $row) {
+                $id = (int) ($row['facet_value_id'] ?? 0);
+
+                if ($id > 0) {
+                    $items["{$type->value}:{$id}"] = ['group' => $group, 'label' => (string) ($choices[$id] ?? "#{$id}")];
+                }
+            }
         }
 
-        $locale    = app()->getLocale();
-        $overrides = app(SearchIndexer::class)->nameOverrides($description);
-        $items     = [];
+        // Attributes: description.attributes_description = [{attribute_id, name: {locale}, description: [{attribute_value_id, name}]}]
+        $attributeGroup = static::typeGroupLabel(SearchRefType::Attribute);
+        $attributeNames = Attribute::attributeChoices($storeId);
 
-        foreach (SearchRefType::cases() as $type) {
-            $ids = $refs[$type->value] ?? [];
+        foreach ((array) $get('description.attributes_description') as $row) {
+            $groupId = (int) ($row['attribute_id'] ?? 0);
 
-            if ($ids === []) {
+            if ($groupId <= 0) {
                 continue;
             }
 
-            // Global reference-book names are the fallback when the product has no override
-            $globalNames = static::modelClass($type)::query()
-                ->whereIn('id', $ids)
-                ->get()
-                ->mapWithKeys(fn ($model) => [$model->id => $model->name]);
+            $groupName = static::stateName($row['name'] ?? null) ?? (string) ($attributeNames[$groupId] ?? "#{$groupId}");
+            $items[SearchRefType::Attribute->value . ":{$groupId}"] = [
+                'group' => $attributeGroup,
+                'label' => $groupName . ' ' . __('admin.catalog.products.tabs.placement.labels.search_whole_group'),
+            ];
 
-            $typeItems = [];
+            $valueNames = null; // loaded only if some value has no name in the form state
 
-            foreach ($ids as $id) {
-                $override = trim((string) ($overrides[$type->value][$id][$locale] ?? ''));
-                $name     = $override !== '' ? $override : ($globalNames[$id] ?? "#{$id}");
+            foreach ((array) ($row['description'] ?? []) as $value) {
+                $valueId = (int) ($value['attribute_value_id'] ?? 0);
 
-                $typeItems["{$type->value}:{$id}"] = static::typeLabel($type) . ': ' . $name;
+                if ($valueId <= 0) {
+                    continue;
+                }
+
+                $valueName = static::stateName($value['name'] ?? null)
+                    ?? (string) (($valueNames ??= AttributeValue::attributeValueChoices($groupId))[$valueId] ?? "#{$valueId}");
+
+                $items[SearchRefType::AttributeValue->value . ":{$valueId}"] = ['group' => $attributeGroup, 'label' => "{$groupName} → {$valueName}"];
+            }
+        }
+
+        // Options: description.options_description = [{option_id, name: {locale}, description: [{option_value_id, name}]}]
+        $optionGroup = static::typeGroupLabel(SearchRefType::Option);
+        $optionNames = Option::optionChoices($storeId);
+
+        foreach ((array) $get('description.options_description') as $row) {
+            $groupId = (int) ($row['option_id'] ?? 0);
+
+            if ($groupId <= 0) {
+                continue;
             }
 
-            asort($typeItems);
-            $items += $typeItems;
+            $groupName = static::stateName($row['name'] ?? null) ?? (string) ($optionNames[$groupId] ?? "#{$groupId}");
+            $items[SearchRefType::Option->value . ":{$groupId}"] = [
+                'group' => $optionGroup,
+                'label' => $groupName . ' ' . __('admin.catalog.products.tabs.placement.labels.search_whole_group'),
+            ];
+
+            $valueNames = null;
+
+            foreach ((array) ($row['description'] ?? []) as $value) {
+                $valueId = (int) ($value['option_value_id'] ?? 0);
+
+                if ($valueId <= 0) {
+                    continue;
+                }
+
+                $valueName = static::stateName($value['name'] ?? null)
+                    ?? (string) (($valueNames ??= OptionValue::optionValueChoices($groupId, $storeId))[$valueId] ?? "#{$valueId}");
+
+                $items[SearchRefType::OptionValue->value . ":{$valueId}"] = ['group' => $optionGroup, 'label' => "{$groupName} → {$valueName}"];
+            }
         }
 
         return $items;
     }
 
     /**
-     * Union of search_included_refs over all language rows of this product in this store.
-     *
-     * @return array<string, int[]>
+     * Name from a translatable form-state array: current admin locale first, then the first filled one.
      */
-    protected static function indexedRefs(int $productId, int $storeId): array
+    protected static function stateName(mixed $names): ?string
     {
-        $merged = [];
+        if (! is_array($names)) {
+            return null;
+        }
 
-        DB::table('product_search_index')
-            ->where('product_id', $productId)
-            ->where('store_id', $storeId)
-            ->pluck('search_included_refs')
-            ->each(function ($json) use (&$merged) {
-                foreach (json_decode((string) $json, true) ?? [] as $type => $ids) {
-                    $merged[$type] = array_values(array_unique([...($merged[$type] ?? []), ...array_map('intval', $ids)]));
-                }
-            });
+        $name = trim((string) ($names[app()->getLocale()] ?? ''));
 
-        return $merged;
+        if ($name !== '') {
+            return $name;
+        }
+
+        foreach ($names as $candidate) {
+            if (($candidate = trim((string) $candidate)) !== '') {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 
     /**
-     * @return class-string<\Illuminate\Database\Eloquent\Model>
+     * Option group header in the select
      */
-    protected static function modelClass(SearchRefType $type): string
+    protected static function typeGroupLabel(SearchRefType $type): string
     {
         return match ($type) {
-            SearchRefType::Category       => Category::class,
-            SearchRefType::Manufacturer   => Manufacturer::class,
-            SearchRefType::Tag            => Tag::class,
-            SearchRefType::Attribute      => Attribute::class,
-            SearchRefType::AttributeValue => AttributeValue::class,
-            SearchRefType::Option         => Option::class,
-            SearchRefType::OptionValue    => OptionValue::class,
-        };
-    }
-
-    protected static function typeLabel(SearchRefType $type): string
-    {
-        return match ($type) {
-            SearchRefType::Category       => FacetType::Category->getLabel(),
-            SearchRefType::Manufacturer   => FacetType::Manufacturer->getLabel(),
-            SearchRefType::Tag            => FacetType::Tag->getLabel(),
-            SearchRefType::Attribute      => __('admin.catalog.products.tabs.placement.labels.attribute_group'),
-            SearchRefType::AttributeValue => FacetType::AttributeValue->getLabel(),
-            SearchRefType::Option         => __('admin.catalog.products.tabs.placement.labels.option_group'),
-            SearchRefType::OptionValue    => FacetType::OptionValue->getLabel(),
+            SearchRefType::Category                                 => __('admin.catalog.products.tabs.placement.labels.categories'),
+            SearchRefType::Manufacturer                             => __('admin.catalog.products.tabs.placement.labels.manufacturers'),
+            SearchRefType::Tag                                      => __('admin.catalog.products.tabs.placement.labels.product_tags'),
+            SearchRefType::Attribute, SearchRefType::AttributeValue => __('admin.catalog.products.tabs.attributes.label'),
+            SearchRefType::Option, SearchRefType::OptionValue       => __('admin.catalog.products.tabs.options.label'),
         };
     }
 
     /**
      * {"category": [5], "option_value": [31]} -> ["category:5", "option_value:31"]
+     * Public: EditProduct uses it to fill the select (see the comment at the select).
      */
-    protected static function flattenRefs(array $refs): array
+    public static function flattenRefs(array $refs): array
     {
         if (array_is_list($refs)) {
             return $refs; // already flat
@@ -394,7 +451,7 @@ class PlacementTab
      * ["category:5", "option_value:31"] -> {"category": [5], "option_value": [31]}
      * Unknown types and non-numeric ids are dropped. An empty result is saved as an empty array.
      */
-    protected static function groupRefs(array $flat): array
+    public static function groupRefs(array $flat): array
     {
         $refs = [];
 
