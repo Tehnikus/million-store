@@ -26,6 +26,7 @@ class ReviewsRelationManager extends RelationManager
     {
         return ProductReviewsTable::configure($table)
             ->searchable(false)
+            // ->deferLoading() // TODO First optimize product form queries then defer relation manager load
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()->after(fn () => $this->refreshBadges()),

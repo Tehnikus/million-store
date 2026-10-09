@@ -34,6 +34,7 @@ class BlogPostsRelationManager extends RelationManager
             ->heading(__('admin.common.helpers.manager_page_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $parentTitle]))
             ->emptyStateHeading(__('admin.common.helpers.manager_page_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $parentTitle]))
             ->emptyStateDescription(__('admin.catalog.products.tabs.blog_posts.empty_state'))
+            // ->deferLoading() // TODO First optimize product form queries then defer relation manager load
             ->recordActions([
                 Action::make('editPost')
                     ->label(__('filament-actions::edit.single.label'))
