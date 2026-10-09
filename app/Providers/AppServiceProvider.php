@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \App\Domain\Catalog\Search\SearchIndexObserver::register(); // Include vector search indexer
+
         Relation::morphMap([
             'product'          => \App\Models\Catalog\Product::class,
             'category'         => \App\Models\Catalog\Category::class,
