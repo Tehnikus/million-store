@@ -2,25 +2,43 @@
 
 namespace App\Filament\Resources\Options\Tables;
 
+use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
+use App\Models\Catalog\Option;
 use App\Models\Catalog\OptionValue;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class OptionsTable
 {
     public static function configure(Table $table): Table
     {
+        $store = Filament::getTenant();
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with('values')) // Eager loading of option values
+            ->modifyQueryUsing(fn($query) => $query
+                ->with('values') // Values badges column eager loading
+                ->addSelect([
+                    // Count products of each option group
+                    'products_count' => DB::table('facet_index as fi')
+                        ->join('option_values as ov', 'ov.id', '=', 'fi.facet_value_id')
+                        ->whereColumn('ov.option_id', 'options.id')
+                        ->where('fi.store_id', $store->id)
+                        ->where('fi.facet_type_id', FacetType::OptionValue->value)
+                        ->selectRaw('COUNT(DISTINCT fi.product_id)'),
+                ]))
             ->emptyStateIcon(NavigationItem::Options->icon())
             ->emptyStateHeading(__('admin.catalog.options.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.options.helpers.group_title'))
@@ -52,6 +70,12 @@ class OptionsTable
                         return 'success';
                     }),
 
+                TextColumn::make('products_count')
+                    ->badge()
+                    ->sortable()
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.options.fields.products')),
+
                 TextColumn::make('type')
                     ->badge()
                     ->formatStateUsing(function ($record) {
@@ -81,12 +105,21 @@ class OptionsTable
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->modalDescription(
+                        function (Option $record) use ($store): HtmlString {
+                            $valueIds = $record->values->modelKeys();
+                            return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
+                        }
+                    ),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make()
+                    ->modalDescription(function ($records) use ($store): HtmlString {
+                        // One query instead of lazy-loading "values" on every selected record
+                        $valueIds = OptionValue::whereIn('option_id', $records->modelKeys())->pluck('id')->all();
+                        return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
+                    }),
             ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
 use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
 use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
@@ -54,6 +55,14 @@ class OptionValue extends Model
     public function option(): BelongsTo
     {
         return $this->belongsTo(Option::class);
+    }
+
+    // Clean product data of this store once the value is gone: combinations with this value and their prices, option overrides, search exclusions.
+    // Slugs (HasSlugs), facet_index (HasFacetIndexCleanup) and the search index (SearchIndexObserver) have their own listeners.
+    protected static function booted(): void
+    {
+        static::deleted(fn (OptionValue $value) => app(PurgeDeletedCatalogValue::class)
+            ->optionValue((int) $value->getKey(), (int) $value->option_id, (int) $value->store_id));
     }
 
     // public function imageColumns(): array
