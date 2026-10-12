@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Attributes\Schemas;
 
+use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\FacetType;
 use App\Filament\Schemas\Fields\SlugInput;
 use App\Models\Store\StoreSettings;
 use Filament\Actions\Action;
@@ -21,6 +23,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class AttributeForm
@@ -30,8 +33,6 @@ class AttributeForm
         $store      = Filament::getTenant();
         $languages  = $store->activeLanguages();
         $prepareValueData = function (array $data) use ($store): array {
-            // unset($data['slugs'], $data['slugs_touched']);
-
             return [...$data, 'store_id' => $store->id];
         };
 
@@ -155,6 +156,16 @@ class AttributeForm
                                 ->columns(2)
                                 ->columnSpanFull()
                             ])
+                            ->deleteAction(fn (Action $action) => $action
+                                ->requiresConfirmation()
+                                ->modalDescription(function (array $arguments) use ($store): ?HtmlString {
+                                    // Saved values have repeater keys "record-{id}", new unsaved ones have a uuid
+                                    $key = (string) ($arguments['item'] ?? '');
+                                    if (!str_starts_with($key, 'record-')) {
+                                        return null;
+                                    }
+                                    return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::AttributeValue, [(int) substr($key, 7)], $store->id, false);
+                                }))
                             ->relationship('values')
                             ->mutateRelationshipDataBeforeCreateUsing($prepareValueData) // Add required store id column
                             ->mutateRelationshipDataBeforeSaveUsing($prepareValueData) // Remove slugs from data 

@@ -2,25 +2,41 @@
 
 namespace App\Filament\Resources\Attributes\Tables;
 
+use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
+use App\Models\Catalog\Attribute;
 use App\Models\Catalog\AttributeValue;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class AttributesTable
 {
     public static function configure(Table $table): Table
     {
+        $store = Filament::getTenant();
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with('values')) // Eager loading of attribute values
+            ->modifyQueryUsing(fn($query) => $query
+                ->with('values') // Values badges column eager loading
+                ->addSelect([
+                    // Count products of each attribute group
+                    'products_count' => DB::table('facet_index as fi')
+                        ->join('attribute_values as av', 'av.id', '=', 'fi.facet_value_id')
+                        ->whereColumn('av.attribute_id', 'attributes.id')
+                        ->where('fi.store_id', $store->id)
+                        ->where('fi.facet_type_id', FacetType::AttributeValue->value)
+                        ->selectRaw('COUNT(DISTINCT fi.product_id)'),
+                ]))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -38,16 +54,16 @@ class AttributesTable
                     ->expandableLimitedList()
                     ->formatStateUsing(fn (AttributeValue $state) => $state->name)
                     ->color(function (AttributeValue $state) {
-                        if (! $state->is_active) {
-                            return 'gray';
-                        }
-
-                        if (! $state->show_in_facets) {
-                            return 'warning';
-                        }
-
+                        if (!$state->is_active) return 'gray';
+                        if (!$state->show_in_facets) return 'warning';
                         return 'info';
                     }),
+
+                TextColumn::make('products_count')
+                    ->badge()
+                    ->sortable()
+                    ->alignment(Alignment::Center)
+                    ->label(__('admin.catalog.attributes.fields.products')),
 
                 ToggleColumn::make('is_active')
                     ->sortable()
@@ -72,12 +88,21 @@ class AttributesTable
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->modalDescription(
+                        function (Attribute $record) use ($store): HtmlString {
+                            $valueIds = $record->values->modelKeys();
+                            return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
+                        }
+                    ),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make()
+                    ->modalDescription(function ($records) use ($store): HtmlString {
+                        // One query instead of lazy-loading "values" on every selected record
+                        $valueIds = AttributeValue::whereIn('attribute_id', $records->modelKeys())->pluck('id')->all();
+                        return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
+                    }),
             ]);
     }
 }

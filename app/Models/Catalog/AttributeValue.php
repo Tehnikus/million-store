@@ -2,12 +2,14 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
 use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
 use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 use Spatie\Translatable\HasTranslations;
@@ -45,6 +47,25 @@ class AttributeValue extends Model
     public function attribute(): BelongsTo
     {
         return $this->belongsTo(Attribute::class);
+    }
+
+    /**
+     * Get products related to attribute value
+     * @return BelongsToMany<Product, AttributeValue, TPivotModel>
+     */
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'facet_index', 'facet_value_id', 'product_id')
+            ->withPivotValue('facet_type_id', FacetType::AttributeValue->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
+    }
+
+    // Clean product data of this store once the value is gone: attribute overrides, search exclusions.
+    // Slugs (HasSlugs), facet_index (HasFacetIndexCleanup) and the search index (SearchIndexObserver) have their own listeners.
+    protected static function booted(): void
+    {
+        static::deleted(fn (AttributeValue $value) => app(PurgeDeletedCatalogValue::class)
+            ->attributeValue((int) $value->getKey(), (int) $value->attribute_id, (int) $value->store_id));
     }
 
     // Cleanup facet index on delete
