@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Category;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,6 +19,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class CategoriesTable
 {
@@ -28,7 +30,7 @@ class CategoriesTable
             ->emptyStateIcon(NavigationItem::Categories->icon())
             ->emptyStateHeading(__('admin.catalog.categories.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.categories.table.empty_state'))
-            ->modifyQueryUsing(fn($query) => $query->with(['products', 'parent'])->where('store_id', $store->id))
+            ->modifyQueryUsing(fn($query) => $query->with('parent')->withCount('products')->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -40,8 +42,9 @@ class CategoriesTable
                     ->label(__('admin.catalog.categories.model_label_singular')),
 
                 SelectColumn::make('parent_id')
-                    ->options(fn (?Category $record) => $record 
-                        ? Category::categoryChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                    ->options(
+                        fn(?Category $record) => $record
+                        ? Category::categoryChoices($store->id)->except([...$record->descendantIds(), $record->id])
                         : Category::categoryChoices($store->id)
                     )
                     ->searchableOptions(true)
@@ -51,9 +54,8 @@ class CategoriesTable
                     ->placeholder(__('admin.catalog.categories.tabs.content.labels.is_root'))
                     ->label(__('admin.catalog.categories.tabs.content.labels.parent_id')),
 
-                TextColumn::make('products')
-                    ->getStateUsing(fn(Category $record) => $record->products->count())
-                    ->color(fn($record) => $record->products->count() > 0 ? 'success' : 'danger')
+                TextColumn::make('products_count')
+                    ->color(fn(int $state) => $state > 0 ? 'success' : 'danger')
                     ->sortable()
                     ->badge()
                     ->width('1%')
@@ -67,6 +69,7 @@ class CategoriesTable
                     ->label(__('admin.catalog.categories.tabs.content.labels.is_active'))
                     ->afterStateUpdated(function ($livewire) {
                         $livewire->dispatch('refresh-sidebar');
+                        // TODO: Rebuild sitemap here
                     }),
 
                 ToggleColumn::make('show_in_facets')
@@ -97,11 +100,15 @@ class CategoriesTable
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
+                    ->modalDescription(fn(Category $record): HtmlString =>
+                        PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::Category, [$record->id], $store->id))
+                    ->after(fn($livewire) => $livewire->dispatch('refresh-sidebar')),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make()
+                    ->modalDescription(fn($records): HtmlString =>
+                        PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::Category, $records->modelKeys(), $store->id))
+                    ->after(fn($livewire) => $livewire->dispatch('refresh-sidebar')),
             ]);
     }
 }

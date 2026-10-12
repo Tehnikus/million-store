@@ -23,6 +23,7 @@ class CategoryProductsRelationManager extends RelationManager
     protected static string $relationship = 'products';
 
     protected ?array $excludedIds = null; // One time request cache
+    protected ?array $primaryIds = null; // One time request cache, reset in setPrimaryCategory()
 
     public function table(Table $table): Table
     {
@@ -61,7 +62,7 @@ class CategoryProductsRelationManager extends RelationManager
                     // ])
                     ->action(function (Product $record, array $data) {
                         $this->setPrimaryCategory([$record->id], (int) $data['category_id']);
-                        // TODO Reindex Sitemap here
+                        // TODO: Rebuild sitemap here
                     }),
                 Action::make('editProduct')
                     ->label(__('filament-actions::edit.single.label'))
@@ -139,7 +140,7 @@ class CategoryProductsRelationManager extends RelationManager
                     ])
                     ->action(function (EloquentCollection $records, array $data) {
                         $this->setPrimaryCategory($records->modelKeys(), (int) $data['category_id']);
-                        // TODO Reindex Sitemap here
+                        // TODO: Rebuild sitemap here
                     })
                     ->deselectRecordsAfterCompletion(),
                 BulkAction::make('detachSelected')
@@ -228,11 +229,21 @@ class CategoryProductsRelationManager extends RelationManager
                 ->when(! $force, fn ($query) => $query->whereNull('primary_category_id'))
                 ->update(['primary_category_id' => $categoryId]);
         });
+
+        $this->primaryIds = null;
     }
 
     private function isPrimaryCategory(Product $product): bool
     {
-        return (int) $product->currentDescription()?->primary_category_id === (int) $this->getOwnerRecord()->id;
+        $owner = $this->getOwnerRecord();
+
+        $this->primaryIds ??= ProductDescription::where('store_id', $owner->store_id)
+            ->where('primary_category_id', $owner->id)
+            ->pluck('product_id')
+            ->flip()
+            ->all();
+
+        return isset($this->primaryIds[$product->id]);
     }
 
     // Rebuild search index of these products after they were attached/detached from the parent record.

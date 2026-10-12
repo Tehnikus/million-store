@@ -36,8 +36,9 @@ class CategoryForm
                                     ->description(__('admin.catalog.categories.tabs.content.helpers.main'))
                                     ->schema([
                                         Select::make('parent_id')
-                                            ->options(fn (?Category $record) => $record 
-                                                ? Category::categoryChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                                            ->options(
+                                                fn(?Category $record) => $record
+                                                ? Category::categoryChoices($store->id)->except([...$record->descendantIds(), $record->id])
                                                 : Category::categoryChoices($store->id)
                                             )
                                             ->searchable()
