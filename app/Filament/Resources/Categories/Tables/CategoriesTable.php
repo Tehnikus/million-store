@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\Actions\DeletionWarnings;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
@@ -101,13 +101,13 @@ class CategoriesTable
                 EditAction::make(),
                 DeleteAction::make()
                     ->modalDescription(fn(Category $record): HtmlString =>
-                        PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::Category, [$record->id], $store->id))
+                        DeletionWarnings::affectedWarningMessage(FacetType::Category, [$record->id], $store->id))
                     ->after(fn($livewire) => $livewire->dispatch('refresh-sidebar')),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make()
                     ->modalDescription(fn($records): HtmlString =>
-                        PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::Category, $records->modelKeys(), $store->id))
+                        DeletionWarnings::affectedWarningMessage(FacetType::Category, $records->modelKeys(), $store->id))
                     ->after(fn($livewire) => $livewire->dispatch('refresh-sidebar')),
             ]);
     }

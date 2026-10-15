@@ -231,6 +231,7 @@ class CategoryProductsRelationManager extends RelationManager
         });
 
         $this->primaryIds = null;
+        // TODO: Product URLs contain primary category: add redirects from old URLs here
     }
 
     private function isPrimaryCategory(Product $product): bool

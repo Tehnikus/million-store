@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Pages;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\Actions\DeletionWarnings;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Support\AdminMenu\NavigationItem;
@@ -23,7 +23,7 @@ class EditCategory extends EditRecord
         return [
             DeleteAction::make()
                 ->modalDescription(fn(Category $record): HtmlString =>
-                    PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::Category, [$record->id], $store->id)),
+                    DeletionWarnings::affectedWarningMessage(FacetType::Category, [$record->id], $store->id)),
         ];
     }
 

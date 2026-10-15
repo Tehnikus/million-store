@@ -2,7 +2,7 @@
 
 namespace App\Models\Catalog;
 
-use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
+use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
 use App\Domain\Media\Concerns\HasProcessedImages;
@@ -20,6 +21,8 @@ class Category extends Model
     use HasTranslations;
     use HasSlugs;
     use HasProcessedImages;
+    use BatchesCatalogDeletion;
+
     protected $fillable = [
         'store_id',
         'is_active',
@@ -88,17 +91,6 @@ class Category extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    /**
-     * Descendants category tree
-     * @return Collection
-     */
-    public function descendants(): Collection
-    {
-        return $this->children()
-            ->get()
-            ->flatMap(fn (self $child) => collect([$child])->merge($child->descendants()));
-    }
-
     // Reverse category relation for ManageCategoryProducts
     public function products(): BelongsToMany
     {
@@ -107,25 +99,32 @@ class Category extends Model
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
-    // Cleanup facet index on delete
-    use HasFacetIndexCleanup;
-    public function facetType(): FacetType
-    {
-        return FacetType::Category;
-    }
-
-    // Update facet_group_id if category->parent_id was changed
     protected static function booted(): void
     {
+        // Update facet_group_id if category->parent_id was changed
         static::updated(function (Category $category) {
-            FacetIndex::where('facet_type_id', FacetType::Category)
+            if (!$category->wasChanged('parent_id')) {
+                return;
+            }
+
+            FacetIndex::where('facet_type_id', FacetType::Category->value)
                 ->where('facet_value_id', $category->id)
                 ->where('store_id', $category->store_id)
-                ->whereNot('facet_group_id', '=', $category->parent_id)
                 ->update(['facet_group_id' => $category->parent_id ?? 0]);
+
+            DB::table('facet_page_index')
+                ->where('facet_type_id', FacetType::Category->value)
+                ->where('facet_value_id', $category->id)
+                ->where('store_id', $category->store_id)
+                ->update(['facet_group_id' => $category->parent_id ?? 0, 'updated_at' => now()]);
+                // TODO: Maybe touch() affected facet pages, so if cache is bound to model events it can be updated?
         });
     }
 
+    /**
+     * Settings for image conversions
+     * @return array{images: array{slug_source: string, type: string}}
+     */
     public function imageColumns(): array
     {
         return [
@@ -157,5 +156,52 @@ class Category extends Model
         Context::add($key, $choices->all());
 
         return $choices;
+    }
+
+
+    /**
+     * id => parent_id of every category of the store, one query per request (Octane-safe via Context)
+     * @return array<int, int|null>
+     */
+    public static function parentMap(int $storeId): array
+    {
+        $key = __METHOD__ . ".{$storeId}";
+
+        if (Context::has($key)) {
+            return Context::get($key);
+        }
+
+        $map = self::query()
+            ->where('store_id', $storeId)
+            ->pluck('parent_id', 'id')
+            ->map(fn($parentId) => $parentId === null ? null : (int) $parentId)
+            ->all();
+
+        Context::add($key, $map);
+
+        return $map;
+    }
+
+    /**
+     * Ids of the whole subtree below this category, built in memory from parentMap()
+     * @return int[]
+     */
+    public function descendantIds(): array
+    {
+        $map = self::parentMap($this->store_id);
+        $result = [];
+        $queue = [$this->id];
+
+        while ($queue) {
+            $current = array_shift($queue);
+            foreach ($map as $id => $parentId) {
+                if ($parentId === $current) {
+                    $result[] = $id;
+                    $queue[] = $id;
+                }
+            }
+        }
+
+        return $result;
     }
 }
