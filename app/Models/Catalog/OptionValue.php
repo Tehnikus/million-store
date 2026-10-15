@@ -2,13 +2,13 @@
 
 namespace App\Models\Catalog;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
-use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
+use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 use Spatie\Translatable\HasTranslations;
@@ -17,7 +17,8 @@ class OptionValue extends Model
 {
     use HasTranslations;
     use HasSlugs;
-    // use HasProcessedImages;
+    use HasProcessedImages;
+    use BatchesCatalogDeletion;
 
     protected $fillable = [
         'store_id',
@@ -45,35 +46,31 @@ class OptionValue extends Model
         'description',
     ];
 
-    // Cleanup facet index on delete
-    use HasFacetIndexCleanup;
-    public function facetType(): FacetType
-    {
-        return FacetType::OptionValue;
-    }
-
     public function option(): BelongsTo
     {
         return $this->belongsTo(Option::class);
     }
 
-    // Clean product data of this store once the value is gone: combinations with this value and their prices, option overrides, search exclusions.
-    // Slugs (HasSlugs), facet_index (HasFacetIndexCleanup) and the search index (SearchIndexObserver) have their own listeners.
-    protected static function booted(): void
+    /**
+     * Get products related to attribute value
+     * @return BelongsToMany<Product, AttributeValue, TPivotModel>
+     */
+    public function products(): BelongsToMany
     {
-        static::deleted(fn (OptionValue $value) => app(PurgeDeletedCatalogValue::class)
-            ->optionValue((int) $value->getKey(), (int) $value->option_id, (int) $value->store_id));
+        return $this->belongsToMany(Product::class, 'facet_index', 'facet_value_id', 'product_id')
+            ->withPivotValue('facet_type_id', FacetType::OptionValue->value)
+            ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
-    // public function imageColumns(): array
-    // {
-    //     return [
-    //         'images' => [
-    //             'type'        => 'option',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-    //             'slug_source' => 'name',      // Translatable field to take converted image names from. Will be slugged
-    //         ],
-    //     ];
-    // }
+    public function imageColumns(): array
+    {
+        return [
+            'images' => [
+                'type'        => 'option',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',      // Translatable field to take converted image names from. Will be slugged
+            ],
+        ];
+    }
 
     /**
      * Cache option value list for select dropdowns with Octane support
