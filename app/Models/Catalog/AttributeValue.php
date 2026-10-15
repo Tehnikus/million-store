@@ -2,8 +2,7 @@
 
 namespace App\Models\Catalog;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
-use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
+use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
@@ -18,7 +17,8 @@ class AttributeValue extends Model
 {
     use HasTranslations;
     use HasSlugs;
-    // use HasProcessedImages;
+    use HasProcessedImages;
+    use BatchesCatalogDeletion;
 
     protected $fillable = [
         'store_id',
@@ -60,30 +60,15 @@ class AttributeValue extends Model
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
-    // Clean product data of this store once the value is gone: attribute overrides, search exclusions.
-    // Slugs (HasSlugs), facet_index (HasFacetIndexCleanup) and the search index (SearchIndexObserver) have their own listeners.
-    protected static function booted(): void
+    public function imageColumns(): array
     {
-        static::deleted(fn (AttributeValue $value) => app(PurgeDeletedCatalogValue::class)
-            ->attributeValue((int) $value->getKey(), (int) $value->attribute_id, (int) $value->store_id));
+        return [
+            'images' => [
+                'type'        => 'attribute',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',        // Translatable field to take converted image names from. Will be slugged
+            ],
+        ];
     }
-
-    // Cleanup facet index on delete
-    use HasFacetIndexCleanup;
-    public function facetType(): FacetType
-    {
-        return FacetType::AttributeValue;
-    }
-
-    // public function imageColumns(): array
-    // {
-    //     return [
-    //         'images' => [
-    //             'type'        => 'attribute',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-    //             'slug_source' => 'name',        // Translatable field to take converted image names from. Will be slugged
-    //         ],
-    //     ];
-    // }
 
     /**
      * Cache attribute values list for select dropdowns with Octane support
