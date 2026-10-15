@@ -344,6 +344,7 @@ return [
         'values'                => 'Значення атрибутів',
         'image'                 => 'Картинка',
         'description'           => 'Опис атрибута',
+        'products'              => 'Товари',
         'attribute_name'        => 'Назва атрибута',
         'slug'                  => 'URL',
         'show_in_facets'        => 'Відображати в фильтрі',
@@ -369,6 +370,7 @@ return [
         'group_title'           => 'Опція',
         'group'                 => 'Група',
         'group_name'            => 'Назва групи опцій',
+        'products'              => 'Товари',
         'values'                => 'Варіанти опцій',
         'image'                 => 'Зображення',
         'description'           => 'Опис',
@@ -433,8 +435,7 @@ return [
           ],
           'empty_state' => 'Тут ви можете швидко прив\'язати товари до цього тегу. Теги дозволяють об\'єднувати товари в групи і робити з тегів посадкові SEO-сторінки',
         ],
-
-        ],
+      ],
       'table' => [
         'empty_state' => 'Теги потрібні для груповання товарів, коли потрібно об\'єднати товари в групу і створити для них посадкову SEO сторінку. Теги також відображаются в фільтрі товарів',
       ],
@@ -475,7 +476,63 @@ return [
         'has_discount'  => 'Зі знижкой',
         'bestseller'    => 'Лідер продажів',
         'best_reviews'  => 'Кращі відгуки',
-      ]
+      ],
+      'notifications' => [
+        // Categories
+        'delete_single_category_primary_products_warning'           => 'Ця категорія є <u>основною</u> для <b style="color: var(--warning-500);">:products товару</b>.|Ця категорія є <u>основною</u> для <b style="color: var(--warning-500);">:products товарів</b>.|Ця категорія є <u>основною</u> для <b style="color: var(--warning-500);">:products товарів</b>.',
+        'delete_multiple_categories_primary_products_warning'       => 'Ці категорії є <u>основними</u> для <b style="color: var(--warning-500);">:products товару</b>.|Ці категорії є <u>основними</u> для <b style="color: var(--warning-500);">:products товарів</b>.|Ці категорії є <u>основними</u> для <b style="color: var(--warning-500);">:products товарів</b>.',
+        'delete_single_category_secondary_products_warning'         => 'Ця категорія призначена <b style="color: var(--warning-500);">:products товару</b> як додаткова. Її буде відв\'язано від цього товару.|Ця категорія призначена <b style="color: var(--warning-500);">:products товарам</b> як додаткова. Її буде відв\'язано від цих товарів.|Ця категорія призначена <b style="color: var(--warning-500);">:products товарам</b> як додаткова. Її буде відв\'язано від цих товарів.',
+        'delete_multiple_categories_secondary_products_warning'     => 'Ці категорії призначені <b style="color: var(--warning-500);">:products товару</b> як додаткові. Їх буде відв\'язано від цього товару.|Ці категорії призначені <b style="color: var(--warning-500);">:products товарам</b> як додаткові. Їх буде відв\'язано від цих товарів.|Ці категорії призначені <b style="color: var(--warning-500);">:products товарам</b> як додаткові. Їх буде відв\'язано від цих товарів.',
+        'delete_single_category_primary_filter_pages_warning'       => 'Ця категорія є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінки фільтрів</b>.|Ця категорія є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.|Ця категорія є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.',
+        'delete_multiple_categories_primary_filter_pages_warning'   => 'Ці категорії є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінки фільтрів</b>.|Ці категорії є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.|Ці категорії є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.',
+        'delete_single_category_secondary_filter_pages_warning'     => 'Ця категорія використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Ця категорія використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Ця категорія використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+        'delete_multiple_categories_secondary_filter_pages_warning' => 'Ці категорії використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Ці категорії використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Ці категорії використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+        'delete_single_category_children_warning'                   => 'У цієї категорії є <b style="color: var(--warning-500);">:children підкатегорія</b>. Її буде перенесено на рівень вище.|У цієї категорії є <b style="color: var(--warning-500);">:children підкатегорії</b>. Їх буде перенесено на рівень вище.|У цієї категорії є <b style="color: var(--warning-500);">:children підкатегорій</b>. Їх буде перенесено на рівень вище.',
+        'delete_multiple_categories_children_warning'               => 'У цих категорій є <b style="color: var(--warning-500);">:children підкатегорія</b>. Її буде перенесено на рівень вище.|У цих категорій є <b style="color: var(--warning-500);">:children підкатегорії</b>. Їх буде перенесено на рівень вище.|У цих категорій є <b style="color: var(--warning-500);">:children підкатегорій</b>. Їх буде перенесено на рівень вище.',
+
+        // Manufacturers
+        'delete_single_manufacturer_primary_products_warning'          => 'Цей виробник є <u>основним</u> для <b style="color: var(--warning-500);">:products товару</b>.|Цей виробник є <u>основним</u> для <b style="color: var(--warning-500);">:products товарів</b>.|Цей виробник є <u>основним</u> для <b style="color: var(--warning-500);">:products товарів</b>.',
+        'delete_multiple_manufacturers_primary_products_warning'       => 'Ці виробники є <u>основними</u> для <b style="color: var(--warning-500);">:products товару</b>.|Ці виробники є <u>основними</u> для <b style="color: var(--warning-500);">:products товарів</b>.|Ці виробники є <u>основними</u> для <b style="color: var(--warning-500);">:products товарів</b>.',
+        'delete_single_manufacturer_secondary_products_warning'        => 'Цього виробника призначено <b style="color: var(--warning-500);">:products товару</b> як додаткового. Його буде відв\'язано від цього товару.|Цього виробника призначено <b style="color: var(--warning-500);">:products товарам</b> як додаткового. Його буде відв\'язано від цих товарів.|Цього виробника призначено <b style="color: var(--warning-500);">:products товарам</b> як додаткового. Його буде відв\'язано від цих товарів.',
+        'delete_multiple_manufacturers_secondary_products_warning'     => 'Цих виробників призначено <b style="color: var(--warning-500);">:products товару</b> як додаткових. Їх буде відв\'язано від цього товару.|Цих виробників призначено <b style="color: var(--warning-500);">:products товарам</b> як додаткових. Їх буде відв\'язано від цих товарів.|Цих виробників призначено <b style="color: var(--warning-500);">:products товарам</b> як додаткових. Їх буде відв\'язано від цих товарів.',
+        'delete_single_manufacturer_primary_filter_pages_warning'      => 'Цей виробник є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінки фільтрів</b>.|Цей виробник є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.|Цей виробник є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.',
+        'delete_multiple_manufacturers_primary_filter_pages_warning'   => 'Ці виробники є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінки фільтрів</b>.|Ці виробники є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.|Ці виробники є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.',
+        'delete_single_manufacturer_secondary_filter_pages_warning'    => 'Цей виробник використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Цей виробник використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Цей виробник використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+        'delete_multiple_manufacturers_secondary_filter_pages_warning' => 'Ці виробники використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Ці виробники використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Ці виробники використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+        'delete_single_manufacturer_children_warning'                  => 'У цього виробника є <b style="color: var(--warning-500);">:children дочірній виробник</b>. Його буде перенесено на рівень вище.|У цього виробника є <b style="color: var(--warning-500);">:children дочірні виробники</b>. Їх буде перенесено на рівень вище.|У цього виробника є <b style="color: var(--warning-500);">:children дочірніх виробників</b>. Їх буде перенесено на рівень вище.',
+        'delete_multiple_manufacturers_children_warning'               => 'У цих виробників є <b style="color: var(--warning-500);">:children дочірній виробник</b>. Його буде перенесено на рівень вище.|У цих виробників є <b style="color: var(--warning-500);">:children дочірні виробники</b>. Їх буде перенесено на рівень вище.|У цих виробників є <b style="color: var(--warning-500);">:children дочірніх виробників</b>. Їх буде перенесено на рівень вище.',
+
+        // Tags
+        'delete_single_tag_products_warning'                 => 'Цей тег призначено <b style="color: var(--warning-500);">:products товару</b>. Його буде відв\'язано від цього товару.|Цей тег призначено <b style="color: var(--warning-500);">:products товарам</b>. Його буде відв\'язано від цих товарів.|Цей тег призначено <b style="color: var(--warning-500);">:products товарам</b>. Його буде відв\'язано від цих товарів.',
+        'delete_multiple_tag_products_warning'               => 'Ці теги призначено <b style="color: var(--warning-500);">:products товару</b>. Їх буде відв\'язано від цього товару.|Ці теги призначено <b style="color: var(--warning-500);">:products товарам</b>. Їх буде відв\'язано від цих товарів.|Ці теги призначено <b style="color: var(--warning-500);">:products товарам</b>. Їх буде відв\'язано від цих товарів.',
+        'delete_single_tag_primary_filter_pages_warning'     => 'Цей тег є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінки фільтрів</b>.|Цей тег є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.|Цей тег є головним фасетом <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.',
+        'delete_multiple_tag_primary_filter_pages_warning'   => 'Ці теги є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінки фільтрів</b>.|Ці теги є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.|Ці теги є головними фасетами <b style="color: var(--warning-500);">:filterPages сторінок фільтрів</b>.',
+        'delete_single_tag_secondary_filter_pages_warning'   => 'Цей тег використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Цей тег використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Цей тег використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+        'delete_multiple_tag_secondary_filter_pages_warning' => 'Ці теги використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Ці теги використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Ці теги використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+
+        // Attributes
+        'delete_attribute_value_products_warning'     => 'Цей атрибут призначено <b style="color: var(--warning-500);">:products товару</b>. Його буде прибрано зі сторінки товару та з блоку фільтрів.|Цей атрибут призначено <b style="color: var(--warning-500);">:products товарам</b>. Його буде прибрано зі сторінок товарів та з блоку фільтрів.|Цей атрибут призначено <b style="color: var(--warning-500);">:products товарам</b>. Його буде прибрано зі сторінок товарів та з блоку фільтрів.',
+        'delete_attribute_group_products_warning'     => 'Атрибути цієї групи призначено <b style="color: var(--warning-500);">:products товару</b>. Їх буде прибрано зі сторінки товару та з блоку фільтрів.|Атрибути цієї групи призначено <b style="color: var(--warning-500);">:products товарам</b>. Їх буде прибрано зі сторінок товарів та з блоку фільтрів.|Атрибути цієї групи призначено <b style="color: var(--warning-500);">:products товарам</b>. Їх буде прибрано зі сторінок товарів та з блоку фільтрів.',
+        'delete_attribute_value_filter_pages_warning' => 'Цей атрибут використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Цей атрибут використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Цей атрибут використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+        'delete_attribute_group_filter_pages_warning' => 'Атрибути цієї групи використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Атрибути цієї групи використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Атрибути цієї групи використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+
+        // Options
+        'delete_option_value_products_warning'     => 'Ця опція використовується в <b style="color: var(--warning-500);">:products товарі</b>.|Ця опція використовується в <b style="color: var(--warning-500);">:products товарах</b>.|Ця опція використовується в <b style="color: var(--warning-500);">:products товарах</b>.',
+        'delete_option_group_products_warning'     => 'Опції цієї групи використовуються в <b style="color: var(--warning-500);">:products товарі</b>.|Опції цієї групи використовуються в <b style="color: var(--warning-500);">:products товарах</b>.|Опції цієї групи використовуються в <b style="color: var(--warning-500);">:products товарах</b>.',
+        'delete_option_value_filter_pages_warning' => 'Ця опція використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Ця опція використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Ця опція використовується як фільтр на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+        'delete_option_group_filter_pages_warning' => 'Опції цієї групи використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінці фільтрів</b>.|Опції цієї групи використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.|Опції цієї групи використовуються як фільтри на <b style="color: var(--warning-500);">:filterPages сторінках фільтрів</b>.',
+
+        // Products additional warnings
+        'product_no_options'                     => 'Варіанти товарів із цією опцією та їхні ціни буде видалено. Товари, у яких не залишиться жодного варіанта, отримають статус <b style="color: var(--danger-500);">Недоступний для продажу</b>.',
+        'product_no_primary_category'            => 'Ці товари буде <b style="color: var(--danger-500);">деактивовано</b>, їхні сторінки стануть недоступними. Призначте їм нову основну категорію та увімкніть їх знову.',
+        'product_primary_to_parent'              => 'Їхньою основною категорією стане батьківська категорія видаленої.',
+        'product_no_primary_manufacturer'        => 'Ці товари залишаться без виробника: інформація про нього та логотип зникнуть з їхніх сторінок. Товари залишаться в продажу.',
+        'product_primary_manufacturer_to_parent' => 'Їхнім основним виробником стане батьківський виробник видаленого.',
+
+        // Facet pages additional warnings
+        'facet_page_no_primary'            => 'Ці сторінки фільтрів буде <b style="color: var(--danger-500);">деактивовано</b>. Оберіть для них новий головний фасет і увімкніть їх знову.',
+        'facet_page_no_unique_combination' => 'Ці сторінки фільтрів буде <b style="color: var(--danger-500);">деактивовано</b>. Увімкніть їх вручну; якщо комбінація фільтрів, що залишилася, більше не унікальна, оберіть нову.',
+      ],
     ],
     'product_reviews' => [
       'navigation_label'      => 'Відгуки про товари',

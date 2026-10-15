@@ -343,6 +343,7 @@ return [
         'group_name'            => 'Attribute group name',
         'values'                => 'Attibute entries',
         'image'                 => 'Image',
+        'products'              => 'Products',
         'description'           => 'Attribute description',
         'attribute_name'        => 'Attribute name',
         'slug'                  => 'URL',
@@ -368,6 +369,7 @@ return [
       'fields'  => [
         'group_title'           => 'Option',
         'group'                 => 'Group',
+        'products'              => 'Products',
         'group_name'            => 'Option group name',
         'values'                => 'Option variants',
         'image'                 => 'Image',
@@ -474,7 +476,63 @@ return [
         'has_discount' => 'Discount',
         'bestseller'   => 'Bestseller',
         'best_reviews' => 'Best reviews',
-      ]
+      ],
+      'notifications' => [
+        // Categories
+        'delete_single_category_primary_products_warning'           => 'This category is the <u>primary</u> one for <b style="color: var(--warning-500);">:products product</b>.|This category is the <u>primary</u> one for <b style="color: var(--warning-500);">:products products</b>.',
+        'delete_multiple_categories_primary_products_warning'       => 'These categories are the <u>primary</u> ones for <b style="color: var(--warning-500);">:products product</b>.|These categories are the <u>primary</u> ones for <b style="color: var(--warning-500);">:products products</b>.',
+        'delete_single_category_secondary_products_warning'         => 'This category is assigned to <b style="color: var(--warning-500);">:products product</b> as secondary. It will be removed from it.|This category is assigned to <b style="color: var(--warning-500);">:products products</b> as secondary. It will be removed from them.',
+        'delete_multiple_categories_secondary_products_warning'     => 'These categories are assigned to <b style="color: var(--warning-500);">:products product</b> as secondary. They will be removed from it.|These categories are assigned to <b style="color: var(--warning-500);">:products products</b> as secondary. They will be removed from them.',
+        'delete_single_category_primary_filter_pages_warning'       => 'This category is the primary facet of <b style="color: var(--warning-500);">:filterPages filter page</b>.|This category is the primary facet of <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_multiple_categories_primary_filter_pages_warning'   => 'These categories are the primary facets of <b style="color: var(--warning-500);">:filterPages filter page</b>.|These categories are the primary facets of <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_single_category_secondary_filter_pages_warning'     => 'This category is used as a filter on <b style="color: var(--warning-500);">:filterPages filter page</b>.|This category is used as a filter on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_multiple_categories_secondary_filter_pages_warning' => 'These categories are used as filters on <b style="color: var(--warning-500);">:filterPages filter page</b>.|These categories are used as filters on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_single_category_children_warning'                   => 'This category has <b style="color: var(--warning-500);">:children subcategory</b>. It will be moved one level up.|This category has <b style="color: var(--warning-500);">:children subcategories</b>. They will be moved one level up.',
+        'delete_multiple_categories_children_warning'               => 'These categories have <b style="color: var(--warning-500);">:children subcategory</b>. It will be moved one level up.|These categories have <b style="color: var(--warning-500);">:children subcategories</b>. They will be moved one level up.',
+
+        // Manufacturers
+        'delete_single_manufacturer_primary_products_warning'           => 'This manufacturer is the <u>primary</u> one for <b style="color: var(--warning-500);">:products product</b>.|This manufacturer is the <u>primary</u> one for <b style="color: var(--warning-500);">:products products</b>.',
+        'delete_multiple_manufacturers_primary_products_warning'        => 'These manufacturers are the <u>primary</u> ones for <b style="color: var(--warning-500);">:products product</b>.|These manufacturers are the <u>primary</u> ones for <b style="color: var(--warning-500);">:products products</b>.',
+        'delete_single_manufacturer_secondary_products_warning'         => 'This manufacturer is assigned to <b style="color: var(--warning-500);">:products product</b> as secondary. It will be removed from it.|This manufacturer is assigned to <b style="color: var(--warning-500);">:products products</b> as secondary. It will be removed from them.',
+        'delete_multiple_manufacturers_secondary_products_warning'      => 'These manufacturers are assigned to <b style="color: var(--warning-500);">:products product</b> as secondary. They will be removed from it.|These manufacturers are assigned to <b style="color: var(--warning-500);">:products products</b> as secondary. They will be removed from them.',
+        'delete_single_manufacturer_primary_filter_pages_warning'       => 'This manufacturer is the primary facet of <b style="color: var(--warning-500);">:filterPages filter page</b>.|This manufacturer is the primary facet of <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_multiple_manufacturers_primary_filter_pages_warning'    => 'These manufacturers are the primary facets of <b style="color: var(--warning-500);">:filterPages filter page</b>.|These manufacturers are the primary facets of <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_single_manufacturer_secondary_filter_pages_warning'     => 'This manufacturer is used as a filter on <b style="color: var(--warning-500);">:filterPages filter page</b>.|This manufacturer is used as a filter on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_multiple_manufacturers_secondary_filter_pages_warning'  => 'These manufacturers are used as filters on <b style="color: var(--warning-500);">:filterPages filter page</b>.|These manufacturers are used as filters on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_single_manufacturer_children_warning'                   => 'This manufacturer has <b style="color: var(--warning-500);">:children child manufacturer</b>. It will be moved one level up.|This manufacturer has <b style="color: var(--warning-500);">:children child manufacturers</b>. They will be moved one level up.',
+        'delete_multiple_manufacturers_children_warning'                => 'These manufacturers have <b style="color: var(--warning-500);">:children child manufacturer</b>. It will be moved one level up.|These manufacturers have <b style="color: var(--warning-500);">:children child manufacturers</b>. They will be moved one level up.',
+
+        // Tags
+        'delete_single_tag_products_warning'                    => 'This tag is assigned to <b style="color: var(--warning-500);">:products product</b>. It will be removed from it.|This tag is assigned to <b style="color: var(--warning-500);">:products products</b>. It will be removed from them.',
+        'delete_multiple_tag_products_warning'                  => 'These tags are assigned to <b style="color: var(--warning-500);">:products product</b>. They will be removed from it.|These tags are assigned to <b style="color: var(--warning-500);">:products products</b>. They will be removed from them.',
+        'delete_single_tag_primary_filter_pages_warning'        => 'This tag is the primary facet of <b style="color: var(--warning-500);">:filterPages filter page</b>.|This tag is the primary facet of <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_multiple_tag_primary_filter_pages_warning'      => 'These tags are the primary facets of <b style="color: var(--warning-500);">:filterPages filter page</b>.|These tags are the primary facets of <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_single_tag_secondary_filter_pages_warning'      => 'This tag is used as a filter on <b style="color: var(--warning-500);">:filterPages filter page</b>.|This tag is used as a filter on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_multiple_tag_secondary_filter_pages_warning'    => 'These tags are used as filters on <b style="color: var(--warning-500);">:filterPages filter page</b>.|These tags are used as filters on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+
+        // Attributes
+        'delete_attribute_value_products_warning'     => 'This attribute is assigned to <b style="color: var(--warning-500);">:products product</b>. It will be removed from its page and from the filter block.|This attribute is assigned to <b style="color: var(--warning-500);">:products products</b>. It will be removed from their pages and from the filter block.',
+        'delete_attribute_group_products_warning'     => 'Attributes of this group are assigned to <b style="color: var(--warning-500);">:products product</b>. They will be removed from its page and from the filter block.|Attributes of this group are assigned to <b style="color: var(--warning-500);">:products products</b>. They will be removed from their pages and from the filter block.',
+        'delete_attribute_value_filter_pages_warning' => 'This attribute is used as a filter on <b style="color: var(--warning-500);">:filterPages filter page</b>.|This attribute is used as a filter on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_attribute_group_filter_pages_warning' => 'Attributes of this group are used as filters on <b style="color: var(--warning-500);">:filterPages filter page</b>.|Attributes of this group are used as filters on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+
+        // Options
+        'delete_option_value_products_warning'      => 'This option is used in <b style="color: var(--warning-500);">:products product</b>.|This option is used in <b style="color: var(--warning-500);">:products products</b>.',
+        'delete_option_group_products_warning'      => 'Options of this group are used in <b style="color: var(--warning-500);">:products product</b>.|Options of this group are used in <b style="color: var(--warning-500);">:products products</b>.',
+        'delete_option_value_filter_pages_warning'  => 'This option is used as a filter on <b style="color: var(--warning-500);">:filterPages filter page</b>.|This option is used as a filter on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+        'delete_option_group_filter_pages_warning'  => 'Options of this group are used as filters on <b style="color: var(--warning-500);">:filterPages filter page</b>.|Options of this group are used as filters on <b style="color: var(--warning-500);">:filterPages filter pages</b>.',
+
+        // Products additional warnings
+        'product_no_options'                        => 'Product variants containing it and their prices will be deleted. Products left without any variants will be marked <b style="color: var(--danger-500);">Unavailable for sale</b>.',
+        'product_no_primary_category'               => 'These products will be <b style="color: var(--danger-500);">deactivated</b> and their pages will become unreachable. Set a new primary category for them and turn them back on.',
+        'product_primary_to_parent'                 => 'Their primary category will be changed to the parent of the deleted one.',
+        'product_no_primary_manufacturer'           => 'These products will be left without a manufacturer: its info and logo will disappear from their pages. They stay on sale.',
+        'product_primary_manufacturer_to_parent'    => 'Their primary manufacturer will be changed to the parent of the deleted one.',
+
+        // Facet pages additional warnings
+        'facet_page_no_primary'               => 'These filter pages will be <b style="color: var(--danger-500);">deactivated</b>. Select a new primary facet for them and turn them back on.',
+        'facet_page_no_unique_combination'    => 'These filter pages will be <b style="color: var(--danger-500);">deactivated</b>. Turn them back on manually; if the remaining filter combination is no longer unique, choose a new one.',
+      ],
     ],
     'product_reviews' => [
       'navigation_label'      => 'Product reviews',
