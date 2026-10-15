@@ -2,14 +2,13 @@
 
 namespace App\Filament\Resources\Options\Tables;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\Actions\DeletionWarnings;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\Option;
 use App\Models\Catalog\OptionValue;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,7 +17,6 @@ use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 
@@ -109,7 +107,7 @@ class OptionsTable
                     ->modalDescription(
                         function (Option $record) use ($store): HtmlString {
                             $valueIds = $record->values->modelKeys();
-                            return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
+                            return DeletionWarnings::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
                         }
                     ),
             ])
@@ -118,7 +116,7 @@ class OptionsTable
                     ->modalDescription(function ($records) use ($store): HtmlString {
                         // One query instead of lazy-loading "values" on every selected record
                         $valueIds = OptionValue::whereIn('option_id', $records->modelKeys())->pluck('id')->all();
-                        return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
+                        return DeletionWarnings::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
                     }),
             ]);
     }

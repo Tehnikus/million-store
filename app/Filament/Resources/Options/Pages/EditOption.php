@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Options\Pages;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\Actions\DeletionWarnings;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\Options\OptionResource;
 use App\Models\Catalog\Option;
@@ -23,7 +23,7 @@ class EditOption extends EditRecord
                 ->modalDescription(
                     function (Option $record) use ($store): HtmlString {
                         $valueIds = $record->values->modelKeys();
-                        return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
+                        return DeletionWarnings::affectedWarningMessage(FacetType::OptionValue, $valueIds, $store->id, true);
                     }
                 ),
         ];

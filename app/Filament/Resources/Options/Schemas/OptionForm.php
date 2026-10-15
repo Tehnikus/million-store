@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Options\Schemas;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\Actions\DeletionWarnings;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Schemas\Fields\SlugInput;
 use App\Models\Store\StoreSettings;
@@ -183,7 +183,7 @@ class OptionForm
                                     if (!str_starts_with($key, 'record-')) {
                                         return null;
                                     }
-                                    return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::OptionValue, [(int) substr($key, 7)], $store->id, false);
+                                    return DeletionWarnings::affectedWarningMessage(FacetType::OptionValue, [(int) substr($key, 7)], $store->id, false);
                                 }))
                             ->relationship('values')
                             ->mutateRelationshipDataBeforeCreateUsing($prepareValueData) // Add required store id column
