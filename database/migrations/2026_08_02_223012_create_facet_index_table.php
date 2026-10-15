@@ -20,8 +20,9 @@ return new class extends Migration
             $table->unsignedBigInteger('facet_value_id');                   // entity id 
             $table->unsignedBigInteger('sort_order')->default(1);           // product sort order in particular facet combination
 
-            $table->unique(['product_id', 'store_id', 'facet_type_id', 'facet_group_id', 'facet_value_id'], 'facet_natural_key');
-            $table->index(['store_id', 'facet_type_id', 'facet_group_id', 'facet_value_id', 'product_id', 'sort_order'], 'facet_lookup');
+            $table->unique(['product_id', 'store_id', 'facet_type_id', 'facet_group_id', 'facet_value_id'], 'facet_natural_key'); // Ensure products has no duplicates in facet index
+            $table->index(['store_id', 'facet_type_id', 'facet_group_id', 'facet_value_id', 'product_id', 'sort_order'], 'facet_lookup'); // Frontend navigation 
+            $table->index(['store_id', 'facet_type_id', 'facet_value_id'], 'facet_value_lookup'); // Admin: deletion and delete warnings look up an entity without its group
 
             // Composite foreign key on product_descriptions
             $table->foreign(['product_id', 'store_id'])
