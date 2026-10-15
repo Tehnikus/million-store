@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \App\Domain\Catalog\Search\SearchIndexObserver::register(); // Include vector search indexer
+        \App\Domain\Catalog\Actions\DeletionObserver::register(); // Include deletion observer to cleanup catalog references
 
         Relation::morphMap([
             'product'          => \App\Models\Catalog\Product::class,
