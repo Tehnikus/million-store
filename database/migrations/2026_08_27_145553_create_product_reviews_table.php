@@ -29,7 +29,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index(['product_id', 'is_approved', 'locale']);
+            $table->index(['product_id', 'store_id', 'is_approved', 'locale']);
             $table->index(['store_id', 'is_approved', 'is_admin_reply']);
             $table->index('thread_id');
         });
