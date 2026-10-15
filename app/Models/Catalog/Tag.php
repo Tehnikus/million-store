@@ -2,7 +2,7 @@
 
 namespace App\Models\Catalog;
 
-use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
+use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Seo\HasSlugs;
@@ -19,6 +19,8 @@ class Tag extends Model
     use HasTranslations;
     use HasSlugs;
     use HasProcessedImages;
+    use BatchesCatalogDeletion;
+
     protected $fillable = [
         'store_id',
         'is_active',
@@ -78,13 +80,6 @@ class Tag extends Model
         return $this->belongsToMany(Product::class, 'facet_index', 'facet_value_id', 'product_id')
             ->withPivotValue('facet_type_id', FacetType::Tag->value)
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
-    }
-
-    // Cleanup facet index on delete
-    use HasFacetIndexCleanup;
-    public function facetType(): FacetType
-    {
-        return FacetType::Tag;
     }
 
     public function imageColumns(): array

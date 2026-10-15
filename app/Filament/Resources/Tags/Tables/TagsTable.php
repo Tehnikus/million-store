@@ -2,19 +2,18 @@
 
 namespace App\Filament\Resources\Tags\Tables;
 
+use App\Domain\Catalog\Actions\DeletionWarnings;
+use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
-use App\Filament\Support\Columns\ConversionImageColumn;
-use App\Filament\Support\Columns\MultilangTextColumn;
+use App\Filament\Support\Columns\{ConversionImageColumn, MultilangTextColumn};
 use App\Models\Catalog\Tag;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\{DeleteAction, DeleteBulkAction, EditAction};
 use Filament\Facades\Filament;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class TagsTable
 {
@@ -65,12 +64,14 @@ class TagsTable
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->modalDescription(fn(Tag $record): HtmlString =>
+                        DeletionWarnings::affectedWarningMessage(FacetType::Tag, [$record->id], $store->id)),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make()
+                    ->modalDescription(fn($records): HtmlString =>
+                        DeletionWarnings::affectedWarningMessage(FacetType::Tag, $records->modelKeys(), $store->id)),
             ]);
     }
 }
