@@ -5,9 +5,7 @@ namespace App\Filament\Resources\Manufacturers\RelationManagers;
 use App\Domain\Catalog\Search\{ProductSearch, SearchIndexer};
 use App\Filament\Resources\Products\{ProductResource, Tables\ProductsTable};
 use App\Filament\Support\AdminMenu\NavigationItem;
-use App\Models\Catalog\Manufacturer;
-use App\Models\Catalog\Product;
-use App\Models\Catalog\ProductDescription;
+use App\Models\Catalog\{Manufacturer, Product, ProductDescription};
 use Filament\Actions\{Action, AttachAction, BulkAction, DetachAction};
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
@@ -139,7 +137,7 @@ class ManufacturerProductsRelationManager extends RelationManager
                     ])
                     ->action(function (EloquentCollection $records, array $data) {
                         $this->setPrimaryManufacturer($records->modelKeys(), (int) $data['manufacturer_id']);
-                        // TODO Reindex Sitemap here
+                        // TODO: Rebuild sitemap here
                     })
                     ->deselectRecordsAfterCompletion(),
                 BulkAction::make('detachSelected')

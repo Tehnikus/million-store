@@ -17,7 +17,7 @@ return new class extends Migration
             // Flags
             $table->boolean('is_active')->default(false);
             $table->boolean('show_in_facets')->default(false);
-            $table->foreignId('parent_id')->nullable()->constrained('manufacturers')->cascadeOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('manufacturers')->nullOnDelete();
             $table->unsignedBigInteger('sort_order')->default(1);
             // Descriptions
             $table->jsonb('name')->nullable()->default('{}');

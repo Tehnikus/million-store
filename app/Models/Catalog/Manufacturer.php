@@ -2,7 +2,7 @@
 
 namespace App\Models\Catalog;
 
-use App\Domain\Catalog\Concerns\HasFacetIndexCleanup;
+use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 use App\Domain\Seo\HasSlugs;
 use App\Domain\Media\Concerns\HasProcessedImages;
@@ -20,6 +21,8 @@ class Manufacturer extends Model
     use HasTranslations;
     use HasSlugs;
     use HasProcessedImages;
+    use BatchesCatalogDeletion;
+    
     protected $fillable = [
         'store_id',
         'is_active',
@@ -44,6 +47,7 @@ class Manufacturer extends Model
         'is_active'             => 'boolean',
         'sort_order'            => 'integer',
         'parent_id'             => 'integer',
+        'show_in_facets'        => 'boolean',
         'name'                  => 'array',
         'h1'                    => 'array',
         'meta_title'            => 'array',
@@ -56,6 +60,7 @@ class Manufacturer extends Model
         'how_to'                => 'array',
         'footer'                => 'array',
     ];
+
     protected $translatable = [
         'name',
         'h1',
@@ -88,15 +93,52 @@ class Manufacturer extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+
     /**
-     * Descendants manufacturer tree
-     * @return Collection
+     * id => parent_id of every manufacturer of the store, one query per request (Octane-safe via Context)
+     * Same as Category::parentMap()
+     * @return array<int, int|null>
      */
-    public function descendants(): Collection
+    public static function parentMap(int $storeId): array
     {
-        return $this->children()
-            ->get()
-            ->flatMap(fn (self $child) => collect([$child])->merge($child->descendants()));
+        $key = __METHOD__ . ".{$storeId}";
+
+        if (Context::has($key)) {
+            return Context::get($key);
+        }
+
+        $map = self::query()
+            ->where('store_id', $storeId)
+            ->pluck('parent_id', 'id')
+            ->map(fn($parentId) => $parentId === null ? null : (int) $parentId)
+            ->all();
+
+        Context::add($key, $map);
+
+        return $map;
+    }
+
+    /**
+     * Ids of the whole subtree below this manufacturer, built in memory from parentMap()
+     * @return int[]
+     */
+    public function descendantIds(): array
+    {
+        $map = self::parentMap($this->store_id);
+        $result = [];
+        $queue = [$this->id];
+
+        while ($queue) {
+            $current = array_shift($queue);
+            foreach ($map as $id => $parentId) {
+                if ($parentId === $current && !in_array($id, $result, true)) {
+                    $result[] = $id;
+                    $queue[] = $id;
+                }
+            }
+        }
+
+        return $result;
     }
 
     // Reverse manufacturer relation for ManageManufacturerProducts
@@ -107,22 +149,24 @@ class Manufacturer extends Model
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
-    // Cleanup facet index on delete
-    use HasFacetIndexCleanup;
-    public function facetType(): FacetType
-    {
-        return FacetType::Manufacturer;
-    }
-
-    // Update facet_group_id if manufacturer->parent_id was changed
     protected static function booted(): void
     {
         static::updated(function (Manufacturer $manufacturer) {
-            FacetIndex::where('facet_type_id', FacetType::Manufacturer)
+            if (!$manufacturer->wasChanged('parent_id')) {
+                return;
+            }
+
+            FacetIndex::where('facet_type_id', FacetType::Manufacturer->value)
                 ->where('facet_value_id', $manufacturer->id)
                 ->where('store_id', $manufacturer->store_id)
-                ->whereNot('facet_group_id', '=', $manufacturer->parent_id)
                 ->update(['facet_group_id' => $manufacturer->parent_id ?? 0]);
+
+            DB::table('facet_page_index')
+                ->where('facet_type_id', FacetType::Manufacturer->value)
+                ->where('facet_value_id', $manufacturer->id)
+                ->where('store_id', $manufacturer->store_id)
+                ->update(['facet_group_id' => $manufacturer->parent_id ?? 0, 'updated_at' => now()]);
+                // TODO: Maybe touch() affected facet pages, so if cache is bound to model events it can be updated?
         });
     }
 

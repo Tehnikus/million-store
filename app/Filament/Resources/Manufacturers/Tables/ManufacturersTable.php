@@ -2,22 +2,19 @@
 
 namespace App\Filament\Resources\Manufacturers\Tables;
 
+use App\Domain\Catalog\Actions\DeletionWarnings;
+use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
-use App\Filament\Support\Columns\ConversionImageColumn;
-use App\Filament\Support\Columns\MultilangTextColumn;
+use App\Filament\Support\Columns\{ConversionImageColumn, MultilangTextColumn};
 use App\Models\Catalog\Manufacturer;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\{DeleteAction, DeleteBulkAction, EditAction};
 use Filament\Facades\Filament;
 use Filament\Support\Enums\Alignment;
-use Filament\Tables\Columns\SelectColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Columns\{SelectColumn, TextColumn, ToggleColumn};
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class ManufacturersTable
 {
@@ -28,7 +25,7 @@ class ManufacturersTable
             ->emptyStateIcon(NavigationItem::Manufacturers->icon())
             ->emptyStateHeading(__('admin.catalog.manufacturers.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.manufacturers.table.empty_state'))
-            ->modifyQueryUsing(fn($query) => $query->with(['products', 'parent'])->where('store_id', $store->id))
+            ->modifyQueryUsing(fn($query) => $query->with('parent')->withCount('products')->where('store_id', $store->id))
             ->columns([
                 ConversionImageColumn::make('images')
                     ->conversion('miniature')
@@ -40,8 +37,9 @@ class ManufacturersTable
                     ->label(__('admin.catalog.manufacturers.model_label_singular')),
 
                 SelectColumn::make('parent_id')
-                    ->options(fn (?Manufacturer $record) => $record 
-                        ? Manufacturer::manufacturerChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                    ->options(
+                        fn(?Manufacturer $record) => $record
+                        ? Manufacturer::manufacturerChoices($store->id)->except([...$record->descendantIds(), $record->id])
                         : Manufacturer::manufacturerChoices($store->id)
                     )
                     ->searchableOptions(true)
@@ -98,11 +96,13 @@ class ManufacturersTable
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
+                    ->modalDescription(fn(Manufacturer $record): HtmlString =>
+                        DeletionWarnings::affectedWarningMessage(FacetType::Manufacturer, [$record->id], $store->id)),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make()
+                    ->modalDescription(fn($records): HtmlString =>
+                        DeletionWarnings::affectedWarningMessage(FacetType::Manufacturer, $records->modelKeys(), $store->id)),
             ]);
     }
 }

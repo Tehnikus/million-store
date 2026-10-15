@@ -36,8 +36,9 @@ class ManufacturerForm
                                     ->description(__('admin.catalog.manufacturers.tabs.content.helpers.main'))
                                     ->schema([
                                         Select::make('parent_id')
-                                            ->options(fn (?Manufacturer $record) => $record 
-                                                ? Manufacturer::manufacturerChoices($store->id)->except($record->descendants()->push($record)->pluck('id')->all())
+                                            ->options(
+                                                fn(?Manufacturer $record) => $record
+                                                ? Manufacturer::manufacturerChoices($store->id)->except([...$record->descendantIds(), $record->id])
                                                 : Manufacturer::manufacturerChoices($store->id)
                                             )
                                             ->searchable()
