@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Attributes\Pages;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\Actions\DeletionWarnings;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Resources\Attributes\AttributeResource;
 use App\Models\Catalog\Attribute;
@@ -23,7 +23,7 @@ class EditAttribute extends EditRecord
                 ->modalDescription(
                     function (Attribute $record) use ($store): HtmlString {
                         $valueIds = $record->values->modelKeys();
-                        return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
+                        return DeletionWarnings::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
                     }
                 ),
         ];

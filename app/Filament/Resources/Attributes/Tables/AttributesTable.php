@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Attributes\Tables;
 
-use App\Domain\Catalog\Actions\PurgeDeletedCatalogValue;
+use App\Domain\Catalog\Actions\DeletionWarnings;
 use App\Domain\Catalog\FacetType;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
@@ -92,7 +92,7 @@ class AttributesTable
                     ->modalDescription(
                         function (Attribute $record) use ($store): HtmlString {
                             $valueIds = $record->values->modelKeys();
-                            return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
+                            return DeletionWarnings::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
                         }
                     ),
             ])
@@ -101,7 +101,7 @@ class AttributesTable
                     ->modalDescription(function ($records) use ($store): HtmlString {
                         // One query instead of lazy-loading "values" on every selected record
                         $valueIds = AttributeValue::whereIn('attribute_id', $records->modelKeys())->pluck('id')->all();
-                        return PurgeDeletedCatalogValue::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
+                        return DeletionWarnings::affectedWarningMessage(FacetType::AttributeValue, $valueIds, $store->id, true);
                     }),
             ]);
     }
