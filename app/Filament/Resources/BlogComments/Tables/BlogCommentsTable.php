@@ -4,7 +4,6 @@ namespace App\Filament\Resources\BlogComments\Tables;
 
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Blog\BlogComment;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -153,9 +152,7 @@ class BlogCommentsTable
             // ->defaultGroup('thread_id')
 
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 }

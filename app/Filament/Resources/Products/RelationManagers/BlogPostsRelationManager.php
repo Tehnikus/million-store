@@ -9,7 +9,6 @@ use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Blog\BlogPost;
 use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
 use Filament\Facades\Filament;
@@ -65,11 +64,9 @@ class BlogPostsRelationManager extends RelationManager
             ->filters([])
             ->reorderable('post_sort_order')->defaultSort('post_sort_order')
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DetachBulkAction::make()
-                        ->modalHeading(__('admin.common.helpers.manager_page_detach_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $parentRecord?->global_name]))
-                        ->after(fn () => $this->dispatch('refresh-tabs')),
-                ]),
+                DetachBulkAction::make()
+                    ->modalHeading(__('admin.common.helpers.manager_page_detach_title', ['entities' => NavigationItem::BlogPosts->labelPlural(), 'name' => $parentRecord?->global_name]))
+                    ->after(fn () => $this->dispatch('refresh-tabs')),
             ]);
     }
 

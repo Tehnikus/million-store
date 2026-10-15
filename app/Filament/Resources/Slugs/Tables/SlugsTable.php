@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Slugs\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
@@ -17,7 +16,6 @@ class SlugsTable
     {
         return $table
             ->columns([
-
                 TextColumn::make('slug')
                     ->label(__('admin.seo.slugs.fields.url'))
                     ->searchable(),
@@ -66,9 +64,7 @@ class SlugsTable
                 DeleteAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 }

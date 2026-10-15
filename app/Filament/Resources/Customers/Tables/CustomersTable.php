@@ -4,27 +4,14 @@ namespace App\Filament\Resources\Customers\Tables;
 
 use App\Models\Customer\Customer;
 use App\Models\Customer\CustomerGroup;
-use App\Domain\Customer\Search\CustomerSearch;
+// use App\Domain\Customer\Search\CustomerSearch;
 use Illuminate\Support\HtmlString;
-use Illuminate\Database\Eloquent\Builder;
-
+// use Illuminate\Database\Eloquent\Builder;
 use Filament\Facades\Filament;
-use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Actions\{Action, DeleteBulkAction, EditAction, ViewAction, DeleteAction, RestoreAction, ForceDeleteAction, RestoreBulkAction, ForceDeleteBulkAction};
+use Filament\Tables\Columns\{IconColumn, TextColumn, ToggleColumn};
 use Filament\Tables\Table;
-use Filament\Tables\Filters\TrashedFilter;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\{TrashedFilter, SelectFilter};
 use Filament\Support\Enums\Alignment;
 
 class CustomersTable
@@ -138,11 +125,9 @@ class CustomersTable
                 ForceDeleteAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
+                RestoreBulkAction::make(),
+                ForceDeleteBulkAction::make(),
             ]);
     }
 }

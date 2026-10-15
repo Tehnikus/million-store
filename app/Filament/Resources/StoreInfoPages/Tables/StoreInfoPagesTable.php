@@ -4,7 +4,6 @@ namespace App\Filament\Resources\StoreInfoPages\Tables;
 
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\MultilangTextColumn;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
@@ -50,9 +49,7 @@ class StoreInfoPagesTable
                 DeleteAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 }

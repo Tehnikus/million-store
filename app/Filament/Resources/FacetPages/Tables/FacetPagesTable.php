@@ -8,7 +8,6 @@ use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\FacetPage;
 use App\Models\Catalog\{AttributeValue, Category, Manufacturer, OptionValue, Tag};
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -81,9 +80,7 @@ class FacetPagesTable
                 DeleteAction::make()
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 

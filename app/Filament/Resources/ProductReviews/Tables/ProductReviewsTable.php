@@ -5,7 +5,6 @@ namespace App\Filament\Resources\ProductReviews\Tables;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\ProductReview;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -174,9 +173,7 @@ class ProductReviewsTable
             ])
             // ->defaultGroup('thread_id')
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 }

@@ -6,7 +6,6 @@ use App\Filament\Resources\BlogPosts\Tables\BlogPostsTable;
 use App\Filament\Resources\BlogTags\BlogTagResource;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use Filament\Actions\AttachAction;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
@@ -36,9 +35,7 @@ class ManageBlogPostTags extends ManageRelatedRecords
                 DetachAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DetachBulkAction::make(),
-                ]),
+                DetachBulkAction::make(),
             ]);
     }
 

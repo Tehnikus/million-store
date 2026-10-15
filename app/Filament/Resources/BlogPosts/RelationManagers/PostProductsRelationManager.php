@@ -7,7 +7,7 @@ use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Products\Tables\ProductsTable;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Product;
-use Filament\Actions\{Action, AttachAction, BulkActionGroup, DetachAction, DetachBulkAction};
+use Filament\Actions\{Action, AttachAction, DetachAction, DetachBulkAction};
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
@@ -54,11 +54,9 @@ class PostProductsRelationManager extends RelationManager
             ->filters([])
             ->reorderable('post_sort_order')->defaultSort('post_sort_order')
             ->toolbarActions([
-                BulkActionGroup::make([
                     DetachBulkAction::make()
                         ->modalHeading(__('admin.common.helpers.manager_page_detach_title', ['entities' => NavigationItem::Products->labelPlural(), 'name' => $parentRecord?->name]))
                         ->after(fn () => $this->dispatch('refresh-tabs')),
-                ]),
             ]);
     }
 

@@ -12,7 +12,7 @@ use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\{ConversionImageColumn, MultilangTextColumn};
 use App\Models\Catalog\{Product, ProductDescription, Category, Manufacturer, Option, OptionValue, Tag, ProductPriceTier};
 use App\Models\Global\Currency;
-use Filament\Actions\{Action, BulkActionGroup, DeleteBulkAction, EditAction, DeleteAction};
+use Filament\Actions\{Action, DeleteBulkAction, EditAction, DeleteAction};
 use Filament\Facades\Filament;
 use Filament\QueryBuilder\Constraints\BooleanConstraint;
 use Filament\Support\Icons\Heroicon;
@@ -259,9 +259,7 @@ class ProductsTable
                     ->tooltip(__('admin.catalog.products.table.buttons.delete_from_all_stores')),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 

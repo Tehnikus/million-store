@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Countries\Tables;
 
 use App\Filament\Support\Columns\MultilangTextColumn;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Enums\Alignment;
@@ -66,9 +65,7 @@ class CountriesTable
                 EditAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 }

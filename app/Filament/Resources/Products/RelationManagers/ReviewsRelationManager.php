@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Products\RelationManagers;
 
 use App\Filament\Resources\ProductReviews\Schemas\ProductReviewForm;
 use App\Filament\Resources\ProductReviews\Tables\ProductReviewsTable;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -35,9 +34,7 @@ class ReviewsRelationManager extends RelationManager
                 CreateAction::make()->after(fn () => $this->refreshBadges()),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()->after(fn () => $this->refreshBadges()),
-                ]),
+                DeleteBulkAction::make()->after(fn () => $this->refreshBadges()),
             ]);
     }
 

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\BlogPosts\RelationManagers;
 
 use App\Filament\Resources\BlogComments\Schemas\BlogCommentForm;
 use App\Filament\Resources\BlogComments\Tables\BlogCommentsTable;
-use Filament\Actions\{BulkActionGroup, CreateAction, DeleteAction, DeleteBulkAction, EditAction};
+use Filament\Actions\{CreateAction, DeleteAction, DeleteBulkAction, EditAction};
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -30,9 +30,7 @@ class BlogCommentsRelationManager extends RelationManager
                 CreateAction::make()->after(fn () => $this->refreshBadges())->modalHeading(__('admin.blog.posts.tabs.comments.labels.create_modal_heading')),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()->after(fn () => $this->refreshBadges()),
-                ]),
+                DeleteBulkAction::make()->after(fn () => $this->refreshBadges()),
             ]);
     }
 
