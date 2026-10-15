@@ -90,6 +90,10 @@ class SupermasterPanelProvider extends PanelProvider
                         ->filtersTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.filter'))) // Table filter button appearence and text 
                         ->columnManagerTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.columns'))) // Table columns button appearence and text
                         ->reorderRecordsTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.reorder')))
+                        ->reorderableColumns()
+                        ->persistColumnsInSession()
+                        // ->searchDebounce('500ms')
+                        // ->deferColumnManager(false)
                         // ->deferLoading()
                         // ->loadingSkeleton()
                         ;
