@@ -18,14 +18,13 @@ use Illuminate\Database\Eloquent\Model;
  *
  *  - updated: only a changed NAME matters (names are the only thing of these entities that is indexed),
  *             and only the languages whose name actually changed are rebuilt.
- *  - deleted: every row that contained the entity is rebuilt in all languages.
  *
  * Rows are found through search_included_refs (GIN index), see SearchIndexer::rebuildForEntity().
  *
  * Order of listeners on delete does not matter: HasFacetIndexCleanup may or may not have removed the facet_index
  * rows yet, but the entity row itself is already gone, and SearchIndexer drops entities it cannot load.
- * Attribute and Option have no cleanup trait (their values are removed by the database cascade, which fires no
- * model events), so rebuilding on the group's own delete is what cleans their products' documents.
+ * Attribute and Option delete their values one by one in "deleting" (see their booted()), so every value
+ * rebuilds its own rows; the group's own rebuild only catches rows that still reference the group.
  *
  * This is the single place to switch to queued rebuilds later: replace the call in rebuild() with a dispatch.
  *
@@ -85,11 +84,6 @@ class SearchIndexObserver
         }
 
         $this->rebuild($model, $languageIds);
-    }
-
-    public function deleted(Model $model): void
-    {
-        $this->rebuild($model, null);
     }
 
     /**
