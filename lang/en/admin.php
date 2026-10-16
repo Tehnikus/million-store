@@ -444,6 +444,7 @@ return [
       'navigation_label'      => 'Filter pages',
       'model_label_singular'  => 'Filter page',
       'fields' => [
+        'name'              => 'Name',
         'filter_settings'   => 'Filter settings',
         'products_count'    => 'Products',
         'is_active'         => 'Is active',
@@ -452,6 +453,15 @@ return [
         'filter_value'      => 'Filter value',
         'root_facet'        => 'Main filter',
         'additional_facets' => 'Additional filters'
+      ],
+      'filters' => [
+        'facets'            => 'Filters',
+        'has_products'      => 'Products',
+        'with_products'     => 'With products',
+        'without_products'  => 'No products',
+        'is_active'         => 'Active',
+        'active'            => 'Active',
+        'inactive'          => 'Inactive',
       ],
       'buttons' => [
         'add_facet' => 'Add filter'
@@ -465,6 +475,7 @@ return [
         'facet_value_required'    => 'Please select a filter value',
       ],
       'helpers' => [
+        'activation_blocked'=> 'The filter page cannot be activated because it does not have a unique set of filters. Go to Filter page settings and select unique filter set to activate this Filter page',
         'filter_settings'   => 'Select the main filter and additional filters in this form. When a user selects a combination of these filters, they will be redirected to this filter page. The filter page has a static URL and will be available for search engine indexing',
         'root_facet'        => 'A filter page consists of a combination of a main filter and additional filters. There is always only one main filter—category, manufacturer, or tag—while there can be one or more additional filters',
         'additional_facets' => 'Additional filters define the combination of other filters along with the main filter for this filter page. Here you can select a manufacturer (if the main filter is a category), tag, attributes, options, or dynamic facets',
