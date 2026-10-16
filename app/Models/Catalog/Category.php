@@ -195,7 +195,7 @@ class Category extends Model
         while ($queue) {
             $current = array_shift($queue);
             foreach ($map as $id => $parentId) {
-                if ($parentId === $current) {
+                if ($parentId === $current && !in_array($id, $result, true)) {
                     $result[] = $id;
                     $queue[] = $id;
                 }
