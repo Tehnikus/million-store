@@ -450,23 +450,25 @@ return [
         'filter_list'       => 'Filter list',
         'filter_type'       => 'Filter type',
         'filter_value'      => 'Filter value',
-        'root_facet'        => 'Root filter',
+        'root_facet'        => 'Main filter',
         'additional_facets' => 'Additional filters'
       ],
       'buttons' => [
         'add_facet' => 'Add filter'
       ],
       'errors' => [
-        'duplicate_combination'   => 'This filters combination already exists',
-        'root_facet_not_selected' => 'Select at least one category or one manufacturer as root for this Filter page',
-        'facet_type_required'     => 'Select filter type',
-        'facet_value_required'    => 'Select filter value',
+        'duplicate_combination'   => 'This filter combination already exists',
+        'duplicate_facet'         => 'This tag is already selected as the main filter',
+        'root_priority'           => 'The category or manufacturer must be the main filter, not an additional one',
+        'root_facet_not_selected' => 'Select one category or one manufacturer for this Filter Page',
+        'facet_type_required'     => 'Please select a filter type',
+        'facet_value_required'    => 'Please select a filter value',
       ],
       'helpers' => [
-        'filter_settings'   => 'Select a root filter and additional filters in this form. When a user chooses a combination of these filters, they will be redirected to the corresponding filter page. This filter page has a static URL and will be accessible for indexing by search engines',
-        'root_facet'        => 'The root filter determines which filter will be the main and mandatory filter for this filter page',
-        'additional_facets' => 'Additional filters define the combination of other filters together with the root filter for this filter page',
-        'group_title'       => 'Filter pages are landing pages designed to more precisely target SEO queries. A filter page allows you to select a combination of a primary filter (such as category or manufacturer) and one or more additional filters (options, attributes, or tags) and create a page for that combination that possesses all the characteristics of a static page, such as a Title, H1 and a detailed description'
+        'filter_settings'   => 'Select the main filter and additional filters in this form. When a user selects a combination of these filters, they will be redirected to this filter page. The filter page has a static URL and will be available for search engine indexing',
+        'root_facet'        => 'A filter page consists of a combination of a main filter and additional filters. There is always only one main filter—category, manufacturer, or tag—while there can be one or more additional filters',
+        'additional_facets' => 'Additional filters define the combination of other filters along with the main filter for this filter page. Here you can select a manufacturer (if the main filter is a category), tag, attributes, options, or dynamic facets',
+        'group_title'       => 'Filter pages are landing pages designed for more precise SEO targeting. A filter page allows you to select a combination of a main filter (category or manufacturer) and one or several additional filters (options, attributes, tags) and create a page for this combination with all the attributes of a static page: Title, H1, and detailed description',
       ]
     ],
     'facets' => [

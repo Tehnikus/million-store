@@ -116,7 +116,7 @@ class FacetPagesTable
         $names = [];
 
         foreach ($type->choices($storeId) as $key => $item) {
-            // Grouped choices: "Parent" => [id => name]  →  id => "Parent: name"
+            // Grouped choices: "Parent" => [id => name]  =>  id => "Parent: name"
             if (is_array($item)) {
                 foreach ($item as $id => $name) {
                     $names[$id] = "{$key}: {$name}";

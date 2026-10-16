@@ -31,12 +31,23 @@ enum FacetType: int implements HasLabel
      * List of facet that can be selected as root for FacetPage and FacetPageIndex
      * @return bool
      */
-    public function canBeRoot(): bool
+    /**
+     * Root priority of root-capable types: when a page's facet set contains several of them,
+     * the one with the lowest number must be the root. null = the type can't be a root.
+     */
+    public function rootPriority(): ?int
     {
         return match ($this) {
-            self::Category, self::Manufacturer => true,
-            default => false,
+            self::Category     => 1,
+            self::Manufacturer => 2,
+            self::Tag          => 3,
+            default            => null,
         };
+    }
+
+    public function canBeRoot(): bool
+    {
+        return $this->rootPriority() !== null;
     }
 
     /**

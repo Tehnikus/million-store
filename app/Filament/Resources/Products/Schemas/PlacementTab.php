@@ -348,7 +348,7 @@ class PlacementTab
                 $valueName = static::stateName($value['name'] ?? null)
                     ?? (string) (($valueNames ??= AttributeValue::attributeValueChoices($groupId))[$valueId] ?? "#{$valueId}");
 
-                $items[SearchRefType::AttributeValue->value . ":{$valueId}"] = ['group' => $attributeGroup, 'label' => "{$groupName} → {$valueName}"];
+                $items[SearchRefType::AttributeValue->value . ":{$valueId}"] = ['group' => $attributeGroup, 'label' => "{$groupName}: {$valueName}"];
             }
         }
 
@@ -381,7 +381,7 @@ class PlacementTab
                 $valueName = static::stateName($value['name'] ?? null)
                     ?? (string) (($valueNames ??= OptionValue::optionValueChoices($groupId, $storeId))[$valueId] ?? "#{$valueId}");
 
-                $items[SearchRefType::OptionValue->value . ":{$valueId}"] = ['group' => $optionGroup, 'label' => "{$groupName} → {$valueName}"];
+                $items[SearchRefType::OptionValue->value . ":{$valueId}"] = ['group' => $optionGroup, 'label' => "{$groupName}: {$valueName}"];
             }
         }
 
