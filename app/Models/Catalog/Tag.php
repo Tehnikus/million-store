@@ -43,6 +43,7 @@ class Tag extends Model
 
     protected $casts = [
         'is_active'             => 'boolean',
+        'show_in_facets'        => 'boolean',
         'sort_order'            => 'integer',
         'name'                  => 'array',
         'h1'                    => 'array',
