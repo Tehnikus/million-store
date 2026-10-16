@@ -444,9 +444,12 @@ return [
       'navigation_label'      => 'Filter pages',
       'model_label_singular'  => 'Filter page',
       'fields' => [
+        'filter_settings'   => 'Filter settings',
+        'products_count'    => 'Products',
         'is_active'         => 'Is active',
-        'facet_list'        => 'Facet list',
-        'facet_index'       => 'Facet index',
+        'filter_list'       => 'Filter list',
+        'filter_type'       => 'Filter type',
+        'filter_value'      => 'Filter value',
         'root_facet'        => 'Root filter',
         'additional_facets' => 'Additional filters'
       ],
@@ -460,6 +463,7 @@ return [
         'facet_value_required'    => 'Select filter value',
       ],
       'helpers' => [
+        'filter_settings'   => 'Select a root filter and additional filters in this form. When a user chooses a combination of these filters, they will be redirected to the corresponding filter page. This filter page has a static URL and will be accessible for indexing by search engines',
         'root_facet'        => 'The root filter determines which filter will be the main and mandatory filter for this filter page',
         'additional_facets' => 'Additional filters define the combination of other filters together with the root filter for this filter page',
         'group_title'       => 'Filter pages are landing pages designed to more precisely target SEO queries. A filter page allows you to select a combination of a primary filter (such as category or manufacturer) and one or more additional filters (options, attributes, or tags) and create a page for that combination that possesses all the characteristics of a static page, such as a Title, H1 and a detailed description'
