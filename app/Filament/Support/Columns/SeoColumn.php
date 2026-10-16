@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Filament\Support\Columns;
+
+use Filament\Facades\Filament;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
+
+/**
+ * Translatable text column with locale badge
+ * Can show all strings with locale badges or only fallback locale string with locale badge
+ */
+class SeoColumn extends TextColumn
+{
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->html()
+            ->formatStateUsing(fn(Model $record) =>
+                self::getSeo($record)
+                
+            )
+            ->searchable()
+            ->sortable();
+    }
+
+    public static function getSeo($record) {
+        dd($record);
+    }
+
+    // public function getSeo(\Closure $record) : static {
+    //     $this->state(function ($record) {
+    //         $h1 = $record->getTranslations('h1') ?? [];
+    //         dd($h1);
+    //     });
+    //     return $this;
+    // }
+
+    // public function getSeo(\Closure $translationsUsing): static
+    // {
+    //     $this->state(function ($record) use ($translationsUsing) {
+    //         $rawState = $translationsUsing($record);
+
+    //         return $rawState === null ? null : static::allColumns($rawState);
+    //     });
+
+    //     return $this;
+    // }
+
+    // /**
+    //  * Display all strings and their locales and mark missing strings with danger locale badge 
+    //  */
+    // public static function allColumns(array $rawState): HtmlString
+    // {
+    //     $result = '';
+    //     $languages = once(fn () => Filament::getTenant()->languages()->wherePivot('is_active', true)->pluck('locale'));
+
+    //     foreach ($languages as $locale) {
+    //         if (!empty($rawState[$locale])) {
+    //             $result .= '<span class="inline-flex fi-color fi-color-success fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($locale) . '</span> ' . e($rawState[$locale]) . '<br>';
+    //         } else {
+    //             $result .= '<span class="inline-flex fi-color fi-color-danger fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">' . e($locale) . ' </span> -- <br>';
+    //         }
+    //     }
+
+    //     return new HtmlString($result ?: '--');
+    // }
+}
