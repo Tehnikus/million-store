@@ -211,8 +211,9 @@ class DeletionObserver
     /**
      * Facet pages (filter landing pages) built on a deleted facet entity:
      *  - every such page is deactivated: gone from the storefront, the admin sees it needs attention;
-     *  - non-root rows pointing to the entity are removed, the rest of the combination stays;
-     *  - root rows are kept: a page cannot exist without a root, the admin picks a new one or deletes the page.
+     *  - every row pointing to the entity is removed, root included: no dangling ids.
+     *    A page that lost its root has none until the admin picks a new one (the form requires a root to activate)
+     *    or deletes the page; the rest of its combination stays.
      * The shortened combination may now equal another page's: caught by the facet page form's duplicate check
      * when the admin re-activates the page.
      */
@@ -220,16 +221,16 @@ class DeletionObserver
     {
         DB::update(
             'UPDATE facet_pages SET is_active = false, updated_at = NOW()
-             WHERE store_id = ? AND id IN (
-                 SELECT facet_page_id FROM facet_page_index
-                 WHERE store_id = ? AND facet_type_id = ? AND facet_value_id = ?
-             )',
+         WHERE store_id = ? AND id IN (
+             SELECT facet_page_id FROM facet_page_index
+             WHERE store_id = ? AND facet_type_id = ? AND facet_value_id = ?
+         )',
             [$storeId, $storeId, $type->value, $entityId],
         );
 
         DB::delete(
             'DELETE FROM facet_page_index
-             WHERE store_id = ? AND facet_type_id = ? AND facet_value_id = ? AND is_root = false',
+         WHERE store_id = ? AND facet_type_id = ? AND facet_value_id = ?',
             [$storeId, $type->value, $entityId],
         );
 
