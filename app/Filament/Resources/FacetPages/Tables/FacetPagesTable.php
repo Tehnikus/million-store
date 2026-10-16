@@ -7,24 +7,45 @@ use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\Columns\ConversionImageColumn;
 use App\Filament\Support\Columns\MultilangTextColumn;
 use App\Models\Catalog\FacetPage;
-use App\Models\Catalog\{AttributeValue, Category, Manufacturer, OptionValue, Tag};
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Context;
 
 class FacetPagesTable
 {
     public static function configure(Table $table): Table
     {
+        $store = Filament::getTenant();
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with('facetIndex'))
+            ->modifyQueryUsing(
+                fn(Builder $query) => $query
+                    ->with('facetIndex')
+                    ->select('facet_pages.*')
+                    // Count products in filter page
+                    ->selectRaw('(
+                        SELECT COUNT(*) FROM (
+                            SELECT fi.product_id
+                            FROM facet_page_index fpi
+                            JOIN facet_index fi
+                            ON fi.store_id          = fpi.store_id
+                            AND fi.facet_type_id    = fpi.facet_type_id
+                            AND fi.facet_value_id   = fpi.facet_value_id
+                            WHERE fpi.facet_page_id = facet_pages.id
+                            GROUP BY fi.product_id
+                            HAVING COUNT(*) = (
+                                SELECT COUNT(*) FROM facet_page_index x
+                                WHERE x.facet_page_id = facet_pages.id
+                            )
+                        ) matched
+                    ) AS products_count')
+            )
             ->emptyStateIcon(NavigationItem::FacetPages->icon())
             ->emptyStateHeading(__('admin.catalog.facet_pages.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.facet_pages.helpers.group_title'))
@@ -39,7 +60,7 @@ class FacetPagesTable
                     ->label(__('admin.catalog.facet_pages.model_label_singular')),
 
                 TextColumn::make('facetIndex')
-                    ->label(__('admin.catalog.facet_pages.fields.facet_list'))
+                    ->label(__('admin.catalog.facet_pages.fields.filter_list'))
                     ->state(function (FacetPage $record) {
                         return $record->facetIndex->map(function ($item) use ($record) {
                             $type  = $item->facet_type_id;
@@ -62,7 +83,13 @@ class FacetPagesTable
                     ->width('300px')
                     ->wrap()
                     ->wrapHeader(),
-
+                TextColumn::make('products_count')
+                    ->label(__('admin.catalog.facet_pages.fields.products_count'))
+                    ->sortable()
+                    ->color(fn($state) => $state === 0 ? 'danger' : 'success')
+                    ->badge()
+                    ->alignment(Alignment::Center)
+                    ->width('1%'),
                 ToggleColumn::make('is_active')
                     ->sortable()
                     ->width('100px')
@@ -86,57 +113,20 @@ class FacetPagesTable
 
     public static function namesFor(FacetType $type, int $storeId): array
     {
-        $key = "facet_entity_names:{$type->value}:{$storeId}";
+        $names = [];
 
-        if (Context::has($key)) {
-            return Context::get($key);
+        foreach ($type->choices($storeId) as $key => $item) {
+            // Grouped choices: "Parent" => [id => name]  →  id => "Parent: name"
+            if (is_array($item)) {
+                foreach ($item as $id => $name) {
+                    $names[$id] = "{$key}: {$name}";
+                }
+                continue;
+            }
+
+            $names[$key] = $item;
         }
-
-        $names = self::loadNames($type, $storeId);
-        Context::add($key, $names);
 
         return $names;
     }
-
-    private static function loadNames(FacetType $type, int $storeId): array
-    {
-        return match ($type) {
-            // Get name of facets
-            FacetType::Category => Category::query()->where('store_id', $storeId)
-                ->get()->mapWithKeys(fn($m) => [$m->id => $m->name])->all(),
-
-            FacetType::Manufacturer => Manufacturer::query()->where('store_id', $storeId)
-                ->get()->mapWithKeys(fn($m) => [$m->id => $m->name])->all(),
-
-            FacetType::Tag => Tag::query()->where('store_id', $storeId)
-                ->get()->mapWithKeys(fn($m) => [$m->id => $m->name])->all(),
-
-            // Get parent entity name for the following facets
-            FacetType::AttributeValue => AttributeValue::query()
-                ->where('store_id', $storeId)
-                ->with('attribute') // relation function name to parent model Attribute in in AttributeValue model
-                ->get()
-                ->mapWithKeys(fn($v) => [$v->id => self::withParentName($v->attribute?->name, $v->name)])
-                ->all(),
-
-            FacetType::OptionValue => OptionValue::query()
-                ->where('store_id', $storeId)
-                ->with('option') // relation function name to parent model Option in in OptionValue model
-                ->get()
-                ->mapWithKeys(fn($v) => [$v->id => self::withParentName($v->option?->name, $v->name)])
-                ->all(),
-
-            // Facets that don't have own dynamic name, like "featured" or "discount"
-            default => [$type->getLabel()]
-        };
-    }
-
-    /**
-     * "Parent: value" badge for options and attributes
-     */
-    private static function withParentName(?string $parentName, string $ownName): string
-    {
-        return filled($parentName) ? "{$parentName}: {$ownName}" : $ownName;
-    }
-
 }

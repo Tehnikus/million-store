@@ -128,7 +128,7 @@ enum FacetType: int implements HasLabel
             self::Manufacturer      => 'success',
             self::AttributeValue    => 'primary',
             self::OptionValue       => 'primary',
-            self::Tag               => 'primary',
+            self::Tag               => 'info',
             self::IsFeatured        => 'info',
             self::HasDiscount       => 'info',
             self::Bestseller        => 'info',
