@@ -113,9 +113,6 @@ class ProductForm
                         PlacementTab::make($store, $languages)
                             ->label(__('admin.catalog.products.tabs.placement.label'))
                             ->icon(NavigationItem::Categories->icon()),
-                        // SearchTab::make($store, $languages)
-                        //     ->label('Search')
-                        //     ->icon(NavigationItem::Categories->icon()),
                         PricesTab::make($store, $currencies, $languages)
                             ->label(__('admin.catalog.products.tabs.prices.label'))
                             ->icon(NavigationItem::Currencies->icon()),
@@ -137,23 +134,27 @@ class ProductForm
                             ->label(__('admin.catalog.products.tabs.reviews.label'))
                             ->icon(NavigationItem::ProductReviews->icon())
                             ->visible(fn(?Product $record) => $record !== null && $record->descriptions->where('store_id', $store->id)->first() !== null)
-                            ->badge(fn(?Product $record) => $record !== null ? (($count = ProductReview::where('product_id', $record->id)->where('store_id', $store->id)->count()) ? $count : null) : null)
+                            ->badge(fn(?Product $record) => $record !== null ? (($count = ProductReview::where('product_id', $record->id)->count()) ? $count : null) : null)
+                            // ->deferBadge() // TODO: uncomment after the whole form's performance is optimized
                             ->schema([
                                 Livewire::make(ReviewsRelationManager::class, fn(?Product $record, ?EditProduct $livewire) => [
                                     'ownerRecord' => $record,
                                     'pageClass'   => $livewire::class,
                                 ])
+                                // ->lazy() // TODO: uncomment after the whole form's performance is optimized
                             ]),
                         Tab::make('blogPosts')
                             ->label(__('admin.catalog.products.tabs.blog_posts.label'))
                             ->icon(NavigationItem::BlogPosts->icon())
                             ->visible(fn(?Product $record) => $record !== null && $record->descriptions->where('store_id', $store->id)->first() !== null)
                             ->badge(fn (?Product $record) => $record?->blogPosts()->count() ?: null)
+                            // ->deferBadge() // TODO: uncomment after the whole form's performance is optimized
                             ->schema([
                                 Livewire::make(BlogPostsRelationManager::class, fn(?Product $record, ?EditProduct $livewire) => [
                                     'ownerRecord' => $record,
                                     'pageClass'   => $livewire::class,
                                 ])
+                                // ->lazy() // TODO: uncomment after the whole form's performance is optimized
                             ]),
                         Tab::make('statistics')
                             ->label(__('admin.catalog.products.tabs.statistics.label'))

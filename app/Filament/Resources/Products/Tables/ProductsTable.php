@@ -69,7 +69,6 @@ class ProductsTable
 
                 return $query;
             })
-            ->searchDebounce('100ms')
             ->emptyStateIcon(NavigationItem::Products->icon())
             ->emptyStateHeading(__('admin.catalog.products.navigation_label'))
             ->emptyStateDescription(__('admin.catalog.products.table.messages.empty_state_message'))
