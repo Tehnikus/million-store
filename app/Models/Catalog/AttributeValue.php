@@ -97,4 +97,20 @@ class AttributeValue extends Model
 
         return $choices;
     }
+
+    /**
+     * Group attribute values by attributes to display them in select dropdowns
+     */
+    public static function attributeValueGroupedChoices(array $attributeIds, int $storeId): array
+    {
+        $attributeNames = Attribute::attributeChoices($storeId);
+        $attributeIds = filled($attributeIds) ? $attributeIds : $attributeNames->keys();
+
+        return collect($attributeIds)
+            ->map(fn($id) => (int) $id)
+            ->mapWithKeys(fn($attributeId) => [
+                $attributeNames->get($attributeId, "#{$attributeId}") => static::attributeValueChoices($attributeId)->all(),
+            ])
+            ->all();
+    }
 }
