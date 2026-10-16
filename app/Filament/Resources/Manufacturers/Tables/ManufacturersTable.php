@@ -49,9 +49,8 @@ class ManufacturersTable
                     ->label(__('admin.catalog.manufacturers.tabs.content.labels.parent_id'))
                     ->placeholder(__('admin.catalog.manufacturers.tabs.content.labels.is_root')),
 
-                TextColumn::make('products')
-                    ->getStateUsing(fn(Manufacturer $record) => $record->products->count())
-                    ->color(fn($record) => $record->products->count() > 0 ? 'success' : 'danger')
+                TextColumn::make('products_count')
+                    ->color(fn(int $state) => $state > 0 ? 'success' : 'danger')
                     ->sortable()
                     ->badge()
                     ->width('1%')
