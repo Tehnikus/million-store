@@ -346,7 +346,7 @@ class PlacementTab
                 }
 
                 $valueName = static::stateName($value['name'] ?? null)
-                    ?? (string) (($valueNames ??= AttributeValue::attributeValueChoices($groupId))[$valueId] ?? "#{$valueId}");
+                    ?? (string) (($valueNames ??= AttributeValue::attributeValueChoices($groupId, $storeId))[$valueId] ?? "#{$valueId}");
 
                 $items[SearchRefType::AttributeValue->value . ":{$valueId}"] = ['group' => $attributeGroup, 'label' => "{$groupName}: {$valueName}"];
             }

@@ -75,13 +75,13 @@ class AttributeValue extends Model
      * @param mixed $attributeId
      * @return Collection
      */
-    public static function attributeValueChoices(?int $attributeId): Collection
+    public static function attributeValueChoices(?int $attributeId, int $storeId): Collection
     {
         if (blank($attributeId)) {
             return collect();
         }
 
-        $key = "attribute_value_choices.{$attributeId}";
+        $key = __METHOD__ . ".{$attributeId}.{$storeId}";
 
         if (Context::has($key)) {
             return collect(Context::get($key));
@@ -89,6 +89,7 @@ class AttributeValue extends Model
 
         $choices = AttributeValue::query()
             ->where('attribute_id', $attributeId)
+            ->where('store_id', $storeId)
             ->where('is_active', true)
             ->get()
             ->mapWithKeys(fn (self $model) => [$model->id => $model->name]);
