@@ -151,4 +151,18 @@ enum FacetType: int implements HasLabel
                 => 3,
         };
     }
+
+
+    public function choices(int $storeId): array
+    {
+        return match ($this) {
+            self::Category => Category::categoryChoices($storeId)->all(),
+            self::Manufacturer => Manufacturer::manufacturerChoices($storeId)->all(),
+            self::Tag => Tag::tagChoices($storeId)->all(),
+            self::AttributeValue => AttributeValue::attributeValueGroupedChoices([], $storeId),
+            self::OptionValue => OptionValue::optionValueGroupedChoices([], $storeId),
+            // Types without own entity ("featured", "discount"): single pseudo-value 0, same as before
+            default => [0 => $this->getLabel()],
+        };
+    }
 }

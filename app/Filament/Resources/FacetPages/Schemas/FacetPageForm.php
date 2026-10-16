@@ -12,14 +12,14 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\FusedGroup;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -42,14 +42,20 @@ class FacetPageForm
                 Tabs::make('facet_page')
                     ->schema([
                         Tab::make(__('admin.common.tabs.content'))
+                            ->icon(Heroicon::OutlinedPencilSquare)
                             ->schema([
-                                Toggle::make('is_active')
-                                    ->label(__('admin.catalog.facet_pages.fields.is_active'))
-                                    ->default(true),
-
-                                // Parent facet. Must be category or manufacturer type. Always required
-                                Fieldset::make(__('admin.catalog.facet_pages.fields.root_facet'))
+                                Section::make(__('admin.catalog.facet_pages.fields.filter_settings'))
+                                    ->description(__('admin.catalog.facet_pages.helpers.filter_settings'))
+                                    ->collapsible()
+                                    ->collapsed(fn ($operation) => $operation !== 'create')
                                     ->schema([
+
+                                        Toggle::make('is_active')
+                                            ->label(__('admin.catalog.facet_pages.fields.is_active'))
+                                            ->default(true),
+        
+                                        // Parent facet. Must be category or manufacturer type. Always required
+
                                         FusedGroup::make([
                                             Select::make('root_facet_type_id')
                                                 ->label(__('admin.catalog.facet_pages.fields.facet_type'))
@@ -70,21 +76,10 @@ class FacetPageForm
                                             Select::make('root_facet_value_id')
                                                 ->label(__('admin.catalog.facet_pages.fields.facet_value'))
                                                 ->searchable()
-                                                ->getSearchResultsUsing(function (string $search, Get $get) use ($store) {
-                                                    $type = self::toFacetType($get('root_facet_type_id'));
-                                                    return $type ? self::searchOptions($type, $store->id, $search, []) : [];
-                                                })
-                                                ->getOptionLabelUsing(function ($value, Get $get) use ($store) {
-                                                    $type = self::toFacetType($get('root_facet_type_id'));
-                                                    return $type ? self::optionLabel($type, $store->id, (int) $value) : null;
-                                                })
-                                                ->options(function (Get $get) use ($store) {
-                                                    $type = self::toFacetType($get('root_facet_type_id'));
-                                                    return $type ? self::searchOptions($type, $store->id, '', []) : [];
-                                                })
+                                                ->options(fn (Get $get) => self::toFacetType($get('root_facet_type_id'))?->choices($store->id) ?? [])
                                                 ->native(false)
                                                 ->live()
-                                                ->disabled(fn(Get $get) => blank($get('root_facet_type_id')))
+                                                ->disabled(fn (Get $get) => blank($get('root_facet_type_id')))
                                                 ->afterStateUpdated(function (Set $set, Get $get, $component, $livewire, ?string $state) use ($store) {
                                                     $type = self::toFacetType($get('root_facet_type_id'));
                                                     $set('root_facet_group_id', filled($state) && $type ? self::groupIdFor($type, $store->id, (int) $state) : 0);
@@ -97,29 +92,24 @@ class FacetPageForm
                                                 ->required()
                                                 ->columnSpan(1),
                                         ])
+                                        ->label(__('admin.catalog.facet_pages.fields.root_facet'))
+                                        ->aboveContent(__('admin.catalog.facet_pages.helpers.root_facet'))
                                         ->columns(2)
                                         ->columnSpanFull(),
 
                                         Hidden::make('root_facet_group_id')->default(0),
-                                        
-                                        Text::make(__('admin.catalog.facet_pages.helpers.root_facet'))
-                                    ])
-                                    ->columns(1),
-
-                                // Other facets, only non-root 
-                                Fieldset::make(__('admin.catalog.facet_pages.fields.additional_facets'))
-                                    ->schema([
-
+                                                
+                                        // Other facets, only non-root 
                                         Repeater::make('facetIndex')
                                             ->relationship(
                                                 name: 'facetIndex',
                                                 modifyQueryUsing: fn(Builder $query) => $query->where('is_root', false),
                                             )
                                             ->table([
-                                                TableColumn::make(__('admin.catalog.facet_pages.fields.facet_list'))->markAsRequired()
+                                                TableColumn::make(__('admin.catalog.facet_pages.fields.filter_type'))->markAsRequired()->width('50%'),
+                                                TableColumn::make(__('admin.catalog.facet_pages.fields.filter_value'))->markAsRequired()->width('50%'),
                                             ])
                                             ->schema([
-                                                FusedGroup::make([
                                                     Select::make('facet_type_id')
                                                         ->label(__('admin.catalog.facet_pages.fields.facet_type'))
                                                         ->options(
@@ -153,27 +143,24 @@ class FacetPageForm
                                                                 ->all();
         
                                                             return in_array($candidateType->value, $usedElsewhere, true);
-                                                        })
-                                                        ->columnSpan(1),
+                                                        }),
         
                                                     Select::make('facet_value_id')
                                                         ->label(__('admin.catalog.facet_pages.fields.facet_value'))
                                                         ->searchable()
-                                                        ->getSearchResultsUsing(function (string $search, Get $get) use ($store) {
+                                                        ->options(fn(Get $get) => self::toFacetType($get('facet_type_id'))?->choices($store->id) ?? [])
+                                                        ->disableOptionWhen(function ($value, Get $get): bool {
                                                             $type = self::toFacetType($get('facet_type_id'));
-                                                            return $type ? self::searchOptions($type, $store->id, $search, self::usedValueIds($get, $type)) : [];
-                                                        })
-                                                        ->getOptionLabelUsing(function ($value, Get $get) use ($store) {
-                                                            $type = self::toFacetType($get('facet_type_id'));
-                                                            return $type ? self::optionLabel($type, $store->id, (int) $value) : null;
-                                                        })
-                                                        ->options(function (Get $get) use ($store) {
-                                                            $type = self::toFacetType($get('facet_type_id'));
-                                                            return $type ? self::searchOptions($type, $store->id, '', self::usedValueIds($get, $type)) : [];
+
+                                                            if (!$type || (int) $value === (int) $get('facet_value_id')) {
+                                                                return false;
+                                                            }
+
+                                                            return in_array((int) $value, self::usedValueIds($get, $type), true);
                                                         })
                                                         ->native(false)
                                                         ->live()
-                                                        ->disabled(fn(Get $get) => blank($get('facet_type_id'))) // Disable if facet_type_id is not selected
+                                                        ->disabled(fn (Get $get) => blank($get('facet_type_id'))) // Disable if facet_type_id is not selected
                                                         ->afterStateUpdated(function (Set $set, Get $get, $component, $livewire, ?string $state) use ($store) {
                                                             $type = self::toFacetType($get('facet_type_id'));
                                                             $set('facet_group_id', filled($state) && $type ? self::groupIdFor($type, $store->id, (int) $state) : 0);
@@ -186,40 +173,18 @@ class FacetPageForm
                                                         ->required()
                                                         ->validationMessages([
                                                             'required' => __('admin.catalog.facet_pages.errors.facet_value_required'),
-                                                        ])
-                                                        ->columnSpan(1),
+                                                        ]),
         
-        
-                                                ])->columns(2),
-                                                Hidden::make('facet_group_id')->default(0),
+                                                    Hidden::make('facet_group_id')->default(0),
                                             ])
                                             ->rules([
                                                 function (?Model $record, Get $get) use ($store) {
                                                     return function (string $attribute, $value, \Closure $fail) use ($record, $store, $get) {
-                                                        $facets = collect($value ?? [])
-                                                            ->filter(fn($i) => filled($i['facet_type_id'] ?? null) && filled($i['facet_value_id'] ?? null))
-                                                            ->map(fn($i) => [
-                                                                'facet_type_id' => $i['facet_type_id'] instanceof FacetType ? $i['facet_type_id']->value : (int) $i['facet_type_id'],
-                                                                'facet_group_id' => (int) ($i['facet_group_id'] ?? 0),
-                                                                'facet_value_id' => (int) $i['facet_value_id'],
-                                                            ])
-                                                            ->all();
-        
-                                                        // Combination check for duplicates - the uniqueness of the entire set,
-                                                        // "exactly one root" and "no more than one category/manufacturer"
-                                                        // are already guaranteed by the form structure (a single root Select + required)
-                                                        $rootType = self::toFacetType($get('root_facet_type_id'));
-                                                        if ($rootType && filled($get('root_facet_value_id'))) {
-                                                            $facets[] = [
-                                                                'facet_type_id' => $rootType->value,
-                                                                'facet_group_id' => (int) ($get('root_facet_group_id') ?? 0),
-                                                                'facet_value_id' => (int) $get('root_facet_value_id'),
-                                                            ];
-                                                        }
-        
-                                                        $duplicateId = self::queryFilterPageByFacets($store->id, $facets, excludePageId: $record?->id);
-        
-                                                        if ($duplicateId) {
+                                                        // Same facet set as the live check: repeater items + root.
+                                                        // "Exactly one root" and "max one category/manufacturer" are guaranteed by the form structure.
+                                                        $facets = self::currentFacetSet($get, $value ?? []);
+
+                                                        if (self::queryFilterPageByFacets($store->id, $facets, excludePageId: $record?->id)) {
                                                             $fail(__('admin.catalog.facet_pages.errors.duplicate_combination'));
                                                         }
                                                     };
@@ -227,12 +192,13 @@ class FacetPageForm
                                             ])
                                             ->minItems(1)
                                             ->reorderable(false)
-                                            ->hiddenLabel()
+                                            ->label(__('admin.catalog.facet_pages.fields.additional_facets'))
+                                            ->aboveContent(__('admin.catalog.facet_pages.helpers.additional_facets'))
                                             ->addActionLabel(__('admin.catalog.facet_pages.buttons.add_facet'))
-                                            ->addActionAlignment('end'),
-                                        Text::make(__('admin.catalog.facet_pages.helpers.additional_facets'))
-                                    ])
-                                    ->columns(1),
+                                            ->addActionAlignment('end')
+                                            ->compact(),
+                                    ]),
+
 
                                 Tabs::make('languages')
                                     ->schema([
@@ -254,46 +220,12 @@ class FacetPageForm
                             ]),
                         ImagesTab::make($store, $languages, ['type' => 'facet_page'])
                     ])
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->contained(false),
             ]);
     }
 
-    /**
-     * Search options for facet value id
-     * @param mixed     $type FacetType::Case
-     * @param int       $storeId
-     * @param string    $search
-     * @param array     $excludedIds
-     * @return array
-     */
-    public static function searchOptions($type, int $storeId, string $search, array $excludedIds): array
-    {
-        $modelClass = $type->modelClass();
 
-        if (!$modelClass) {
-            return [$type->getLabel()];
-        }
-
-        return $modelClass::query()
-            ->where('store_id', $storeId)
-            ->whereRaw("name::text ilike ?", ["%{$search}%"])
-            ->when($excludedIds !== [], fn($q) => $q->whereNotIn('id', $excludedIds))
-            ->limit(50)
-            ->get()
-            ->mapWithKeys(fn($m) => [$m->id => $m->name])
-            ->all();
-    }
-
-    /**
-     * Get option labels for live search
-     */
-    public static function optionLabel($type, int $storeId, int $id): ?string
-    {
-        $modelClass = $type->modelClass();
-        $model = $modelClass ? $modelClass::where('store_id', $storeId)->find($id) : null;
-
-        return $model?->name ?? $type->getLabel();
-    }
 
     /**
      * Separates root_facet_* (UI service fields, not facet_pages columns) from the rest of the form data
