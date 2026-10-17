@@ -134,15 +134,19 @@ class FacetPagesTable
                     ->alignment(Alignment::Center)
                     ->width('1%'),
                 ToggleColumn::make('is_active')
+                    ->label(__('admin.catalog.facet_pages.fields.is_active'))
                     ->disabled(fn(FacetPage $record): bool => (bool) $record->activation_blocked)
-                    ->offColor(fn(FacetPage $record): string => (bool) $record->activation_blocked ? 'black' : 'gray')
-                    ->tooltip(fn(FacetPage $record): ?string => $record->activation_blocked
-                        ? __('admin.catalog.facet_pages.helpers.activation_blocked')
-                        : null)
+                    ->offColor(fn(FacetPage $record): string => (bool) $record->activation_blocked ? '#000000' : 'gray')
                     ->sortable()
-                    ->width('100px')
+                    ->width('1%')
                     ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.facet_pages.fields.is_active')),
+                    // ->tooltip(fn(FacetPage $record): ?string => $record->activation_blocked ? __('admin.catalog.facet_pages.helpers.activation_blocked') : null)
+                    ->extraAttributes(fn(FacetPage $record) => [
+                        // Workaround on tooltips not working on disabled toggles
+                        'style' => 'pointer-events: auto;',
+                        'x-tooltip.raw' => $record->activation_blocked ? __('admin.catalog.facet_pages.helpers.activation_blocked') : null,
+                    ])
+                    ,
 
             ])
             ->defaultSort('sort_order')
@@ -196,8 +200,8 @@ class FacetPagesTable
                     ->native(false),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make()
+                EditAction::make()->tooltip(__('filament-actions::edit.single.label')),
+                DeleteAction::make()->tooltip(__('filament-actions::delete.single.label'))
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
