@@ -92,7 +92,7 @@ class SupermasterPanelProvider extends PanelProvider
                         ->reorderRecordsTriggerAction(fn (Action $action) => $action->button()->label(__('admin.common.buttons.reorder')))
                         ->reorderableColumns()
                         ->persistColumnsInSession()
-                        // ->searchDebounce('500ms')
+                        // ->searchDebounce('500ms') // TODO Uncomment when admin panel is finished
                         // ->deferColumnManager(false)
                         // ->deferLoading()
                         // ->loadingSkeleton()
@@ -234,6 +234,7 @@ class SupermasterPanelProvider extends PanelProvider
             ->tenantRegistration(StoreWizard::class) // Store creation wizard on fresh migration
             // ->simplePageMaxContentWidth(Width::FitContent) // Login AND store tenant creation page
             ->subNavigationPosition(SubNavigationPosition::Top)
+            // ->spa()  // TODO Uncomment when admin panel is finished
             ;
     }
 }
