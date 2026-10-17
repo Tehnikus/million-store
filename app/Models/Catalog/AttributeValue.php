@@ -110,7 +110,7 @@ class AttributeValue extends Model
         return collect($attributeIds)
             ->map(fn($id) => (int) $id)
             ->mapWithKeys(fn($attributeId) => [
-                $attributeNames->get($attributeId, "#{$attributeId}") => static::attributeValueChoices($attributeId)->all(),
+                $attributeNames->get($attributeId, "#{$attributeId}") => static::attributeValueChoices($attributeId, $storeId)->all(),
             ])
             ->all();
     }
