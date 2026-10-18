@@ -934,7 +934,10 @@ return [
       'created_at'        => 'Created at',
       'updated_at'        => 'Updated at',
       'is_active'         => 'Active',
-      'ai_result'         => 'Result'
+      'ai_result'         => 'Result',
+      'ai_lang_name'      => 'Language',
+      'ai_entity_name'    => 'Name',
+      'ai_parent_name'    => 'Parent name',
     ],
     'helpers' => [
       'name'                      => 'Name',

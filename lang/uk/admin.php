@@ -934,7 +934,10 @@ return [
       'created_at'        => 'Дата створення',
       'updated_at'        => 'Дата змінення',
       'is_active'         => 'Активний',
-      'ai_result'         => 'Результат'
+      'ai_result'         => 'Результат',
+      'ai_lang_name'      => 'Мова',
+      'ai_entity_name'    => 'Назва',
+      'ai_parent_name'    => 'Відноситься до',
     ],
     'helpers' => [
       'name'                      => 'Ім\'я',

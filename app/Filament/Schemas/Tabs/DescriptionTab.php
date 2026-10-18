@@ -5,8 +5,13 @@ namespace App\Filament\Schemas\Tabs;
 use App\Domain\Ai\{AiConnection, AiProvider};
 use App\Filament\Schemas\Fields\SlugInput;
 use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Models\Catalog\Category;
+use App\Models\Catalog\Manufacturer;
+use App\Models\Catalog\Product;
+use App\Models\Global\Language;
 use App\Models\Seo\MetaTagFormula;
 use App\Models\Store\StoreSettings;
+use Arr;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\{Hidden, RichEditor, Select, Textarea, TextInput};
@@ -195,12 +200,15 @@ class DescriptionTab
             ->hiddenLabel()
             ->modalHeading(__('admin.common.buttons.ai_action'))
             ->tooltip(__('admin.common.buttons.ai_action'))
-            ->fillForm(function ($schemaComponentState) use ($defaultProviderKey, $defaultPromptKey, $settings) {
+            ->fillForm(function ($schemaComponentState, ?Model $record, \Livewire\Component $livewire) use (
+                $defaultProviderKey, $defaultPromptKey, $settings, $language
+            ) {
                 return [
                     'source'     => $schemaComponentState,
                     'provider'   => $defaultProviderKey,
                     'prompt_id'  => $defaultPromptKey,
                     'prompt'     => $settings['prompts'][$defaultPromptKey]['prompt'] ?? null,
+                    'extra'      => static::buildAiContext($record, $language, $livewire->form->getRawState()),
                     'has_result' => false,
                 ];
             })
@@ -237,12 +245,14 @@ class DescriptionTab
                     Textarea::make('prompt')
                         ->live(onBlur: true)
                         ->rows(5)
+                        ->autosize()
                         ->required()
                         ->default($settings['prompts'][$defaultPromptKey]['prompt'] ?? null)
                         ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_text'))
                         ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_text')),
                     Textarea::make('extra')
                         ->rows(3)
+                        ->autosize()
                         ->label(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_extra'))
                         ->placeholder(__('admin.stores.store_settings.tabs.ai_settings.labels.prompt_extra')),
                 ])
@@ -309,6 +319,55 @@ class DescriptionTab
 
                 $schemaSet($schemaComponent->getStatePath(false), $html);
             });
+    }
+
+    /**
+     * Fill AI context with additional data:
+     * Name, Parent name, Price, Options, Attributes, etc.
+     * Helps AI to undersatnd what to do
+     * @param mixed $record
+     * @param Language $language
+     * @param array $formState
+     * @return string|null
+     */
+    protected static function buildAiContext(?Model $record, Language $language, array $formState): ?string
+    {
+        if (! $record) {
+            return null;
+        }
+
+        $lines = print_r($formState, true);
+        // Temporary return the whole form state to pick all necessary fields
+        // TODO finish this function, after product form is finished
+
+        $name = match (true) {
+            $record instanceof Product      => $record->currentDescription()?->name ?? $record->global_name,
+            $record instanceof Category     => $record->name,
+            $record instanceof Manufacturer => $record->name,
+            default                         => null,
+        };
+
+        $parentId = match (true) {
+            $record instanceof Product      => Arr::get($formState, 'description.parent_id'),
+            $record instanceof Category     => Arr::get($formState, 'parent_id'),
+            $record instanceof Manufacturer => Arr::get($formState, 'parent_id'),
+            default                         => null,
+        };
+
+        $parentName = match (true) {
+            $record instanceof Product      => Category::find($parentId)?->name,
+            $record instanceof Category     => Category::find($parentId)?->name,
+            $record instanceof Manufacturer => Manufacturer::find($parentId)?->name,
+            default                         => null,
+        };
+
+        $lines = array_filter([
+            __('admin.common.fields.ai_lang_name') . ": {$language->name} ({$language->locale})",           // Language name
+            $name       !== null ? __('admin.common.fields.ai_entity_name') . ": {$name}" : null,           // Entity name
+            $parentName !== null ? __('admin.common.fields.ai_parent_name') . ": {$parentName}" : null,     // Parent name
+        ]);
+
+        return implode("\n", $lines) ?: null;
     }
 
     private static function metaEditorGenerate(): Action

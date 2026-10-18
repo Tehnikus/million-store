@@ -491,7 +491,7 @@ return [
         'tag'          => 'Тег',
         'is_featured'  => 'Рекомендуемый',
         'has_discount' => 'Со скидкой',
-        'bestseller'   => 'Лидепр продаж',
+        'bestseller'   => 'Лидер продаж',
         'best_reviews' => 'Лучшие отзывы',
       ],
       'notifications' => [
@@ -934,7 +934,10 @@ return [
       'created_at'        => 'Дата создания',
       'updated_at'        => 'Дата изменения',
       'is_active'         => 'Включен',
-      'ai_result'         => 'Результат'
+      'ai_result'         => 'Результат',
+      'ai_lang_name'      => 'Язык',
+      'ai_entity_name'    => 'Имя',
+      'ai_parent_name'    => 'Относится к',
     ],
     'helpers' => [
       'name'                      => 'Имя',
