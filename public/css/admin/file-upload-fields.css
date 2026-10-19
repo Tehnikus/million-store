@@ -1,0 +1,95 @@
+/* Per-file text fields inside FilePond items (FileUploadWithFields) */
+
+/* Room for the inputs under each image: one row = input height + gap, plus 0.5rem top padding of the list */
+.upload-fields {
+    --upload-fields-reserve: calc(var(--upload-fields-count, 0) * 2.25rem + 0.5rem);
+}
+
+/*
+ * FilePond gives each item a fixed inline height and stacks items absolutely,
+ * but it adds the item's margin-bottom to the vertical step between rows.
+ * The margin is read ONCE when an item is created, so it must come from static CSS.
+ * 0.25em is FilePond's own default item margin, we add our reserve on top of it.
+ */
+.upload-fields .filepond--item {
+    margin-bottom: calc(0.25em + var(--upload-fields-reserve));
+}
+
+/*
+ * Last row fix. In "flexible height" mode FilePond sets
+ *   root.height = list height − (first item's margin-top + margin-bottom)
+ * i.e. it assumes the outer item margins bleed outside. Filament makes .filepond--root
+ * overflow: hidden, so the last row loses exactly our reserve.
+ * With content-box sizing, padding is added ON TOP of FilePond's inline height,
+ * so we give the reserve back. :has() — only when there are files, so the empty dropzone keeps its size.
+ */
+.upload-fields .filepond--root:has(.filepond--item) {
+    box-sizing: content-box;
+    padding-bottom: var(--upload-fields-reserve);
+}
+
+/* Sits right under the image panel, inside the reserved margin */
+.upload-fields__list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-top: 0.375rem;
+}
+
+.upload-fields__row {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    border: 1px solid var(--gray-300, #d1d5db);
+    border-radius: 0.5rem;
+    background: var(--white, #fff);
+    overflow: hidden;
+}
+
+.upload-fields__row:focus-within {
+    border-color: var(--primary-500, #3b82f6);
+    box-shadow: 0 0 0 1px var(--primary-500, #3b82f6);
+}
+
+.upload-fields__label {
+    flex-shrink: 0;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+    color: var(--gray-500, #6b7280);
+    border-right: 1px solid var(--gray-200, #e5e7eb);
+    white-space: nowrap;
+}
+
+.upload-fields__input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--gray-950, #030712);
+}
+
+.dark .upload-fields__row {
+    border-color: rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.05);
+}
+
+.dark .upload-fields__label {
+    color: var(--gray-400, #9ca3af);
+    border-right-color: rgb(255 255 255 / 0.1);
+}
+
+.dark .upload-fields__input {
+    color: var(--white, #fff);
+}
+
+.filepond--image-preview-overlay-success {
+    color:#333;
+}
