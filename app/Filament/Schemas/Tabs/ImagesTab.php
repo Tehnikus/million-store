@@ -2,129 +2,67 @@
 
 namespace App\Filament\Schemas\Tabs;
 
-use App\Models\Store\StoreSettings;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Callout;
-use Filament\Schemas\Components\Group;
+use App\Domain\Media\ImageType;
+use App\Filament\Forms\Components\FileUploadWithFields;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Arr;
-use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
 
+/**
+ * Images tab for models with HasProcessedImages.
+ * The Edit page must refresh the column after save (the pipeline moves files out of staging):
+ *   protected function afterSave(): void { $this->refreshFormData(['images']); }
+ */
 class ImagesTab
 {
-    public static function make($store, $languages, $config = []): Tab
+    public static function make($store, $languages, ImageType $type): Tab
     {
         return Tab::make('images')
-            ->schema(self::schema($store, $languages, $config))
-            ->label(self::label())
-            ->icon(Heroicon::OutlinedPhoto);
+            ->schema(self::schema($store, $languages, $type))
+            ->label(__('admin.common.tabs.images'))
+            ->icon(Heroicon::OutlinedPhoto)
+            ->badge(fn(Get $get) => count($get('images') ?? []) ?: null);
     }
 
-    public static function schema($store, $languages, $config = []): array
+    public static function schema($store, $languages, ImageType $type): array
     {
-        $storeId    = $store->id;
-        $type       = $config['type'] ?? 'misc';
-        $dimensions = StoreSettings::where('store_id', $storeId)->first()?->image_dimensions;
+        $storeId = $store->id;
 
-        // Error message if image dimensions for this type are not set
-        if (!isset($dimensions[$type])) {
-            return [
-                Callout::make(__('admin.common.helpers.image_type_not_set_title'))
-                    ->description(new HtmlString(__('admin.common.helpers.image_type_not_set_info', ['type' => __("admin.design.image_types.{$type}")])))
-                    ->danger()
-                    ->columnSpanFull(),
-            ];
-        }
+        // The largest conversion of this type (the last one: main, or miniature for small types)
+        // gives the editor's first aspect ratio. Reduced by GCD: 2000×2000 → 1:1, 1600×900 → 16:9.
+        $dimensions = $type->dimensions($store->storeSettings?->image_dimensions ?? []);
+        ['width' => $width, 'height' => $height] = end($dimensions);
 
-        // Calculate file upload aspect ratio
-        if (isset($dimensions[$type]['miniature'])) {
-            $width = $dimensions[$type]['miniature']['width'];
-            $height = $dimensions[$type]['miniature']['height'];
-        } elseif (isset($dimensions[$type]['main'])) {
-            $width = $dimensions[$type]['main']['width'];
-            $height = $dimensions[$type]['main']['height'];
-        } else {
-            $firstKey = array_key_first($dimensions[$type]);
-            $width = $dimensions[$type][$firstKey]['width'];
-            $height = $dimensions[$type][$firstKey]['height'];
-        }
-        $aspectRatio = ($width / $width) . ':' . ($height / $width);
+        for ($a = $width, $b = $height; $b !== 0; [$a, $b] = [$b, $a % $b])
+            ;
+        $aspectRatio = ($width / $a) . ':' . ($height / $a);
 
         return [
-            Repeater::make('images')
-                ->hiddenLabel()
-                ->table([
-                    TableColumn::make(__('admin.common.fields.image'))->width('300px'),
-                    TableColumn::make(__('admin.common.fields.image_description')),
-                ])
-                ->skipRenderAfterStateUpdated()
-                ->schema([
-                    // Service inputs for saving()/saved() interaction
-                    Hidden::make('id')->default(fn () => (string) Str::ulid()),
-                    Hidden::make('conversions')->default([]),
-
-                    FileUpload::make('image')
-                        ->image()
-                        ->disk('public')
-                        ->directory("{$storeId}/images/staging")
-                        ->imageEditor()
-                        ->imageEditorAspectRatioOptions([$aspectRatio, '16:9', '4:3', '1:1', null]) // Set actual aspect ration first
-                        ->formatStateUsing(fn (Get $get) => static::resolvePreviewPath($get('conversions') ?? [])) // Display preview on edit page
-                        // ->statePath(function (Get $get) {return "{$get('id')}.image";})
-                        // ->skipRenderAfterStateUpdated()
-                        // ->live()
-                        // ->partiallyRenderAfterStateUpdated()
-                        // ->required(fn (Get $get) => blank($get('conversions'))) // Show error if image is still uploading
-                        // ->multiple()
-                        // ->maxParallelUploads(1)
-                        // ->maxFiles(1)
-                        // ->live()
-                        // ->preserveFilenames()
-                        ,
-
-                    Group::make(
-                        collect($languages)->map(
-                            fn ($language) => TextInput::make("alt.{$language->locale}")
-                                ->columnSpanFull()
-                                ->prefix($language->locale)
-                                ->placeholder('Alt')
-                        )->all()
-                    ),
-                ])
-                // ->live()
-                // ->partiallyRenderAfterStateUpdated()
-                ->addActionLabel(__('admin.common.buttons.add_image_row'))
-                ->reorderable(true)
-                ->columnSpanFull()
-                ->helperText(__('admin.common.helpers.images_tab')),
+            FileUploadWithFields::make('images')
+                ->multiple()
+                ->fields(
+                    fn() => collect($languages)
+                        ->mapWithKeys(fn($language) => [
+                            "alt.{$language->locale}" => "Alt ({$language->locale})",
+                        ])
+                        ->all()
+                )
+                ->panelLayout('grid')
+                ->reorderable()
+                ->image() // only images allowed
+                ->disk('public') // Store on local public disc (not remote s3)
+                ->directory("{$storeId}/images/staging") // temporary folder for uploaded files
+                ->imageEditor() // Enaple image editor
+                ->appendFiles() // Add new files to the end
+                // The type's own ratio first; array_unique drops it from the presets if it's already there
+                ->imageEditorAspectRatioOptions(array_values(array_unique([$aspectRatio, '16:9', '4:3', '1:1', null])))
+                // ->imagePreviewHeight('250')
+                ->loadingIndicatorPosition('right')
+                // ->panelAspectRatio('2:1')
+                // ->panelLayout('integrated')
+                ->removeUploadedFileButtonPosition('right')
+                ->uploadButtonPosition('right')
+                ->uploadProgressIndicatorPosition('right'),
         ];
-    }
-
-    /**
-     * Resolve preview
-     * Needed because after the image was uploaded and the form was saved saved data structure does not match format expected by the Repeater component
-     * So it passes original or large conversion to diplay in FileUpload component
-     * Try to load orgilan first, then main image, then first array element
-     * @param array $conversions
-     */
-    private static function resolvePreviewPath(array $conversions): ?string
-    {
-        return $conversions['original'] ?? $conversions['main'] ?? Arr::first($conversions);
-    }
-
-    /**
-     * Display tab label
-     * @return array|string
-     */
-    public static function label(): string
-    {
-        return __('admin.common.tabs.images');
     }
 }

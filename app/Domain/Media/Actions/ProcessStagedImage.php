@@ -2,6 +2,7 @@
 
 namespace App\Domain\Media\Actions;
 
+use App\Domain\Media\ImageType;
 use App\Domain\Media\Services\MediaPathGenerator;
 use App\Models\Store\StoreSettings;
 use Illuminate\Support\Facades\Storage;
@@ -9,7 +10,6 @@ use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Format;
 use Intervention\Image\ImageManager;
-use InvalidArgumentException;
 use RuntimeException;
 
 class ProcessStagedImage
@@ -17,82 +17,80 @@ class ProcessStagedImage
     public function __construct(
         private readonly MediaPathGenerator $pathGenerator,
         private readonly string $disk = 'public',
-    ) {}
+    ) {
+    }
 
     /**
-     * @return array{id: string, conversions: array<string, string>}
+     * Moves a staged upload to permanent storage and creates its conversions.
+     * Folder bucketing (100 entities per folder) comes from $entityId, see MediaPathGenerator.
+     *
+     * @return array{src: string, conversions: array<string, string>}
      */
     public function handle(
         string $stagedPath,
         int $storeId,
-        string $type,
+        ImageType $type,
         int $entityId,
         string $baseSlug,
-        ?string $existingId = null,
     ): array {
-        $dimensions = $this->resolveDimensions($storeId, $type);
+        // Store's own sizes where saved, defaults from the enum for the rest.
+        // first()?->column, not value('column'): value() skips the model's array cast and returns raw JSON.
+        $saved = StoreSettings::where('store_id', $storeId)->first()?->image_dimensions ?? [];
+        $dimensions = $type->dimensions($saved);
 
-        if (! Storage::disk($this->disk)->exists($stagedPath)) {
+        if (!Storage::disk($this->disk)->exists($stagedPath)) {
             throw new RuntimeException("Staging file not found: [{$stagedPath}].");
         }
 
         $extension = pathinfo($stagedPath, PATHINFO_EXTENSION) ?: 'jpg';
 
+        // A short random suffix instead of the image's position in the list:
+        //  - a new image can't take the name of an existing one and overwrite its file
+        //  - an edited image gets a new URL, so browsers and CDNs don't serve the old cached file
+        $baseName = $baseSlug . '-' . Str::lower(Str::random(6));
+
         // 1. Move source image from "staging" to permanent storage folder without changes
-        $sourcePath = $this->pathGenerator->sourcePath($storeId, $type, $entityId, $baseSlug, $extension);
+        $sourcePath = $this->pathGenerator->sourcePath($storeId, $type->value, $entityId, $baseName, $extension);
         Storage::disk($this->disk)->makeDirectory(dirname($sourcePath));
         Storage::disk($this->disk)->move($stagedPath, $sourcePath);
 
-        // 2. Convert images every time
-        // TODO Add timestamp to image to skip unchanged images
+        // 2. Create conversions
         $manager = ImageManager::usingDriver(Driver::class);
         $absoluteSourcePath = Storage::disk($this->disk)->path($sourcePath);
 
-        $conversions = ['original' => $sourcePath];
+        $conversions = [];
 
-        foreach ($dimensions as $key => $size) {
+        foreach ($type->conversions() as $conversion) {
+            $size = $dimensions[$conversion->value];
+
             // Also ->orient() closure can be used to orient by EXIF data
             $image = $manager->decode($absoluteSourcePath);
 
-            // Different resize types for different image dimensions types
-            $image = $key === 'miniature'
+            // The fitting rule belongs to the conversion (see ImageConversion::fit())
+            $image = $conversion->fit() === 'cover'
                 ? $image->cover($size['width'], $size['height'])
                 : $image->contain($size['width'], $size['height'], background: '#ffffff');
 
             $conversionPath = $this->pathGenerator->conversionPath(
-                $storeId, $type, $entityId, $baseSlug, $key, $size['width'], $size['height']
+                $storeId,
+                $type->value,
+                $entityId,
+                $baseName,
+                $conversion->value,
+                $size['width'],
+                $size['height']
             );
 
             Storage::disk($this->disk)->makeDirectory(dirname($conversionPath));
             // TODO Make format configurable
             Storage::disk($this->disk)->put($conversionPath, (string) $image->encodeUsingFormat(Format::WEBP, quality: 82));
 
-            $conversions[$key] = $conversionPath;
+            $conversions[$conversion->value] = $conversionPath;
         }
 
         return [
-            'id' => $existingId ?? (string) Str::ulid(),
+            'src' => $sourcePath,
             'conversions' => $conversions,
         ];
-    }
-
-    /**
-     * Get image dimensions from StoreSetting by type
-     * @param int $storeId
-     * @param string $type: 'product', 'category', 'blog', etc. Must be set in store_settings.image_dimensions table
-     * @throws InvalidArgumentException
-     * @return array
-     */
-    private function resolveDimensions(int $storeId, string $type): array
-    {
-        $dimensions = StoreSettings::where('store_id', $storeId)->first()->image_dimensions[$type] ?? null;
-
-        if ($dimensions === null) {
-            throw new InvalidArgumentException(
-                "Image dimensions for type [{$type}] are not set in store_id = [{$storeId}]."
-            );
-        }
-
-        return $dimensions;
     }
 }

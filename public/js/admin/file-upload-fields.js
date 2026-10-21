@@ -1,7 +1,6 @@
 // Per-file text fields inside FilePond items.
 // Server side: App\Filament\Forms\Components\FileUploadWithFields
 
-
 // File name without extension: 'photo-v2.jpg' → 'photo-v2'
 const baseName = (name) => (name.includes('.') ? name.slice(0, name.lastIndexOf('.')) : name)
 
@@ -78,7 +77,6 @@ document.addEventListener('alpine:init', () => {
             // 'addfile' — we can't rely on event order. Instead we remember which file the editor was
             // opened for (see watchEditor) and recognize the copy by its name.
             this.root.addEventListener('FilePond:addfile', ({ detail }) => {
-                // console.log('addfile', detail?.file?.filename, 'edited:', this.editedName, 'known:', JSON.parse(JSON.stringify(this.knownFiles)))
                 const file = detail?.file
                 const name = this.editedName
 
@@ -164,6 +162,16 @@ document.addEventListener('alpine:init', () => {
                 // Already rendered for this file
                 if (item.dataset.uploadFieldsUuid === uuid) {
                     continue
+                }
+
+                // A uuid we haven't seen: after refreshFormData() (afterSave) the server re-keys all files,
+                // and our init() snapshot doesn't know the new uuids. Livewire's state does — read it from there.
+                if (!this.values[uuid]) {
+                    const saved = this.$wire.$get(`${fieldsPath}.${uuid}`)
+
+                    if (isPlainObject(saved)) {
+                        this.values[uuid] = JSON.parse(JSON.stringify(saved))
+                    }
                 }
 
                 item.querySelector(':scope > .upload-fields__list')?.remove()

@@ -1,46 +1,56 @@
 <?php
 
 namespace App\Domain\Media\Concerns;
-use illuminate\Support\Str;
+
 use App\Domain\Media\Actions\DeleteProcessedImage;
 use App\Domain\Media\Actions\ProcessStagedImage;
 use App\Models\Global\Language;
 use App\Models\Global\StoreLanguage;
+use Illuminate\Support\Str;
+use LogicException;
+use RuntimeException;
 
 /**
- * Converts images automatically to WEBP
+ * Converts uploaded images to WEBP sizes and keeps the files on disk in sync with the column.
+ *
  * The model must declare:
  *  public function imageColumns(): array
  *  {
  *      return [
  *          'images' => [
- *              'type'        => 'blog', // Image type. Sets which dimensions to choose from StoreSetting and what directory to store images in
- *              'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
+ *              'type'        => ImageType::Category, // sizes (store settings / defaults) and directory name
+ *              'slug_source' => 'name',              // translatable field the file names are made from
  *          ],
  *      ];
  *  }
- * Also store_id column must be present in DB table to resolve default language and make a slug name of image from translatable field in defaul language 
+ * A store_id column is required: it resolves the store's default language and the storage folder.
+ *
+ * Column format — a list, filled by FileUploadWithFields::make(...)->multiple():
+ *  [
+ *      {
+ *          "src": "1/images/category/sources/0/5_laptops-k3f9a2.jpg",  // source file; a staging path until processed
+ *          "fields": {"alt": {"uk": "...", "en": "..."}},              // whatever the form sends, kept as is
+ *          "conversions": {"miniature": "....webp", "main": "....webp"} // owned by this trait, never by the form
+ *      },
+ *  ]
+ *
+ * An image is identified by its src (file paths are unique). The form only knows src + fields;
+ * conversions are taken from the DB copy of the record (getOriginal), so the browser can't forge them.
  */
 trait HasProcessedImages
 {
+    /** Entries removed from the column during this save; their files are deleted after the save succeeds */
     protected array $pendingImageDeletions = [];
 
     public static function bootHasProcessedImages(): void
     {
         static::saving(function (self $model) {
-            // Catch livewire upload race bug
-            // TODO Make workaround for livewire bug
-            \Log::debug('images raw state at saving()', [
-                'model'     => static::class,
-                'id'        => $model->getKey(),
-                'images'    => $model->images ?? null,
-            ]);
-            $model->captureImageDeletions();
+            $model->mergeStoredConversions();
         });
 
         static::saved(function (self $model) {
             $model->deletePendingImages();
-            $model->processRawImages();
+            $model->processStagedImages();
         });
 
         static::deleted(function (self $model) {
@@ -48,34 +58,81 @@ trait HasProcessedImages
                 return;
             }
 
-            // Delete all images when entity is deleted
             $model->deleteAllImages();
         });
     }
 
     abstract public function imageColumns(): array;
 
-    protected function captureImageDeletions(): void
+    /**
+     * Before save: give every kept image its conversions back from the DB and note removed images.
+     */
+    protected function mergeStoredConversions(): void
     {
-        foreach ($this->imageColumns() as $column => $config) {
-            $original       = $this->getOriginal($column) ?? [];
-            $current        = $this->getAttribute($column) ?? [];
-            $originalById   = collect($original)->keyBy('id');
-            $currentIds     = collect($current)->pluck('id')->filter()->all();
-            $removed        = $originalById->except($currentIds)->values()->all();
+        $stagingPrefix = "{$this->store_id}/images/staging/";
 
-            if ($removed !== []) {
-                $this->pendingImageDeletions = [...$this->pendingImageDeletions, ...$removed];
+        foreach ($this->imageColumns() as $column => $config) {
+            // isDirty compares the JSON: the form never sends conversions, so any form save makes it dirty
+            if (!$this->isDirty($column)) {
+                continue;
             }
+
+            $current = $this->getAttribute($column) ?? [];
+
+            if (array_key_exists('src', $current)) {
+                throw new LogicException(
+                    "Column [{$column}] of " . static::class . ' holds a single image; use FileUploadWithFields with ->multiple().'
+                );
+            }
+
+            // Previous DB state, src => entry
+            $stored = collect($this->getOriginal($column) ?? [])->keyBy('src');
+
+            $images = [];
+            $keptSources = [];
+
+            foreach ($current as $entry) {
+                $src = $entry['src'] ?? null;
+
+                if (blank($src)) {
+                    continue;
+                }
+
+                // Already processed and still there: restore its conversions from the DB
+                if ($stored->has($src)) {
+                    $images[] = [...$entry, 'conversions' => $stored[$src]['conversions'] ?? []];
+                    $keptSources[] = $src;
+
+                    continue;
+                }
+
+                // New upload: processed after save. Anything conversions-like from the input is dropped.
+                if (str_starts_with($src, $stagingPrefix)) {
+                    unset($entry['conversions']);
+                    $images[] = $entry;
+
+                    continue;
+                }
+
+                // Neither stored nor staged: a stale form (refreshFormData missing) or a forged path.
+                // Livewire's 'livewire-file:' placeholders (upload race) also end up here.
+                report(new RuntimeException(
+                    "Unknown image src [{$src}] dropped from {$column}, model " . static::class . " #{$this->getKey()}"
+                ));
+            }
+
+            $removed = $stored->except($keptSources)->values()->all();
+            $this->pendingImageDeletions = [...$this->pendingImageDeletions, ...$removed];
+
+            $this->setAttribute($column, $images);
         }
     }
 
+    /**
+     * After save: files of removed images go away only once the record is really saved
+     */
     protected function deletePendingImages(): void
     {
-        if ($this->pendingImageDeletions === []) {
-            return;
-        }
-
         $action = app(DeleteProcessedImage::class);
 
         foreach ($this->pendingImageDeletions as $entry) {
@@ -85,61 +142,49 @@ trait HasProcessedImages
         $this->pendingImageDeletions = [];
     }
 
-    protected function processRawImages(): void
+    /**
+     * After save: process images whose src is still in staging. Needs the record id (folder bucket),
+     * that's why it runs in saved() and not in saving().
+     */
+    protected function processStagedImages(): void
     {
-        $touched        = false;
-        $slugBase       = null;
-        $stagingPrefix  = "{$this->store_id}/images/staging/";
+        $isTouched = false;
+        $slugBase = null;
+        $stagingPrefix = "{$this->store_id}/images/staging/";
 
         foreach ($this->imageColumns() as $column => $config) {
             $images = $this->getAttribute($column) ?? [];
+            $isColumnTouched = false;
 
-            foreach ($images as $index => &$entry) {
-                $imagePath = $entry['image'] ?? null;
-
-                // If image is empty or already processed, skip it
-                if (blank($imagePath) || ! str_starts_with($imagePath, $stagingPrefix)) {
+            foreach ($images as $index => $entry) {
+                if (!str_starts_with($entry['src'] ?? '', $stagingPrefix)) {
                     continue;
                 }
 
-                // Livewire race condition bug log
-                if (str_starts_with($imagePath, 'livewire-file:')) {
-                    report(new \RuntimeException(
-                        "Uploaded image skipped (Livewire race) for {$column}[{$index}], model ".static::class." #{$this->getKey()}"
-                    ));
-
-                    continue;
-                }
-
-                // Delete previous images before creating new
-                if (filled($entry['conversions'] ?? null)) {
-                    app(DeleteProcessedImage::class)->handle($entry);
-                }
-
+                // Resolved once per save, only when there is something to process
                 $slugBase ??= $this->resolveSlugBase($config['slug_source'] ?? null);
 
+                // Returns the new src (permanent source path) and conversions; fields stay untouched
                 $processed = app(ProcessStagedImage::class)->handle(
-                    stagedPath: $imagePath,
-                    storeId:    $this->store_id,
-                    type:       $config['type'],
-                    entityId:   $this->getKey(),
-                    baseSlug:   "{$slugBase}-{$index}",
-                    existingId: $entry['id'] ?? null,
+                    stagedPath: $entry['src'],
+                    storeId: $this->store_id,
+                    type: $config['type'],
+                    entityId: $this->getKey(),
+                    baseSlug: $slugBase,
                 );
 
-                $entry = [...$entry, ...$processed];
-                unset($entry['image']);
-
-                $touched = true;
+                $images[$index] = [...$entry, ...$processed];
+                $isColumnTouched = true;
             }
-            unset($entry);
 
-            if ($touched) {
-                $this->setAttribute($column, array_values($images));
+            if ($isColumnTouched) {
+                $this->setAttribute($column, $images);
+                $isTouched = true;
             }
         }
 
-        if ($touched) {
+        // Quietly: no saving/saved events, so no recursion into this trait
+        if ($isTouched) {
             $this->saveQuietly();
         }
     }
@@ -163,8 +208,7 @@ trait HasProcessedImages
     }
 
     /**
-     * Delete all images when entity is deleted
-     * @return void
+     * Entity deleted: remove all its image files
      */
     protected function deleteAllImages(): void
     {
