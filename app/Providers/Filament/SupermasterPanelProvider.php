@@ -18,6 +18,8 @@ use Filament\PanelProvider;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Tabs;
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 // use Filament\Widgets\AccountWidget;
 // use Filament\Widgets\FilamentInfoWidget;
@@ -235,6 +237,10 @@ class SupermasterPanelProvider extends PanelProvider
             // ->simplePageMaxContentWidth(Width::FitContent) // Login AND store tenant creation page
             ->subNavigationPosition(SubNavigationPosition::Top)
             // ->spa()  // TODO Uncomment when admin panel is finished
+            ->assets([
+                Css::make('file-upload-fields', asset('css/admin/file-upload-fields.css')),
+                Js::make('file-upload-fields', asset('js/admin/file-upload-fields.js')),
+            ])
             ;
     }
 }
