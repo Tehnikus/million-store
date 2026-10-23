@@ -2,14 +2,8 @@
 
 namespace App\Domain\Media;
 
-use App\Models\Blog\BlogPost;
-use App\Models\Blog\BlogTag;
-use App\Models\Catalog\AttributeValue;
-use App\Models\Catalog\Category;
-use App\Models\Catalog\Manufacturer;
-use App\Models\Catalog\OptionValue;
-use App\Models\Catalog\ProductDescription;
-use App\Models\Catalog\Tag;
+use App\Models\Blog\{BlogPost, BlogTag};
+use App\Models\Catalog\{AttributeValue, Category, FacetPage, Manufacturer, OptionValue, ProductDescription, Tag};
 
 /**
  * Every kind of image in the shop, in one place.
@@ -26,6 +20,7 @@ enum ImageType: string
     case Product        = 'product';
     case Category       = 'category';
     case Manufacturer   = 'manufacturer';
+    case FacetPage      = 'filter_page';
     case Tag            = 'tag';
     case BlogPost       = 'blog';
     case BlogTag        = 'blog_tag';
@@ -64,6 +59,7 @@ enum ImageType: string
             self::Product       => ProductDescription::class, // product images are store-scoped
             self::Category      => Category::class,
             self::Manufacturer  => Manufacturer::class,
+            self::FacetPage     => FacetPage::class,
             self::Tag           => Tag::class,
             self::BlogPost      => BlogPost::class,
             self::BlogTag       => BlogTag::class,
