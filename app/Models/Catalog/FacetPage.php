@@ -2,6 +2,8 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Media\Concerns\HasProcessedImages;
+use App\Domain\Media\ImageType;
 use App\Domain\Seo\HasSlugs;
 use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
 use App\Filament\Resources\FacetPages\FacetPageResource;
@@ -15,6 +17,8 @@ class FacetPage extends Model
 {
     use HasSlugs;
     use HasTranslations;
+    use HasProcessedImages;
+    
     protected $table = 'facet_pages';
     protected $fillable = [
         'store_id',
@@ -72,6 +76,16 @@ class FacetPage extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function imageColumns(): array
+    {
+        return [
+            'images' => [
+                'type' => ImageType::FacetPage, // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',        // Translatable field to take converted image names from. Will be slugged
+            ],
+        ];
     }
 
 

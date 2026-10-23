@@ -149,8 +149,7 @@ class FacetPagesTable
                     ->afterStateUpdated(function ($livewire) {
                         $livewire->dispatch('refresh-sidebar');
                         // TODO: Rebuild sitemap here
-                    })
-                    ,
+                    }),
 
             ])
             ->defaultSort('sort_order')

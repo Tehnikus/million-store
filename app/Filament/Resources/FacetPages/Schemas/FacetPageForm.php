@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FacetPages\Schemas;
 
 use App\Domain\Catalog\FacetType;
+use App\Domain\Media\ImageType;
 use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, FooterTab, HowToTab, ImagesTab};
 use App\Models\Catalog\{FacetPage, FacetPageIndex};
 use App\Models\Global\Store;
@@ -264,7 +265,7 @@ class FacetPageForm
                                         )
                                     ])
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'facet_page'])
+                        ImagesTab::make($store, $languages, ImageType::FacetPage)
                     ])
                     ->columnSpanFull()
                     ->contained(false),
