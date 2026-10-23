@@ -38,13 +38,15 @@ return [
           'global_name'             => 'Глобальна назва',
           'sku'                     => 'Арт',
           'price'                   => 'Ціна',
-          'created_at'              => 'Створено',
-          'updated_at'              => 'Змінено',
+          'created_at'              => 'Створений',
+          'updated_at'              => 'Змінений',
           'valid_until'             => 'до',
           'store_name'              => 'Назва в магазині',
           'placement'               => 'Розміщення',
           'is_active'               => 'Активний у цьому магазині',
           'is_not_active'           => 'Неактивний у цьому магазині',
+          'is_available'            => 'Доступний для замовлення у цьому магазині',
+          'is_not_available'        => 'Недоступний для замовлення у цьому магазині',
           'is_not_associated'       => 'Не зв\'язаний з цим магазином',
         ],
         'filters' => [
@@ -562,7 +564,7 @@ return [
         'body'               => 'Текст відгуку',
         'rating'             => 'Рейтинг',
         'is_approved'        => 'Ухвалено',
-        'created_at'         => 'Дата створення',
+        'created_at'         => 'Створений',
         'reply_body'         => 'Відповідь',
         'locale'             => 'Мова',
         'thread'             => 'Гілка відповідей',
@@ -810,7 +812,7 @@ return [
         'name'            => 'Ім\'я',
         'sort_order'      => 'Сортування',
         'is_active'       => 'Активний',
-        'created_at'      => 'Дата створення',
+        'created_at'      => 'Створений',
         'posts_count'     => 'Кілкість статей',
         'social_links'    => 'Соціальні мережі автора',
         'social_platform' => 'Платформа',
@@ -835,7 +837,7 @@ return [
         'body'               => 'Відгук',
         'rating'             => 'Рейтинг',
         'is_approved'        => 'Ухавлений',
-        'created_at'         => 'Дата створення',
+        'created_at'         => 'Створений',
         'reply_body'         => 'Відповідь',
         'locale'             => 'Мова',
         'thread'             => 'Відповіді',
@@ -868,7 +870,7 @@ return [
         'sort_order'  => 'Сортування',
         'is_active'   => 'Активний',
         'is_menu'     => 'Відображати в меню',
-        'created_at'  => 'Дата створення',
+        'created_at'  => 'Створений',
         'posts_count' => 'Статті',
       ],
       'helpers' => [
@@ -887,7 +889,7 @@ return [
             'name'        => 'Назва',
             'sort_order'  => 'Сортування',
             'is_active'   => 'Активна',
-            'created_at'  => 'Дата створення',
+            'created_at'  => 'Створена',
           ],
           'helpers' => [
             'main'                => 'Автор статті, теги та настройки відображення',
@@ -931,8 +933,8 @@ return [
       'image_description' => 'Опис',
       'footer_tab'        => 'Назва вкладки',
       'footer_content'    => 'Вміст вкладки',
-      'created_at'        => 'Дата створення',
-      'updated_at'        => 'Дата змінення',
+      'created_at'        => 'Створено',
+      'updated_at'        => 'Змінено',
       'is_active'         => 'Активний',
       'ai_result'         => 'Результат',
       'ai_lang_name'      => 'Мова',
@@ -1024,6 +1026,7 @@ return [
         'product'       => 'Товари',
         'category'      => 'Категорії',
         'manufacturer'  => 'Виробники',
+        'filter_page'   => 'Сторінки фільтра',
         'tag'           => 'Теги',
         'blog'          => 'Блог - статті',
         'blog_tag'      => 'Блог - теги',
@@ -1034,7 +1037,6 @@ return [
         'miniature' => 'Мініатюра',
         'main'      => 'Основне зображення',
       ],
-
     ],
     'css_editor' => [
       'navigation_label'  => 'Редактор CSS',
@@ -1232,6 +1234,14 @@ return [
     'info_pages' => [
       'navigation_label'     => 'Інфо сторінки',
       'model_label_singular' => 'Інфо сторінка',
+      'labels' => [
+        'is_active' => 'Активна'
+      ],
+      'columns' => [
+        'name'        => 'Назва',
+        'is_active'   => 'Активна',
+        'created_at'  => 'Створена',
+      ],
       'helpers' => [
         'group_title' => 'Інфо сторінки - це сторінки з основною інформацією про магазин, такою як контакти, правила доставки та оплати, правові положення'
       ]
@@ -1248,7 +1258,7 @@ return [
       'role'        => 'Тип',
       'password'    => 'Пароль',
       'locale'      => 'Мова інтерфейса',
-      'created_at'  => 'Дата створення',
+      'created_at'  => 'Створений',
       'is_active'   => 'Активний',
     ],
   ],

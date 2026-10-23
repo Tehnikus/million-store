@@ -45,6 +45,8 @@ return [
           'store_name'              => 'Название в магазине',
           'is_active'               => 'Активен в этом магазине',
           'is_not_active'           => 'Неактивен в этом магазине',
+          'is_available'            => 'Доступен для заказа в этом магазине',
+          'is_not_available'        => 'Не доступен для заказа в этом магазине',
           'is_not_associated'       => 'Не связан с этим магазином',
         ],
         'filters' => [
@@ -562,7 +564,7 @@ return [
         'body'               => 'Текст отзыва',
         'rating'             => 'Рейтинг',
         'is_approved'        => 'Одобрен',
-        'created_at'         => 'Дата создания',
+        'created_at'         => 'Создан',
         'reply_body'         => 'Ответ',
         'locale'             => 'Язык',
         'thread'             => 'Ветка ответов',
@@ -810,7 +812,7 @@ return [
         'name'            => 'Имя',
         'sort_order'      => 'Порядок сортировки',
         'is_active'       => 'Активен',
-        'created_at'      => 'Дата создания',
+        'created_at'      => 'Создан',
         'posts_count'     => 'Количество постов',
         'social_links'    => 'Социальные сети автора',
         'social_platform' => 'Платформа',
@@ -835,7 +837,7 @@ return [
         'body'               => 'Отзыв',
         'rating'             => 'Рейтинг',
         'is_approved'        => 'Одобрен',
-        'created_at'         => 'Дата создания',
+        'created_at'         => 'Создан',
         'reply_body'         => 'Ответ',
         'locale'             => 'Язык',
         'thread'             => 'Ответы',
@@ -868,7 +870,7 @@ return [
         'sort_order'  => 'Сортировка',
         'is_active'   => 'Включен',
         'is_menu'     => 'Показывать в меню',
-        'created_at'  => 'Дата создания',
+        'created_at'  => 'Создан',
         'posts_count' => 'Статьи',
       ],
       'helpers' => [
@@ -887,7 +889,7 @@ return [
             'name'        => 'Название',
             'sort_order'  => 'Сортировка',
             'is_active'   => 'Включена',
-            'created_at'  => 'Дата создания',
+            'created_at'  => 'Создана',
           ],
           'helpers' => [
             'main'                => 'Автор статьи, теги и настройки отображения',
@@ -931,7 +933,7 @@ return [
       'image_description' => 'Описание изображения',
       'footer_tab'        => 'Название вкладки',
       'footer_content'    => 'Контент',
-      'created_at'        => 'Дата создания',
+      'created_at'        => 'Создано',
       'updated_at'        => 'Дата изменения',
       'is_active'         => 'Включен',
       'ai_result'         => 'Результат',
@@ -1024,6 +1026,7 @@ return [
         'product'       => 'Товары',
         'category'      => 'Категории',
         'manufacturer'  => 'Производители',
+        'filter_page'   => 'Страницы фильтра',
         'tag'           => 'Теги',
         'blog'          => 'Блог - статьи',
         'blog_tag'      => 'Блог - теги',
@@ -1231,6 +1234,14 @@ return [
     'info_pages' => [
       'navigation_label'     => 'Инфо страницы',
       'model_label_singular' => 'Инфо страница',
+      'labels' => [
+        'is_active' => 'Активна'
+      ],
+      'columns' => [
+        'name'        => 'Name',
+        'is_active'   => 'Активна',
+        'created_at'  => 'Создана',
+      ],
       'helpers' => [
         'group_title' => 'Инфо страницы - это страницы с основной информацией о магазине, такой как контакты, правила доставки и оплаты, правовые положения'
       ]
@@ -1247,7 +1258,7 @@ return [
       'role'        => 'Тип',
       'password'    => 'Пароль',
       'locale'      => 'Язык интерфейса',
-      'created_at'  => 'Дата создания',
+      'created_at'  => 'Создан',
       'is_active'   => 'Включен',
     ],
   ],

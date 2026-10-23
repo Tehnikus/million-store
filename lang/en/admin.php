@@ -45,6 +45,8 @@ return [
           'placement'               => 'Placement',
           'is_active'               => 'Active in this store',
           'is_not_active'           => 'Not active in this store',
+          'is_available'            => 'Available for order in this store',
+          'is_not_available'        => 'Not available for order in this store',
           'is_not_associated'       => 'Not associated to this store',
         ],
         'filters' => [
@@ -1016,8 +1018,6 @@ return [
     'image_settings' => [
       'navigation_label'    => 'Images settings',
       'subheading'          => 'Here you can set your store logo and global image dimensions',
-      'slider'              => 'Slider',
-      'misc'                => 'Miscellaneous',
       'image_type'          => 'Image type',
       'width'               => 'Width (px)',
       'height'              => 'Height (px)',
@@ -1026,6 +1026,7 @@ return [
         'product'       => 'Products',
         'category'      => 'Categories',
         'manufacturer'  => 'Manufacturers',
+        'filter_page'   => 'Filter page',
         'tag'           => 'Tags',
         'blog'          => 'Blog posts',
         'blog_tag'      => 'Blog tags',
@@ -1237,7 +1238,9 @@ return [
         'is_active' => 'Active'
       ],
       'columns' => [
-        
+        'name'        => 'Name',
+        'is_active'   => 'Active',
+        'created_at'  => 'Created',
       ],
       'helpers' => [
         'group_title' => 'Info pages are pages containing key information about the store, such as contact details, delivery and payment policies, and legal terms'
