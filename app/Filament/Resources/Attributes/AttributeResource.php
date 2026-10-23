@@ -7,6 +7,7 @@ use App\Filament\Resources\Attributes\Pages\EditAttribute;
 use App\Filament\Resources\Attributes\Pages\ListAttributes;
 use App\Filament\Resources\Attributes\Schemas\AttributeForm;
 use App\Filament\Resources\Attributes\Tables\AttributesTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Attribute;
@@ -64,5 +65,13 @@ class AttributeResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::Attributes;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_active', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }

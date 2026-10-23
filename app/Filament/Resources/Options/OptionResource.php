@@ -7,9 +7,11 @@ use App\Filament\Resources\Options\Pages\EditOption;
 use App\Filament\Resources\Options\Pages\ListOptions;
 use App\Filament\Resources\Options\Schemas\OptionForm;
 use App\Filament\Resources\Options\Tables\OptionsTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Option;
+use App\Models\Catalog\OptionValue;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -64,5 +66,19 @@ class OptionResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::Options;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $badgeData = [
+            'disabledOptions' => static::getEloquentQuery()->where('is_active', false)->count(),
+            'disabledValues' => OptionValue::where('is_active', false)->count(),
+        ];
+
+        $badgeFlag = array_filter($badgeData, fn($counter) => $counter !== 0);
+
+        return !empty($badgeFlag) ? implode('/', $badgeData) : null;
     }
 }

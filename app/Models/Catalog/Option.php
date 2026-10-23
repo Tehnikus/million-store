@@ -3,6 +3,8 @@
 namespace App\Models\Catalog;
 
 use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\Options\OptionResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -67,5 +69,12 @@ class Option extends Model
         Context::add($key, $choices->all());
 
         return $choices;
+    }
+
+    // Clear cache of admin navigation badges when model is changed
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [OptionResource::class];
     }
 }

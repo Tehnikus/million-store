@@ -87,7 +87,10 @@ class OptionsTable
                     ->sortable()
                     ->width('100px')
                     ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.options.fields.is_active')),
+                    ->label(__('admin.catalog.options.fields.is_active'))
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                    }),
 
                 ToggleColumn::make('show_in_facets')
                     ->sortable()

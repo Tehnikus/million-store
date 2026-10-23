@@ -66,10 +66,13 @@ class AttributesTable
                     ->label(__('admin.catalog.attributes.fields.products')),
 
                 ToggleColumn::make('is_active')
+                    ->label(__('admin.catalog.attributes.fields.is_active'))
                     ->sortable()
                     ->width('100px')
                     ->alignment(Alignment::Center)
-                    ->label(__('admin.catalog.attributes.fields.is_active')),
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                    }),
 
                 ToggleColumn::make('show_in_facets')
                     ->sortable()
