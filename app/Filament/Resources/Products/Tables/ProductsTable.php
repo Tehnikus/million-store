@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Domain\Catalog\FacetType;
+use App\Filament\Resources\Products\ProductResource;
 use App\Models\Catalog\FacetIndex;
 use Arr;
 use Illuminate\Support\Js;
@@ -238,11 +239,24 @@ class ProductsTable
                     ->icon(fn($record) => $record->currentDescription()?->is_active == true ? Heroicon::Play : Heroicon::Stop)
                     ->color(fn($record) => $record->currentDescription()?->is_active == true ? 'success' : 'danger')
                     ->tooltip(fn($record) => $record->currentDescription()?->is_active == true ? __('admin.catalog.products.table.columns.is_active') : __('admin.catalog.products.table.columns.is_not_active')),
+                
+                Action::make('toggleAvailable')
+                    ->requiresConfirmation(false)
+                    ->action(fn (Product $record) => $record->currentDescription()?->update(['is_available' => !$record->currentDescription()?->is_available]))->after(fn($livewire) => $livewire->dispatch('refresh-sidebar'))
+                    ->visible(fn($record) => $record->currentDescription() !== null)
+                    ->icon(Heroicon::ShoppingCart)
+                    ->color(fn($record) => $record->currentDescription()?->is_available && $record->currentDescription()?->is_active ? 'success' : 'gray')
+                    ->disabled(fn (Product $record) => !$record->currentDescription()?->is_active)
+                    ->tooltip(fn($record) => $record->currentDescription()?->is_available && $record->currentDescription()?->is_active ? __('admin.catalog.products.table.columns.is_available') : __('admin.catalog.products.table.columns.is_not_available')),
 
                 EditAction::make()->tooltip(__('admin.catalog.products.table.buttons.edit_product')),
                 
                 Action::make('deleteFromStore')
-                    ->action(fn(Product $product) => ProductDescription::where('product_id', $product->id)->where('store_id', Filament::getTenant()->id)->delete())
+                    ->action(fn(Product $product) => ProductDescription::where('product_id', $product->id)
+                        ->where('store_id', Filament::getTenant()->id)
+                        ->first()
+                        ?->delete()
+                    )
                     ->visible(fn($record) => $record->currentDescription() !== null)
                     ->icon(Heroicon::OutlinedNoSymbol)
                     ->color('danger')
@@ -252,6 +266,7 @@ class ProductsTable
                     ->tooltip(__('admin.catalog.products.table.buttons.delete_from_store')),
 
                 DeleteAction::make()
+                    ->after(fn() => ProductResource::forgetNavigationBadgeCache())
                     ->requiresConfirmation()
                     ->modalHeading(__('admin.catalog.products.table.buttons.delete_from_all_stores'))
                     ->modalDescription(__('admin.catalog.products.table.messages.delete_from_all_stores'))
