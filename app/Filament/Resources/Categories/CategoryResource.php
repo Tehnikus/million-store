@@ -5,11 +5,10 @@ namespace App\Filament\Resources\Categories;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Categories\Pages\ListCategories;
-// use App\Filament\Resources\Categories\Pages\ManageCategoryProducts;
 use App\Filament\Resources\Categories\Schemas\CategoryForm;
 use App\Filament\Resources\Categories\Tables\CategoriesTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Catalog\Category;
-// use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -48,18 +47,9 @@ class CategoryResource extends Resource
             'index'     => ListCategories::route('/'),
             'create'    => CreateCategory::route('/create'),
             'edit'      => EditCategory::route('/{record}/edit'),
-            // 'products'  => ManageCategoryProducts::route('{record}/products'),
         ];
     }
-
-    // public static function getRecordSubNavigation(Page $page): array
-    // {
-    //     return $page->generateNavigationItems([
-    //         EditCategory::class,
-    //         ManageCategoryProducts::class,
-    //     ]);
-    // }
-
+    
     // Global search columns list
     public static function getGloballySearchableAttributes(): array
     {
@@ -71,5 +61,13 @@ class CategoryResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::Categories;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_active', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }

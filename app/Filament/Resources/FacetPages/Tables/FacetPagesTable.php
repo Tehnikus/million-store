@@ -146,6 +146,10 @@ class FacetPagesTable
                         'style' => 'pointer-events: auto;',
                         'x-tooltip.raw' => $record->activation_blocked ? __('admin.catalog.facet_pages.helpers.activation_blocked') : null,
                     ])
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                        // TODO: Rebuild sitemap here
+                    })
                     ,
 
             ])

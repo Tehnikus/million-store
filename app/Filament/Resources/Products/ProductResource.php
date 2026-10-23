@@ -7,9 +7,12 @@ use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\Schemas\ProductForm;
 use App\Filament\Resources\Products\Tables\ProductsTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Models\Catalog\Product;
+use App\Models\Catalog\ProductDescription;
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -67,17 +70,33 @@ class ProductResource extends Resource
         return parent::getEloquentQuery()->with(['descriptions']);
     }
 
-    public static function getGlobalSearchResultTitle(Model $record): string
+    // public static function getGlobalSearchResultTitle(Model $record): string
+    // {
+    //     return "{$record?->currentDescription()?->name} ({$record->global_name})";
+    // }
+
+    // public static function getRecordTitle(?Model $record): string|Htmlable|null
+    // {
+    //     if (!$record) {
+    //         return null;
+    //     }
+
+    //     return "{$record->currentDescription()?->name} ({$record->global_name})";
+    // }
+
+    use HasCachedNavigationBadge;
+    protected static function badgeIsTenantScoped(): bool
     {
-        return "{$record?->currentDescription()?->name} ({$record->global_name})";
+        return true;
     }
 
-    public static function getRecordTitle(?Model $record): string|Htmlable|null
+    protected static function computeNavigationBadge(): ?string
     {
-        if (!$record) {
-            return null;
-        }
+        $count = ProductDescription::where('store_id', Filament::getTenant()->id)
+            ->where('is_active', false)
+            ->orWhere('is_available', false)
+            ->count();
 
-        return "{$record->currentDescription()?->name} ({$record->global_name})";
+        return $count > 0 ? (string) $count : null;
     }
 }

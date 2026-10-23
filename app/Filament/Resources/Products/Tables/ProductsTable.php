@@ -233,7 +233,7 @@ class ProductsTable
             ->recordActions([
                 Action::make('toggleActive')
                     ->requiresConfirmation(false)
-                    ->action(fn (Product $record) => $record->currentDescription()?->update(['is_active' => !$record->currentDescription()?->is_active]))
+                    ->action(fn (Product $record) => $record->currentDescription()?->update(['is_active' => !$record->currentDescription()?->is_active]))->after(fn($livewire) => $livewire->dispatch('refresh-sidebar'))
                     ->visible(fn($record) => $record->currentDescription() !== null)
                     ->icon(fn($record) => $record->currentDescription()?->is_active == true ? Heroicon::Play : Heroicon::Stop)
                     ->color(fn($record) => $record->currentDescription()?->is_active == true ? 'success' : 'danger')

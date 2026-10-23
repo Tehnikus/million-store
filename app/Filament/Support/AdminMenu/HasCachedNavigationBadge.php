@@ -43,4 +43,9 @@ trait HasCachedNavigationBadge
     }
 
     abstract protected static function computeNavigationBadge(): ?string;
+
+    protected static function badgeIsTenantScoped(): bool
+    {
+        return static::isScopedToTenant();
+    }
 }

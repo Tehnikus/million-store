@@ -5,6 +5,8 @@ namespace App\Models\Catalog;
 use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
 use App\Domain\Media\ImageType;
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\Categories\CategoryResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -204,5 +206,12 @@ class Category extends Model
         }
 
         return $result;
+    }
+
+    // Clear cache of admin navigation badges when model is changed
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [CategoryResource::class];
     }
 }

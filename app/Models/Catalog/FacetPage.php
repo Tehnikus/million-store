@@ -3,6 +3,8 @@
 namespace App\Models\Catalog;
 
 use App\Domain\Seo\HasSlugs;
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\FacetPages\FacetPageResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -70,5 +72,13 @@ class FacetPage extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+
+    // Clear cache of admin navigation badges when model is changed
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [FacetPageResource::class];
     }
 }

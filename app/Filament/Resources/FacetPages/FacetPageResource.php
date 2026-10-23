@@ -7,6 +7,7 @@ use App\Filament\Resources\FacetPages\Pages\EditFacetPage;
 use App\Filament\Resources\FacetPages\Pages\ListFacetPages;
 use App\Filament\Resources\FacetPages\Schemas\FacetPageForm;
 use App\Filament\Resources\FacetPages\Tables\FacetPagesTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\FacetPage;
@@ -58,5 +59,13 @@ class FacetPageResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::FacetPages;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_active', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }

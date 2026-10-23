@@ -2,6 +2,8 @@
 
 namespace App\Models\Catalog;
 
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\Products\ProductResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -86,5 +88,11 @@ class ProductDescription extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [ProductResource::class];
     }
 }
