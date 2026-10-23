@@ -4,6 +4,8 @@ namespace App\Models\Blog;
 
 use App\Domain\Media\Concerns\HasProcessedImages;
 use App\Domain\Media\ImageType;
+use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
+use App\Filament\Resources\BlogTags\BlogTagResource;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,6 +92,13 @@ class BlogTag extends Model
         return $this->belongsToMany(BlogPost::class, 'blog_post_tag')
             ->withPivot(['sort_order'])
             ->withTimestamps();
+    }
+
+    // Clear cache of admin navigation badges when model is changed
+    use InvalidatesNavigationBadges;
+    protected static function navigationBadgeResources(): array
+    {
+        return [BlogTagResource::class];
     }
 
 }

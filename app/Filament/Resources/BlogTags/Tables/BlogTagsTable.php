@@ -47,7 +47,11 @@ class BlogTagsTable
                 ToggleColumn::make('is_active')
                     ->label(__('admin.blog.tags.fields.is_active'))
                     ->alignment(Alignment::Center)
-                    ->width('100px'),
+                    ->width('100px')
+                    ->afterStateUpdated(function ($livewire) {
+                        $livewire->dispatch('refresh-sidebar');
+                        // TODO: Rebuild sitemap here
+                    }),
 
                 TextColumn::make('created_at')
                     ->label(__('admin.blog.tags.fields.created_at'))

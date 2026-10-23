@@ -8,6 +8,7 @@ use App\Filament\Resources\BlogTags\Pages\ListBlogTags;
 use App\Filament\Resources\BlogTags\Pages\ManageBlogPostTags;
 use App\Filament\Resources\BlogTags\Schemas\BlogTagForm;
 use App\Filament\Resources\BlogTags\Tables\BlogTagsTable;
+use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Blog\BlogTag;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
@@ -69,5 +70,13 @@ class BlogTagResource extends Resource
     protected static function getMenuConfig(): NavigationItem
     {
         return NavigationItem::BlogTags;
+    }
+
+    // Cached navigation badge
+    use HasCachedNavigationBadge;
+    protected static function computeNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->where('is_active', false)->count();
+        return $count > 0 ? (string) $count : null;
     }
 }
