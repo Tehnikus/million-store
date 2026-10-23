@@ -11,6 +11,7 @@ use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Filament\Support\AdminMenu\HasCentralizedNavigation;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Catalog\Attribute;
+use App\Models\Catalog\AttributeValue;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -71,7 +72,13 @@ class AttributeResource extends Resource
     use HasCachedNavigationBadge;
     protected static function computeNavigationBadge(): ?string
     {
-        $count = static::getEloquentQuery()->where('is_active', false)->count();
-        return $count > 0 ? (string) $count : null;
+        $badgeData = [
+            'disabledAttributes' => static::getEloquentQuery()->where('is_active', false)->count(),
+            'disabledValues' => AttributeValue::where('is_active', false)->count(),
+        ];
+
+        $badgeFlag = array_filter($badgeData, fn($counter) => $counter !== 0);
+
+        return !empty($badgeFlag) ? implode('/', $badgeData) : null;
     }
 }

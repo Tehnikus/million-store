@@ -16,9 +16,7 @@ use Filament\Facades\Filament;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class ProductResource extends Resource
 {
@@ -92,11 +90,13 @@ class ProductResource extends Resource
 
     protected static function computeNavigationBadge(): ?string
     {
-        $count = ProductDescription::where('store_id', Filament::getTenant()->id)
-            ->where('is_active', false)
-            ->orWhere('is_available', false)
-            ->count();
+        $badgeData = [
+            'disabledProducts'    => ProductDescription::where('store_id', Filament::getTenant()->id)->where('is_active', false)->count(),
+            'unavailableProducts' => ProductDescription::where('store_id', Filament::getTenant()->id)->where('is_available', false)->count(),
+        ];
 
-        return $count > 0 ? (string) $count : null;
+        $badgeFlag = array_filter($badgeData, fn($counter) => $counter !== 0);
+
+        return !empty($badgeFlag) ? implode('/', $badgeData) : null;
     }
 }
