@@ -159,21 +159,20 @@ class OptionForm
                                     ->helperText(__('admin.catalog.options.helpers.is_default'))
                                     ->live()
                                     ->distinct(fn(Get $get) => $get('../../type') == 'radio')
-                                    ->fixIndistinctState(fn(Get $get) => $get('../../type') == 'radio'),
+                                    ->fixIndistinctState(fn(Get $get) => $get('../../type') == 'radio')
+                                    ->afterStateUpdated(fn(Set $set) => $set('is_active', true)),
 
-                                Group::make([
-                                    Toggle::make('is_active')
-                                        ->label(__('admin.catalog.options.fields.is_active'))
-                                        ->helperText(__('admin.catalog.options.helpers.value_is_active'))
-                                        ->default(true),
+                                Toggle::make('is_active')
+                                    ->label(__('admin.catalog.options.fields.is_active'))
+                                    ->helperText(__('admin.catalog.options.helpers.value_is_active'))
+                                    ->default(true)
+                                    ->disabled(fn(Get $get) => $get('is_default') === true),
 
-                                    Toggle::make('show_in_facets')
-                                        ->label(__('admin.catalog.options.fields.show_in_facets'))
-                                        ->helperText(__('admin.catalog.options.helpers.value_show_in_facets'))
-                                        ->default(true),
-                                ])
-                                ->columns(1)
-                                ->columnSpanFull()
+                                Toggle::make('show_in_facets')
+                                    ->label(__('admin.catalog.options.fields.show_in_facets'))
+                                    ->helperText(__('admin.catalog.options.helpers.value_show_in_facets'))
+                                    ->default(true),
+
                             ])
                             ->deleteAction(fn(Action $action) => $action
                                 ->requiresConfirmation()
