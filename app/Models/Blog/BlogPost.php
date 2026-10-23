@@ -2,6 +2,7 @@
 
 namespace App\Models\Blog;
 
+use App\Domain\Media\ImageType;
 use App\Domain\Support\Concerns\InvalidatesNavigationBadges;
 use App\Filament\Resources\BlogPosts\BlogPostResource;
 use App\Models\Catalog\Product;
@@ -21,6 +22,7 @@ class BlogPost extends Model
     use HasTranslations;
     use HasSlugs;
     use HasProcessedImages;
+
     protected $fillable = [
         'store_id',
         'name',
@@ -102,13 +104,16 @@ class BlogPost extends Model
             ->withTimestamps();
     }
 
-    // Required for image conversions
+    /**
+     * Settings for image conversions
+     * @return array{images: array{slug_source: string, type: string}}
+     */
     public function imageColumns(): array
     {
         return [
             'images' => [
-                'type'        => 'blog', // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-                'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
+                'type' => ImageType::BlogPost, // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',       // Translatable field to take converted image names from. Will be slugged
             ],
         ];
     }

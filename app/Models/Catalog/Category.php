@@ -4,6 +4,7 @@ namespace App\Models\Catalog;
 
 use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
+use App\Domain\Media\ImageType;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -129,8 +130,8 @@ class Category extends Model
     {
         return [
             'images' => [
-                'type'        => 'category',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-                'slug_source' => 'name',        // Translatable field to take converted image names from. Will be slugged
+                'type'          => ImageType::Category, // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source'   => 'name',              // Translatable field to take converted image names from. Will be slugged
             ],
         ];
     }

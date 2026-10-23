@@ -2,23 +2,19 @@
 
 namespace App\Filament\Resources\BlogTags\Schemas;
 
+use App\Domain\Media\ImageType;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use App\Filament\Schemas\Tabs\DescriptionTab;
-use App\Filament\Schemas\Tabs\FaqTab;
-use App\Filament\Schemas\Tabs\HowToTab;
-use App\Filament\Schemas\Tabs\FooterTab;
-use App\Filament\Schemas\Tabs\ImagesTab;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
+use Filament\Schemas\Components\{Tabs, Tabs\Tab};
 use Filament\Forms\Components\Toggle;
 
 class BlogTagForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $store      = Filament::getTenant();
-        $languages  = $store->activeLanguages();
+        $store = Filament::getTenant()->load('storeSettings');
+        $languages = $store->activeLanguages();
 
         return $schema
             ->components([
@@ -48,9 +44,10 @@ class BlogTagForm
 
                                                 ])
                                         )
-                                    ])
+                                    ]),
+                                
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'blog_tag'])
+                        ImagesTab::make($store, $languages, ImageType::BlogTag),
                     ]),
             ]);
     }

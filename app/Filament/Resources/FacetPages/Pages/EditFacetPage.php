@@ -34,6 +34,7 @@ class EditFacetPage extends EditRecord
     protected function afterSave(): void
     {
         FacetPageForm::saveRootFacet($this->record, $this->pendingRootFacet);
+        $this->refreshFormData(['images']); // Refresh images tab
     }
 
     protected function getHeaderActions(): array

@@ -2,6 +2,8 @@
 
 namespace App\Models\Blog;
 
+use App\Domain\Media\Concerns\HasProcessedImages;
+use App\Domain\Media\ImageType;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +15,8 @@ class BlogTag extends Model
 {
     use HasTranslations;
     use HasSlugs;
+    use HasProcessedImages;
+    
     protected $fillable = [
         'store_id',
         'name',
@@ -61,6 +65,20 @@ class BlogTag extends Model
         'how_to'                => 'array',
         'footer'                => 'array',
     ];
+
+    /**
+     * Settings for image conversions
+     * @return array{images: array{slug_source: string, type: string}}
+     */
+    public function imageColumns(): array
+    {
+        return [
+            'images' => [
+                'type' => ImageType::BlogTag, // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',       // Translatable field to take converted image names from. Will be slugged
+            ],
+        ];
+    }
 
     public function store(): BelongsTo
     {

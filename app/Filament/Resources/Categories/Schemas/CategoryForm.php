@@ -2,14 +2,15 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use App\Domain\Media\ImageType;
 use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Categories\RelationManagers\CategoryProductsRelationManager;
 use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use App\Models\Catalog\Category;
 use Filament\Forms\Components\{Select, Toggle};
 use Filament\Schemas\Components\{Livewire, Section};
 use Filament\Schemas\Schema;
-use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Facades\Filament;
@@ -19,7 +20,7 @@ class CategoryForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $store = Filament::getTenant();
+        $store = Filament::getTenant()->load('storeSettings');
         $languages = $store->activeLanguages();
 
         return $schema
@@ -74,7 +75,7 @@ class CategoryForm
                                     ])
 
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'category']),
+                        ImagesTab::make($store, $languages, ImageType::Category),
                         Tab::make('products')
                             ->label(__('admin.catalog.categories.tabs.products.label'))
                             ->icon(NavigationItem::Products->icon())

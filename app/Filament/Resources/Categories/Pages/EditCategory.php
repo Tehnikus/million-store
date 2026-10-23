@@ -26,6 +26,11 @@ class EditCategory extends EditRecord
                     DeletionWarnings::affectedWarningMessage(FacetType::Category, [$record->id], $store->id)),
         ];
     }
+    
+    protected function afterSave(): void
+    {
+        $this->refreshFormData(['images']);
+    }
 
     public static function getNavigationIcon(): string
     {

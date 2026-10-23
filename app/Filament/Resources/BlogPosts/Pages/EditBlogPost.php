@@ -19,6 +19,11 @@ class EditBlogPost extends EditRecord
         ];
     }
 
+    protected function afterSave(): void
+    {
+        $this->refreshFormData(['images']);
+    }
+
     public static function getNavigationIcon(): string
     {
         return NavigationItem::BlogPosts->icon();

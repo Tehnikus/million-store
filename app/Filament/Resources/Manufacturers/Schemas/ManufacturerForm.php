@@ -2,14 +2,15 @@
 
 namespace App\Filament\Resources\Manufacturers\Schemas;
 
+use App\Domain\Media\ImageType;
 use App\Filament\Resources\Manufacturers\Pages\EditManufacturer;
 use App\Filament\Resources\Manufacturers\RelationManagers\ManufacturerProductsRelationManager;
 use App\Filament\Support\AdminMenu\NavigationItem;
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use App\Models\Catalog\Manufacturer;
 use Filament\Schemas\Components\{Livewire, Section};
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\{Select, Toggle};
-use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Facades\Filament;
@@ -19,7 +20,7 @@ class ManufacturerForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $store = Filament::getTenant();
+        $store = Filament::getTenant()->load('storeSettings');
         $languages = $store->activeLanguages();
 
         return $schema
@@ -72,7 +73,7 @@ class ManufacturerForm
                                         )
                                     ])
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'manufacturer']),
+                        ImagesTab::make($store, $languages, ImageType::Manufacturer),
                         Tab::make('products')
                             ->label(__('admin.catalog.manufacturers.tabs.products.label'))
                             ->icon(NavigationItem::Products->icon())

@@ -4,6 +4,7 @@ namespace App\Models\Catalog;
 
 use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
+use App\Domain\Media\ImageType;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -170,15 +171,21 @@ class Manufacturer extends Model
         });
     }
 
+
+    /**
+     * Settings for image conversions
+     * @return array{images: array{slug_source: string, type: string}}
+     */
     public function imageColumns(): array
     {
         return [
             'images' => [
-                'type'        => 'manufacturer', // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-                'slug_source' => 'name', // Translatable field to take converted image names from. Will be slugged
+                'type' => ImageType::Manufacturer, // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',           // Translatable field to take converted image names from. Will be slugged
             ],
         ];
     }
+
 
     /**
      * Cache manufacturer list for select dropdowns with Octane support

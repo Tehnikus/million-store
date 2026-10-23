@@ -27,6 +27,11 @@ class EditManufacturer extends EditRecord
         ];
     }
 
+    protected function afterSave(): void
+    {
+        $this->refreshFormData(['images']);
+    }
+
     public static function getNavigationIcon(): string
     {
         return NavigationItem::Manufacturers->icon();

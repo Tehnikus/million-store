@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\BlogPosts\Schemas;
 
+use App\Domain\Media\ImageType;
 use App\Filament\Resources\BlogPosts\Pages\EditBlogPost;
 use App\Filament\Resources\BlogPosts\RelationManagers\{BlogCommentsRelationManager, PostProductsRelationManager};
+use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use App\Filament\Support\AdminMenu\NavigationItem;
 use App\Models\Blog\{BlogPost, BlogTag, BlogAuthor};
-use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, HowToTab, FooterTab, ImagesTab};
 use Filament\Facades\Filament;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\{Livewire, Section, Tabs, Tabs\Tab};
@@ -18,7 +19,7 @@ class BlogPostForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $store = Filament::getTenant();
+        $store = Filament::getTenant()->load('storeSettings');
         $languages = $store->activeLanguages();
 
         return $schema
@@ -87,7 +88,7 @@ class BlogPostForm
 
                             ]),
 
-                        ImagesTab::make($store, $languages, ['type' => 'blog_post']),
+                        ImagesTab::make($store, $languages, ImageType::BlogPost),
 
                         Tab::make('products')
                             ->label(__('admin.blog.posts.tabs.products.label'))
