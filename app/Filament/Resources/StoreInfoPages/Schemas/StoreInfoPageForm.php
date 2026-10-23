@@ -25,7 +25,7 @@ class StoreInfoPageForm
                         Tab::make(__('admin.common.tabs.content'))
                             ->schema([
                                 Toggle::make('is_active')
-                                    ->label(__('admin.blog.posts.fields.is_active'))
+                                    ->label(__('admin.stores.info_pages.labels.is_active'))
                                     ->default(true)
                                     ->columnSpanFull(),
                                 Tabs::make('languages')

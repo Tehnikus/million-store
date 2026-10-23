@@ -25,15 +25,15 @@ class StoreInfoPagesTable
                 MultilangTextColumn::make('name')
                     ->recordColumnAll(fn ($record) => $record->getTranslations('name') ?? [])
                     ->wrapHeader()
-                    ->label(__('admin.blog.posts.fields.name')),
+                    ->label(__('admin.stores.info_pages.columns.name')),
 
                 ToggleColumn::make('is_active')
-                    ->label(__('admin.blog.posts.fields.is_active'))
+                    ->label(__('admin.stores.info_pages.columns.is_active'))
                     ->alignment(Alignment::Center)
                     ->width('100px'),
 
                 TextColumn::make('created_at')
-                    ->label(__('admin.blog.posts.fields.created_at'))
+                    ->label(__('admin.stores.info_pages.columns.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->width('1%')
