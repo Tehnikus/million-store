@@ -1016,25 +1016,26 @@ return [
     'image_settings' => [
       'navigation_label'    => 'Images settings',
       'subheading'          => 'Here you can set your store logo and global image dimensions',
-      'logo'                => 'Logo',
-      'product'             => 'Product',
-      'category'            => 'Category',
-      'manufacturer'        => 'Manufacturer',
-      'blog'                => 'Blog',
-      'product_miniature'   => 'Product miniature',
-      'product_main'        => 'Product main',
-      'options_attributes'  => 'Options and attributes',
-      'options'             => 'Options',
-      'attributes'          => 'Attributes',
-      'blog_miniature'      => 'Blog miniature',
-      'blog_main'           => 'Blog main',
-      'category_miniature'  => 'Category miniature',
-      'category_main'       => 'Category main',
       'slider'              => 'Slider',
       'misc'                => 'Miscellaneous',
       'image_type'          => 'Image type',
       'width'               => 'Width (px)',
       'height'              => 'Height (px)',
+      'types' => [
+        'logo'          => 'Logo',
+        'product'       => 'Products',
+        'category'      => 'Categories',
+        'manufacturer'  => 'Manufacturers',
+        'tag'           => 'Tags',
+        'blog'          => 'Blog posts',
+        'blog_tag'      => 'Blog tags',
+        'option'        => 'Options',
+        'attribute'     => 'Attributes',
+      ],
+      'conversions' => [
+        'miniature' => 'Miniature',
+        'main'      => 'Main image',
+      ],
     ],
     'css_editor' => [
       'navigation_label'  => 'CSS Editor',
@@ -1232,6 +1233,12 @@ return [
     'info_pages' => [
       'navigation_label'     => 'Info pages',
       'model_label_singular' => 'Info page',
+      'labels' => [
+        'is_active' => 'Active'
+      ],
+      'columns' => [
+        
+      ],
       'helpers' => [
         'group_title' => 'Info pages are pages containing key information about the store, such as contact details, delivery and payment policies, and legal terms'
       ]

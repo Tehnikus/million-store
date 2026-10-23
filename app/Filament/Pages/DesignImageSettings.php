@@ -27,29 +27,34 @@ class DesignImageSettings extends Page
     {
         // One section per image type, one fieldset per conversion — all from the ImageType enum.
         // A new case in the enum appears here without touching this page.
-        $sections = collect(ImageType::cases())->map(
-            fn(ImageType $type) => Section::make($type->label())
-                ->schema(collect($type->conversions())->map(function (ImageConversion $conversion) use ($type) {
-                    $path = "image_dimensions.{$type->value}.{$conversion->value}";
-                    $default = $conversion->defaultDimensions();
+        // Types without conversions have no gallery (content images only) and nothing to configure here
+        $sections = collect(ImageType::cases())
+            ->filter(fn(ImageType $type) => $type->conversions() !== [])
+            ->map(
+                fn(ImageType $type) => Section::make($type->label())
+                    ->schema(collect($type->conversions())->map(function (ImageConversion $conversion) use ($type) {
+                        $path = "image_dimensions.{$type->value}.{$conversion->value}";
+                        $default = $conversion->defaultDimensions();
 
-                    // Not required: an empty field means "use the default", which the placeholder shows
-                    return Fieldset::make($conversion->label())
-                        ->schema([
-                            TextInput::make("{$path}.width")
-                                ->integer()
-                                ->minValue(1)
-                                ->placeholder((string) $default['width'])
-                                ->label(__('admin.design.image_settings.width')),
-                            TextInput::make("{$path}.height")
-                                ->integer()
-                                ->minValue(1)
-                                ->placeholder((string) $default['height'])
-                                ->label(__('admin.design.image_settings.height')),
-                        ])
-                        ->columns(2);
-                })->all())
-        )->all();
+                        // Not required: an empty field means "use the default", which the placeholder shows
+                        return Fieldset::make($conversion->label())
+                            ->schema([
+                                TextInput::make("{$path}.width")
+                                    ->integer()
+                                    ->minValue(1)
+                                    ->placeholder((string) $default['width'])
+                                    ->label(__('admin.design.image_settings.width')),
+                                TextInput::make("{$path}.height")
+                                    ->integer()
+                                    ->minValue(1)
+                                    ->placeholder((string) $default['height'])
+                                    ->label(__('admin.design.image_settings.height')),
+                            ])
+                            ->columns(2);
+                    })->all())
+            )
+            ->values()
+            ->all();
 
         return $schema
             ->components([
