@@ -50,6 +50,7 @@ class TagsTable
                     ->label(__('admin.catalog.tags.tabs.content.labels.is_active'))
                     ->afterStateUpdated(function ($livewire) {
                         $livewire->dispatch('refresh-sidebar');
+                        // TODO Update sitemap here
                     }),
 
                 ToggleColumn::make('show_in_facets')
