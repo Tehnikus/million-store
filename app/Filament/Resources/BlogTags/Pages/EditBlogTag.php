@@ -6,6 +6,7 @@ use App\Filament\Resources\BlogTags\BlogTagResource;
 use App\Filament\Support\AdminMenu\NavigationItem;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Livewire\Attributes\On;
 
 class EditBlogTag extends EditRecord
 {
@@ -28,4 +29,9 @@ class EditBlogTag extends EditRecord
         return NavigationItem::BlogTags->icon();
     }
 
+    #[On('refresh-tabs')]
+    public function refreshTabBadges(): void
+    {
+        // Empty method to refresh tab relation manager badges
+    }
 }

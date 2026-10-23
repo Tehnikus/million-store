@@ -5,12 +5,12 @@ namespace App\Filament\Resources\BlogTags;
 use App\Filament\Resources\BlogTags\Pages\CreateBlogTag;
 use App\Filament\Resources\BlogTags\Pages\EditBlogTag;
 use App\Filament\Resources\BlogTags\Pages\ListBlogTags;
-use App\Filament\Resources\BlogTags\Pages\ManageBlogPostTags;
+// use App\Filament\Resources\BlogTags\Pages\ManageBlogPostTags;
 use App\Filament\Resources\BlogTags\Schemas\BlogTagForm;
 use App\Filament\Resources\BlogTags\Tables\BlogTagsTable;
 use App\Filament\Support\AdminMenu\HasCachedNavigationBadge;
 use App\Models\Blog\BlogTag;
-use Filament\Pages\Page;
+// use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -47,17 +47,17 @@ class BlogTagResource extends Resource
             'index'     => ListBlogTags::route('/'),
             'create'    => CreateBlogTag::route('/create'),
             'edit'      => EditBlogTag::route('/{record}/edit'),
-            'posts'     => ManageBlogPostTags::route('/{record}/posts')
+            // 'posts'     => ManageBlogPostTags::route('/{record}/posts')
         ];
     }
 
-    public static function getRecordSubNavigation(Page $page): array
-    {
-        return $page->generateNavigationItems([
-            EditBlogTag::class,
-            ManageBlogPostTags::class,
-        ]);
-    }
+    // public static function getRecordSubNavigation(Page $page): array
+    // {
+    //     return $page->generateNavigationItems([
+    //         EditBlogTag::class,
+    //         ManageBlogPostTags::class,
+    //     ]);
+    // }
 
     // Skip global search DB columns
     public static function getGloballySearchableAttributes(): array
