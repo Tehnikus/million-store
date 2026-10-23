@@ -5,6 +5,7 @@ namespace App\Models\Catalog;
 use App\Domain\Catalog\Concerns\BatchesCatalogDeletion;
 use App\Domain\Catalog\FacetType;
 use App\Domain\Media\Concerns\HasProcessedImages;
+use App\Domain\Media\ImageType;
 use App\Domain\Seo\HasSlugs;
 use App\Models\Global\Store;
 use Illuminate\Database\Eloquent\Model;
@@ -83,12 +84,16 @@ class Tag extends Model
             ->withPivot(['store_id', 'facet_group_id', 'sort_order']);
     }
 
+    /**
+     * Settings for image conversions
+     * @return array{images: array{slug_source: string, type: string}}
+     */
     public function imageColumns(): array
     {
         return [
             'images' => [
-                'type'        => 'tag',    // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
-                'slug_source' => 'name',   // Translatable field to take converted image names from. Will be slugged
+                'type' => ImageType::Tag, // Image type. Sets which dimensions to choose from StoreSettings and what directory to store images in
+                'slug_source' => 'name',  // Translatable field to take converted image names from. Will be slugged
             ],
         ];
     }

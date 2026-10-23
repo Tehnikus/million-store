@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tags\Schemas;
 
+use App\Domain\Media\ImageType;
 use App\Filament\Resources\Tags\RelationManagers\TagProductsRelationManager;
 use App\Filament\Resources\Tags\Pages\EditTag;
 use App\Filament\Schemas\Tabs\{DescriptionTab, FaqTab, FooterTab, HowToTab, ImagesTab};
@@ -70,7 +71,7 @@ class TagForm
                                         )
                                     ])
                             ]),
-                        ImagesTab::make($store, $languages, ['type' => 'tag']),
+                        ImagesTab::make($store, $languages, ImageType::Tag),
                         Tab::make('products')
                             ->label(__('admin.catalog.tags.tabs.products.label'))
                             ->icon(NavigationItem::Products->icon())

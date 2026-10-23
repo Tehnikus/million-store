@@ -32,6 +32,11 @@ class EditTag extends EditRecord
         return NavigationItem::Tags->icon();
     }
 
+    protected function afterSave(): void
+    {
+        $this->refreshFormData(['images']);
+    }
+
     #[On('refresh-tabs')]
     public function refreshTabBadges(): void
     {
